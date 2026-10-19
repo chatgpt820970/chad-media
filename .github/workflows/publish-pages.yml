@@ -55,6 +55,11 @@ jobs:
               n += len(names) if r.returncode == 0 else 0
           print(f"{n} files from {len(want)} releases")
           PY
+          # Public read-only feed for the user's Grok (morning slots): same stories and media as BIBI uses.
+          mkdir -p site/feed
+          for f in candidates.json media_ready.json posted.json; do
+            [ -f "xnc/data/$f" ] && cp "xnc/data/$f" site/feed/ || true
+          done
           du -sh site
 
       - uses: actions/upload-pages-artifact@v4
