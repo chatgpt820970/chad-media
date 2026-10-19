@@ -1,0 +1,64 @@
+name: Prepare media
+
+# Started by x-news-collector's collect run (it pushes trigger/last.json here) or by hand.
+# Runs media_prep.py from the private x-news-collector repo, publishes the files as a
+# GitHub Release in this public repo and commits data/media_ready.json back to x-news-collector.
+on:
+  push:
+    branches: [main]
+    paths: ["trigger/**"]
+  workflow_dispatch:
+
+permissions:
+  contents: write   # create/delete releases in this repo
+
+concurrency:
+  group: prepare-media
+  cancel-in-progress: false
+
+jobs:
+  media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 28
+    steps:
+      - name: Check out x-news-collector
+        uses: actions/checkout@v4
+        with:
+          repository: chatgpt820970/x-news-collector
+          ssh-key: ${{ secrets.XNC_DEPLOY_KEY }}
+          path: xnc
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: denoland/setup-deno@v2   # JS runtime yt-dlp needs for YouTube
+        with:
+          deno-version: v2.x
+
+      - name: Install yt-dlp, ffmpeg
+        run: |
+          pip install -q -U "yt-dlp[default]" requests pillow
+          curl -sSL https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar xJ -C /tmp
+          echo "$(ls -d /tmp/ffmpeg-master-latest-linux64-gpl)/bin" >> "$GITHUB_PATH"
+
+      - name: Prepare media
+        working-directory: xnc
+        env:
+          GH_TOKEN: ${{ github.token }}
+          MEDIA_REPO: ${{ github.repository }}
+        run: python -u media_prep.py
+
+      - name: Commit media_ready.json to x-news-collector
+        working-directory: xnc
+        run: |
+          git config user.name "x-news-collector[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add data/media_ready.json
+          if git diff --cached --quiet; then echo "No change."; exit 0; fi
+          git commit -q -m "Update media_ready.json $(TZ=Asia/Kolkata date '+%Y-%m-%d %H:%M IST')"
+          for i in 1 2 3; do
+            git pull -q --rebase -X theirs origin main && git push -q origin HEAD:main && exit 0
+            echo "Push failed, retrying ($i)..."; sleep 5
+          done
+          exit 1
