@@ -1,0 +1,65 @@
+name: Publish Pages
+
+# Mirrors every GitHub Pages URL listed in x-news-collector data/media_ready.json from its
+# release asset to Pages. Started by Prepare media and by the box's YouTube media prep.
+# The newest run wins (it always rebuilds from the latest media_ready.json).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: publish-pages
+  cancel-in-progress: true
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    environment:
+      name: github-pages
+    steps:
+      - name: Check out x-news-collector (data only)
+        uses: actions/checkout@v4
+        with:
+          repository: chatgpt820970/x-news-collector
+          ssh-key: ${{ secrets.XNC_DEPLOY_KEY }}
+          path: xnc
+          sparse-checkout: data
+
+      - name: Collect files from releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p site/m
+          printf '<!doctype html><title>chad-media</title>media files\n' > site/index.html
+          python3 - <<'PY'
+          import json, subprocess, collections
+          d = json.load(open("xnc/data/media_ready.json"))
+          base = "https://chatgpt820970.github.io/chad-media/m/"
+          want = collections.defaultdict(set)
+          for v in d.get("items", {}).values():
+              urls = [v.get("video_1080_url")] + list(v.get("frame_urls") or []) + list(v.get("photo_urls") or [])
+              for u in urls:
+                  if u and u.startswith(base) and v.get("release_tag"):
+                      want[v["release_tag"]].add(u[len(base):])
+          n = 0
+          for tag, names in want.items():
+              cmd = ["gh", "release", "download", tag, "-R", "chatgpt820970/chad-media", "-D", "site/m", "--clobber"]
+              for name in sorted(names):
+                  cmd += ["-p", name]
+              r = subprocess.run(cmd)
+              n += len(names) if r.returncode == 0 else 0
+          print(f"{n} files from {len(want)} releases")
+          PY
+          du -sh site
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: site
+          retention-days: 1
+
+      - uses: actions/deploy-pages@v4
