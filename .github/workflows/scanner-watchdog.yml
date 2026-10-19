@@ -38,13 +38,14 @@ jobs:
           echo "heartbeat age: ${AGE} min (force_stale=$FORCE)"
           if [ "$AGE" -le 20 ] && [ "$FORCE" != true ]; then echo "box is alive, nothing to do"; exit 0; fi
           echo "heartbeat stale: running fallback"
-          gh workflow run paper-trade.yml -R chatgpt820970/meme-coin-scanner >/dev/null 2>&1 \
-            && echo "meme scanner dispatched" || echo "::warning::meme dispatch failed"
+          dispatch() { # repo workflow label; prints only gh's error message on failure
+            if OUT=$(gh api -X POST "repos/chatgpt820970/$1/actions/workflows/$2/dispatches" -f ref=main 2>&1); then echo "$3 scanner dispatched"
+            else echo "::warning::$3 dispatch failed: $(echo "$OUT" | grep -o 'gh: .*' | head -1)"; fi; }
+          dispatch meme-coin-scanner paper-trade.yml meme
           # Capital at most once per 15 min: look at its latest run.
           LAST=$(gh run list -R chatgpt820970/capital-trade-scanner -w demo-scanner.yml -L 1 --json createdAt -q '.[0].createdAt' 2>/dev/null || true)
           if [ -n "$LAST" ] && [ $(( (NOW - $(date -ud "$LAST" +%s)) / 60 )) -lt 14 ]; then
             echo "capital ran less than 15 min ago, skipping"
           else
-            gh workflow run demo-scanner.yml -R chatgpt820970/capital-trade-scanner >/dev/null 2>&1 \
-              && echo "capital scanner dispatched" || echo "::warning::capital dispatch failed"
+            dispatch capital-trade-scanner demo-scanner.yml capital
           fi
