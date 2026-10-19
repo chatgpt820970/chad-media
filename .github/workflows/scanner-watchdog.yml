@@ -1,0 +1,50 @@
+name: Scanner watchdog
+
+# Fallback for the box-hosted trading scanners. The box writes a UTC timestamp
+# to a secret gist every 5 min. If it is stale (> 20 min), this dispatches the
+# scanners' own workflow_dispatch workflows in their private repos.
+# Logs print only ages and run decisions: no tokens, no trade data.
+on:
+  schedule:
+    - cron: "*/5 * * * *"
+  workflow_dispatch:
+    inputs:
+      force_stale:
+        description: "Test: treat the heartbeat as stale"
+        type: boolean
+        default: false
+
+permissions: {}
+
+concurrency:
+  group: scanner-watchdog
+  cancel-in-progress: false
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check heartbeat and dispatch if stale
+        env:
+          GH_TOKEN: ${{ secrets.SCANNER_DISPATCH_PAT }}
+          GIST: 856f663fd0cabe1cabcae9a907d1e545
+          FORCE: ${{ github.event.inputs.force_stale || 'false' }}
+        run: |
+          set -u
+          TS=$(curl -fsS --max-time 20 "https://gist.githubusercontent.com/chatgpt820970/$GIST/raw/heartbeat.txt?t=$(date +%s)" | tr -d '[:space:]' || true)
+          NOW=$(date +%s)
+          if HB=$(date -ud "$TS" +%s 2>/dev/null); then AGE=$(( (NOW - HB) / 60 )); else AGE=9999; fi
+          echo "heartbeat age: ${AGE} min (force_stale=$FORCE)"
+          if [ "$AGE" -le 20 ] && [ "$FORCE" != true ]; then echo "box is alive, nothing to do"; exit 0; fi
+          echo "heartbeat stale: running fallback"
+          gh workflow run paper-trade.yml -R chatgpt820970/meme-coin-scanner >/dev/null 2>&1 \
+            && echo "meme scanner dispatched" || echo "::warning::meme dispatch failed"
+          # Capital at most once per 15 min: look at its latest run.
+          LAST=$(gh run list -R chatgpt820970/capital-trade-scanner -w demo-scanner.yml -L 1 --json createdAt -q '.[0].createdAt' 2>/dev/null || true)
+          if [ -n "$LAST" ] && [ $(( (NOW - $(date -ud "$LAST" +%s)) / 60 )) -lt 14 ]; then
+            echo "capital ran less than 15 min ago, skipping"
+          else
+            gh workflow run demo-scanner.yml -R chatgpt820970/capital-trade-scanner >/dev/null 2>&1 \
+              && echo "capital scanner dispatched" || echo "::warning::capital dispatch failed"
+          fi
