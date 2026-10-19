@@ -11,6 +11,8 @@ on:
 
 permissions:
   contents: write   # create/delete releases in this repo
+  pages: write      # publish this run's files on GitHub Pages
+  id-token: write
 
 concurrency:
   group: prepare-media
@@ -20,6 +22,8 @@ jobs:
   media:
     runs-on: ubuntu-latest
     timeout-minutes: 28
+    environment:
+      name: github-pages
     steps:
       - name: Check out x-news-collector
         uses: actions/checkout@v4
@@ -38,7 +42,8 @@ jobs:
 
       - name: Install yt-dlp, ffmpeg
         run: |
-          pip install -q -U "yt-dlp[default]" requests pillow
+          pip install -q -U "yt-dlp[default]" bgutil-ytdlp-pot-provider requests pillow
+          docker run -d --name bgutil -p 4416:4416 brainicism/bgutil-ytdlp-pot-provider >/dev/null || true
           curl -sSL https://github.com/BtbN/FFmpeg-Builds/releases/download/latest/ffmpeg-master-latest-linux64-gpl.tar.xz | tar xJ -C /tmp
           echo "$(ls -d /tmp/ffmpeg-master-latest-linux64-gpl)/bin" >> "$GITHUB_PATH"
 
@@ -47,7 +52,21 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           MEDIA_REPO: ${{ github.repository }}
-        run: python -u media_prep.py
+          PAGES_DIR: ${{ runner.temp }}/site
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}   # optional Netscape cookies.txt; unset = no cookies
+        run: |
+          mkdir -p "$PAGES_DIR"
+          printf '<!doctype html><title>chad-media</title>media files\n' > "$PAGES_DIR/index.html"
+          if [ -n "$YT_COOKIES" ]; then printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/yt_cookies.txt"; export YT_COOKIES_FILE="$RUNNER_TEMP/yt_cookies.txt"; fi
+          unset YT_COOKIES
+          python -u media_prep.py
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: ${{ runner.temp }}/site
+          retention-days: 1
+
+      - uses: actions/deploy-pages@v4
 
       - name: Commit media_ready.json to x-news-collector
         working-directory: xnc
