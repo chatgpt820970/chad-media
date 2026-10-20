@@ -1,11 +1,83 @@
 {
-  "generated_at": "2026-10-20T09:58:55Z",
+  "generated_at": "2026-10-20T10:30:07Z",
   "sources": {
     "tiktok": "ok",
     "x": "skipped: timeline requires a login",
     "instagram": "skipped: reels require a login"
   },
   "items": [
+    {
+      "id": "tt-7698441437280570657",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7698441437280570657",
+      "platform": "tiktok",
+      "duration": 124.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7698441437280570657.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698441437280570657-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698441437280570657-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698441437280570657-3.jpg"
+      ],
+      "title": "Nobody cut egg with scissor haiyaa",
+      "caption": "A sharp little bit of comedy. Nobody cut egg with scissor haiyaa",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T10:30:07Z"
+    },
+    {
+      "id": "tt-7698007218364501262",
+      "source_url": "https://www.tiktok.com/@humankind/video/7698007218364501262",
+      "platform": "tiktok",
+      "duration": 35.5,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7698007218364501262.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698007218364501262-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698007218364501262-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698007218364501262-3.jpg"
+      ],
+      "title": "\"Are you Justin Bieber?",
+      "caption": "Something warm for the middle of the day. \"Are you Justin Bieber? Yeah, what’s up, bro? Justin.\" An aspiring musician’s car broke down on the side of the road when suddenly Justin Bieber stopped to help.",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-20T10:29:05Z"
+    },
+    {
+      "id": "tt-7685800549144399134",
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7685800549144399134",
+      "platform": "tiktok",
+      "duration": 36.2,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7685800549144399134.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685800549144399134-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685800549144399134-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685800549144399134-3.jpg"
+      ],
+      "title": "You almost got a piece of mozzarella… sorry about that 🧀",
+      "caption": "This one earns the replay. You almost got a piece of mozzarella… sorry about that 🧀",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T10:28:31Z"
+    },
+    {
+      "id": "tt-7698030898096180512",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7698030898096180512",
+      "platform": "tiktok",
+      "duration": 112.4,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7698030898096180512.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698030898096180512-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698030898096180512-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698030898096180512-3.jpg"
+      ],
+      "title": "Torch ginger flower takes fried rice to a whole new level...find this recipe & more in my",
+      "caption": "A sharp little bit of comedy. Torch ginger flower takes fried rice to a whole new level...find this recipe & more in my new cookbook out Nov 3 📖 and I’m serious about helping me source the torch ginger flower. Hit me up if you know where I can buy them in the US",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T10:28:09Z"
+    },
     {
       "id": "tt-7637895137439403278",
       "source_url": "https://www.tiktok.com/@spencerx/video/7637895137439403278",
