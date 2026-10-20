@@ -1,0 +1,110 @@
+name: Shorts
+
+# Keyless shorts queue. No repo secrets. Does not edit the other workflows.
+# Republish runs after "Publish Pages" so that rebuild does not drop these files.
+on:
+  schedule:
+    # 01:20, 09:20, 17:20 UTC — three times a day.
+    - cron: "20 1,9,17 * * *"
+  workflow_dispatch:
+    inputs:
+      require:
+        description: "Minimum queue size that counts as success"
+        type: string
+        default: "3"
+  workflow_run:
+    workflows: ["Publish Pages"]
+    types: [completed]
+
+permissions:
+  contents: write
+  pages: write
+  id-token: write
+
+concurrency:
+  group: shorts-pipeline
+  cancel-in-progress: false
+
+jobs:
+  collect:
+    if: github.event_name != 'workflow_run'
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, tesseract, yt-dlp, gallery-dl
+        run: |
+          set -euo pipefail
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim
+          pip install -q -r shorts/requirements.txt
+
+      - name: Collect clips
+        env:
+          SHORTS_REQUIRE: ${{ github.event_name == 'workflow_dispatch' && inputs.require || '0' }}
+        run: python shorts/pipeline.py collect --target 4
+
+      - name: Store media on the shorts-media release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python shorts/pipeline.py release-sync
+
+      - name: Build the Pages site (existing media plus shorts)
+        run: python shorts/pipeline.py assemble-site
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: shorts/work/site
+          retention-days: 1
+
+      - uses: actions/deploy-pages@v4
+
+      - name: Commit the seen log and queue
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add shorts/state/seen.json shorts/state/posted.json shorts/feed/shorts_queue.json
+          if git diff --cached --quiet; then
+            echo "No queue change."
+            exit 0
+          fi
+          git commit -m "chore(shorts): update queue and seen log"
+          for i in 1 2 3 4; do
+            git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
+            echo "Push failed, retrying ($i)..."
+            sleep 5
+          done
+          exit 1
+
+  republish:
+    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment:
+      name: github-pages
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Put the shorts files back on Pages
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python shorts/pipeline.py republish
+
+      - uses: actions/upload-pages-artifact@v4
+        with:
+          path: shorts/work/site
+          retention-days: 1
+
+      - uses: actions/deploy-pages@v4
