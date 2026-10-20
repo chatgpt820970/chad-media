@@ -10,7 +10,7 @@ Each item has `id`, `source_url`, `platform`, `duration` (seconds), `mp4_url` (a
 
 ## What a run does
 
-`.github/workflows/shorts.yml` runs three times a day (01:20, 09:20, and 17:20 UTC). It can also be started by hand.
+`.github/workflows/shorts.yml` runs three times a day (01:20, 09:20, and 17:20 UTC). It can also be started by hand, and it runs when the collector code itself changes on `main`. Updating the seen log or the queue does not start another run.
 
 1. Look for new public clips. YouTube is never a source.
 2. Keep clips that are at least 30 seconds and under 3 minutes, with enough plays to count as high engagement.

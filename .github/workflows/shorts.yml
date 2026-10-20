@@ -6,6 +6,14 @@ on:
   schedule:
     # 01:20, 09:20, 17:20 UTC — three times a day.
     - cron: "20 1,9,17 * * *"
+  # Code changes on main also run it. State and feed commits are not in this
+  # list, so the queue update at the end of a run does not start another one.
+  push:
+    branches: [main]
+    paths:
+      - ".github/workflows/shorts.yml"
+      - "shorts/pipeline.py"
+      - "shorts/requirements.txt"
   workflow_dispatch:
     inputs:
       require:
@@ -48,7 +56,7 @@ jobs:
 
       - name: Collect clips
         env:
-          SHORTS_REQUIRE: ${{ github.event_name == 'workflow_dispatch' && inputs.require || '0' }}
+          SHORTS_REQUIRE: ${{ github.event_name == 'workflow_dispatch' && inputs.require || (github.event_name == 'push' && '3' || '0') }}
         run: python shorts/pipeline.py collect --target 4
 
       - name: Store media on the shorts-media release
