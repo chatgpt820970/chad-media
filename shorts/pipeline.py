@@ -985,37 +985,86 @@ def count_ready_today(items: list[dict], now: datetime | None = None) -> int:
     )
 
 
-def slot_goal(ready_today: int, now: datetime, cap: int) -> tuple[int, int]:
-    """Clips this run should add, and how many new ready clips it must land.
+def parse_stamp(value: str) -> datetime | None:
+    try:
+        return datetime.strptime(value, "%Y-%m-%dT%H:%M:%SZ").replace(tzinfo=timezone.utc)
+    except ValueError:
+        return None
 
-    cron-job.org dispatches at 06:30 and 14:30 IST (01:00 and 09:00 UTC).
-    Each of those runs targets `cap` (5) and must add at least 4 ready clips.
-    The GitHub schedule (01:20, 09:20, 17:20 UTC) is only a backup: once the
-    slot already holds its clips, the run adds nothing.
+
+def collects_today(previous: dict, now: datetime) -> list[dict[str, object]]:
+    day = now.strftime("%Y-%m-%d")
+    rows = previous.get("collects_today")
+    if not isinstance(rows, list):
+        return []
+    kept: list[dict[str, object]] = []
+    for row in rows:
+        if not isinstance(row, dict):
+            continue
+        stamp = parse_stamp(str(row.get("at") or ""))
+        added = as_int(row.get("added"))
+        if stamp is None or stamp.strftime("%Y-%m-%d") != day or added <= 0:
+            continue
+        kept.append({"at": iso(stamp), "added": added})
+    return kept
+
+
+def slot_landed(rows: list[dict[str, object]], start_min: int, end_min: int) -> bool:
+    for row in rows:
+        stamp = parse_stamp(str(row.get("at") or ""))
+        if stamp is None or as_int(row.get("added")) < PER_RUN_MIN:
+            continue
+        minutes = stamp.hour * 60 + stamp.minute
+        if start_min <= minutes < end_min:
+            return True
+    return False
+
+
+def run_plan(
+    event: str,
+    ready_today: int,
+    rows: list[dict[str, object]],
+    now: datetime,
+    cap: int,
+    require: int,
+) -> tuple[int, int]:
+    """How many ready clips to add, and how many this run must land.
+
+    cron-job.org dispatches at 06:30 and 14:30 IST. Those runs, and a push of
+    the collector, always target `cap` (5) and must add at least 4. The GitHub
+    schedule is only a backup for a window that does not already have a batch.
     """
     if cap < 1:
         return 0, 0
+    if event != "schedule":
+        minimum = PER_RUN_MIN if require <= 0 else min(max(require, 1), cap)
+        return cap, minimum
     minutes = now.hour * 60 + now.minute
-    desired = cap if minutes < 9 * 60 else cap * 2
-    shortfall = desired - ready_today
-    if shortfall <= 0:
+    morning = slot_landed(rows, 0, 9 * 60)
+    afternoon = slot_landed(rows, 9 * 60, 17 * 60)
+    if minutes < 9 * 60:
+        return (0, 0) if morning else (cap, min(PER_RUN_MIN, cap))
+    if minutes < 17 * 60:
+        return (0, 0) if afternoon else (cap, min(PER_RUN_MIN, cap))
+    if ready_today >= DAILY_TARGET or afternoon:
         return 0, 0
-    if minutes >= 17 * 60 and shortfall > cap:
-        goal = min(cap + PER_RUN_MIN, shortfall)
-        minimum = min(goal, max(PER_RUN_MIN, DAILY_TARGET - ready_today))
-        return goal, minimum
-    if shortfall >= PER_RUN_MIN:
-        return min(cap, shortfall), PER_RUN_MIN
-    return shortfall, shortfall
+    if morning:
+        return cap, min(PER_RUN_MIN, cap)
+    return DAILY_TARGET, DAILY_TARGET
 
 
-def write_feed(items: list[dict], sources: dict[str, str]) -> None:
+def write_feed(
+    items: list[dict],
+    sources: dict[str, str],
+    collects: list[dict[str, object]],
+) -> None:
     save_json(
         FEED_PATH,
         {
             "generated_at": iso(utc_now()),
             "ready_today": count_ready_today(items),
             "daily_target": DAILY_TARGET,
+            "collects_today": collects,
             "sources": sources,
             "items": items,
         },
@@ -1038,10 +1087,17 @@ def collect(target: int, require: int) -> None:
     seen_ids = set((seen.get("entries") or {}).keys())
     previous = load_json(FEED_PATH, {"items": []})
     items = [item for item in previous.get("items") or [] if isinstance(item, dict) and item.get("id")]
-    ready_today = count_ready_today(items)
-    goal, minimum = slot_goal(ready_today, utc_now(), target)
-    if minimum > 0 and require > 0:
-        minimum = max(minimum, min(require, goal))
+    now = utc_now()
+    ready_today = count_ready_today(items, now)
+    collects = collects_today(previous, now)
+    goal, minimum = run_plan(
+        os.environ.get("GITHUB_EVENT_NAME", ""),
+        ready_today,
+        collects,
+        now,
+        target,
+        require,
+    )
     log(f"ready_today {ready_today} goal {goal} minimum {minimum}")
     if goal == 0:
         sources = previous.get("sources") if isinstance(previous.get("sources"), dict) else {}
@@ -1086,8 +1142,10 @@ def collect(target: int, require: int) -> None:
         items.append(item)
         added += 1
     items = apply_posted(prune_queue(items))
+    if added > 0:
+        collects.append({"at": iso(utc_now()), "added": added})
     save_json(STATE_PATH, seen)
-    write_feed(items, sources)
+    write_feed(items, sources, collects)
     ready_now = count_ready_today(items)
     log(f"queue size {len(items)} added {added} ready_today {ready_now}")
     if added < minimum:

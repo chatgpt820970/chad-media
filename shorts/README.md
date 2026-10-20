@@ -14,7 +14,7 @@ Each item has `id`, `source_url`, `platform`, `duration` (seconds), `mp4_url` (a
 
 cron-job.org dispatches `.github/workflows/shorts.yml` at **06:30 and 14:30 IST**. Each of those runs tries to add **5** new clips and must add **at least 4** with `status: "ready"`. Together that is 8 to 10 new ready clips, so the day clears 7 even if a few candidates are rejected.
 
-The GitHub schedule at 01:20, 09:20, and 17:20 UTC (06:50, 14:50, and 22:50 IST) is only a backup. A backup run adds nothing when that slot's clips are already in the feed. The late run can still fill a day whose dispatches produced nothing.
+The GitHub schedule at 01:20, 09:20, and 17:20 UTC (06:50, 14:50, and 22:50 IST) is only a backup. A backup run adds nothing when that window already landed at least 4 ready clips. The late run still fills a day that never reached 7.
 
 The workflow also runs when the collector code itself changes on `main`. Updating the seen log or the queue does not start another run.
 

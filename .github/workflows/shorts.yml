@@ -57,6 +57,8 @@ jobs:
           pip install -q -r shorts/requirements.txt
 
       - name: Collect clips
+        env:
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
         run: python shorts/pipeline.py collect --target 5 --require 4
 
       - name: Store media on the shorts-media release
