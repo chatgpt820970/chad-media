@@ -80,6 +80,51 @@
       "reason": "",
       "duration": 124.1,
       "seen_at": "2026-10-20T10:30:07Z"
+    },
+    "x-791033514011615232": {
+      "source_url": "https://x.com/JaredKMueller/status/791033514011615232",
+      "platform": "x",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 33.1,
+      "seen_at": "2026-10-20T10:37:12Z"
+    },
+    "tt-7688183159904587030": {
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7688183159904587030",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 50.6,
+      "seen_at": "2026-10-20T10:37:42Z"
+    },
+    "tt-7678009073421405471": {
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7678009073421405471",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 30.6,
+      "seen_at": "2026-10-20T10:38:16Z"
+    },
+    "tt-7263096251363659010": {
+      "source_url": "https://www.tiktok.com/@yoyohoneysingh/video/7263096251363659010",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 32.4,
+      "seen_at": "2026-10-20T10:38:38Z"
+    },
+    "tt-7686587011351743766": {
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7686587011351743766",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 144.5,
+      "seen_at": "2026-10-20T10:39:51Z"
     }
   }
 }

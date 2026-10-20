@@ -1,11 +1,109 @@
 {
-  "generated_at": "2026-10-20T10:30:07Z",
+  "generated_at": "2026-10-20T10:39:51Z",
+  "ready_today": 13,
+  "daily_target": 7,
+  "collects_today": [
+    {
+      "at": "2026-10-20T10:39:51Z",
+      "added": 5
+    }
+  ],
   "sources": {
     "tiktok": "ok",
-    "x": "skipped: timeline requires a login",
-    "instagram": "skipped: reels require a login"
+    "x": "ok",
+    "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7686587011351743766",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7686587011351743766",
+      "platform": "tiktok",
+      "duration": 144.5,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7686587011351743766.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7686587011351743766-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7686587011351743766-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7686587011351743766-3.jpg"
+      ],
+      "title": "Nice to meet you in real life chef Tila!",
+      "caption": "A sharp little bit of comedy. Nice to meet you in real life chef Tila! Your pad thai not bad FUIYOH",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T10:39:51Z"
+    },
+    {
+      "id": "tt-7263096251363659010",
+      "source_url": "https://www.tiktok.com/@yoyohoneysingh/video/7263096251363659010",
+      "platform": "tiktok",
+      "duration": 32.4,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7263096251363659010.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7263096251363659010-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7263096251363659010-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7263096251363659010-3.jpg"
+      ],
+      "title": "out now on",
+      "caption": "Something warm for the middle of the day. out now on",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-20T10:38:38Z"
+    },
+    {
+      "id": "tt-7678009073421405471",
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7678009073421405471",
+      "platform": "tiktok",
+      "duration": 30.6,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7678009073421405471.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7678009073421405471-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7678009073421405471-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7678009073421405471-3.jpg"
+      ],
+      "title": "They were there yesterday, I promise 🤨",
+      "caption": "This one earns the replay. They were there yesterday, I promise 🤨",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T10:38:16Z"
+    },
+    {
+      "id": "tt-7688183159904587030",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7688183159904587030",
+      "platform": "tiktok",
+      "duration": 50.6,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7688183159904587030.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7688183159904587030-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7688183159904587030-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7688183159904587030-3.jpg"
+      ],
+      "title": "This more egg soup than fried rice",
+      "caption": "A sharp little bit of comedy. This more egg soup than fried rice",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T10:37:42Z"
+    },
+    {
+      "id": "x-791033514011615232",
+      "source_url": "https://x.com/JaredKMueller/status/791033514011615232",
+      "platform": "x",
+      "duration": 33.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-791033514011615232.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-791033514011615232-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-791033514011615232-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-791033514011615232-3.jpg"
+      ],
+      "title": "Wait for it",
+      "caption": "This one earns the replay.",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T10:37:12Z"
+    },
     {
       "id": "tt-7698441437280570657",
       "source_url": "https://www.tiktok.com/@mrnigelng/video/7698441437280570657",
