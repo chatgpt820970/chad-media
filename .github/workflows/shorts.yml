@@ -4,7 +4,9 @@ name: Shorts
 # Republish runs after "Publish Pages" so that rebuild does not drop these files.
 on:
   schedule:
-    # 01:20, 09:20, 17:20 UTC — three times a day.
+    # Backup for cron-job.org, which dispatches this workflow at 06:30 and
+    # 14:30 IST. These run about 20 minutes later (06:50 and 14:50 IST) and
+    # once more at 22:50 IST, and only add clips when that slot is still short.
     - cron: "20 1,9,17 * * *"
   # Code changes on main also run it. State and feed commits are not in this
   # list, so the queue update at the end of a run does not start another one.
@@ -17,9 +19,9 @@ on:
   workflow_dispatch:
     inputs:
       require:
-        description: "Minimum queue size that counts as success"
+        description: "Kept for older dispatch calls. The collect step always requires 4 new ready clips."
         type: string
-        default: "3"
+        default: "4"
   workflow_run:
     workflows: ["Publish Pages"]
     types: [completed]
@@ -37,7 +39,7 @@ jobs:
   collect:
     if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
-    timeout-minutes: 35
+    timeout-minutes: 60
     environment:
       name: github-pages
     steps:
@@ -55,9 +57,7 @@ jobs:
           pip install -q -r shorts/requirements.txt
 
       - name: Collect clips
-        env:
-          SHORTS_REQUIRE: ${{ github.event_name == 'workflow_dispatch' && inputs.require || (github.event_name == 'push' && '3' || '0') }}
-        run: python shorts/pipeline.py collect --target 4
+        run: python shorts/pipeline.py collect --target 5 --require 4
 
       - name: Store media on the shorts-media release
         env:

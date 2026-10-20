@@ -9,6 +9,8 @@ download, and publishes 1080x1920 H.264 files plus a review feed.
 from __future__ import annotations
 
 import argparse
+import base64
+import html
 import json
 import os
 import re
@@ -34,7 +36,12 @@ SITE = WORK / "site"
 MIN_SECONDS = 30.0
 MAX_SECONDS = 179.0
 KEEP_DAYS = 4
-MAX_QUEUE = 18
+# Two prep runs add about 5 clips each. Keep two days of those, plus clips
+# still waiting for a later posting slot.
+MAX_QUEUE = 24
+PER_RUN_TARGET = 5
+PER_RUN_MIN = 4
+DAILY_TARGET = 7
 RELEASE_TAG = "shorts-media"
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -44,20 +51,34 @@ USER_AGENT = (
 # Public accounts that currently serve 30s+ clips with no login.
 # min_plays drops low-engagement posts. Lanes are mixed each run.
 ACCOUNTS: tuple[dict[str, object], ...] = (
-    {"user": "mrnigelng", "lane": "chinese", "min_plays": 50_000},
-    {"user": "madewithlau", "lane": "chinese", "min_plays": 8_000},
-    {"user": "thefoodranger", "lane": "chinese", "min_plays": 15_000},
-    {"user": "khaby.lame", "lane": "funny", "min_plays": 100_000},
-    {"user": "dudeperfect", "lane": "funny", "min_plays": 80_000},
-    {"user": "failarmy", "lane": "funny", "min_plays": 80_000},
-    {"user": "kingbach", "lane": "funny", "min_plays": 80_000},
-    {"user": "benoftheweek", "lane": "funny", "min_plays": 100_000},
-    {"user": "spencerx", "lane": "funny", "min_plays": 80_000},
-    {"user": "yoyohoneysingh", "lane": "feelgood", "min_plays": 20_000},
-    {"user": "diljitdosanjh", "lane": "feelgood", "min_plays": 20_000},
-    {"user": "armaanmalik", "lane": "feelgood", "min_plays": 10_000},
-    {"user": "jonitamusic", "lane": "feelgood", "min_plays": 10_000},
-    {"user": "humankind", "lane": "feelgood", "min_plays": 50_000},
+    {"user": "mrnigelng", "lane": "chinese", "min_plays": 30_000},
+    {"user": "madewithlau", "lane": "chinese", "min_plays": 5_000},
+    {"user": "thefoodranger", "lane": "chinese", "min_plays": 8_000},
+    {"user": "thestevenhe", "lane": "chinese", "min_plays": 20_000},
+    {"user": "khaby.lame", "lane": "funny", "min_plays": 80_000},
+    {"user": "dudeperfect", "lane": "funny", "min_plays": 40_000},
+    {"user": "failarmy", "lane": "funny", "min_plays": 40_000},
+    {"user": "kingbach", "lane": "funny", "min_plays": 40_000},
+    {"user": "benoftheweek", "lane": "funny", "min_plays": 50_000},
+    {"user": "spencerx", "lane": "funny", "min_plays": 40_000},
+    {"user": "zachking", "lane": "funny", "min_plays": 30_000},
+    {"user": "yoyohoneysingh", "lane": "feelgood", "min_plays": 10_000},
+    {"user": "diljitdosanjh", "lane": "feelgood", "min_plays": 10_000},
+    {"user": "armaanmalik", "lane": "feelgood", "min_plays": 5_000},
+    {"user": "jonitamusic", "lane": "feelgood", "min_plays": 5_000},
+    {"user": "humankind", "lane": "feelgood", "min_plays": 20_000},
+)
+
+# Public search text. Results are status ids or reel codes, never a logged-in feed.
+X_QUERIES: tuple[tuple[str, str], ...] = (
+    ("funny", "funny video site:x.com/status"),
+    ("chinese", "chinese funny video site:x.com"),
+    ("feelgood", "wholesome video site:x.com"),
+)
+IG_QUERIES: tuple[tuple[str, str], ...] = (
+    ("funny", "standup comedy reel site:instagram.com/reel"),
+    ("chinese", "chinese funny reel site:instagram.com/reel"),
+    ("feelgood", "indian song reel site:instagram.com/reel"),
 )
 
 LANE_ORDER = ("chinese", "funny", "feelgood")
@@ -89,6 +110,7 @@ class Candidate:
     description: str
     width: int
     height: int
+    media_url: str = ""
 
     @property
     def item_id(self) -> str:
@@ -127,13 +149,29 @@ def save_json(path: Path, data: dict) -> None:
     path.write_text(json.dumps(data, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 
-def http_bytes(url: str, timeout: int = 60, referer: str | None = None) -> bytes:
-    headers = {"User-Agent": USER_AGENT, "Accept": "*/*"}
+def http_response(
+    url: str,
+    timeout: int = 60,
+    referer: str | None = None,
+    data: bytes | None = None,
+) -> tuple[int, bytes]:
+    headers = {"User-Agent": USER_AGENT, "Accept": "*/*", "Accept-Language": "en-US,en;q=0.9"}
     if referer:
         headers["Referer"] = referer
-    request = urllib.request.Request(url, headers=headers)
-    with urllib.request.urlopen(request, timeout=timeout) as response:
-        return response.read()
+    request = urllib.request.Request(url, data=data, headers=headers)
+    try:
+        with urllib.request.urlopen(request, timeout=timeout) as response:
+            return response.status, response.read()
+    except urllib.error.HTTPError as exc:
+        body = exc.read() if exc.fp is not None else b""
+        return exc.code, body
+
+
+def http_bytes(url: str, timeout: int = 60, referer: str | None = None) -> bytes:
+    status, body = http_response(url, timeout=timeout, referer=referer)
+    if status >= 400:
+        raise RuntimeError(f"HTTP {status} for {url}")
+    return body
 
 
 def run(
@@ -237,11 +275,11 @@ def discover_tiktok(seen_ids: set[str]) -> list[Candidate]:
                     "-o",
                     "audio=false",
                     "-o",
-                    "tiktok-range=1-8",
+                    "tiktok-range=1-12",
                     "-j",
                     url,
                 ],
-                timeout=40,
+                timeout=50,
                 check=False,
             )
         except subprocess.TimeoutExpired:
@@ -295,59 +333,207 @@ def discover_tiktok(seen_ids: set[str]) -> list[Candidate]:
     return found
 
 
-def probe_x() -> str:
-    """Return a short status. Timelines need a logged-in session."""
-    gallery = shutil.which("gallery-dl")
-    if gallery:
+def ddg_result_urls(query: str) -> list[str]:
+    url = "https://html.duckduckgo.com/html/?" + urllib.parse.urlencode({"q": query})
+    status, body = http_response(url, timeout=25, referer="https://html.duckduckgo.com/")
+    text = body.decode("utf-8", "replace")
+    if status != 200 or len(text) < 18000:
+        time.sleep(2.0)
+        status, body = http_response(url, timeout=25, referer="https://html.duckduckgo.com/")
+        text = body.decode("utf-8", "replace")
+    if status != 200:
+        raise RuntimeError(f"duckduckgo HTTP {status}")
+    found: list[str] = []
+    for encoded in re.findall(r"uddg=([^&\"']+)", text):
+        decoded = urllib.parse.unquote(html.unescape(encoded))
+        if decoded.startswith("http") and decoded not in found:
+            found.append(decoded)
+    return found
+
+
+def bing_result_urls(query: str) -> list[str]:
+    url = "https://www.bing.com/search?" + urllib.parse.urlencode({"q": query, "count": "20"})
+    status, body = http_response(url, timeout=25)
+    if status != 200:
+        raise RuntimeError(f"bing HTTP {status}")
+    text = html.unescape(body.decode("utf-8", "replace"))
+    found: list[str] = []
+    for token in re.findall(r"u=(a1[A-Za-z0-9_\-+/=%]{8,})", text):
+        raw = urllib.parse.unquote(token)
+        payload = raw[2:]
+        padding = "=" * ((4 - len(payload) % 4) % 4)
         try:
-            result = run(
-                [gallery, "-q", "--range", "1-1", "-j", "https://x.com/X/media"],
-                timeout=25,
-                check=False,
+            decoded = base64.b64decode(payload + padding).decode("utf-8", "replace")
+        except Exception:
+            continue
+        if decoded.startswith("http") and decoded not in found:
+            found.append(decoded)
+    return found
+
+
+def public_result_urls(query: str) -> tuple[list[str], bool]:
+    found: list[str] = []
+    ok = False
+    for fetcher in (ddg_result_urls, bing_result_urls):
+        try:
+            for item in fetcher(query):
+                if item not in found and not YOUTUBE_RE.search(item):
+                    found.append(item)
+            ok = True
+        except Exception as exc:  # noqa: BLE001 - one search engine can fail
+            log(f"search failed: {exc}")
+        time.sleep(0.8)
+    return found, ok
+
+
+def status_ids_from_urls(urls: list[str]) -> list[str]:
+    found: list[str] = []
+    for url in urls:
+        for match in re.findall(r"status/(\d{8,})", url):
+            if match not in found:
+                found.append(match)
+    return found
+
+
+def reel_codes_from_urls(urls: list[str]) -> list[str]:
+    found: list[str] = []
+    for url in urls:
+        for match in re.findall(r"instagram\.com/(?:reel|p)/([A-Za-z0-9_-]{5,})", url):
+            if match not in found:
+                found.append(match)
+    return found
+
+
+def x_mp4_url(video: dict[str, object]) -> str:
+    direct = str(video.get("url") or "")
+    if ".mp4" in direct.split("?", 1)[0] and not YOUTUBE_RE.search(direct):
+        return direct
+    best = ""
+    best_rate = -1
+    variants = video.get("variants")
+    if not isinstance(variants, list):
+        return ""
+    for variant in variants:
+        if not isinstance(variant, dict):
+            continue
+        url = str(variant.get("url") or "")
+        path = url.split("?", 1)[0]
+        if ".mp4" not in path or "m3u8" in url or YOUTUBE_RE.search(url):
+            continue
+        rate = as_int(variant.get("bitrate"))
+        if rate >= best_rate:
+            best = url
+            best_rate = rate
+    return best
+
+
+def discover_x(seen_ids: set[str]) -> tuple[list[Candidate], str]:
+    """Public post ids from search, then a direct mp4 from api.fxtwitter.com."""
+    by_lane: dict[str, list[str]] = {lane: [] for lane in LANE_ORDER}
+    search_ok = False
+    for lane, query in X_QUERIES:
+        urls, ok = public_result_urls(query)
+        search_ok = search_ok or ok
+        for status_id in status_ids_from_urls(urls):
+            if f"x-{status_id}" in seen_ids or status_id in by_lane[lane]:
+                continue
+            by_lane[lane].append(status_id)
+    found: list[Candidate] = []
+    lookups = 0
+    while len(found) < 8 and lookups < 30 and any(by_lane[lane] for lane in LANE_ORDER):
+        for lane in LANE_ORDER:
+            if not by_lane[lane] or len(found) >= 8 or lookups >= 30:
+                continue
+            status_id = by_lane[lane].pop(0)
+            lookups += 1
+            time.sleep(0.15)
+            try:
+                status, body = http_response(
+                    f"https://api.fxtwitter.com/status/{status_id}",
+                    timeout=25,
+                )
+            except Exception as exc:  # noqa: BLE001
+                log(f"x: status {status_id} failed: {exc}")
+                continue
+            if status != 200:
+                continue
+            try:
+                payload = json.loads(body.decode("utf-8", "replace"))
+            except json.JSONDecodeError:
+                continue
+            tweet = payload.get("tweet") if isinstance(payload, dict) else None
+            if not isinstance(tweet, dict) or tweet.get("possibly_sensitive") is True:
+                continue
+            media = tweet.get("media") if isinstance(tweet.get("media"), dict) else {}
+            videos = media.get("videos") if isinstance(media.get("videos"), list) else []
+            chosen: dict[str, object] | None = None
+            for video in videos:
+                if not isinstance(video, dict):
+                    continue
+                duration = as_float(video.get("duration"))
+                mp4 = x_mp4_url(video)
+                if mp4 and MIN_SECONDS <= duration < 180:
+                    chosen = video
+                    break
+            if chosen is None:
+                continue
+            source_url = str(tweet.get("url") or f"https://x.com/i/status/{status_id}")
+            if YOUTUBE_RE.search(source_url):
+                continue
+            found.append(
+                Candidate(
+                    platform="x",
+                    video_id=status_id,
+                    source_url=source_url,
+                    lane=lane,
+                    duration=as_float(chosen.get("duration")),
+                    plays=as_int(tweet.get("views")),
+                    description=str(tweet.get("text") or ""),
+                    width=as_int(chosen.get("width")),
+                    height=as_int(chosen.get("height")),
+                    media_url=x_mp4_url(chosen),
+                )
             )
-        except subprocess.TimeoutExpired:
-            return "skipped: timed out"
-        text = f"{result.stdout}\n{result.stderr}"
-        if "AuthRequired" in text or "authenticated cookies" in text:
-            return "skipped: timeline requires a login"
-        if '"error"' in text and result.returncode != 0:
-            return "skipped: public timeline is not available"
-    try:
-        request = urllib.request.Request(
-            "https://syndication.twitter.com/srv/timeline-profile/screen-name/X",
-            headers={"User-Agent": USER_AGENT},
-        )
-        with urllib.request.urlopen(request, timeout=20) as response:
-            body = response.read(200)
-            if body.strip().startswith(b"{"):
-                return "ok"
-    except urllib.error.HTTPError as exc:
-        if exc.code in (401, 403, 429):
-            return "skipped: public timeline requires a login or is rate-limited"
-        return f"skipped: syndication HTTP {exc.code}"
-    except Exception as exc:  # noqa: BLE001 - probe must not abort the run
-        return f"skipped: {exc.__class__.__name__}"
-    return "skipped: no public video list"
+    if not search_ok and not found:
+        return [], "skipped: public search returned no posts"
+    log(f"x: {len(found)} public videos in range")
+    return found, "ok"
 
 
-def probe_instagram() -> str:
-    gallery = shutil.which("gallery-dl")
-    if not gallery:
-        return "skipped: gallery-dl is not installed"
-    try:
-        result = run(
-            [gallery, "-q", "--range", "1-1", "-j", "https://www.instagram.com/instagram/reels/"],
-            timeout=12,
-            check=False,
-        )
-    except subprocess.TimeoutExpired:
-        return "skipped: reels require a login"
-    text = f"{result.stdout}\n{result.stderr}"
-    if "login" in text.lower():
-        return "skipped: reels require a login"
-    if result.returncode != 0:
-        return "skipped: public reels are not available"
-    return "ok"
+def discover_instagram(seen_ids: set[str]) -> tuple[list[Candidate], str]:
+    """Public reel codes from search. yt-dlp downloads the file with no login."""
+    by_lane: dict[str, list[str]] = {lane: [] for lane in LANE_ORDER}
+    search_ok = False
+    for lane, query in IG_QUERIES:
+        urls, ok = public_result_urls(query)
+        search_ok = search_ok or ok
+        for code in reel_codes_from_urls(urls):
+            if f"ig-{code}" in seen_ids or code in by_lane[lane]:
+                continue
+            by_lane[lane].append(code)
+    found: list[Candidate] = []
+    while len(found) < 8 and any(by_lane[lane] for lane in LANE_ORDER):
+        for lane in LANE_ORDER:
+            if not by_lane[lane] or len(found) >= 8:
+                continue
+            code = by_lane[lane].pop(0)
+            found.append(
+                Candidate(
+                    platform="instagram",
+                    video_id=code,
+                    source_url=f"https://www.instagram.com/reel/{code}/",
+                    lane=lane,
+                    duration=0,
+                    plays=0,
+                    description="",
+                    width=0,
+                    height=0,
+                )
+            )
+    if not search_ok and not found:
+        return [], "skipped: public search returned no reels"
+    log(f"instagram: {len(found)} public reel codes")
+    return found, "ok"
 
 
 def interleave(candidates: list[Candidate]) -> list[Candidate]:
@@ -398,13 +584,53 @@ def download_tiktok_clean(source_url: str, dest: Path) -> None:
     raise RuntimeError(str(last_error or "download failed"))
 
 
+def download_direct(url: str, dest: Path) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(http_bytes(url, timeout=120))
+    if dest.stat().st_size < 100_000:
+        raise RuntimeError("download was too small")
+
+
+def download_instagram(source_url: str, dest: Path) -> None:
+    ytdlp = which("yt-dlp")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.unlink(missing_ok=True)
+    result = run(
+        [
+            ytdlp,
+            "-f",
+            "bv*[vcodec^=avc]+ba/bv*[vcodec^=h264]+ba/bv*+ba/b",
+            "--merge-output-format",
+            "mp4",
+            "--no-playlist",
+            "--no-warnings",
+            "--socket-timeout",
+            "25",
+            "-o",
+            str(dest),
+            source_url,
+        ],
+        timeout=120,
+        check=False,
+    )
+    if not dest.exists():
+        matches = [path for path in dest.parent.glob(dest.stem + ".*") if path.is_file()]
+        if len(matches) == 1:
+            matches[0].replace(dest)
+    if result.returncode != 0 or not dest.exists() or dest.stat().st_size < 100_000:
+        tail = (result.stderr or result.stdout or "")[-300:]
+        raise RuntimeError(f"instagram download failed: {tail}")
+
+
 def encode_vertical(src: Path, dest: Path) -> None:
     info = probe(src)
     width = int(info["width"])
     height = int(info["height"])
     if width < 2 or height < 2:
         raise RuntimeError("could not read video dimensions")
-    portrait = (height / width) >= 1.15
+    # Already-vertical clips are center-cropped. Wider ones sit on a blurred
+    # copy of the same video. The frame is never padded with black.
+    portrait = (height / width) >= 1.45
     audio = "loudnorm=I=-16:TP=-1.5:LRA=11"
     common = [
         "-c:v",
@@ -646,6 +872,12 @@ def process_candidate(candidate: Candidate, seen: dict) -> dict | None:
     try:
         if candidate.platform == "tiktok":
             download_tiktok_clean(candidate.source_url, raw_path)
+        elif candidate.platform == "x":
+            if not candidate.media_url or YOUTUBE_RE.search(candidate.media_url):
+                raise RuntimeError("missing public x video")
+            download_direct(candidate.media_url, raw_path)
+        elif candidate.platform == "instagram":
+            download_instagram(candidate.source_url, raw_path)
         else:
             raise RuntimeError(f"no downloader for {candidate.platform}")
         info = probe(raw_path)
@@ -744,15 +976,60 @@ def apply_posted(items: list[dict]) -> list[dict]:
     return items
 
 
+def count_ready_today(items: list[dict], now: datetime | None = None) -> int:
+    day = (now or utc_now()).strftime("%Y-%m-%d")
+    return sum(
+        1
+        for item in items
+        if item.get("status") == "ready" and str(item.get("queued_at") or "").startswith(day)
+    )
+
+
+def slot_goal(ready_today: int, now: datetime, cap: int) -> tuple[int, int]:
+    """Clips this run should add, and how many new ready clips it must land.
+
+    cron-job.org dispatches at 06:30 and 14:30 IST (01:00 and 09:00 UTC).
+    Each of those runs targets `cap` (5) and must add at least 4 ready clips.
+    The GitHub schedule (01:20, 09:20, 17:20 UTC) is only a backup: once the
+    slot already holds its clips, the run adds nothing.
+    """
+    if cap < 1:
+        return 0, 0
+    minutes = now.hour * 60 + now.minute
+    desired = cap if minutes < 9 * 60 else cap * 2
+    shortfall = desired - ready_today
+    if shortfall <= 0:
+        return 0, 0
+    if minutes >= 17 * 60 and shortfall > cap:
+        goal = min(cap + PER_RUN_MIN, shortfall)
+        minimum = min(goal, max(PER_RUN_MIN, DAILY_TARGET - ready_today))
+        return goal, minimum
+    if shortfall >= PER_RUN_MIN:
+        return min(cap, shortfall), PER_RUN_MIN
+    return shortfall, shortfall
+
+
 def write_feed(items: list[dict], sources: dict[str, str]) -> None:
     save_json(
         FEED_PATH,
         {
             "generated_at": iso(utc_now()),
+            "ready_today": count_ready_today(items),
+            "daily_target": DAILY_TARGET,
             "sources": sources,
             "items": items,
         },
     )
+
+
+def take_turns(*groups: list[Candidate]) -> list[Candidate]:
+    pools = [list(group) for group in groups]
+    ordered: list[Candidate] = []
+    while any(pools):
+        for pool in pools:
+            if pool:
+                ordered.append(pool.pop(0))
+    return ordered
 
 
 def collect(target: int, require: int) -> None:
@@ -761,22 +1038,39 @@ def collect(target: int, require: int) -> None:
     seen_ids = set((seen.get("entries") or {}).keys())
     previous = load_json(FEED_PATH, {"items": []})
     items = [item for item in previous.get("items") or [] if isinstance(item, dict) and item.get("id")]
-    sources = {
-        "tiktok": "ok",
-        "x": probe_x(),
-        "instagram": probe_instagram(),
-    }
+    ready_today = count_ready_today(items)
+    goal, minimum = slot_goal(ready_today, utc_now(), target)
+    if minimum > 0 and require > 0:
+        minimum = max(minimum, min(require, goal))
+    log(f"ready_today {ready_today} goal {goal} minimum {minimum}")
+    if goal == 0:
+        sources = previous.get("sources") if isinstance(previous.get("sources"), dict) else {}
+        sources = {
+            "tiktok": str(sources.get("tiktok") or "ok"),
+            "x": str(sources.get("x") or "ok"),
+            "instagram": str(sources.get("instagram") or "ok"),
+        }
+        candidates: list[Candidate] = []
+    else:
+        x_candidates, x_status = discover_x(seen_ids)
+        ig_candidates, ig_status = discover_instagram(seen_ids)
+        tiktok_candidates = interleave(discover_tiktok(seen_ids))
+        sources = {"tiktok": "ok", "x": x_status, "instagram": ig_status}
+        candidates = take_turns(
+            interleave(x_candidates),
+            interleave(ig_candidates),
+            tiktok_candidates,
+        )
+        log(
+            "candidates "
+            f"x={len(x_candidates)} instagram={len(ig_candidates)} tiktok={len(tiktok_candidates)}"
+        )
     log(f"sources: {json.dumps(sources)}")
-    if not sources["x"].startswith("ok"):
-        log(f"x: {sources['x']}")
-    if not sources["instagram"].startswith("ok"):
-        log(f"instagram: {sources['instagram']}")
-    candidates = interleave(discover_tiktok(seen_ids))
-    log(f"tiktok: {len(candidates)} new candidates in range")
     added = 0
     attempts = 0
+    attempt_limit = max(goal * 4, 12) if goal else 0
     for candidate in candidates:
-        if added >= target or attempts >= max(target * 5, 15):
+        if added >= goal or attempts >= attempt_limit:
             break
         attempts += 1
         if candidate.item_id in seen_ids:
@@ -787,16 +1081,17 @@ def collect(target: int, require: int) -> None:
             log(f"skip {candidate.item_id}: {exc}")
             continue
         seen_ids.add(candidate.item_id)
-        if item is None:
+        if item is None or item.get("status") != "ready":
             continue
         items.append(item)
         added += 1
     items = apply_posted(prune_queue(items))
     save_json(STATE_PATH, seen)
     write_feed(items, sources)
-    log(f"queue size {len(items)} (added {added})")
-    if len(items) < require:
-        raise SystemExit(f"queue has {len(items)} items, need at least {require}")
+    ready_now = count_ready_today(items)
+    log(f"queue size {len(items)} added {added} ready_today {ready_now}")
+    if added < minimum:
+        raise SystemExit(f"added {added} ready clips, need at least {minimum}")
 
 
 def gh(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
@@ -951,8 +1246,8 @@ def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Collect and publish the shorts queue")
     sub = parser.add_subparsers(dest="command", required=True)
     collect_parser = sub.add_parser("collect")
-    collect_parser.add_argument("--target", type=int, default=4)
-    collect_parser.add_argument("--require", type=int, default=int(os.environ.get("SHORTS_REQUIRE", "0")))
+    collect_parser.add_argument("--target", type=int, default=PER_RUN_TARGET)
+    collect_parser.add_argument("--require", type=int, default=int(os.environ.get("SHORTS_REQUIRE", str(PER_RUN_MIN))))
     sub.add_parser("release-sync")
     sub.add_parser("assemble-site")
     sub.add_parser("republish")
