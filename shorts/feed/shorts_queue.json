@@ -1,5 +1,82 @@
 {
-  "generated_at": null,
-  "sources": {},
-  "items": []
+  "generated_at": "2026-10-20T09:58:55Z",
+  "sources": {
+    "tiktok": "ok",
+    "x": "skipped: timeline requires a login",
+    "instagram": "skipped: reels require a login"
+  },
+  "items": [
+    {
+      "id": "tt-7637895137439403278",
+      "source_url": "https://www.tiktok.com/@spencerx/video/7637895137439403278",
+      "platform": "tiktok",
+      "duration": 45.8,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7637895137439403278.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7637895137439403278-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7637895137439403278-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7637895137439403278-3.jpg"
+      ],
+      "title": "beatbox challenge: hello 🗣️👋",
+      "caption": "This one earns the replay. beatbox challenge: hello 🗣️👋",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T09:58:55Z"
+    },
+    {
+      "id": "tt-7689960781407898902",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7689960781407898902",
+      "platform": "tiktok",
+      "duration": 52.3,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7689960781407898902.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7689960781407898902-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7689960781407898902-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7689960781407898902-3.jpg"
+      ],
+      "title": "STOP DESTROYING ICE CREAM & Elaine👨🏻‍🍳💞👩🏼‍🍳",
+      "caption": "A sharp little bit of comedy. STOP DESTROYING ICE CREAM & Elaine👨🏻‍🍳💞👩🏼‍🍳",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T09:58:31Z"
+    },
+    {
+      "id": "tt-7688216774919179534",
+      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7688216774919179534",
+      "platform": "tiktok",
+      "duration": 125.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7688216774919179534.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7688216774919179534-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7688216774919179534-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7688216774919179534-3.jpg"
+      ],
+      "title": "PINGLISH vlog",
+      "caption": "Something warm for the middle of the day. PINGLISH vlog",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-20T09:58:00Z"
+    },
+    {
+      "id": "tt-7696678471677824289",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7696678471677824289",
+      "platform": "tiktok",
+      "duration": 77.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7696678471677824289.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696678471677824289-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696678471677824289-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696678471677824289-3.jpg"
+      ],
+      "title": "This guy is a FRIED RICE MASTER",
+      "caption": "A sharp little bit of comedy. This guy is a FRIED RICE MASTER",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-20T09:56:44Z"
+    }
+  ]
 }
