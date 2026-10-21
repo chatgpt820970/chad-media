@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-20T20:42:11Z",
-  "ready_today": 13,
+  "generated_at": "2026-10-21T03:10:12Z",
+  "ready_today": 5,
   "daily_target": 7,
   "collects_today": [
     {
-      "at": "2026-10-20T10:39:51Z",
+      "at": "2026-10-21T03:10:12Z",
       "added": 5
     }
   ],
@@ -14,6 +14,96 @@
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7690585621525548310",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7690585621525548310",
+      "platform": "tiktok",
+      "duration": 140.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7690585621525548310.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7690585621525548310-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7690585621525548310-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7690585621525548310-3.jpg"
+      ],
+      "title": "My mom judges my cooking.",
+      "caption": "A sharp little bit of comedy. My mom judges my cooking. Go get your signed version of DON’T MESS UP YOUR RICE now, link in bio",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-21T03:10:12Z"
+    },
+    {
+      "id": "tt-7698519306316958990",
+      "source_url": "https://www.tiktok.com/@humankind/video/7698519306316958990",
+      "platform": "tiktok",
+      "duration": 120.8,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7698519306316958990.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698519306316958990-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698519306316958990-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698519306316958990-3.jpg"
+      ],
+      "title": "Her husband made sure her late dad would be part of their wedding memories in a way she",
+      "caption": "Something warm for the middle of the day. Her husband made sure her late dad would be part of their wedding memories in a way she never expected.",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-21T03:08:39Z"
+    },
+    {
+      "id": "tt-7670957230178503966",
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7670957230178503966",
+      "platform": "tiktok",
+      "duration": 44.5,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7670957230178503966.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7670957230178503966-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7670957230178503966-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7670957230178503966-3.jpg"
+      ],
+      "title": "I showed you how it’s done… your turn now",
+      "caption": "This one earns the replay. I showed you how it’s done… your turn now.",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-21T03:07:32Z"
+    },
+    {
+      "id": "tt-7429836503334833454",
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7429836503334833454",
+      "platform": "tiktok",
+      "duration": 44.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7429836503334833454.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7429836503334833454-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7429836503334833454-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7429836503334833454-3.jpg"
+      ],
+      "title": "I'm so excited to share my dad's Spinach Tofu Soup (菠菜豆腐湯) recipe!",
+      "caption": "A sharp little bit of comedy. I'm so excited to share my dad's Spinach Tofu Soup (菠菜豆腐湯) recipe! Today, we’re showing you how to make one of the most reliable, heartwarming Chinese dishes for simple dinners, sick days, and everything in between: Spinach Tofu Soup (菠菜豆腐湯)! Plus,",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-21T03:06:55Z"
+    },
+    {
+      "id": "x-1223781814747193352",
+      "source_url": "https://x.com/JeffReidUP/status/1223781814747193352",
+      "platform": "x",
+      "duration": 79.305,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-1223781814747193352.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-1223781814747193352-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-1223781814747193352-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-1223781814747193352-3.jpg"
+      ],
+      "title": "COULD IT BE?!",
+      "caption": "This one earns the replay. COULD IT BE?! IT IS! IS BACK!",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-21T03:06:20Z"
+    },
     {
       "id": "tt-7686587011351743766",
       "source_url": "https://www.tiktok.com/@mrnigelng/video/7686587011351743766",

@@ -125,6 +125,51 @@
       "reason": "",
       "duration": 144.5,
       "seen_at": "2026-10-20T10:39:51Z"
+    },
+    "x-1223781814747193352": {
+      "source_url": "https://x.com/JeffReidUP/status/1223781814747193352",
+      "platform": "x",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 79.305,
+      "seen_at": "2026-10-21T03:06:20Z"
+    },
+    "tt-7429836503334833454": {
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7429836503334833454",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 44.0,
+      "seen_at": "2026-10-21T03:06:55Z"
+    },
+    "tt-7670957230178503966": {
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7670957230178503966",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 44.5,
+      "seen_at": "2026-10-21T03:07:32Z"
+    },
+    "tt-7698519306316958990": {
+      "source_url": "https://www.tiktok.com/@humankind/video/7698519306316958990",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 120.8,
+      "seen_at": "2026-10-21T03:08:39Z"
+    },
+    "tt-7690585621525548310": {
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7690585621525548310",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 140.0,
+      "seen_at": "2026-10-21T03:10:12Z"
     }
   }
 }
