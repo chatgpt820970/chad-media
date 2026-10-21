@@ -5,6 +5,12 @@ name: Publish Pages
 # contains both trees: /m plus the news feeds, and /shorts plus feed/shorts_queue.json.
 on:
   workflow_dispatch:
+  # Editing this file on main publishes the combined site, so a deploy change
+  # cannot land without the news files and the shorts queue going out together.
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/publish-pages.yml
 
 permissions:
   contents: read
