@@ -1,6 +1,6 @@
 # Shorts
 
-A separate, keyless pipeline that queues vertical clips for a YouTube channel. It does not use API keys, tokens, or repo secrets, and it does not change the other workflows in this repo.
+A separate, keyless pipeline that queues vertical clips for a YouTube channel. It does not use API keys, tokens, or repo secrets. The news Pages workflow deploys this queue in the same site, and this workflow deploys the news files in the same site.
 
 The feed is published on GitHub Pages:
 
@@ -23,7 +23,7 @@ The workflow also runs when the collector code itself changes on `main`. Updatin
 3. Download a watermark-free file when the platform offers one. Clips that still show a TikTok, Instagram, or X logo or `@handle` are skipped. Nothing is blurred or cropped to hide a watermark.
 4. Encode 1080x1920 H.264 + AAC, loudness-normalized, faststart MP4, under Buffer's YouTube upload size. The picture fills the 9:16 frame. A clip that is already vertical is center-cropped. Any wider clip is placed on a blurred, scaled copy of the same video. Black padding is not used.
 5. Save three frames (about 15%, 50%, and 85%).
-6. Publish the mp4s, frames, and `feed/shorts_queue.json` on GitHub Pages. The existing news media on that site is copied back into the same deploy so this workflow does not wipe it. After the other Pages workflow runs, this one republishes the shorts files.
+6. Publish the mp4s, frames, and `feed/shorts_queue.json` on GitHub Pages. The same deploy also copies the news media (`/m` and the news feeds) so this workflow does not wipe it. The news Publish Pages workflow attaches this queue and the `shorts-media` release, so a news deploy does not wipe the shorts files either.
 7. Record every accepted or rejected id in `shorts/state/seen.json` so a clip is never queued twice. `shorts/state/posted.json` (`{"ids": []}`) marks ids already posted; those items stay `status: "posted"` and do not count toward `ready_today`.
 8. Drop media older than 4 days, and never keep more than 24 clips. Binaries live on the `shorts-media` GitHub Release and on Pages, not in git history.
 
@@ -31,12 +31,12 @@ The workflow also runs when the collector code itself changes on `main`. Updatin
 
 | Platform | What happens |
 | --- | --- |
-| TikTok | Works without a login. Posts come from public comedy, Chinese, and Indian-music accounts via gallery-dl. The file saved is the public no-watermark `play` URL, not the watermarked download. |
+| TikTok | Works without a login. Posts come from public comedy, Chinese, and Indian-music accounts via gallery-dl. The file saved is the public no-watermark play file: tikwm's `play` URL, then the same `playAddr` through gallery-dl's page session, then yt-dlp. gallery-dl's watermarked HD download is never saved. |
 | X | Works without a login when public search returns a post id. `api.fxtwitter.com/status/<id>` supplies the direct mp4. Profile timelines, Nitter, and vxtwitter are not used. |
 | Instagram | Works without a login when public search returns a reel code. yt-dlp downloads that reel as a guest. The embed page, gallery-dl, and ddinstagram are not used. |
 | YouTube | Never used. |
 
-If search is blocked, `sources.x` or `sources.instagram` in the feed says so, and the run still fills the slot from TikTok.
+If search is blocked, `sources.x` or `sources.instagram` in the feed says so, and the run still fills the slot from TikTok. If tikwm answers 403, `sources.tiktok` says the public play file (or yt-dlp) was used. When X or Instagram still queued clips, the run publishes those clips even if the total is under 4. A run that queued nothing still fails.
 
 Chinese-leaning clips come from public TikTok accounts such as `@mrnigelng`, `@madewithlau`, `@thefoodranger`, and `@thestevenhe`, plus Chinese-funny posts found on X and Instagram. Feel-good Indian music comes from accounts such as `@yoyohoneysingh`, `@diljitdosanjh`, `@armaanmalik`, and `@jonitamusic`, plus warm clips from `@humankind`. Funny high-engagement clips come from `@khaby.lame`, `@dudeperfect`, `@failarmy`, `@kingbach`, `@benoftheweek`, `@spencerx`, and `@zachking`.
 

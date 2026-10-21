@@ -1,7 +1,8 @@
 name: Shorts
 
-# Keyless shorts queue. No repo secrets. Does not edit the other workflows.
-# Republish runs after "Publish Pages" so that rebuild does not drop these files.
+# Keyless shorts queue. No repo secrets.
+# Publish Pages already includes these files. Republish is a second combined
+# deploy for the cases where that workflow was started by hand.
 on:
   schedule:
     # Backup for cron-job.org, which dispatches this workflow at 06:30 and
@@ -106,6 +107,9 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
+
+      - name: Install Python packages
+        run: pip install -q -r shorts/requirements.txt
 
       - name: Put the shorts files back on Pages
         env:

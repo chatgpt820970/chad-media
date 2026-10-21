@@ -1,8 +1,8 @@
 name: Publish Pages
 
-# Mirrors every GitHub Pages URL listed in x-news-collector data/media_ready.json from its
-# release asset to Pages. Started by Prepare media and by the box's YouTube media prep.
-# The newest run wins (it always rebuilds from the latest media_ready.json).
+# One Pages site for the news media and the shorts queue. Started by Prepare media
+# and by the box's YouTube media prep. The newest run wins, and the artifact always
+# contains both trees: /m plus the news feeds, and /shorts plus feed/shorts_queue.json.
 on:
   workflow_dispatch:
 
@@ -18,7 +18,7 @@ concurrency:
 jobs:
   publish:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     environment:
       name: github-pages
     steps:
@@ -60,6 +60,66 @@ jobs:
           for f in candidates.json media_ready.json posted.json; do
             [ -f "xnc/data/$f" ] && cp "xnc/data/$f" site/feed/ || true
           done
+          du -sh site
+
+      - name: Attach the shorts queue and media
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p site/feed site/shorts/v site/shorts/f
+          gh api -H "Accept: application/vnd.github.raw" \
+            "/repos/${GITHUB_REPOSITORY}/contents/shorts/feed/shorts_queue.json?ref=main" \
+            > site/feed/shorts_queue.json
+          python3 - <<'PY'
+          import json, os, shutil, subprocess
+          from pathlib import Path
+
+          feed_path = Path("site/feed/shorts_queue.json")
+          feed = json.loads(feed_path.read_text(encoding="utf-8"))
+          items = feed.get("items") if isinstance(feed, dict) else None
+          if not isinstance(items, list) or not items:
+              raise SystemExit("shorts queue has no items")
+          names: list[str] = []
+          ready = 0
+          for item in items:
+              if not isinstance(item, dict) or not item.get("id"):
+                  continue
+              if item.get("status") == "ready":
+                  ready += 1
+              item_id = str(item["id"])
+              names.append(f"{item_id}.mp4")
+              names.extend(f"{item_id}-{index}.jpg" for index in (1, 2, 3))
+          if not names:
+              raise SystemExit("shorts queue has no media names")
+          print(f"shorts queue items={len(names) // 4} ready={ready}")
+          repo = os.environ["GITHUB_REPOSITORY"]
+          download_dir = Path("site/shorts/_dl")
+          download_dir.mkdir(parents=True, exist_ok=True)
+          cmd = [
+              "gh", "release", "download", "shorts-media",
+              "-R", repo,
+              "-D", str(download_dir),
+              "--clobber",
+          ]
+          for name in names:
+              cmd.extend(["-p", name])
+          result = subprocess.run(cmd)
+          if result.returncode != 0:
+              raise SystemExit(f"shorts release download failed ({result.returncode})")
+          video_dir = Path("site/shorts/v")
+          frame_dir = Path("site/shorts/f")
+          video_dir.mkdir(parents=True, exist_ok=True)
+          frame_dir.mkdir(parents=True, exist_ok=True)
+          for name in names:
+              src = download_dir / name
+              if not src.is_file() or src.stat().st_size < 100:
+                  raise SystemExit(f"missing shorts file {name}")
+              target = video_dir / name if name.endswith(".mp4") else frame_dir / name
+              src.replace(target)
+          shutil.rmtree(download_dir)
+          print(f"attached {len(names)} shorts files")
+          PY
           du -sh site
 
       - uses: actions/upload-pages-artifact@v4

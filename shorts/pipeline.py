@@ -21,9 +21,13 @@ import time
 import urllib.error
 import urllib.parse
 import urllib.request
+from collections.abc import Callable
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+
+from gallery_dl.extractor import find as gallery_find
+from gallery_dl.extractor.common import Message
 
 ROOT = Path(__file__).resolve().parent
 STATE_PATH = ROOT / "state" / "seen.json"
@@ -47,6 +51,10 @@ USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
 )
+# Counts for this process only. tikwm often answers 403 from GitHub; later
+# clips then skip it and use the public play file instead.
+_tikwm_blocked = False
+_tiktok_methods = {"tikwm": 0, "play": 0, "ytdlp": 0, "failed": 0}
 
 # Public accounts that currently serve 30s+ clips with no login.
 # min_plays drops low-engagement posts. Lanes are mixed each run.
@@ -553,13 +561,31 @@ def interleave(candidates: list[Candidate]) -> list[Candidate]:
     return ordered
 
 
-def download_tiktok_clean(source_url: str, dest: Path) -> None:
-    """Download TikTok's no-watermark play URL.
+def reset_tiktok_methods() -> None:
+    global _tikwm_blocked
+    _tikwm_blocked = False
+    for key in _tiktok_methods:
+        _tiktok_methods[key] = 0
 
-    gallery-dl's highest rendition matches the watermarked HD file.
-    tikwm's `play` field is the public unauthenticated clean variant.
-    `wmplay` and `hdplay` are never saved.
-    """
+
+def tiktok_source_note() -> str | None:
+    saved = _tiktok_methods["tikwm"] + _tiktok_methods["play"] + _tiktok_methods["ytdlp"]
+    if saved == 0 and _tiktok_methods["failed"] == 0:
+        return None
+    if saved == 0:
+        return "degraded: tikwm blocked; public play file and yt-dlp failed"
+    if _tiktok_methods["play"]:
+        return "ok: public play file"
+    if _tiktok_methods["ytdlp"]:
+        return "ok: yt-dlp"
+    return None
+
+
+def download_tiktok_tikwm(source_url: str, dest: Path) -> None:
+    """Save tikwm's public `play` file. Never `wmplay` or `hdplay`."""
+    global _tikwm_blocked
+    if _tikwm_blocked:
+        raise RuntimeError("HTTP 403 for tikwm")
     api = "https://www.tikwm.com/api/?hd=1&url=" + urllib.parse.quote(source_url, safe="")
     last_error: Exception | None = None
     for attempt in (1, 2):
@@ -568,7 +594,8 @@ def download_tiktok_clean(source_url: str, dest: Path) -> None:
             payload = json.loads(http_bytes(api, timeout=40, referer="https://www.tikwm.com/").decode("utf-8"))
             data = payload.get("data") if isinstance(payload, dict) else None
             if not isinstance(data, dict) or not data.get("play"):
-                raise RuntimeError(f"no clean play URL ({payload.get('msg') if isinstance(payload, dict) else 'bad response'})")
+                message = payload.get("msg") if isinstance(payload, dict) else "bad response"
+                raise RuntimeError(f"no clean play URL ({message})")
             play = str(data["play"])
             if "wmplay" in play:
                 raise RuntimeError("refusing watermarked play URL")
@@ -577,11 +604,75 @@ def download_tiktok_clean(source_url: str, dest: Path) -> None:
             if dest.stat().st_size < 100_000:
                 raise RuntimeError("download was too small")
             return
-        except Exception as exc:  # noqa: BLE001 - retry then surface
+        except Exception as exc:  # noqa: BLE001 - one retry, then the next method
             last_error = exc
-            log(f"download attempt {attempt} failed: {exc}")
+            log(f"tikwm attempt {attempt} failed: {exc}")
+            if "HTTP 403" in str(exc):
+                _tikwm_blocked = True
+                break
             time.sleep(2)
-    raise RuntimeError(str(last_error or "download failed"))
+    raise RuntimeError(str(last_error or "tikwm failed"))
+
+
+def download_tiktok_playaddr(source_url: str, dest: Path) -> None:
+    """Save TikTok's public playAddr with gallery-dl's page session.
+
+    The highest rendition gallery-dl would save is the watermarked HD file.
+    playAddr is the clean file (the same one tikwm calls `play`). Requesting
+    that CDN URL without the session cookies is rejected.
+    """
+    extractor = gallery_find(source_url)
+    if extractor is None:
+        raise RuntimeError("no public tiktok extractor")
+    play = ""
+    for message in extractor:
+        if not message or message[0] != Message.Url:
+            continue
+        meta = message[2] if len(message) > 2 else None
+        video = meta.get("video") if isinstance(meta, dict) else None
+        if isinstance(video, dict) and video.get("playAddr"):
+            play = str(video["playAddr"])
+            break
+    if not play:
+        raise RuntimeError("no public play file")
+    response = extractor.request(play, timeout=120)
+    body = response.content or b""
+    if response.status_code != 200 or len(body) < 100_000:
+        raise RuntimeError(f"public play file HTTP {response.status_code} ({len(body)} bytes)")
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    dest.write_bytes(body)
+
+
+def download_tiktok_clean(source_url: str, dest: Path) -> None:
+    """Download a TikTok file with no burned-in logo.
+
+    tikwm first, then the public playAddr through gallery-dl, then yt-dlp.
+    """
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    errors: list[str] = []
+    methods: tuple[tuple[str, Callable[[str, Path], None]], ...] = (
+        ("tikwm", download_tiktok_tikwm),
+        ("play", download_tiktok_playaddr),
+        ("ytdlp", download_tiktok_ytdlp),
+    )
+    for name, func in methods:
+        if name == "tikwm" and _tikwm_blocked:
+            continue
+        try:
+            func(source_url, dest)
+        except Exception as exc:  # noqa: BLE001 - try the next public method
+            dest.unlink(missing_ok=True)
+            errors.append(f"{name}: {exc}")
+            log(f"tiktok {name} failed: {exc}")
+            continue
+        if dest.exists() and dest.stat().st_size >= 100_000:
+            _tiktok_methods[name] += 1
+            log(f"tiktok via {name}")
+            return
+        dest.unlink(missing_ok=True)
+        errors.append(f"{name}: file too small")
+    _tiktok_methods["failed"] += 1
+    raise RuntimeError("; ".join(errors) or "tiktok download failed")
 
 
 def download_direct(url: str, dest: Path) -> None:
@@ -591,7 +682,7 @@ def download_direct(url: str, dest: Path) -> None:
         raise RuntimeError("download was too small")
 
 
-def download_instagram(source_url: str, dest: Path) -> None:
+def download_ytdlp(source_url: str, dest: Path) -> subprocess.CompletedProcess[str]:
     ytdlp = which("yt-dlp")
     dest.parent.mkdir(parents=True, exist_ok=True)
     dest.unlink(missing_ok=True)
@@ -617,9 +708,21 @@ def download_instagram(source_url: str, dest: Path) -> None:
         matches = [path for path in dest.parent.glob(dest.stem + ".*") if path.is_file()]
         if len(matches) == 1:
             matches[0].replace(dest)
+    return result
+
+
+def download_instagram(source_url: str, dest: Path) -> None:
+    result = download_ytdlp(source_url, dest)
     if result.returncode != 0 or not dest.exists() or dest.stat().st_size < 100_000:
         tail = (result.stderr or result.stdout or "")[-300:]
         raise RuntimeError(f"instagram download failed: {tail}")
+
+
+def download_tiktok_ytdlp(source_url: str, dest: Path) -> None:
+    result = download_ytdlp(source_url, dest)
+    if result.returncode != 0 or not dest.exists() or dest.stat().st_size < 100_000:
+        tail = (result.stderr or result.stdout or "")[-300:]
+        raise RuntimeError(f"yt-dlp failed: {tail}")
 
 
 def encode_vertical(src: Path, dest: Path) -> None:
@@ -1083,6 +1186,7 @@ def take_turns(*groups: list[Candidate]) -> list[Candidate]:
 
 def collect(target: int, require: int) -> None:
     MEDIA.mkdir(parents=True, exist_ok=True)
+    reset_tiktok_methods()
     seen = load_json(STATE_PATH, {"entries": {}})
     seen_ids = set((seen.get("entries") or {}).keys())
     previous = load_json(FEED_PATH, {"items": []})
@@ -1123,6 +1227,7 @@ def collect(target: int, require: int) -> None:
         )
     log(f"sources: {json.dumps(sources)}")
     added = 0
+    added_by = {"tiktok": 0, "x": 0, "instagram": 0}
     attempts = 0
     attempt_limit = max(goal * 4, 12) if goal else 0
     for candidate in candidates:
@@ -1141,15 +1246,31 @@ def collect(target: int, require: int) -> None:
             continue
         items.append(item)
         added += 1
+        platform = str(item.get("platform") or "")
+        if platform in added_by:
+            added_by[platform] += 1
+    note = tiktok_source_note()
+    if note:
+        sources["tiktok"] = note
     items = apply_posted(prune_queue(items))
     if added > 0:
         collects.append({"at": iso(utc_now()), "added": added})
     save_json(STATE_PATH, seen)
     write_feed(items, sources, collects)
     ready_now = count_ready_today(items)
-    log(f"queue size {len(items)} added {added} ready_today {ready_now}")
-    if added < minimum:
+    log(
+        f"queue size {len(items)} added {added} ready_today {ready_now} "
+        f"x={added_by['x']} instagram={added_by['instagram']} tiktok={added_by['tiktok']}"
+    )
+    # A short TikTok outage must not throw away clips X or Instagram already queued.
+    # A run that queued nothing still fails, so a broken morning is visible.
+    if added < minimum and added_by["x"] + added_by["instagram"] == 0:
         raise SystemExit(f"added {added} ready clips, need at least {minimum}")
+    if added < minimum:
+        log(
+            f"added {added} ready clips, under {minimum}; "
+            "publishing the clips X or Instagram queued"
+        )
 
 
 def gh(*args: str, check: bool = True) -> subprocess.CompletedProcess[str]:
