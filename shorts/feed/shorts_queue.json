@@ -1,19 +1,113 @@
 {
-  "generated_at": "2026-10-21T06:07:54Z",
-  "ready_today": 5,
+  "generated_at": "2026-10-21T09:06:00Z",
+  "ready_today": 10,
   "daily_target": 7,
   "collects_today": [
     {
       "at": "2026-10-21T03:10:12Z",
       "added": 5
+    },
+    {
+      "at": "2026-10-21T09:06:00Z",
+      "added": 5
     }
   ],
   "sources": {
-    "tiktok": "ok",
+    "tiktok": "ok: public play file",
     "x": "ok",
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7696622610125278478",
+      "source_url": "https://www.tiktok.com/@dudeperfect/video/7696622610125278478",
+      "platform": "tiktok",
+      "duration": 57.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7696622610125278478.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696622610125278478-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696622610125278478-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696622610125278478-3.jpg"
+      ],
+      "title": "we shoulda switched level hard and impossible 😭✌️ Olawole SQUAD",
+      "caption": "This one earns the replay. we shoulda switched level hard and impossible 😭✌️ Olawole SQUAD",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-21T09:06:00Z"
+    },
+    {
+      "id": "tt-7687356600364846358",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7687356600364846358",
+      "platform": "tiktok",
+      "duration": 40.3,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7687356600364846358.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7687356600364846358-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7687356600364846358-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7687356600364846358-3.jpg"
+      ],
+      "title": "Who looked at peanut butter and said put this in instant noodle?!",
+      "caption": "A sharp little bit of comedy. Who looked at peanut butter and said put this in instant noodle?!",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-21T09:05:16Z"
+    },
+    {
+      "id": "tt-7685768407307930894",
+      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7685768407307930894",
+      "platform": "tiktok",
+      "duration": 44.2,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7685768407307930894.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685768407307930894-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685768407307930894-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685768407307930894-3.jpg"
+      ],
+      "title": "A little warmth for today",
+      "caption": "Something warm for the middle of the day. Pyar 🫶🏽",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-21T09:04:46Z"
+    },
+    {
+      "id": "tt-7681719358225239326",
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7681719358225239326",
+      "platform": "tiktok",
+      "duration": 48.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7681719358225239326.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7681719358225239326-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7681719358225239326-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7681719358225239326-3.jpg"
+      ],
+      "title": "Well… that didn’t go as planned",
+      "caption": "This one earns the replay. Well… that didn’t go as planned",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-21T09:04:10Z"
+    },
+    {
+      "id": "tt-7691827410337123606",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7691827410337123606",
+      "platform": "tiktok",
+      "duration": 49.2,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7691827410337123606.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691827410337123606-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691827410337123606-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691827410337123606-3.jpg"
+      ],
+      "title": "Will she accept this challenge?",
+      "caption": "A sharp little bit of comedy. Will she accept this challenge?",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-21T09:03:43Z"
+    },
     {
       "id": "tt-7690585621525548310",
       "source_url": "https://www.tiktok.com/@mrnigelng/video/7690585621525548310",
