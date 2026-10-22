@@ -260,6 +260,51 @@
       "reason": "",
       "duration": 62.6,
       "seen_at": "2026-10-22T01:08:29Z"
+    },
+    "tt-7435047097629494570": {
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7435047097629494570",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 53.9,
+      "seen_at": "2026-10-22T09:03:50Z"
+    },
+    "tt-7430570086697651487": {
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7430570086697651487",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 60.2,
+      "seen_at": "2026-10-22T09:04:42Z"
+    },
+    "tt-7683889999426669838": {
+      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7683889999426669838",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 33.6,
+      "seen_at": "2026-10-22T09:05:12Z"
+    },
+    "tt-7696342795962912032": {
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7696342795962912032",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 119.7,
+      "seen_at": "2026-10-22T09:06:20Z"
+    },
+    "tt-7675410938970901791": {
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7675410938970901791",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 33.7,
+      "seen_at": "2026-10-22T09:06:47Z"
     }
   }
 }

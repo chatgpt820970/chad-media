@@ -1,19 +1,113 @@
 {
-  "generated_at": "2026-10-22T06:10:51Z",
-  "ready_today": 5,
+  "generated_at": "2026-10-22T09:06:47Z",
+  "ready_today": 10,
   "daily_target": 7,
   "collects_today": [
     {
       "at": "2026-10-22T01:08:29Z",
       "added": 5
+    },
+    {
+      "at": "2026-10-22T09:06:47Z",
+      "added": 5
     }
   ],
   "sources": {
-    "tiktok": "ok: public play file",
+    "tiktok": "ok",
     "x": "ok",
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7675410938970901791",
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7675410938970901791",
+      "platform": "tiktok",
+      "duration": 33.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7675410938970901791.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7675410938970901791-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7675410938970901791-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7675410938970901791-3.jpg"
+      ],
+      "title": "Come back whenever you want bro 💪🏿",
+      "caption": "This one earns the replay. Come back whenever you want bro 💪🏿",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-22T09:06:47Z"
+    },
+    {
+      "id": "tt-7696342795962912032",
+      "source_url": "https://www.tiktok.com/@mrnigelng/video/7696342795962912032",
+      "platform": "tiktok",
+      "duration": 119.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7696342795962912032.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696342795962912032-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696342795962912032-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696342795962912032-3.jpg"
+      ],
+      "title": "We’ve been cooking up something new Introducing our upgraded menu featuring 17 new dishes",
+      "caption": "A sharp little bit of comedy. We’ve been cooking up something new Introducing our upgraded menu featuring 17 new dishes 🍽️ Come give them a try!",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-22T09:06:20Z"
+    },
+    {
+      "id": "tt-7683889999426669838",
+      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7683889999426669838",
+      "platform": "tiktok",
+      "duration": 33.6,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7683889999426669838.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683889999426669838-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683889999426669838-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683889999426669838-3.jpg"
+      ],
+      "title": "WEMBLEY 2 DAYS TO GO",
+      "caption": "Something warm for the middle of the day. WEMBLEY 2 DAYS TO GO",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-22T09:05:12Z"
+    },
+    {
+      "id": "tt-7430570086697651487",
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7430570086697651487",
+      "platform": "tiktok",
+      "duration": 60.2,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7430570086697651487.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7430570086697651487-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7430570086697651487-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7430570086697651487-3.jpg"
+      ],
+      "title": "today was a timothee chalamet movie.",
+      "caption": "This one earns the replay. today was a timothee chalamet movie. thank you Po for letting me judge the timothee chalamet competition your mind scares me",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-22T09:04:42Z"
+    },
+    {
+      "id": "tt-7435047097629494570",
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7435047097629494570",
+      "platform": "tiktok",
+      "duration": 53.9,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7435047097629494570.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7435047097629494570-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7435047097629494570-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7435047097629494570-3.jpg"
+      ],
+      "title": "Got leftover ingredients in your fridge?",
+      "caption": "A sharp little bit of comedy. Got leftover ingredients in your fridge? Let’s use them to make Scrambled Eggs & Chives (韭菜炒蛋)! The pungent blades of garlic chives add the most drool-worthy flavor to scrambled eggs, making for an easy weeknight dinner 🍳 Find the full recipe on",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-22T09:03:50Z"
+    },
     {
       "id": "tt-7434170075264847134",
       "source_url": "https://www.tiktok.com/@benoftheweek/video/7434170075264847134",
@@ -355,96 +449,6 @@
       "lane": "chinese",
       "youtube_category_id": "23",
       "queued_at": "2026-10-20T10:37:42Z"
-    },
-    {
-      "id": "x-791033514011615232",
-      "source_url": "https://x.com/JaredKMueller/status/791033514011615232",
-      "platform": "x",
-      "duration": 33.1,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-791033514011615232.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/x-791033514011615232-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/x-791033514011615232-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/x-791033514011615232-3.jpg"
-      ],
-      "title": "Wait for it",
-      "caption": "This one earns the replay.",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-20T10:37:12Z"
-    },
-    {
-      "id": "tt-7698441437280570657",
-      "source_url": "https://www.tiktok.com/@mrnigelng/video/7698441437280570657",
-      "platform": "tiktok",
-      "duration": 124.1,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7698441437280570657.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698441437280570657-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698441437280570657-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698441437280570657-3.jpg"
-      ],
-      "title": "Nobody cut egg with scissor haiyaa",
-      "caption": "A sharp little bit of comedy. Nobody cut egg with scissor haiyaa",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-20T10:30:07Z"
-    },
-    {
-      "id": "tt-7698007218364501262",
-      "source_url": "https://www.tiktok.com/@humankind/video/7698007218364501262",
-      "platform": "tiktok",
-      "duration": 35.5,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7698007218364501262.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698007218364501262-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698007218364501262-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698007218364501262-3.jpg"
-      ],
-      "title": "\"Are you Justin Bieber?",
-      "caption": "Something warm for the middle of the day. \"Are you Justin Bieber? Yeah, what’s up, bro? Justin.\" An aspiring musician’s car broke down on the side of the road when suddenly Justin Bieber stopped to help.",
-      "status": "ready",
-      "lane": "feelgood",
-      "youtube_category_id": "10",
-      "queued_at": "2026-10-20T10:29:05Z"
-    },
-    {
-      "id": "tt-7685800549144399134",
-      "source_url": "https://www.tiktok.com/@khaby.lame/video/7685800549144399134",
-      "platform": "tiktok",
-      "duration": 36.2,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7685800549144399134.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685800549144399134-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685800549144399134-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685800549144399134-3.jpg"
-      ],
-      "title": "You almost got a piece of mozzarella… sorry about that 🧀",
-      "caption": "This one earns the replay. You almost got a piece of mozzarella… sorry about that 🧀",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-20T10:28:31Z"
-    },
-    {
-      "id": "tt-7698030898096180512",
-      "source_url": "https://www.tiktok.com/@mrnigelng/video/7698030898096180512",
-      "platform": "tiktok",
-      "duration": 112.4,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7698030898096180512.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698030898096180512-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698030898096180512-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698030898096180512-3.jpg"
-      ],
-      "title": "Torch ginger flower takes fried rice to a whole new level...find this recipe & more in my",
-      "caption": "A sharp little bit of comedy. Torch ginger flower takes fried rice to a whole new level...find this recipe & more in my new cookbook out Nov 3 📖 and I’m serious about helping me source the torch ginger flower. Hit me up if you know where I can buy them in the US",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-20T10:28:09Z"
     }
   ]
 }
