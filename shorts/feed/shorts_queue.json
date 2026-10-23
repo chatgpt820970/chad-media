@@ -1,10 +1,14 @@
 {
-  "generated_at": "2026-10-23T06:06:38Z",
-  "ready_today": 5,
+  "generated_at": "2026-10-23T09:47:55Z",
+  "ready_today": 10,
   "daily_target": 7,
   "collects_today": [
     {
       "at": "2026-10-23T01:08:00Z",
+      "added": 5
+    },
+    {
+      "at": "2026-10-23T09:47:55Z",
       "added": 5
     }
   ],
@@ -14,6 +18,96 @@
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7625798204092632333",
+      "source_url": "https://www.tiktok.com/@spencerx/video/7625798204092632333",
+      "platform": "tiktok",
+      "duration": 38.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7625798204092632333.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625798204092632333-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625798204092632333-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625798204092632333-3.jpg"
+      ],
+      "title": "beatbox challenge: thanks 🗣️🙏🏼",
+      "caption": "This one earns the replay. beatbox challenge: thanks 🗣️🙏🏼",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-23T09:47:55Z"
+    },
+    {
+      "id": "tt-7409055770500746542",
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7409055770500746542",
+      "platform": "tiktok",
+      "duration": 49.4,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7409055770500746542.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7409055770500746542-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7409055770500746542-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7409055770500746542-3.jpg"
+      ],
+      "title": "Let’s make Pineapple Fried Rice (菠蘿炒飯)!",
+      "caption": "A sharp little bit of comedy. Let’s make Pineapple Fried Rice (菠蘿炒飯)! Our Cantonese take on this Thai dish was a favorite at Daddy Lau’s old restaurants, and is a great way to add another dimension of flavor to the traditionally savory fried rice dishes. Watch our latest YouTube",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-23T09:47:26Z"
+    },
+    {
+      "id": "tt-7699120594402479373",
+      "source_url": "https://www.tiktok.com/@humankind/video/7699120594402479373",
+      "platform": "tiktok",
+      "duration": 34.8,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699120594402479373.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699120594402479373-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699120594402479373-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699120594402479373-3.jpg"
+      ],
+      "title": "Only in New York does your dog have a favorite doorman to a building you DON'T live in.",
+      "caption": "Something warm for the middle of the day. Only in New York does your dog have a favorite doorman to a building you DON'T live in. 😂",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-23T09:46:54Z"
+    },
+    {
+      "id": "tt-7694335322922044703",
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7694335322922044703",
+      "platform": "tiktok",
+      "duration": 30.633,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7694335322922044703.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694335322922044703-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694335322922044703-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694335322922044703-3.jpg"
+      ],
+      "title": "Was the ball out, or was it just my imagination?",
+      "caption": "This one earns the replay. Was the ball out, or was it just my imagination? 🤨",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-23T09:46:28Z"
+    },
+    {
+      "id": "tt-7408963192170335534",
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7408963192170335534",
+      "platform": "tiktok",
+      "duration": 54.9,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7408963192170335534.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7408963192170335534-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7408963192170335534-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7408963192170335534-3.jpg"
+      ],
+      "title": "My parents are getting their kitchen remodeled (Part 1!) Their kitchen was on its last",
+      "caption": "A sharp little bit of comedy. My parents are getting their kitchen remodeled (Part 1!) Their kitchen was on its last legs, and when their stove finally broke it was time to pull the trigger. Thanks to our friends at Hauslane for helping us get setup with a new range hood (the",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-23T09:45:47Z"
+    },
     {
       "id": "tt-7407447628339776814",
       "source_url": "https://www.tiktok.com/@madewithlau/video/7407447628339776814",
@@ -355,96 +449,6 @@
       "lane": "funny",
       "youtube_category_id": "23",
       "queued_at": "2026-10-21T09:04:10Z"
-    },
-    {
-      "id": "tt-7691827410337123606",
-      "source_url": "https://www.tiktok.com/@mrnigelng/video/7691827410337123606",
-      "platform": "tiktok",
-      "duration": 49.2,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7691827410337123606.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691827410337123606-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691827410337123606-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691827410337123606-3.jpg"
-      ],
-      "title": "Will she accept this challenge?",
-      "caption": "A sharp little bit of comedy. Will she accept this challenge?",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-21T09:03:43Z"
-    },
-    {
-      "id": "tt-7690585621525548310",
-      "source_url": "https://www.tiktok.com/@mrnigelng/video/7690585621525548310",
-      "platform": "tiktok",
-      "duration": 140.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7690585621525548310.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7690585621525548310-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7690585621525548310-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7690585621525548310-3.jpg"
-      ],
-      "title": "My mom judges my cooking.",
-      "caption": "A sharp little bit of comedy. My mom judges my cooking. Go get your signed version of DON’T MESS UP YOUR RICE now, link in bio",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-21T03:10:12Z"
-    },
-    {
-      "id": "tt-7698519306316958990",
-      "source_url": "https://www.tiktok.com/@humankind/video/7698519306316958990",
-      "platform": "tiktok",
-      "duration": 120.8,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7698519306316958990.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698519306316958990-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698519306316958990-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7698519306316958990-3.jpg"
-      ],
-      "title": "Her husband made sure her late dad would be part of their wedding memories in a way she",
-      "caption": "Something warm for the middle of the day. Her husband made sure her late dad would be part of their wedding memories in a way she never expected.",
-      "status": "ready",
-      "lane": "feelgood",
-      "youtube_category_id": "10",
-      "queued_at": "2026-10-21T03:08:39Z"
-    },
-    {
-      "id": "tt-7670957230178503966",
-      "source_url": "https://www.tiktok.com/@khaby.lame/video/7670957230178503966",
-      "platform": "tiktok",
-      "duration": 44.5,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7670957230178503966.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7670957230178503966-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7670957230178503966-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7670957230178503966-3.jpg"
-      ],
-      "title": "I showed you how it’s done… your turn now",
-      "caption": "This one earns the replay. I showed you how it’s done… your turn now.",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-21T03:07:32Z"
-    },
-    {
-      "id": "tt-7429836503334833454",
-      "source_url": "https://www.tiktok.com/@madewithlau/video/7429836503334833454",
-      "platform": "tiktok",
-      "duration": 44.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7429836503334833454.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7429836503334833454-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7429836503334833454-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7429836503334833454-3.jpg"
-      ],
-      "title": "I'm so excited to share my dad's Spinach Tofu Soup (菠菜豆腐湯) recipe!",
-      "caption": "A sharp little bit of comedy. I'm so excited to share my dad's Spinach Tofu Soup (菠菜豆腐湯) recipe! Today, we’re showing you how to make one of the most reliable, heartwarming Chinese dishes for simple dinners, sick days, and everything in between: Spinach Tofu Soup (菠菜豆腐湯)! Plus,",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-21T03:06:55Z"
     }
   ]
 }
