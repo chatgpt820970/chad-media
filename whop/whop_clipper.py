@@ -362,7 +362,8 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
             links_blocked=links_blocked,
         )
         duration_ok, duration_reason = platform_map.duration_fits(youtube, clip.get("duration"))
-        x_duration_ok, x_duration_reason = platform_map.duration_fits(x_campaign, clip.get("duration"))
+        x_seconds = clip.get("x_duration_sec", clip.get("duration"))
+        x_duration_ok, x_duration_reason = platform_map.duration_fits(x_campaign, x_seconds)
         clip["campaign_id"] = youtube.get("id")
         clip["whop_id"] = youtube.get("product_id") or youtube.get("whop_id")
         clip["youtube_campaign"] = youtube.get("id")
@@ -378,7 +379,9 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
         clip["x_duration_ok"] = x_duration_ok
         clip["x_duration_reason"] = x_duration_reason
         clip["overlay"] = platform_map.overlay_plan(youtube, x_campaign)
-        clip["x_mp4_url"] = None
+        clip["x_duration_sec"] = x_seconds
+        if not clip.get("x_mp4_url"):
+            clip["x_mp4_url"] = None
         clip["x_render"] = clip["overlay"]["mode"]
 
 
@@ -398,8 +401,10 @@ def build_whop_ready_feed() -> dict:
                 "humanly possible 🤯🧩 Wait for his opponent's reaction at the end!"
             ),
             "lane": "funny",
-            "duration": 34.7,
-            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-speedcube-lockin.mp4",
+            "duration": 12.5,
+            "x_duration_sec": 30.0,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
+            "x_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-1.mp4",
             "logo_used": "whop/logos/fastloanpilot.png",
             "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
             "channels": {
@@ -416,8 +421,10 @@ def build_whop_ready_feed() -> dict:
                 "😭🌍 The ending caught him completely off guard!"
             ),
             "lane": "knowledge",
-            "duration": 38.0,
-            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-language-gauntlet.mp4",
+            "duration": 12.5,
+            "x_duration_sec": 30.0,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-2.mp4",
+            "x_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-2.mp4",
             "logo_used": "whop/logos/fastloanpilot.png",
             "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
             "channels": {
@@ -434,8 +441,10 @@ def build_whop_ready_feed() -> dict:
                 "Goosebumps every single time!"
             ),
             "lane": "concert",
-            "duration": 70.0,
-            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-concert-vibes.mp4",
+            "duration": 12.5,
+            "x_duration_sec": 30.0,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-3.mp4",
+            "x_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-3.mp4",
             "logo_used": "whop/logos/fastloanpilot.png",
             "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
             "channels": {

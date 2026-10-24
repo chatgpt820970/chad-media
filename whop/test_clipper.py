@@ -6,6 +6,7 @@ import json
 import unittest
 
 from whop.clipper import (
+    FEED_JSON_PATH,
     MANIFEST_PATH,
     CampaignPlatformError,
     banner_overlay_spec,
@@ -26,6 +27,8 @@ X_PAYING_IDS = {
     "dishpilot-x-clipping",
     "finsta-ugc-clipping",
     "darkroom-clipping",
+    "nova-x-clipping",
+    "cravin-x-clipping",
 }
 
 
@@ -94,6 +97,8 @@ class PlatformCampaignMappingTest(unittest.TestCase):
                 "dishpilot-x-clipping",
                 "finsta-ugc-clipping",
                 "darkroom-clipping",
+                "nova-x-clipping",
+                "cravin-x-clipping",
             ],
         )
         best = max(paying, key=lambda campaign: campaign["remaining_pool_usd"])
@@ -150,6 +155,9 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertEqual(manifest["slots"][0]["x_campaign"], "dishpilot-x-clipping")
         self.assertEqual(manifest["slots"][1]["x_campaign"], "finsta-ugc-clipping")
         self.assertEqual(manifest["slots"][2]["x_campaign"], "darkroom-clipping")
+        self.assertEqual(manifest["slots"][3]["x_campaign"], "nova-x-clipping")
+        self.assertEqual(manifest["slots"][3]["x_rate_per_1k_views_usd"], 5.0)
+        self.assertEqual(manifest["slots"][4]["x_campaign"], "cravin-x-clipping")
 
         flp_cta = self.flp["rules"]["mandatory_caption"]
         for slot in manifest["slots"]:
@@ -166,7 +174,14 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertIn(slot["hook"], slot["youtube_caption"])
             self.assertIn(slot["x_campaign"], X_PAYING_IDS)
             self.assertEqual(slot["x_handle"], "@chadriyo")
-            self.assertEqual(slot["x_rate_per_1k_views_usd"], 2.0)
+            self.assertIn(slot["x_rate_per_1k_views_usd"], (2.0, 5.0))
+            self.assertTrue(slot["youtube_duration_ok"])
+            self.assertEqual(slot["youtube_duration_sec"], 12.5)
+            self.assertRegex(slot["youtube_mp4_url"], r"/yt-flp-[123]\.mp4$")
+            self.assertTrue(slot["x_duration_ok"])
+            self.assertGreaterEqual(slot["x_duration_sec"], 20)
+            self.assertLessEqual(slot["x_duration_sec"], 35)
+            self.assertRegex(slot["x_mp4_url"], r"/x-clip-[123]\.mp4$")
             self.assertNotIn("http://", slot["x_caption"].lower())
             self.assertNotIn("https://", slot["x_caption"].lower())
             self.assertNotIn("whop.com", slot["x_caption"].lower())
@@ -179,6 +194,51 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         on_disk = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
         self.assertEqual(on_disk["slots"], manifest["slots"])
         self.assertEqual(verify_manifest_data(on_disk, self.data), [])
+        feed = json.loads(FEED_JSON_PATH.read_text(encoding="utf-8"))
+        self.assertEqual(feed["items"], manifest["slots"])
+        self.assertTrue(all(item["youtube_duration_ok"] for item in feed["items"]))
+        self.assertTrue(all(str(item["x_mp4_url"]).endswith((".mp4",)) for item in feed["items"]))
+
+    def test_nova_and_cravin_accept_x(self) -> None:
+        nova = next(campaign for campaign in self.data["active_campaigns"] if campaign["id"] == "nova-x-clipping")
+        cravin = next(campaign for campaign in self.data["active_campaigns"] if campaign["id"] == "cravin-x-clipping")
+        self.assertEqual(nova["title"], "Nova Clipping ($5 / 1K Views on X)")
+        self.assertEqual(nova["whop_product_id"], "prod_3juzE1FqAXBsj")
+        self.assertEqual(nova["whop_experience_id"], "exp_zB6vOQWkg5RKa6")
+        self.assertEqual(
+            nova["submission_url"],
+            "https://whop.com/joined/nova-content/exp_zB6vOQWkg5RKa6/app/",
+        )
+        self.assertEqual(nova["cpm_usd"], 5.0)
+        self.assertEqual(nova["pool_remaining_usd"], 1000.0)
+        self.assertEqual(nova["denial_rate"], 0.0)
+        self.assertEqual(
+            nova["accepted_platforms"],
+            ["x", "tiktok", "youtube_shorts", "instagram_reels"],
+        )
+        self.assertEqual(nova["min_duration_sec"], 10)
+        self.assertEqual(nova["max_duration_sec"], 60)
+        self.assertEqual(nova["required_caption"], "Check out Nova ✨ #Nova #Viral #Clips")
+        nova_ok, nova_reason = check_campaign_pool_guard(nova, self.guard)
+        self.assertTrue(nova_ok, nova_reason)
+        bind_clip_to_campaign(nova, "x")
+
+        self.assertEqual(cravin["title"], "Cravin Clipping Program ($2 / 1K Views on X)")
+        self.assertEqual(cravin["whop_product_id"], "prod_636gGffOtD5Vc")
+        self.assertEqual(cravin["whop_experience_id"], "exp_v8e0kiUai6qGnf")
+        self.assertEqual(
+            cravin["submission_url"],
+            "https://whop.com/joined/cravin-clipping/exp_v8e0kiUai6qGnf/app/",
+        )
+        self.assertEqual(cravin["cpm_usd"], 2.0)
+        self.assertEqual(cravin["pool_remaining_usd"], 1000.0)
+        self.assertEqual(cravin["denial_rate"], 0.0)
+        self.assertEqual(cravin["min_duration_sec"], 10)
+        self.assertEqual(cravin["max_duration_sec"], 60)
+        self.assertEqual(cravin["required_caption"], "Cravin hits different 🔥 #Cravin #FoodTok #Viral")
+        cravin_ok, cravin_reason = check_campaign_pool_guard(cravin, self.guard)
+        self.assertTrue(cravin_ok, cravin_reason)
+        bind_clip_to_campaign(cravin, "x")
 
     def test_x_caption_strips_links_when_blocked(self) -> None:
         campaign = {

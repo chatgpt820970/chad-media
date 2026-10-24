@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-24T14:10:00Z",
+  "updated_at": "2026-10-24T14:20:00Z",
   "whop_user": "@bi60",
   "whop_user_id": "user_JUKQo7VMHc6IS",
   "supported_viral_categories": [
@@ -42,7 +42,9 @@
       "campaign_ids": [
         "dishpilot-x-clipping",
         "finsta-ugc-clipping",
-        "darkroom-clipping"
+        "darkroom-clipping",
+        "nova-x-clipping",
+        "cravin-x-clipping"
       ]
     },
     "youtube_shorts": {
@@ -54,7 +56,9 @@
         "flp-logo-clipping",
         "dishpilot-x-clipping",
         "finsta-ugc-clipping",
-        "darkroom-clipping"
+        "darkroom-clipping",
+        "nova-x-clipping",
+        "cravin-x-clipping"
       ]
     }
   },
@@ -232,6 +236,96 @@
         "hashtags": ["#DarkRoom", "#viral"]
       },
       "requirements": "Banner reads DARK ROOM. Pays X (@chadriyo) and YouTube Shorts (Denzen) views at $2 per 1,000."
+    },
+    {
+      "id": "nova-x-clipping",
+      "title": "Nova Clipping ($5 / 1K Views on X)",
+      "whop_product_id": "prod_3juzE1FqAXBsj",
+      "product_id": "prod_3juzE1FqAXBsj",
+      "whop_id": "prod_3juzE1FqAXBsj",
+      "whop_experience_id": "exp_zB6vOQWkg5RKa6",
+      "experience_id": "exp_zB6vOQWkg5RKa6",
+      "content_rewards_experience_id": "exp_zB6vOQWkg5RKa6",
+      "submission_url": "https://whop.com/joined/nova-content/exp_zB6vOQWkg5RKa6/app/",
+      "type": "type2_logo_overlay",
+      "url": "https://whop.com/joined/nova-content/exp_zB6vOQWkg5RKa6/app/",
+      "status": "open",
+      "joined": true,
+      "cpm_usd": 5.0,
+      "rate_per_1k_views_usd": 5.0,
+      "pool_remaining_usd": 1000.0,
+      "remaining_pool_usd": 1000.0,
+      "remaining_budget_usd": 1000.0,
+      "total_pool_usd": 1000.0,
+      "budget_total_usd": 1000.0,
+      "paid_out_usd": 0.0,
+      "paid_out_percent": 0.0,
+      "denial_rate": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": false,
+      "payout": "$5.00 per 1,000 views on X (@chadriyo) — $1,000 pool left",
+      "accepted_platforms": ["x", "tiktok", "youtube_shorts", "instagram_reels"],
+      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "min_duration_sec": 10,
+      "max_duration_sec": 60,
+      "required_caption": "Check out Nova ✨ #Nova #Viral #Clips",
+      "watermark_text": "NOVA",
+      "cta_text": "Check out Nova",
+      "rules": {
+        "min_duration_sec": 10,
+        "max_duration_sec": 60,
+        "logo_overlay_required": true,
+        "logo_text": "NOVA",
+        "logo_subtext": "Check out Nova",
+        "mandatory_caption": "Check out Nova ✨ #Nova #Viral #Clips",
+        "hashtags": ["#Nova", "#Viral", "#Clips"]
+      },
+      "requirements": "Dark header badge reads NOVA. Pays X (@chadriyo) views at $5 per 1,000."
+    },
+    {
+      "id": "cravin-x-clipping",
+      "title": "Cravin Clipping Program ($2 / 1K Views on X)",
+      "whop_product_id": "prod_636gGffOtD5Vc",
+      "product_id": "prod_636gGffOtD5Vc",
+      "whop_id": "prod_636gGffOtD5Vc",
+      "whop_experience_id": "exp_v8e0kiUai6qGnf",
+      "experience_id": "exp_v8e0kiUai6qGnf",
+      "content_rewards_experience_id": "exp_v8e0kiUai6qGnf",
+      "submission_url": "https://whop.com/joined/cravin-clipping/exp_v8e0kiUai6qGnf/app/",
+      "type": "type2_logo_overlay",
+      "url": "https://whop.com/joined/cravin-clipping/exp_v8e0kiUai6qGnf/app/",
+      "status": "open",
+      "joined": true,
+      "cpm_usd": 2.0,
+      "rate_per_1k_views_usd": 2.0,
+      "pool_remaining_usd": 1000.0,
+      "remaining_pool_usd": 1000.0,
+      "remaining_budget_usd": 1000.0,
+      "total_pool_usd": 1000.0,
+      "budget_total_usd": 1000.0,
+      "paid_out_usd": 0.0,
+      "paid_out_percent": 0.0,
+      "denial_rate": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": false,
+      "payout": "$2.00 per 1,000 views on X (@chadriyo) — $1,000 pool left",
+      "accepted_platforms": ["x", "tiktok", "youtube_shorts", "instagram_reels"],
+      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "min_duration_sec": 10,
+      "max_duration_sec": 60,
+      "required_caption": "Cravin hits different 🔥 #Cravin #FoodTok #Viral",
+      "watermark_text": "CRAVIN",
+      "cta_text": "Cravin hits different",
+      "rules": {
+        "min_duration_sec": 10,
+        "max_duration_sec": 60,
+        "logo_overlay_required": true,
+        "logo_text": "CRAVIN",
+        "logo_subtext": "Cravin hits different",
+        "mandatory_caption": "Cravin hits different 🔥 #Cravin #FoodTok #Viral",
+        "hashtags": ["#Cravin", "#FoodTok", "#Viral"]
+      },
+      "requirements": "Dark header badge reads CRAVIN. Pays X (@chadriyo) views at $2 per 1,000."
     },
     {
       "id": "whop-ai-shane-gillis",

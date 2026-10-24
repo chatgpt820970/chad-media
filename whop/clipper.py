@@ -12,6 +12,7 @@ from __future__ import annotations
 import argparse
 import json
 import re
+import subprocess
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
@@ -19,6 +20,10 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 CAMPAIGNS_PATH = ROOT / "campaigns.json"
 MANIFEST_PATH = ROOT / "manifest.json"
+FEED_JSON_PATH = ROOT / "feed.json"
+MEDIA_DIR = ROOT / "v"
+PAGES_MEDIA_BASE = "https://chatgpt820970.github.io/chad-media/whop/v/"
+BOLD_FONT = "/usr/share/fonts/truetype/macos/Inter-Bold.ttf"
 
 SUPPORTED_PLATFORMS = ("x", "youtube_shorts")
 PLATFORM_ACCOUNTS = {
@@ -50,6 +55,45 @@ DAILY_SLOTS = (
 )
 
 _LINK_RE = re.compile(r"(https?://\S+|www\.\S+)", re.IGNORECASE)
+_X_MP4_RE = re.compile(
+    r"^https://chatgpt820970\.github\.io/chad-media/whop/v/x-clip-[123]\.mp4$"
+)
+_YT_MP4_RE = re.compile(
+    r"^https://chatgpt820970\.github\.io/chad-media/whop/v/yt-flp-[123]\.mp4$"
+)
+
+# YouTube Shorts files are 12.5s (inside FastLoanPilot's 6–15s window) at 60fps.
+# X files are 30s (inside the 20–35s render window) with a dark header over y=0..180.
+YOUTUBE_DURATION_SEC = 12.5
+X_DURATION_SEC = 30.0
+YOUTUBE_VARIANTS = (
+    {"file": "yt-flp-1.mp4", "source": "flp-speedcube-lockin.mp4"},
+    {"file": "yt-flp-2.mp4", "source": "flp-language-gauntlet.mp4"},
+    {"file": "yt-flp-3.mp4", "source": "flp-concert-vibes.mp4"},
+)
+X_VARIANTS = (
+    {
+        "file": "x-clip-1.mp4",
+        "source": "flp-speedcube-lockin.mp4",
+        "badge": "NOVA",
+        "hook": "WATCH HIS HANDS",
+        "campaign_id": "nova-x-clipping",
+    },
+    {
+        "file": "x-clip-2.mp4",
+        "source": "flp-language-gauntlet.mp4",
+        "badge": "DISHPILOT",
+        "hook": "NAME EVERY FLAG",
+        "campaign_id": "dishpilot-x-clipping",
+    },
+    {
+        "file": "x-clip-3.mp4",
+        "source": "flp-concert-vibes.mp4",
+        "badge": "CRAVIN",
+        "hook": "WAIT FOR THE NOTE",
+        "campaign_id": "cravin-x-clipping",
+    },
+)
 
 
 class CampaignPlatformError(ValueError):
@@ -78,10 +122,9 @@ def _total_pool(campaign: dict) -> float:
 
 
 def _remaining_pool(campaign: dict) -> float:
-    if campaign.get("remaining_pool_usd") is not None:
-        return float(campaign["remaining_pool_usd"])
-    if campaign.get("remaining_budget_usd") is not None:
-        return float(campaign["remaining_budget_usd"])
+    for key in ("remaining_pool_usd", "pool_remaining_usd", "remaining_budget_usd"):
+        if campaign.get(key) is not None:
+            return float(campaign[key])
     return _total_pool(campaign) - float(campaign.get("paid_out_usd") or 0.0)
 
 
@@ -151,12 +194,21 @@ def check_campaign_pool_guard(campaign: dict, guard_cfg: dict | None) -> tuple[b
     )
 
 
+def _experience_id(campaign: dict) -> str:
+    return str(
+        campaign.get("experience_id")
+        or campaign.get("whop_experience_id")
+        or campaign.get("content_rewards_experience_id")
+        or ""
+    )
+
+
 def _is_direct_submission(campaign: dict) -> bool:
     if "hub" in str(campaign.get("type") or ""):
         return False
     if not campaign.get("submission_url"):
         return False
-    if not (campaign.get("experience_id") or campaign.get("content_rewards_experience_id")):
+    if not _experience_id(campaign):
         return False
     return True
 
@@ -249,8 +301,8 @@ def duration_fits(campaign: dict, duration_sec: float | None) -> tuple[bool, str
     if duration_sec is None:
         return True, "duration not checked"
     duration = float(duration_sec)
-    minimum = rules.get("min_duration_sec")
-    maximum = rules.get("max_duration_sec")
+    minimum = rules.get("min_duration_sec", campaign.get("min_duration_sec"))
+    maximum = rules.get("max_duration_sec", campaign.get("max_duration_sec"))
     if minimum is not None and duration < float(minimum):
         return False, f"duration {duration:g}s < min {minimum}s"
     if maximum is not None and duration > float(maximum):
@@ -284,7 +336,9 @@ def build_platform_caption(
     links_blocked: bool | None = None,
 ) -> str:
     """Hook + mandatory CTA + hashtags. X drops raw links when the channel blocks them."""
-    cta = str(_rules(campaign).get("mandatory_caption") or "").strip()
+    cta = str(
+        _rules(campaign).get("mandatory_caption") or campaign.get("required_caption") or ""
+    ).strip()
     parts = [part for part in (hook.strip(), cta) if part]
     caption = "\n\n".join(parts)
     extras = _extra_hashtags(caption, campaign)
@@ -419,6 +473,18 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
             raise CampaignPlatformError(
                 f"Slot {spec['slot']} X caption still contains a link for {x_campaign.get('id')}"
             )
+        youtube_variant = YOUTUBE_VARIANTS[index % len(YOUTUBE_VARIANTS)]
+        x_variant = X_VARIANTS[index % len(X_VARIANTS)]
+        youtube_ok, youtube_reason = duration_fits(youtube_campaign, YOUTUBE_DURATION_SEC)
+        x_ok, x_reason = duration_fits(x_campaign, X_DURATION_SEC)
+        if not youtube_ok:
+            raise CampaignPlatformError(
+                f"Slot {spec['slot']} YouTube render is outside the campaign window: {youtube_reason}"
+            )
+        if not x_ok:
+            raise CampaignPlatformError(
+                f"Slot {spec['slot']} X render is outside the campaign window: {x_reason}"
+            )
         slots.append(
             {
                 "slot": spec["slot"],
@@ -432,6 +498,10 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 "youtube_submission_url": youtube_campaign.get("submission_url"),
                 "youtube_handle": youtube_account["handle"],
                 "youtube_username": youtube_account["username"],
+                "youtube_mp4_url": PAGES_MEDIA_BASE + youtube_variant["file"],
+                "youtube_duration_sec": YOUTUBE_DURATION_SEC,
+                "youtube_duration_ok": youtube_ok,
+                "youtube_duration_reason": youtube_reason,
                 "x_campaign": x_campaign.get("id"),
                 "x_campaign_title": x_campaign.get("title"),
                 "x_rate_per_1k_views_usd": _rate(x_campaign),
@@ -439,6 +509,11 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 "x_caption": x_caption,
                 "x_submission_url": x_campaign.get("submission_url"),
                 "x_handle": x_account["handle"],
+                "x_mp4_url": PAGES_MEDIA_BASE + x_variant["file"],
+                "x_duration_sec": X_DURATION_SEC,
+                "x_duration_ok": x_ok,
+                "x_duration_reason": x_reason,
+                "x_badge": x_variant["badge"],
                 "overlay": overlay_plan(youtube_campaign, x_campaign),
             }
         )
@@ -547,10 +622,35 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
             errors.append(f"slot {slot_no} x_handle is not @chadriyo")
         if slot.get("youtube_handle") != platform_account(campaigns_data, "youtube_shorts")["handle"]:
             errors.append(f"slot {slot_no} youtube_handle is not Denzen")
+        if slot.get("youtube_duration_ok") is not True:
+            errors.append(f"slot {slot_no} youtube_duration_ok must be true")
+        youtube_seconds = slot.get("youtube_duration_sec")
+        if youtube_seconds is None or not duration_fits(youtube_campaign, float(youtube_seconds))[0]:
+            errors.append(f"slot {slot_no} YouTube duration is outside the FastLoanPilot window")
+        if not _YT_MP4_RE.match(str(slot.get("youtube_mp4_url") or "")):
+            errors.append(f"slot {slot_no} youtube_mp4_url must be a yt-flp-*.mp4 pages URL")
+        if slot.get("x_duration_ok") is not True:
+            errors.append(f"slot {slot_no} x_duration_ok must be true")
+        x_seconds = slot.get("x_duration_sec")
+        if x_seconds is None or not (20 <= float(x_seconds) <= 35):
+            errors.append(f"slot {slot_no} X duration must be 20–35s")
+        if x_seconds is None or not duration_fits(x_campaign, float(x_seconds))[0]:
+            errors.append(f"slot {slot_no} X duration is outside {x_id}'s window")
+        if not _X_MP4_RE.match(str(slot.get("x_mp4_url") or "")):
+            errors.append(f"slot {slot_no} x_mp4_url must be an x-clip-*.mp4 pages URL")
     missing = [campaign_id for campaign_id in x_ids if campaign_id not in seen_x]
     if missing:
         errors.append("daily manifest never assigns X views to: " + ", ".join(missing))
     return errors
+
+
+def feed_from_manifest(manifest: dict) -> dict:
+    return {
+        "generated_at": manifest.get("generated_at"),
+        "slot_count": manifest.get("slot_count"),
+        "guarantee": manifest.get("guarantee"),
+        "items": manifest.get("slots") or [],
+    }
 
 
 def write_manifest(path: Path | None = None, campaigns_data: dict | None = None) -> dict:
@@ -560,19 +660,131 @@ def write_manifest(path: Path | None = None, campaigns_data: dict | None = None)
     if errors:
         raise CampaignPlatformError("; ".join(errors))
     save_json(path or MANIFEST_PATH, manifest)
+    save_json(FEED_JSON_PATH, feed_from_manifest(manifest))
     return manifest
+
+
+def _run_ffmpeg(cmd: list[str]) -> None:
+    result = subprocess.run(cmd, capture_output=True, text=True, check=False)
+    if result.returncode != 0:
+        raise RuntimeError((result.stderr or "ffmpeg failed")[-800:])
+
+
+def _x_header_filter(hook: str, badge: str) -> str:
+    """Dark header over y=0..180, extended through the burned-in logo just below it."""
+    font = BOLD_FONT
+    hook_text = escape_drawtext(hook)
+    badge_text = escape_drawtext(badge)
+    return (
+        "scale=1080:1920:flags=lanczos,fps=30,format=yuv420p,"
+        "drawbox=x=0:y=0:w=iw:h=180:color=black@0.94:t=fill,"
+        "drawbox=x=0:y=180:w=iw:h=180:color=black@0.94:t=fill,"
+        "drawbox=x=0:y=1560:w=iw:h=360:color=black@0.92:t=fill,"
+        f"drawtext=fontfile='{font}':text='{hook_text}':fontcolor=white:fontsize=52:"
+        "x=(w-text_w)/2:y=42,"
+        f"drawtext=fontfile='{font}':text='{badge_text}':fontcolor=0x111111:fontsize=34:"
+        "box=1:boxcolor=white@0.96:boxborderw=18:x=(w-text_w)/2:y=112"
+    )
+
+
+def render_platform_variants(media_dir: Path | None = None) -> list[Path]:
+    """Write the 12.5s YouTube Shorts files and the 30s X files into whop/v/."""
+    target = media_dir or MEDIA_DIR
+    target.mkdir(parents=True, exist_ok=True)
+    written: list[Path] = []
+    for variant in YOUTUBE_VARIANTS:
+        source = target / variant["source"]
+        dest = target / variant["file"]
+        _run_ffmpeg(
+            [
+                "ffmpeg",
+                "-y",
+                "-v",
+                "error",
+                "-i",
+                str(source),
+                "-t",
+                str(YOUTUBE_DURATION_SEC),
+                "-vf",
+                "scale=1080:1920:flags=lanczos,fps=60,format=yuv420p",
+                "-c:v",
+                "libx264",
+                "-preset",
+                "veryfast",
+                "-crf",
+                "23",
+                "-r",
+                "60",
+                "-pix_fmt",
+                "yuv420p",
+                "-c:a",
+                "aac",
+                "-b:a",
+                "128k",
+                "-ar",
+                "48000",
+                "-movflags",
+                "+faststart",
+                str(dest),
+            ]
+        )
+        written.append(dest)
+    for variant in X_VARIANTS:
+        source = target / variant["source"]
+        dest = target / variant["file"]
+        _run_ffmpeg(
+            [
+                "ffmpeg",
+                "-y",
+                "-v",
+                "error",
+                "-i",
+                str(source),
+                "-t",
+                str(X_DURATION_SEC),
+                "-vf",
+                _x_header_filter(str(variant["hook"]), str(variant["badge"])),
+                "-c:v",
+                "libx264",
+                "-preset",
+                "veryfast",
+                "-crf",
+                "23",
+                "-r",
+                "30",
+                "-pix_fmt",
+                "yuv420p",
+                "-c:a",
+                "aac",
+                "-b:a",
+                "128k",
+                "-ar",
+                "48000",
+                "-movflags",
+                "+faststart",
+                str(dest),
+            ]
+        )
+        written.append(dest)
+    return written
 
 
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Whop platform campaign mapping")
     sub = parser.add_subparsers(dest="command", required=True)
-    sub.add_parser("build-manifest", help="Write whop/manifest.json for the 10 daily slots")
+    sub.add_parser("build-manifest", help="Write whop/manifest.json and whop/feed.json for the 10 daily slots")
     sub.add_parser("verify-manifest", help="Fail if any slot pairs a platform with a campaign that does not pay it")
+    sub.add_parser("render-variants", help="Render yt-flp-*.mp4 and x-clip-*.mp4 into whop/v/")
     args = parser.parse_args(argv)
     data = load_campaigns()
     if args.command == "build-manifest":
         manifest = write_manifest(campaigns_data=data)
-        print(f"wrote {MANIFEST_PATH} ({manifest['slot_count']} slots)")
+        print(f"wrote {MANIFEST_PATH} and {FEED_JSON_PATH} ({manifest['slot_count']} slots)")
+        return 0
+    if args.command == "render-variants":
+        paths = render_platform_variants()
+        for path in paths:
+            print(path)
         return 0
     if args.command == "verify-manifest":
         if not MANIFEST_PATH.exists():
