@@ -23,9 +23,7 @@ on:
         description: "Kept for older dispatch calls. The collect step always requires 4 new ready clips."
         type: string
         default: "4"
-  workflow_run:
-    workflows: ["Publish Pages"]
-    types: [completed]
+
 
 permissions:
   contents: write
