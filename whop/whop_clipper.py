@@ -783,6 +783,7 @@ def schedule_unscheduled_items(feed: dict, token: str, poster=None) -> int:
     for item in feed.get("items") or []:
         if not isinstance(item, dict) or item.get("buffer_status") == "scheduled":
             continue
+        platform_map.assert_feed_item_community_guidelines_safe(item)
         body = platform_map.buffer_create_post_body(item)
         try:
             ok, post_id = poster(body) if poster is not None else _post_buffer(token, body)
@@ -857,6 +858,10 @@ def load_queue_urls() -> tuple[list[str], str, str]:
 
 
 def merge_ingested_items(existing: dict, feed: dict) -> dict:
+    for item in feed.get("items") or []:
+        if not isinstance(item, dict):
+            raise platform_map.CampaignPlatformError("daily feed contains a non-object item")
+        platform_map.assert_feed_item_community_guidelines_safe(item)
     if existing.get("date") != feed.get("date"):
         return feed
     have = {item.get("clip_id") for item in feed.get("items") or []}
@@ -865,6 +870,8 @@ def merge_ingested_items(existing: dict, feed: dict) -> dict:
         for item in existing.get("items") or []
         if isinstance(item, dict) and item.get("source") == "ingest" and item.get("clip_id") not in have
     ]
+    for item in extras:
+        platform_map.assert_feed_item_community_guidelines_safe(item)
     if not extras:
         return feed
     merged = dict(feed)
@@ -882,6 +889,12 @@ def append_items_to_daily_feed(items: list[dict], today) -> dict:
             "count": 0,
             "items": [],
         }
+    for item in feed.get("items") or []:
+        if not isinstance(item, dict):
+            raise platform_map.CampaignPlatformError("daily feed contains a non-object item")
+        platform_map.assert_feed_item_community_guidelines_safe(item)
+    for item in items:
+        platform_map.assert_feed_item_community_guidelines_safe(item)
     have = {item.get("clip_id") for item in feed.get("items") or []}
     for item in items:
         if item.get("clip_id") not in have:
@@ -921,6 +934,31 @@ def _download_mp4(url: str, dest: Path) -> None:
         dest.write_bytes(response.read())
 
 
+def probe_source_metadata(path: Path) -> dict:
+    """Read container/stream tags used by the four-platform safety gate."""
+    command = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-show_entries",
+        "format_tags:stream_tags",
+        "-of",
+        "json",
+        str(path),
+    ]
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    if result.returncode != 0:
+        return {}
+    try:
+        metadata = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {}
+    return metadata if isinstance(metadata, dict) else {}
+
+
 def ingest_urls_command(
     urls: list[str],
     campaign: str,
@@ -957,12 +995,21 @@ def ingest_urls_command(
     rendered: list[Path] = []
     for index, source_url in enumerate(chosen_urls):
         parsed = platform_map.parse_source_url(source_url)
-        clean_url = platform_map.resolve_clean_mp4_url(source_url, fetch)
+        source_metadata: dict = {}
+        clean_url = platform_map.resolve_clean_mp4_url(source_url, fetch, source_metadata)
         raw_path = ROOT / "work" / "ingest" / f"{parsed['id']}.mp4"
         if clean_url:
             download(clean_url, raw_path)
         else:
             download_hd_source(source_url, raw_path)
+        source_metadata["container"] = probe_source_metadata(raw_path)
+        platform_map.assert_community_guidelines_safe(
+            title="Watch this",
+            hook="Watch this",
+            tags=(category,),
+            source_metadata=source_metadata,
+            context=f"downloaded source {parsed['id']}",
+        )
         hosted_by_platform: dict[str, str] = {}
         campaign_id = platform_map.campaign_id_from_alias(campaign)
         selected = platform_map.platforms_for_campaign(
@@ -992,6 +1039,7 @@ def ingest_urls_command(
                     today=today,
                     slot=(index % platform_map.DAILY_30_PER_PLATFORM) + 1,
                     category=category,
+                    source_metadata=source_metadata,
                 )
             )
     if not created:

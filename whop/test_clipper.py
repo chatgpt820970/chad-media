@@ -32,7 +32,9 @@ from whop.clipper import (
     build_ingest_items,
     build_platform_caption,
     campaigns_for_platform,
+    check_community_guidelines_safe,
     check_campaign_pool_guard,
+    community_guidelines_violations,
     daily_feed_is_current,
     download_attempt_plan,
     duration_fits,
@@ -48,8 +50,9 @@ from whop.clipper import (
     select_campaign_for_platform,
     single_campaign_drawtext,
     verify_manifest_data,
+    _catalog_clip,
 )
-from whop.whop_clipper import should_publish_daily
+from whop.whop_clipper import schedule_unscheduled_items, should_publish_daily
 
 X_PAYING_IDS = {"dishpilot-clipping"}
 INDIAN_CATEGORIES = {"indian_actor_reels", "indian_movie_scenes"}
@@ -678,6 +681,96 @@ class IngestUrlPipelineTest(unittest.TestCase):
         short = parse_source_url("https://vm.tiktok.com/ZMabc123/")
         self.assertEqual(short["kind"], "tiktok")
         self.assertEqual(short["id"], "ZMabc123")
+
+    def test_four_platform_community_guidelines_safety_filter(self) -> None:
+        allowed = (
+            "Attractive glamorous couple in a romantic movie scene",
+            "4K anime edit",
+            "Top 4K movie scene",
+        )
+        for title in allowed:
+            with self.subTest(title=title):
+                self.assertTrue(
+                    check_community_guidelines_safe(
+                        title=title,
+                        hook="Wait for the reveal",
+                        tags=("#Anime4K", "#Movie4K"),
+                        source_metadata={"nsfw": False, "rating": "general"},
+                    )
+                )
+
+        blocked = (
+            "NSFW edit",
+            "18+ uncensored",
+            "explicit nudity",
+            "graphic violence compilation",
+            "gory beheading scene",
+            "hate speech",
+            "terrorist propaganda",
+            "self-harm tutorial",
+            "fake giveaway phishing",
+        )
+        for title in blocked:
+            with self.subTest(title=title):
+                self.assertFalse(check_community_guidelines_safe(title=title))
+                self.assertTrue(community_guidelines_violations(title=title))
+
+        self.assertFalse(
+            check_community_guidelines_safe(
+                title="Ordinary title",
+                source_metadata={"moderation": {"nsfw": True}},
+            )
+        )
+        self.assertFalse(
+            check_community_guidelines_safe(
+                title="Ordinary title",
+                source_metadata={"safety": {"graphic_violence_score": 0.2}},
+            )
+        )
+        self.assertTrue(
+            check_community_guidelines_safe(
+                title="Romantic scene",
+                source_metadata={"nsfw": False, "graphic_violence_score": 0},
+            )
+        )
+
+    def test_unsafe_catalog_feed_and_buffer_posts_fail_closed(self) -> None:
+        with self.assertRaisesRegex(CampaignPlatformError, "Community Guidelines"):
+            _catalog_clip(
+                ("unsafe", "movie_4k", "Explicit nudity scene", "https://example.com/unsafe.mp4")
+            )
+        with self.assertRaisesRegex(CampaignPlatformError, "Community Guidelines"):
+            build_ingest_items(
+                self.data,
+                source_url="https://x.com/a/status/42",
+                source_id="unsafe-42",
+                video_url="https://example.com/unsafe.mp4",
+                campaign_alias="dishpilot",
+                platforms="x",
+                hook="Watch this",
+                today=self.day,
+                category="movie_4k",
+                source_metadata={"moderation": {"adult_content": True}},
+            )
+
+        unsafe = dict(self.items[0])
+        unsafe["title"] = "NSFW 18+"
+        unsafe["caption"] = "NSFW 18+ #Dishpilot"
+        unsafe_feed = {
+            "date": self.day.isoformat(),
+            "items": [unsafe, *self.items[1:]],
+        }
+        self.assertFalse(daily_feed_is_current(unsafe_feed, self.day))
+        with self.assertRaisesRegex(CampaignPlatformError, "Community Guidelines"):
+            buffer_create_post_body(unsafe)
+        calls = []
+        with self.assertRaisesRegex(CampaignPlatformError, "Community Guidelines"):
+            schedule_unscheduled_items(
+                {"items": [unsafe]},
+                "token",
+                poster=lambda body: calls.append(body) or (True, "post"),
+            )
+        self.assertEqual(calls, [])
 
     def test_download_chain_prefers_clean_apis(self) -> None:
         x_plan = download_attempt_plan(parse_source_url("https://x.com/a/status/42"))

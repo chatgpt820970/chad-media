@@ -63,6 +63,62 @@ INDIAN_CATEGORIES = ("indian_actor_reels", "indian_movie_scenes")
 PRIORITY_CATEGORIES = ("anime_4k", "glamorous_girls", "celebrity", "movie_4k")
 INGEST_CATEGORIES = (*PRIORITY_CATEGORIES, "funny", "knowledge", "concert", "other")
 X_VIRAL_CATEGORIES = ("funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert")
+COMMUNITY_GUIDELINES_BLOCKED_PATTERNS = (
+    ("adult sexual content", re.compile(
+        r"\b(?:nsfw|porn(?:ography|ographic)?|xxx|18\s*\+|onlyfans|nude|nudity|"
+        r"naked|explicit\s+sex(?:ual)?|sexually\s+explicit|hentai|fetish)\b",
+        re.IGNORECASE,
+    )),
+    ("sexual exploitation", re.compile(
+        r"\b(?:sexual\s+exploitation|revenge\s+porn|non[- ]consensual|"
+        r"child\s+(?:porn|sexual)|underage\s+sex)\b",
+        re.IGNORECASE,
+    )),
+    ("graphic violence", re.compile(
+        r"\b(?:graphic\s+violence|gore|gory|bloodbath|behead(?:ing|ed)?|"
+        r"decapitat(?:ion|ed)|dismember(?:ment|ed)?|mutilat(?:ion|ed)|snuff)\b",
+        re.IGNORECASE,
+    )),
+    ("hate or extremism", re.compile(
+        r"\b(?:hate\s+speech|racial\s+slur|white\s+supremac(?:y|ist)|"
+        r"neo[- ]?nazi|terrorist\s+propaganda|violent\s+extremis(?:m|t))\b",
+        re.IGNORECASE,
+    )),
+    ("self-harm", re.compile(
+        r"\b(?:self[- ]harm|suicide\s+(?:method|tutorial|challenge)|"
+        r"how\s+to\s+(?:self[- ]harm|commit\s+suicide))\b",
+        re.IGNORECASE,
+    )),
+    ("dangerous or illegal activity", re.compile(
+        r"\b(?:drug\s+dealing|buy\s+illegal\s+drugs|bomb[- ]making|"
+        r"weapon[- ]making|human\s+trafficking|animal\s+cruelty)\b",
+        re.IGNORECASE,
+    )),
+    ("scam or platform manipulation", re.compile(
+        r"\b(?:phishing|credential\s+stealing|engagement\s+bot|fake\s+giveaway|"
+        r"guaranteed\s+money|ban\s+evasion)\b",
+        re.IGNORECASE,
+    )),
+)
+COMMUNITY_GUIDELINES_UNSAFE_FLAGS = frozenset({
+    "adult",
+    "adult_content",
+    "age_restricted",
+    "explicit",
+    "graphic_violence",
+    "hate",
+    "hate_speech",
+    "nsfw",
+    "nudity",
+    "porn",
+    "restricted",
+    "self_harm",
+    "sexual",
+    "sexual_content",
+    "terrorism",
+    "unsafe",
+    "violence_graphic",
+})
 # Locked @chadriyo mix. Every category appears at least once across the 10 slots.
 X_SLOT_CATEGORIES = (
     "funny",
@@ -309,6 +365,114 @@ _HASHTAG_RE = re.compile(r"#[A-Za-z][A-Za-z0-9_]*")
 
 class CampaignPlatformError(ValueError):
     """A clip was paired with a campaign that does not pay for that platform."""
+
+
+def _metadata_scalars(value, path: str = "source_metadata"):
+    if isinstance(value, dict):
+        for key, child in value.items():
+            normalized = re.sub(r"[^a-z0-9]+", "_", str(key).casefold()).strip("_")
+            child_path = f"{path}.{normalized}"
+            flag_name = normalized.removesuffix("_score")
+            if flag_name in COMMUNITY_GUIDELINES_UNSAFE_FLAGS:
+                if child is True or (isinstance(child, str) and child.casefold() in {"true", "yes", "1"}):
+                    yield child_path, normalized
+                elif normalized.endswith("_score") and isinstance(child, (int, float)) and child > 0:
+                    yield child_path, str(child)
+            yield from _metadata_scalars(child, child_path)
+    elif isinstance(value, (list, tuple, set)):
+        for index, child in enumerate(value):
+            yield from _metadata_scalars(child, f"{path}[{index}]")
+    elif value is not None and value is not False:
+        yield path, str(value)
+
+
+def community_guidelines_violations(
+    *,
+    title: str = "",
+    hook: str = "",
+    tags=(),
+    source_metadata=None,
+) -> list[str]:
+    """Return four-platform textual/metadata safety violations.
+
+    This deliberately permits glamorous, attractive, romantic, anime, and
+    movie-scene labels. It blocks explicit/adult content and high-risk safety
+    labels shared by X, Instagram, YouTube, and TikTok.
+    """
+    if isinstance(tags, str):
+        tag_values = [tags]
+    else:
+        tag_values = [str(tag) for tag in tags or ()]
+    fields = [("title", title), ("hook", hook)]
+    fields.extend((f"tags[{index}]", tag) for index, tag in enumerate(tag_values))
+    fields.extend(_metadata_scalars(source_metadata or {}))
+    violations: list[str] = []
+    for field, raw_value in fields:
+        value = str(raw_value)
+        for label, pattern in COMMUNITY_GUIDELINES_BLOCKED_PATTERNS:
+            if pattern.search(value):
+                finding = f"{field}: {label}"
+                if finding not in violations:
+                    violations.append(finding)
+        normalized_value = re.sub(r"[^a-z0-9]+", "_", value.casefold()).strip("_")
+        if normalized_value in COMMUNITY_GUIDELINES_UNSAFE_FLAGS:
+            finding = f"{field}: unsafe safety flag"
+            if finding not in violations:
+                violations.append(finding)
+    return violations
+
+
+def check_community_guidelines_safe(
+    *,
+    title: str = "",
+    hook: str = "",
+    tags=(),
+    source_metadata=None,
+) -> bool:
+    """True only when text and supplied source metadata pass all four platforms."""
+    return not community_guidelines_violations(
+        title=title,
+        hook=hook,
+        tags=tags,
+        source_metadata=source_metadata,
+    )
+
+
+def assert_community_guidelines_safe(
+    *,
+    title: str = "",
+    hook: str = "",
+    tags=(),
+    source_metadata=None,
+    context: str = "clip",
+) -> None:
+    violations = community_guidelines_violations(
+        title=title,
+        hook=hook,
+        tags=tags,
+        source_metadata=source_metadata,
+    )
+    if violations:
+        raise CampaignPlatformError(
+            f"{context} failed four-platform Community Guidelines safety: "
+            + "; ".join(violations)
+        )
+
+
+def assert_feed_item_community_guidelines_safe(item: dict) -> None:
+    caption = str(item.get("caption") or "")
+    assert_community_guidelines_safe(
+        title=str(item.get("title") or ""),
+        hook=caption,
+        tags=_HASHTAG_RE.findall(caption),
+        source_metadata={
+            "category": item.get("category"),
+            "source": item.get("source"),
+            "source_url": item.get("source_url"),
+            "source_metadata": item.get("source_metadata"),
+        },
+        context=f"feed item {item.get('clip_id') or '<unknown>'}",
+    )
 
 
 def load_campaigns(path: Path | None = None) -> dict:
@@ -1522,7 +1686,15 @@ _DAILY_CLIP_ROWS = (
 
 def _catalog_clip(row: tuple[str, str, str, str]) -> dict:
     clip_id, category, hook, video_url = row
-    return {"id": clip_id, "category": category, "hook": hook, "video_url": video_url}
+    clip = {"id": clip_id, "category": category, "hook": hook, "video_url": video_url}
+    assert_community_guidelines_safe(
+        title=hook,
+        hook=hook,
+        tags=(category,),
+        source_metadata={"source_url": video_url, "category": category},
+        context=f"catalog clip {clip_id}",
+    )
+    return clip
 
 
 DAILY_CLIP_CATALOG = tuple(_catalog_clip(row) for row in _DAILY_CLIP_ROWS)
@@ -1568,7 +1740,13 @@ def daily_feed_is_current(feed: dict, today: date) -> bool:
         return False
     counts = {platform: 0 for platform in SUPPORTED_PLATFORMS}
     for item in items:
-        if isinstance(item, dict) and item.get("platform") in counts:
+        if not isinstance(item, dict):
+            return False
+        try:
+            assert_feed_item_community_guidelines_safe(item)
+        except CampaignPlatformError:
+            return False
+        if item.get("platform") in counts:
             counts[str(item["platform"])] += 1
     core = ("x", "youtube_shorts", "instagram_reels")
     return all(counts[platform] >= DAILY_30_PER_PLATFORM for platform in core)
@@ -1713,7 +1891,18 @@ def _daily_item(
     caption = build_platform_caption(hook, campaign, platform, links_blocked=links_blocked)
     if contains_loan_spam(caption) or contains_loan_spam(hook):
         raise CampaignPlatformError(f"{clip['id']} caption contains loan text")
-    return {
+    assert_community_guidelines_safe(
+        title=hook,
+        hook=hook,
+        tags=_HASHTAG_RE.findall(caption),
+        source_metadata={
+            "category": clip.get("category"),
+            "source_url": clip.get("video_url"),
+            "source_metadata": clip.get("source_metadata"),
+        },
+        context=f"{platform} clip {clip['id']}",
+    )
+    item = {
         "slot": slot,
         "platform": platform,
         "channel_id": daily_channel_id(campaigns_data, platform),
@@ -1730,6 +1919,8 @@ def _daily_item(
         "priority": priority_rank(str(clip["category"])) < len(PRIORITY_CATEGORIES),
         "buffer_status": "pending",
     }
+    assert_feed_item_community_guidelines_safe(item)
+    return item
 
 
 def build_daily_30(
@@ -1877,6 +2068,7 @@ def buffer_create_post_body(item: dict, now: datetime | None = None) -> dict:
     A slot whose time already passed (for example an ingest run late in the day)
     goes to the channel queue instead, since Buffer rejects past `dueAt` values.
     """
+    assert_feed_item_community_guidelines_safe(item)
     due = str(item["due_at_utc"])
     if due.endswith("Z"):
         due = due[:-1] + "+00:00"
@@ -2083,9 +2275,38 @@ def extract_mp4(via: str, payload: dict) -> str:
     return ""
 
 
-def resolve_clean_mp4_url(url: str, fetch_json) -> str | None:
+_SAFETY_METADATA_KEY_RE = re.compile(
+    r"(?:title|desc|caption|tag|label|safety|moderation|sensitive|nsfw|adult|"
+    r"explicit|nudity|sexual|violence|hate|restricted|rating)",
+    re.IGNORECASE,
+)
+
+
+def source_safety_metadata(payload, depth: int = 0):
+    """Keep only API metadata that can describe or safety-label the source."""
+    if depth > 5:
+        return None
+    if isinstance(payload, dict):
+        selected = {}
+        for key, value in payload.items():
+            if _SAFETY_METADATA_KEY_RE.search(str(key)):
+                selected[str(key)] = value
+            elif isinstance(value, (dict, list)):
+                nested = source_safety_metadata(value, depth + 1)
+                if nested:
+                    selected[str(key)] = nested
+        return selected
+    if isinstance(payload, list):
+        selected = [source_safety_metadata(value, depth + 1) for value in payload]
+        return [value for value in selected if value]
+    return None
+
+
+def resolve_clean_mp4_url(url: str, fetch_json, metadata_sink: dict | None = None) -> str | None:
     """Return a clean MP4 URL, or None when the caller should fall back to yt-dlp."""
     parsed = parse_source_url(url)
+    if metadata_sink is not None:
+        metadata_sink.update({"source_kind": parsed["kind"], "source_id": parsed["id"]})
     for attempt in download_attempt_plan(parsed):
         if attempt["via"] == "direct":
             return attempt["url"]
@@ -2095,6 +2316,9 @@ def resolve_clean_mp4_url(url: str, fetch_json) -> str | None:
             payload = fetch_json(attempt["url"])
         except Exception:
             continue
+        if metadata_sink is not None and isinstance(payload, dict):
+            metadata_sink["provider"] = attempt["via"]
+            metadata_sink["safety"] = source_safety_metadata(payload)
         found = extract_mp4(attempt["via"], payload if isinstance(payload, dict) else {})
         if found:
             return found
@@ -2179,12 +2403,24 @@ def build_ingest_items(
     today: date | None = None,
     slot: int = 1,
     category: str = "glamorous_girls",
+    source_metadata: dict | None = None,
 ) -> list[dict]:
     """Queue one rendered file onto each platform that campaign pays."""
     if category not in INGEST_CATEGORIES:
         raise CampaignPlatformError(
             f"Unknown category {category!r}. Expected one of {', '.join(INGEST_CATEGORIES)}."
         )
+    assert_community_guidelines_safe(
+        title=hook,
+        hook=hook,
+        tags=(category,),
+        source_metadata={
+            "source_url": source_url,
+            "category": category,
+            "api": source_metadata or {},
+        },
+        context=f"ingest source {source_id}",
+    )
     run_day = today or datetime.now(timezone.utc).date()
     campaign_id = campaign_id_from_alias(campaign_alias)
     selected = platforms_for_campaign(campaigns_data, campaign_id, parse_platform_list(platforms))
@@ -2218,6 +2454,8 @@ def build_ingest_items(
             raise CampaignPlatformError(f"Ingest caption for {platform} does not match {campaign_id}")
         item["source"] = "ingest"
         item["source_url"] = source_url
+        item["source_metadata"] = source_metadata or {}
+        assert_feed_item_community_guidelines_safe(item)
         items.append(item)
     if campaign.get("id") != campaign_id:
         raise CampaignPlatformError("Ingest campaign did not bind")
