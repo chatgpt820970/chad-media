@@ -79,14 +79,15 @@ ACCOUNTS: tuple[dict[str, object], ...] = (
 
 # Public search text. Results are status ids or reel codes, never a logged-in feed.
 X_QUERIES: tuple[tuple[str, str], ...] = (
+    ("funny", "shane gillis OR standup comedy OR podcast clip site:x.com/status"),
+    ("chinese", "anime fight scene OR anime edit 4k site:x.com/status"),
+    ("feelgood", "movie scene OR cinema scene clip site:x.com/status"),
     ("funny", "funny video site:x.com/status"),
-    ("chinese", "chinese funny video site:x.com"),
-    ("feelgood", "wholesome video site:x.com"),
 )
 IG_QUERIES: tuple[tuple[str, str], ...] = (
-    ("funny", "standup comedy reel site:instagram.com/reel"),
-    ("chinese", "chinese funny reel site:instagram.com/reel"),
-    ("feelgood", "indian song reel site:instagram.com/reel"),
+    ("funny", "standup comedy OR podcast clip reel site:instagram.com/reel"),
+    ("chinese", "anime edit 4k OR anime scene reel site:instagram.com/reel"),
+    ("feelgood", "movie scene OR iconic cinema reel site:instagram.com/reel"),
 )
 
 LANE_ORDER = ("chinese", "funny", "feelgood")
@@ -690,7 +691,7 @@ def download_ytdlp(source_url: str, dest: Path) -> subprocess.CompletedProcess[s
         [
             ytdlp,
             "-f",
-            "bv*[vcodec^=avc]+ba/bv*[vcodec^=h264]+ba/bv*+ba/b",
+            "bv*[height>=1080][vcodec^=avc]+ba/bv*[height>=1080][vcodec^=h264]+ba/bv*[vcodec^=avc]+ba/bv*[vcodec^=h264]+ba/bv*+ba/b",
             "--merge-output-format",
             "mp4",
             "--no-playlist",
@@ -745,19 +746,19 @@ def encode_vertical(src: Path, dest: Path) -> None:
         "-pix_fmt",
         "yuv420p",
         "-preset",
-        "veryfast",
+        "fast",
         "-crf",
-        "22",
+        "19",
         "-maxrate",
-        "4M",
-        "-bufsize",
         "8M",
+        "-bufsize",
+        "16M",
         "-r",
         "30",
         "-c:a",
         "aac",
         "-b:a",
-        "128k",
+        "192k",
         "-ar",
         "48000",
         "-ac",
@@ -767,11 +768,12 @@ def encode_vertical(src: Path, dest: Path) -> None:
         "-f",
         "mp4",
     ]
+    crisp = "unsharp=5:5:0.8:3:3:0.35,eq=contrast=1.03:saturation=1.06"
     dest.parent.mkdir(parents=True, exist_ok=True)
     if portrait:
         video_args = [
             "-vf",
-            "scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1",
+            f"scale=1080:1920:flags=lanczos:force_original_aspect_ratio=increase,crop=1080:1920,{crisp},setsar=1",
             "-af",
             audio,
         ]
@@ -779,8 +781,8 @@ def encode_vertical(src: Path, dest: Path) -> None:
         video_args = [
             "-filter_complex",
             (
-                "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=24:2[bg];"
-                "[0:v]scale=1080:1920:force_original_aspect_ratio=decrease[fg];"
+                "[0:v]scale=1080:1920:flags=lanczos:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=24:2[bg];"
+                f"[0:v]scale=1080:1920:flags=lanczos:force_original_aspect_ratio=decrease,{crisp}[fg];"
                 "[bg][fg]overlay=(W-w)/2:(H-h)/2,setsar=1"
             ),
             "-af",
@@ -1395,6 +1397,9 @@ def assemble_site() -> None:
                 log(f"could not mirror {name}: {exc}")
         log(f"mirrored {len(names)} existing media files")
     shutil.copyfile(FEED_PATH, feed_dir / "shorts_queue.json")
+    whop_feed = ROOT.parent / "whop" / "feed" / "whop_ready_feed.json"
+    if whop_feed.exists():
+        shutil.copyfile(whop_feed, feed_dir / "whop_ready_feed.json")
     video_dir = SITE / "shorts" / "v"
     frame_dir = SITE / "shorts" / "f"
     video_dir.mkdir(parents=True)

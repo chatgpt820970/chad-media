@@ -60,7 +60,9 @@ jobs:
       - name: Collect clips
         env:
           GITHUB_EVENT_NAME: ${{ github.event_name }}
-        run: python shorts/pipeline.py collect --target 5 --require 4
+        run: |
+          python shorts/pipeline.py collect --target 5 --require 4
+          python whop/whop_clipper.py build-feed
 
       - name: Store media on the shorts-media release
         env:
@@ -82,7 +84,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add shorts/state/seen.json shorts/state/posted.json shorts/feed/shorts_queue.json
+          git add shorts/state/seen.json shorts/state/posted.json shorts/feed/shorts_queue.json whop/feed/whop_ready_feed.json
           if git diff --cached --quiet; then
             echo "No queue change."
             exit 0

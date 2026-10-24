@@ -1,0 +1,1288 @@
+{
+  "generated_at": "2026-10-24T12:06:32Z",
+  "whop_user": "@bi60",
+  "quality_profile": "1080x1920_lanczos_cas_crf18_8mbps",
+  "pool_guard_rules": {
+    "min_remaining_budget_usd": 500.0,
+    "max_paid_out_fraction": 0.8,
+    "min_spots_remaining": 5,
+    "max_denial_rate": 0.5,
+    "skip_paused_or_closed": true
+  },
+  "healthy_campaigns_count": 7,
+  "healthy_campaigns": [
+    {
+      "id": "whop-ai-shane-gillis",
+      "whop_id": "bnty_iJpOl5HbBoDQu",
+      "type": "type1_creator_clipping",
+      "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+      "url": "https://whop.com/whop-ai",
+      "status": "open",
+      "budget_total_usd": 1000.0,
+      "paid_out_usd": 30.0,
+      "remaining_budget_usd": 970.0,
+      "paid_out_percent": 3.0,
+      "spots_remaining": 97,
+      "unlimited_budget": false,
+      "payout": "$10 per 5-clip submission ($970 / $1,000 remaining — 97% pool left, 97 spots open, India allowed)",
+      "cpm_usd": 10.0,
+      "allowed_lanes": [
+        "podcast"
+      ],
+      "watermark_text": "WHOP AI • ENTERTAINMENT",
+      "cta_text": "Full clip on Whop AI",
+      "requirements": "Cut 30-60s funny standalone Shane Gillis moments (stand-up, podcasts, interviews) in crisp HD MP4.",
+      "pool_guard_status": "OK (remaining=$970, paid=3.0%, spots=97)"
+    },
+    {
+      "id": "clip-influence-hub",
+      "whop_id": "prod_E72V5pvr59GNU",
+      "type": "hub_type1_and_type2",
+      "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+      "url": "https://whop.com/clip-influence",
+      "status": "open",
+      "budget_total_usd": 50000.0,
+      "paid_out_usd": 0.0,
+      "remaining_budget_usd": 50000.0,
+      "paid_out_percent": 0.0,
+      "spots_remaining": 9999,
+      "unlimited_budget": true,
+      "payout": "$0.50 - $3.00+ per 1,000 views across rotating infinite-budget campaigns (4.91★, 464 reviews)",
+      "cpm_usd": 2.5,
+      "allowed_lanes": [
+        "anime",
+        "movie",
+        "podcast"
+      ],
+      "watermark_text": "",
+      "cta_text": "",
+      "requirements": "Join free on Whop to access active music, anime/edit, podcast, and logo campaigns.",
+      "pool_guard_status": "OK (remaining=$50000, paid=0.0%, spots=9999)"
+    },
+    {
+      "id": "fastloanpilot-logo",
+      "whop_id": "prod_DyuwRHNCz3vpv",
+      "type": "type2_logo_overlay",
+      "title": "FastLoanPilot Logo Clipping",
+      "url": "https://whop.com/fast-loan-pilot-logo-clipping",
+      "status": "open",
+      "budget_total_usd": 10000.0,
+      "paid_out_usd": 0.0,
+      "remaining_budget_usd": 10000.0,
+      "paid_out_percent": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": true,
+      "payout": "$2.00 per 1,000 views (TikTok, YouTube Shorts, Instagram Reels — 4.86★, 3,105 members)",
+      "cpm_usd": 2.0,
+      "allowed_lanes": [
+        "anime",
+        "movie",
+        "podcast"
+      ],
+      "logo_url": "https://assets-2-prod.whop.com/public/uploads/2025-12-12/user_20188843_9d0287aa-c688-4608-9ef2-ce961aaee48f.png",
+      "watermark_text": "FastLoanPilot",
+      "cta_text": "FastLoanPilot.com",
+      "requirements": "Add FastLoanPilot logo overlay onto viral anime/movie/podcast clips and post on YT Shorts, IG Reels, and TikTok.",
+      "pool_guard_status": "OK (remaining=$10000, paid=0.0%, spots=999)"
+    },
+    {
+      "id": "dark-room-unlimited",
+      "whop_id": "prod_VNZEYlBBA5rGH",
+      "type": "type2_viral_clipping",
+      "title": "DARK Room — $2 per 1,000+ Views Video (UNLIMITED BUDGET)",
+      "url": "https://whop.com/2-per-1-000-views-video",
+      "status": "open",
+      "budget_total_usd": 25000.0,
+      "paid_out_usd": 0.0,
+      "remaining_budget_usd": 25000.0,
+      "paid_out_percent": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": true,
+      "payout": "$2.00 per 1,000 views (Explicitly marked UNLIMITED BUDGET, 5.0★)",
+      "cpm_usd": 2.0,
+      "allowed_lanes": [
+        "anime",
+        "movie",
+        "podcast"
+      ],
+      "watermark_text": "",
+      "cta_text": "",
+      "requirements": "Clip & post high-retention viral videos across Shorts/Reels/TikTok.",
+      "pool_guard_status": "OK (remaining=$25000, paid=0.0%, spots=999)"
+    },
+    {
+      "id": "finsta-ugc-ongoing",
+      "whop_id": "prod_02kkwyeSx8c8j",
+      "type": "type1_and_type2_ugc",
+      "title": "Finsta App — $2 per 1,000 Views (Always Ongoing)",
+      "url": "https://whop.com/ugc-content-for-finsta-app-always-ongoing",
+      "status": "open",
+      "budget_total_usd": 15000.0,
+      "paid_out_usd": 0.0,
+      "remaining_budget_usd": 15000.0,
+      "paid_out_percent": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": true,
+      "payout": "$2.00 per 1,000 views (Min $10, Max $250/video — Always Ongoing, updated Oct 24, 2026)",
+      "cpm_usd": 2.0,
+      "allowed_lanes": [
+        "podcast",
+        "movie"
+      ],
+      "watermark_text": "FINSTA APP",
+      "cta_text": "Download Finsta on App Store",
+      "requirements": "AI-generated and real content both accepted; include CTA to download Finsta from App Store.",
+      "pool_guard_status": "OK (remaining=$15000, paid=0.0%, spots=999)"
+    },
+    {
+      "id": "gambana-logo",
+      "whop_id": "prod_GY4Ma7YDNImaO",
+      "type": "type2_logo_overlay",
+      "title": "Gambana Logo Clipping",
+      "url": "https://whop.com/gambana-logo-clipping-e6",
+      "status": "open",
+      "budget_total_usd": 5000.0,
+      "paid_out_usd": 0.0,
+      "remaining_budget_usd": 5000.0,
+      "paid_out_percent": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": true,
+      "payout": "$2.00 per 1,000 views (981 members)",
+      "cpm_usd": 2.0,
+      "allowed_lanes": [
+        "anime",
+        "movie",
+        "podcast"
+      ],
+      "logo_url": "https://assets-2-prod.whop.com/public/uploads/user_20188843/image/bots/2026-03-27/692a0ec9-de63-4b58-9497-8133af5d0fd2.png",
+      "watermark_text": "GAMBANA",
+      "cta_text": "Gambana",
+      "requirements": "Place Gambana logo overlay onto viral clips and post on TikTok, YouTube Shorts, and Instagram Reels.",
+      "pool_guard_status": "OK (remaining=$5000, paid=0.0%, spots=999)"
+    },
+    {
+      "id": "zostel-india",
+      "whop_id": "prod_MG954dJcxIksB",
+      "type": "type1_brand_footage",
+      "title": "Zostel Creator Programme (India Travel Clips)",
+      "url": "https://whop.com/zostel-creator-programme",
+      "status": "open",
+      "budget_total_usd": 5000.0,
+      "paid_out_usd": 0.0,
+      "remaining_budget_usd": 5000.0,
+      "paid_out_percent": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": true,
+      "payout": "$1.00 per 1,000 views on Instagram Reels (India audience targeted!)",
+      "cpm_usd": 1.0,
+      "allowed_lanes": [
+        "movie",
+        "podcast"
+      ],
+      "watermark_text": "ZOSTEL",
+      "cta_text": "@zostel #LiveItNow",
+      "requirements": "Use Zostel raw travel footage, add strong 3s hook & captions, tag @zostel.",
+      "pool_guard_status": "OK (remaining=$5000, paid=0.0%, spots=999)"
+    }
+  ],
+  "skipped_campaigns": [
+    {
+      "whop_id": "bnty_B5WoyERaKyVhK",
+      "title": "Waterloo Roofers",
+      "reason": "REJECTED BY POOL GUARD: Only $10.36 remaining budget (1 spot left) and 915 denied submissions vs 0 accepted (100% denial bait)."
+    },
+    {
+      "whop_id": "bnty_WtGhFbkCnAg8s",
+      "title": "X Masterclass First Customer Blueprint",
+      "reason": "SKIPPED BY POOL GUARD: Total pool only $30 ($5/spot, <$500 minimum pool threshold)."
+    },
+    {
+      "whop_id": "prod_EmrRGxMh0OnFZ",
+      "title": "MAC ENERGY Clipping Campaign",
+      "reason": "SKIPPED BY GEO/RATING GUARD: Strict 60%+ USA audience required (auto-rejects Indian audience) and low 2.5★ review rating."
+    }
+  ],
+  "ready_clips_count": 24,
+  "items": [
+    {
+      "id": "tt-7501669584592817451",
+      "title": "Do i have your vote?",
+      "caption": "This one earns the replay. Do i have your vote?",
+      "lane": "funny",
+      "duration": 66.3,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7501669584592817451.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7501669584592817451-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7501669584592817451-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7501669584592817451-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T09:06:36Z"
+    },
+    {
+      "id": "tt-7418951366325931306",
+      "title": "My parents finished their kitchen remodel (Part 2/2), and we had to christen their",
+      "caption": "A sharp little bit of comedy. My parents finished their kitchen remodel (Part 2/2), and we had to christen their kitchen with a chow mein recipe! Their kitchen was on its last legs, and when their stove finally broke it was time to pull the trigger. Thanks to our friends at",
+      "lane": "chinese",
+      "duration": 58.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7418951366325931306.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7418951366325931306-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7418951366325931306-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7418951366325931306-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T09:05:45Z"
+    },
+    {
+      "id": "tt-7564513815384116498",
+      "title": "This one came straight from the heart 🫶🏼 Sheeran 🫰🏼",
+      "caption": "Something warm for the middle of the day. This one came straight from the heart 🫶🏼 Sheeran 🫰🏼",
+      "lane": "feelgood",
+      "duration": 70.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7564513815384116498.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7564513815384116498-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7564513815384116498-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7564513815384116498-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T09:05:11Z"
+    },
+    {
+      "id": "tt-7482079182034341162",
+      "title": "why it’s good that flying is suddenly dangerous ❤️",
+      "caption": "This one earns the replay. why it’s good that flying is suddenly dangerous ❤️",
+      "lane": "funny",
+      "duration": 61.4,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7482079182034341162.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7482079182034341162-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7482079182034341162-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7482079182034341162-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T09:04:32Z"
+    },
+    {
+      "id": "tt-7406458142877437230",
+      "title": "I haven’t opened up like this with y’all in a while but I am finally taking a moment to",
+      "caption": "A sharp little bit of comedy. I haven’t opened up like this with y’all in a while but I am finally taking a moment to reflect on the past few months (and years) which have been one of the craziest chapters of my life.. from the James Beard Awards, to the White House, to",
+      "lane": "chinese",
+      "duration": 47.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7406458142877437230.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7406458142877437230-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7406458142877437230-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7406458142877437230-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T09:03:51Z"
+    },
+    {
+      "id": "tt-7438260086109261086",
+      "title": "bring back booing with tomatoes",
+      "caption": "This one earns the replay. bring back booing with tomatoes",
+      "lane": "funny",
+      "duration": 61.8,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7438260086109261086.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7438260086109261086-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7438260086109261086-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7438260086109261086-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T01:07:00Z"
+    },
+    {
+      "id": "tt-6838102367699832065",
+      "title": "amazing liuxiang noodle in china6 !",
+      "caption": "A sharp little bit of comedy. amazing liuxiang noodle in china6 !",
+      "lane": "chinese",
+      "duration": 60.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-6838102367699832065.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699832065-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699832065-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699832065-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T01:06:11Z"
+    },
+    {
+      "id": "tt-7548779492546825473",
+      "title": "for everyone who’s ever loved and lost…this one’s for you 🩶",
+      "caption": "Something warm for the middle of the day. for everyone who’s ever loved and lost…this one’s for you 🩶",
+      "lane": "feelgood",
+      "duration": 40.9,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7548779492546825473.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548779492546825473-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548779492546825473-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548779492546825473-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T01:05:18Z"
+    },
+    {
+      "id": "tt-7691740195418377502",
+      "title": "Just give me 5 more minutes 😭",
+      "caption": "This one earns the replay. Just give me 5 more minutes 😭",
+      "lane": "funny",
+      "duration": 34.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7691740195418377502.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691740195418377502-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691740195418377502-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691740195418377502-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T01:04:57Z"
+    },
+    {
+      "id": "tt-7423544912349646126",
+      "title": "Bring on the nostalgia!",
+      "caption": "A sharp little bit of comedy. Bring on the nostalgia! Today we’re making Fuzzy Melon with Vermicelli & Shrimp (節瓜粉絲蝦煲), a dish that reminds of us of our parents’ and grandparents’ home cooking. We’ll show you the best way to handle fuzzy melon, as well as how beautifully it",
+      "lane": "chinese",
+      "duration": 49.6,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7423544912349646126.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7423544912349646126-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7423544912349646126-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7423544912349646126-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-24T01:04:37Z"
+    },
+    {
+      "id": "tt-7625798204092632333",
+      "title": "beatbox challenge: thanks 🗣️🙏🏼",
+      "caption": "This one earns the replay. beatbox challenge: thanks 🗣️🙏🏼",
+      "lane": "funny",
+      "duration": 38.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7625798204092632333.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625798204092632333-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625798204092632333-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625798204092632333-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T09:47:55Z"
+    },
+    {
+      "id": "tt-7409055770500746542",
+      "title": "Let’s make Pineapple Fried Rice (菠蘿炒飯)!",
+      "caption": "A sharp little bit of comedy. Let’s make Pineapple Fried Rice (菠蘿炒飯)! Our Cantonese take on this Thai dish was a favorite at Daddy Lau’s old restaurants, and is a great way to add another dimension of flavor to the traditionally savory fried rice dishes. Watch our latest YouTube",
+      "lane": "chinese",
+      "duration": 49.4,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7409055770500746542.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7409055770500746542-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7409055770500746542-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7409055770500746542-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T09:47:26Z"
+    },
+    {
+      "id": "tt-7699120594402479373",
+      "title": "Only in New York does your dog have a favorite doorman to a building you DON'T live in.",
+      "caption": "Something warm for the middle of the day. Only in New York does your dog have a favorite doorman to a building you DON'T live in. 😂",
+      "lane": "feelgood",
+      "duration": 34.8,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699120594402479373.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699120594402479373-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699120594402479373-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699120594402479373-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T09:46:54Z"
+    },
+    {
+      "id": "tt-7694335322922044703",
+      "title": "Was the ball out, or was it just my imagination?",
+      "caption": "This one earns the replay. Was the ball out, or was it just my imagination? 🤨",
+      "lane": "funny",
+      "duration": 30.633,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7694335322922044703.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694335322922044703-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694335322922044703-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694335322922044703-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T09:46:28Z"
+    },
+    {
+      "id": "tt-7408963192170335534",
+      "title": "My parents are getting their kitchen remodeled (Part 1!) Their kitchen was on its last",
+      "caption": "A sharp little bit of comedy. My parents are getting their kitchen remodeled (Part 1!) Their kitchen was on its last legs, and when their stove finally broke it was time to pull the trigger. Thanks to our friends at Hauslane for helping us get setup with a new range hood (the",
+      "lane": "chinese",
+      "duration": 54.9,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7408963192170335534.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7408963192170335534-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7408963192170335534-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7408963192170335534-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T09:45:47Z"
+    },
+    {
+      "id": "tt-7407447628339776814",
+      "title": "Are you over-steeping your tea?",
+      "caption": "A sharp little bit of comedy. Are you over-steeping your tea? Doing so can release tannins and bitter flavors into the tea, causing it to lose its original aroma. Daddy Lau teaches how to steep your tea properly 🍵 Visit madewithlau.com/club to access this exclusive course and",
+      "lane": "chinese",
+      "duration": 50.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7407447628339776814.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7407447628339776814-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7407447628339776814-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7407447628339776814-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T01:08:00Z"
+    },
+    {
+      "id": "tt-7683220492567809294",
+      "title": "DAURA WORLD TOUR 2026 🇳🇱",
+      "caption": "Something warm for the middle of the day. DAURA WORLD TOUR 2026 🇳🇱",
+      "lane": "feelgood",
+      "duration": 53.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7683220492567809294.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683220492567809294-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683220492567809294-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683220492567809294-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T01:07:28Z"
+    },
+    {
+      "id": "tt-7653329285284908301",
+      "title": "i went on the jojo siwa cruise and all i got was this hantavirus!",
+      "caption": "This one earns the replay. i went on the jojo siwa cruise and all i got was this hantavirus!",
+      "lane": "funny",
+      "duration": 67.2,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7653329285284908301.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7653329285284908301-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7653329285284908301-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7653329285284908301-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T01:06:44Z"
+    },
+    {
+      "id": "tt-7419446077172108586",
+      "title": "Char Siu doesn’t have to be a long, laborious process.",
+      "caption": "A sharp little bit of comedy. Char Siu doesn’t have to be a long, laborious process. Introducing Char Siu Chicken Drumsticks (叉燒雞髀), a riff on our most popular recipe! This recipe uses a marinade modified to pair with one of the most versatile, healthy, and affordable cuts of",
+      "lane": "chinese",
+      "duration": 47.9,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7419446077172108586.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7419446077172108586-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7419446077172108586-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7419446077172108586-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T01:05:54Z"
+    },
+    {
+      "id": "x-2113280429898027519",
+      "title": "Chinese funny videos 😂🤣",
+      "caption": "A sharp little bit of comedy. Chinese funny videos 😂🤣",
+      "lane": "chinese",
+      "duration": 145.3,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-2113280429898027519.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-2113280429898027519-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-2113280429898027519-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-2113280429898027519-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-23T01:05:22Z"
+    },
+    {
+      "id": "tt-7675410938970901791",
+      "title": "Come back whenever you want bro 💪🏿",
+      "caption": "This one earns the replay. Come back whenever you want bro 💪🏿",
+      "lane": "funny",
+      "duration": 33.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7675410938970901791.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7675410938970901791-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7675410938970901791-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7675410938970901791-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-22T09:06:47Z"
+    },
+    {
+      "id": "tt-7696342795962912032",
+      "title": "We’ve been cooking up something new Introducing our upgraded menu featuring 17 new dishes",
+      "caption": "A sharp little bit of comedy. We’ve been cooking up something new Introducing our upgraded menu featuring 17 new dishes 🍽️ Come give them a try!",
+      "lane": "chinese",
+      "duration": 119.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7696342795962912032.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696342795962912032-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696342795962912032-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696342795962912032-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-22T09:06:20Z"
+    },
+    {
+      "id": "tt-7683889999426669838",
+      "title": "WEMBLEY 2 DAYS TO GO",
+      "caption": "Something warm for the middle of the day. WEMBLEY 2 DAYS TO GO",
+      "lane": "feelgood",
+      "duration": 33.6,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7683889999426669838.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683889999426669838-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683889999426669838-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683889999426669838-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-22T09:05:12Z"
+    },
+    {
+      "id": "tt-7430570086697651487",
+      "title": "today was a timothee chalamet movie.",
+      "caption": "This one earns the replay. today was a timothee chalamet movie. thank you Po for letting me judge the timothee chalamet competition your mind scares me",
+      "lane": "funny",
+      "duration": 60.2,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7430570086697651487.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7430570086697651487-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7430570086697651487-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7430570086697651487-3.jpg"
+      ],
+      "channels": {
+        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+        "ig_benreelr": "6ac93d936a5c39ccb66624d7",
+        "yt_denzen": "6ac4da806a5c39ccb62eab64"
+      },
+      "eligible_whop_campaigns": [
+        {
+          "campaign_id": "whop-ai-shane-gillis",
+          "whop_id": "bnty_iJpOl5HbBoDQu",
+          "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+          "cpm_usd": 10.0,
+          "remaining_budget_usd": 970.0,
+          "url": "https://whop.com/whop-ai"
+        },
+        {
+          "campaign_id": "clip-influence-hub",
+          "whop_id": "prod_E72V5pvr59GNU",
+          "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+          "cpm_usd": 2.5,
+          "remaining_budget_usd": 50000.0,
+          "url": "https://whop.com/clip-influence"
+        },
+        {
+          "campaign_id": "fastloanpilot-logo",
+          "whop_id": "prod_DyuwRHNCz3vpv",
+          "title": "FastLoanPilot Logo Clipping",
+          "cpm_usd": 2.0,
+          "remaining_budget_usd": 10000.0,
+          "url": "https://whop.com/fast-loan-pilot-logo-clipping"
+        }
+      ],
+      "queued_at": "2026-10-22T09:04:42Z"
+    }
+  ]
+}
