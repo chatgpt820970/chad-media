@@ -484,12 +484,35 @@ def x_links_blocked(campaigns_data: dict) -> bool:
     return bool(channel.get("links_blocked", True))
 
 
+DISHPILOT_WATERMARK_TEXT = "Dishpilot"
+# Pixels cut from the bottom of a 1080x1920 master before it is scaled back.
+# The baked fastloanpilot wordmark sits in this strip (around y=1818–1872).
+BOTTOM_STRIP_CROP_PX = 200
+
+
 def escape_drawtext(text: str) -> str:
     return (
         text.replace("\\", "\\\\")
         .replace(":", "\\:")
         .replace("'", "")
         .replace("%", "%%%%")
+        .replace(",", "\\,")
+    )
+
+
+def is_dishpilot_badge(text: str) -> bool:
+    letters = "".join(ch for ch in text.casefold() if ch.isalpha())
+    return letters in {"dishpilot", "dishpilotcom"}
+
+
+def dishpilot_watermark_drawtext(font_path: str) -> str:
+    """Small semi-transparent creator mark along the bottom. No pill."""
+    text = escape_drawtext(DISHPILOT_WATERMARK_TEXT)
+    return (
+        f"drawtext=fontfile='{font_path}':text='{text}':"
+        "fontsize=24:fontcolor=white@0.42:"
+        "shadowcolor=black@0.28:shadowx=1:shadowy=1:"
+        "x=(w-text_w)/2:y=h-text_h-28"
     )
 
 
@@ -535,7 +558,11 @@ def ffmpeg_banner_filter(spec: dict, input_label: str, font_path: str) -> tuple[
         raise CampaignPlatformError("Logo placement must be a corner or omitted")
     if int(spec.get("logo_count") or 0) != 1:
         return "", input_label
-    logo_text = escape_drawtext(str(spec.get("logo_text") or ""))
+    raw_logo = str(spec.get("logo_text") or "")
+    if is_dishpilot_badge(raw_logo):
+        graph = f"{input_label}{dishpilot_watermark_drawtext(font_path)}[vbadge]"
+        return graph, "[vbadge]"
+    logo_text = escape_drawtext(raw_logo)
     if not logo_text:
         return "", input_label
     graph = (
@@ -904,13 +931,126 @@ def _hook_and_badge_filter(hook: str, badge: str, *, fps: int) -> str:
             "borderw=3:bordercolor=black:x=(w-text_w)/2:y=78"
         )
     if badge.strip():
-        badge_text = escape_drawtext(badge)
-        chain += (
-            f",drawtext=fontfile='{font}':text='{badge_text}':fontcolor=white:fontsize=28:"
-            "borderw=2:bordercolor=black:box=1:boxcolor=black@0.45:boxborderw=10:"
-            "x=w-text_w-40:y=h-text_h-48"
-        )
+        if is_dishpilot_badge(badge):
+            chain += "," + dishpilot_watermark_drawtext(font)
+        else:
+            badge_text = escape_drawtext(badge)
+            chain += (
+                f",drawtext=fontfile='{font}':text='{badge_text}':fontcolor=white:fontsize=28:"
+                "borderw=2:bordercolor=black:box=1:boxcolor=black@0.45:boxborderw=10:"
+                "x=w-text_w-40:y=h-text_h-48"
+            )
     return chain
+
+
+def dishpilot_clip_filter(
+    hook: str,
+    *,
+    fps: int,
+    width: int,
+    height: int,
+    clean_bottom_strip: bool,
+) -> str:
+    """Vertical (or native) frame plus one bottom Dishpilot watermark.
+
+    When ``clean_bottom_strip`` is set, the bottom band that holds the baked
+    fastloanpilot wordmark is cropped off and the picture is scaled back, so
+    the mark is gone without painting an opaque box.
+    """
+    font = BOLD_FONT
+    chain = f"scale={width}:{height}:flags=lanczos,fps={fps},format=yuv420p"
+    if clean_bottom_strip:
+        if width == 1080 and height == 1920:
+            chain += ",delogo=x=60:y=70:w=960:h=90:show=0,delogo=x=200:y=180:w=700:h=180:show=0"
+        kept = height - BOTTOM_STRIP_CROP_PX
+        if kept < 64:
+            raise CampaignPlatformError("Bottom strip crop is taller than the frame")
+        chain += f",crop={width}:{kept}:0:0,scale={width}:{height}:flags=lanczos"
+    hook_text = escape_drawtext(hook.strip())
+    if hook_text:
+        chain += (
+            f",drawtext=fontfile='{font}':text='{hook_text}':fontcolor=white:fontsize=48:"
+            "borderw=3:bordercolor=black:x=(w-text_w)/2:y=78"
+        )
+    chain += "," + dishpilot_watermark_drawtext(font)
+    return chain
+
+
+def render_dishpilot_clip(
+    source: Path,
+    dest: Path,
+    *,
+    hook: str = "",
+    duration: float | None = 30,
+    fps: int = 30,
+    width: int | None = 1080,
+    height: int | None = 1920,
+    clean_bottom_strip: bool = True,
+) -> None:
+    """Burn the small Dishpilot watermark. Optionally crop the baked bottom logo."""
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    if width is None or height is None:
+        probe = subprocess.run(
+            [
+                "ffprobe",
+                "-v",
+                "error",
+                "-select_streams",
+                "v:0",
+                "-show_entries",
+                "stream=width,height",
+                "-of",
+                "csv=p=0:s=x",
+                str(source),
+            ],
+            capture_output=True,
+            text=True,
+            check=False,
+        )
+        if probe.returncode != 0 or "x" not in probe.stdout:
+            raise RuntimeError(probe.stderr or "ffprobe failed")
+        width_text, height_text = probe.stdout.strip().split("x", 1)
+        width, height = int(width_text), int(height_text)
+    video_filter = dishpilot_clip_filter(
+        hook,
+        fps=fps,
+        width=width,
+        height=height,
+        clean_bottom_strip=clean_bottom_strip,
+    )
+    trim = ["-t", str(duration)] if duration is not None else []
+    _run_ffmpeg(
+        [
+            "ffmpeg",
+            "-y",
+            "-v",
+            "error",
+            "-i",
+            str(source),
+            *trim,
+            "-vf",
+            video_filter,
+            "-c:v",
+            "libx264",
+            "-preset",
+            "veryfast",
+            "-crf",
+            "23",
+            "-r",
+            str(fps),
+            "-pix_fmt",
+            "yuv420p",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "128k",
+            "-ar",
+            "48000",
+            "-movflags",
+            "+faststart",
+            str(dest),
+        ]
+    )
 
 
 def _encode_variant(
