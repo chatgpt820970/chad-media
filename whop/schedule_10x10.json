@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-10-24T16:00:00Z",
-  "description": "10 YouTube Shorts (Denzen / @denzen0) and 10 X (@chadriyo) slots. X slots 3-10 are Dishpilot clips with one bottom-right DISHPILOT badge. The baked fastloanpilot corner logo is covered by an opaque dark pill.",
+  "description": "10 YouTube Shorts (Denzen / @denzen0) and 10 X (@chadriyo) slots. X slots 3-10 are Dishpilot clips. The baked fastloanpilot bottom strip is cropped away, and the only mark is a small semi-transparent Dishpilot watermark at the bottom.",
   "x_slots": [
     {
       "slot": 1,
@@ -48,7 +48,7 @@
       "campaign_title": "Dishpilot Clipping Program",
       "category": "anime",
       "handle": "@chadriyo",
-      "badge": "DISHPILOT",
+      "badge": "Dishpilot",
       "hook": "THIS ANIMATION IS INSANE",
       "caption": "THIS ANIMATION IS INSANE\n\n#Dishpilot #viral",
       "hashtags": [
@@ -65,8 +65,16 @@
       "submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "logo_count": 1,
       "logo_placement": "corner",
-      "logo_text": "DISHPILOT",
-      "covered_watermark": "fastloanpilot"
+      "logo_text": "Dishpilot",
+      "watermark": {
+        "text": "Dishpilot",
+        "fontsize": 24,
+        "fontcolor": "white@0.42",
+        "shadowcolor": "black@0.28",
+        "shadowx": 1,
+        "shadowy": 1,
+        "box": false
+      }
     },
     {
       "slot": 4,
@@ -75,7 +83,7 @@
       "campaign_title": "Dishpilot Clipping Program",
       "category": "celebrity",
       "handle": "@chadriyo",
-      "badge": "DISHPILOT",
+      "badge": "Dishpilot",
       "hook": "WAIT FOR THE DROP",
       "caption": "WAIT FOR THE DROP\n\n#Dishpilot #viral",
       "hashtags": [
@@ -92,8 +100,16 @@
       "submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "logo_count": 1,
       "logo_placement": "corner",
-      "logo_text": "DISHPILOT",
-      "covered_watermark": "fastloanpilot"
+      "logo_text": "Dishpilot",
+      "watermark": {
+        "text": "Dishpilot",
+        "fontsize": 24,
+        "fontcolor": "white@0.42",
+        "shadowcolor": "black@0.28",
+        "shadowx": 1,
+        "shadowy": 1,
+        "box": false
+      }
     },
     {
       "slot": 5,
@@ -102,7 +118,7 @@
       "campaign_title": "Dishpilot Clipping Program",
       "category": "funny",
       "handle": "@chadriyo",
-      "badge": "DISHPILOT",
+      "badge": "Dishpilot",
       "hook": "HIS REACTION AT THE END",
       "caption": "HIS REACTION AT THE END\n\n#Dishpilot #viral",
       "hashtags": [
@@ -119,8 +135,16 @@
       "submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "logo_count": 1,
       "logo_placement": "corner",
-      "logo_text": "DISHPILOT",
-      "covered_watermark": "fastloanpilot"
+      "logo_text": "Dishpilot",
+      "watermark": {
+        "text": "Dishpilot",
+        "fontsize": 24,
+        "fontcolor": "white@0.42",
+        "shadowcolor": "black@0.28",
+        "shadowx": 1,
+        "shadowy": 1,
+        "box": false
+      }
     },
     {
       "slot": 6,
@@ -129,7 +153,7 @@
       "campaign_title": "Dishpilot Clipping Program",
       "category": "concert",
       "handle": "@chadriyo",
-      "badge": "DISHPILOT",
+      "badge": "Dishpilot",
       "hook": "60,000 PEOPLE IN SYNC",
       "caption": "60,000 PEOPLE IN SYNC\n\n#Dishpilot #viral",
       "hashtags": [
@@ -146,8 +170,16 @@
       "submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "logo_count": 1,
       "logo_placement": "corner",
-      "logo_text": "DISHPILOT",
-      "covered_watermark": "fastloanpilot"
+      "logo_text": "Dishpilot",
+      "watermark": {
+        "text": "Dishpilot",
+        "fontsize": 24,
+        "fontcolor": "white@0.42",
+        "shadowcolor": "black@0.28",
+        "shadowx": 1,
+        "shadowy": 1,
+        "box": false
+      }
     },
     {
       "slot": 7,
@@ -156,7 +188,7 @@
       "campaign_title": "Dishpilot Clipping Program",
       "category": "celebrity",
       "handle": "@chadriyo",
-      "badge": "DISHPILOT",
+      "badge": "Dishpilot",
       "hook": "WHEN THE BEAT DROPS",
       "caption": "WHEN THE BEAT DROPS\n\n#Dishpilot #viral",
       "hashtags": [
@@ -173,8 +205,16 @@
       "submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "logo_count": 1,
       "logo_placement": "corner",
-      "logo_text": "DISHPILOT",
-      "covered_watermark": "fastloanpilot"
+      "logo_text": "Dishpilot",
+      "watermark": {
+        "text": "Dishpilot",
+        "fontsize": 24,
+        "fontcolor": "white@0.42",
+        "shadowcolor": "black@0.28",
+        "shadowx": 1,
+        "shadowy": 1,
+        "box": false
+      }
     },
     {
       "slot": 8,
@@ -183,7 +223,7 @@
       "campaign_title": "Dishpilot Clipping Program",
       "category": "knowledge",
       "handle": "@chadriyo",
-      "badge": "DISHPILOT",
+      "badge": "Dishpilot",
       "hook": "WAIT FOR THE REVEAL",
       "caption": "WAIT FOR THE REVEAL\n\n#Dishpilot #viral",
       "hashtags": [
@@ -200,8 +240,16 @@
       "submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "logo_count": 1,
       "logo_placement": "corner",
-      "logo_text": "DISHPILOT",
-      "covered_watermark": "fastloanpilot"
+      "logo_text": "Dishpilot",
+      "watermark": {
+        "text": "Dishpilot",
+        "fontsize": 24,
+        "fontcolor": "white@0.42",
+        "shadowcolor": "black@0.28",
+        "shadowx": 1,
+        "shadowy": 1,
+        "box": false
+      }
     },
     {
       "slot": 9,
@@ -210,7 +258,7 @@
       "campaign_title": "Dishpilot Clipping Program",
       "category": "funny",
       "handle": "@chadriyo",
-      "badge": "DISHPILOT",
+      "badge": "Dishpilot",
       "hook": "NYC DOORMAN PLOT TWIST",
       "caption": "NYC DOORMAN PLOT TWIST\n\n#Dishpilot #viral",
       "hashtags": [
@@ -227,8 +275,16 @@
       "submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "logo_count": 1,
       "logo_placement": "corner",
-      "logo_text": "DISHPILOT",
-      "covered_watermark": "fastloanpilot"
+      "logo_text": "Dishpilot",
+      "watermark": {
+        "text": "Dishpilot",
+        "fontsize": 24,
+        "fontcolor": "white@0.42",
+        "shadowcolor": "black@0.28",
+        "shadowx": 1,
+        "shadowy": 1,
+        "box": false
+      }
     },
     {
       "slot": 10,
@@ -237,7 +293,7 @@
       "campaign_title": "Dishpilot Clipping Program",
       "category": "knowledge",
       "handle": "@chadriyo",
-      "badge": "DISHPILOT",
+      "badge": "Dishpilot",
       "hook": "NOBODY EXPECTED THIS",
       "caption": "NOBODY EXPECTED THIS\n\n#Dishpilot #viral",
       "hashtags": [
@@ -254,8 +310,16 @@
       "submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "logo_count": 1,
       "logo_placement": "corner",
-      "logo_text": "DISHPILOT",
-      "covered_watermark": "fastloanpilot"
+      "logo_text": "Dishpilot",
+      "watermark": {
+        "text": "Dishpilot",
+        "fontsize": 24,
+        "fontcolor": "white@0.42",
+        "shadowcolor": "black@0.28",
+        "shadowx": 1,
+        "shadowy": 1,
+        "box": false
+      }
     }
   ],
   "youtube_slots": [

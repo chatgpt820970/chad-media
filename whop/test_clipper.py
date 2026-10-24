@@ -18,6 +18,7 @@ from whop.clipper import (
     campaigns_for_platform,
     check_campaign_pool_guard,
     duration_fits,
+    dishpilot_clip_filter,
     ffmpeg_banner_filter,
     load_campaigns,
     overlay_plan,
@@ -309,12 +310,21 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertEqual(overlay_plan(same, same)["x"]["logo_subtext"], "")
 
         graph, label = ffmpeg_banner_filter(banner_overlay_spec(dishpilot), "[vbase]", "Sans")
-        self.assertIn("DISHPILOT", graph)
+        self.assertIn("text='Dishpilot'", graph)
+        self.assertIn("fontsize=24:fontcolor=white@0.42:shadowcolor=black@0.28:shadowx=1:shadowy=1", graph)
         self.assertNotIn("Dishpilot.com", graph)
-        self.assertNotIn("(w-text_w)/2", graph)
-        self.assertIn("w-text_w-40", graph)
+        self.assertNotIn("box=", graph)
+        self.assertNotIn("drawbox", graph)
+        self.assertIn("y=h-text_h-28", graph)
         self.assertEqual(graph.count("drawtext"), 1)
         self.assertEqual(label, "[vbadge]")
+        nova_graph, _nova_label = ffmpeg_banner_filter(
+            {"logo_text": "NOVA", "logo_count": 1, "logo_placement": "corner"},
+            "[vbase]",
+            "Sans",
+        )
+        self.assertIn("w-text_w-40", nova_graph)
+        self.assertIn("box=1", nova_graph)
 
         self.assertFalse(duration_fits(self.flp, 34.7)[0])
         self.assertTrue(duration_fits(self.flp, 12)[0])
@@ -336,8 +346,21 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             "Sans",
         )
         self.assertEqual(graph.count("drawtext"), 1)
-        self.assertIn("w-text_w-40", graph)
+        self.assertIn("text='Dishpilot'", graph)
+        self.assertIn("fontcolor=white@0.42", graph)
+        self.assertNotIn("box=", graph)
         self.assertNotIn("SECOND", graph)
+        cleaned = dishpilot_clip_filter(
+            "60,000 PEOPLE IN SYNC",
+            fps=30,
+            width=1080,
+            height=1920,
+            clean_bottom_strip=True,
+        )
+        self.assertIn("crop=1080:1720:0:0", cleaned)
+        self.assertIn("text='Dishpilot'", cleaned)
+        self.assertNotIn("drawbox", cleaned)
+        self.assertIn("60\\,000", cleaned)
 
     def test_dishpilot_x_captions_have_zero_loan_text(self) -> None:
         manifest = build_daily_manifest(self.data, generated_at="2026-10-24T00:00:00Z")
@@ -394,8 +417,8 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             path, hook = expected[number]
             self.assertEqual(slot["campaign"], "dishpilot-clipping")
             self.assertEqual(slot["handle"], "@chadriyo")
-            self.assertEqual(slot["badge"], "DISHPILOT")
-            self.assertEqual(slot["logo_text"], "DISHPILOT")
+            self.assertEqual(slot["badge"], "Dishpilot")
+            self.assertEqual(slot["logo_text"], "Dishpilot")
             self.assertEqual(slot["logo_count"], 1)
             self.assertEqual(slot["logo_placement"], "corner")
             self.assertEqual(slot["hook"], hook)
