@@ -1,10 +1,14 @@
 {
-  "generated_at": "2026-10-24T06:00:38Z",
-  "ready_today": 5,
+  "generated_at": "2026-10-24T09:06:36Z",
+  "ready_today": 10,
   "daily_target": 7,
   "collects_today": [
     {
       "at": "2026-10-24T01:07:00Z",
+      "added": 5
+    },
+    {
+      "at": "2026-10-24T09:06:36Z",
       "added": 5
     }
   ],
@@ -14,6 +18,96 @@
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7501669584592817451",
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7501669584592817451",
+      "platform": "tiktok",
+      "duration": 66.3,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7501669584592817451.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7501669584592817451-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7501669584592817451-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7501669584592817451-3.jpg"
+      ],
+      "title": "Do i have your vote?",
+      "caption": "This one earns the replay. Do i have your vote?",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T09:06:36Z"
+    },
+    {
+      "id": "tt-7418951366325931306",
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7418951366325931306",
+      "platform": "tiktok",
+      "duration": 58.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7418951366325931306.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7418951366325931306-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7418951366325931306-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7418951366325931306-3.jpg"
+      ],
+      "title": "My parents finished their kitchen remodel (Part 2/2), and we had to christen their",
+      "caption": "A sharp little bit of comedy. My parents finished their kitchen remodel (Part 2/2), and we had to christen their kitchen with a chow mein recipe! Their kitchen was on its last legs, and when their stove finally broke it was time to pull the trigger. Thanks to our friends at",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T09:05:45Z"
+    },
+    {
+      "id": "tt-7564513815384116498",
+      "source_url": "https://www.tiktok.com/@jonitamusic/video/7564513815384116498",
+      "platform": "tiktok",
+      "duration": 70.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7564513815384116498.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7564513815384116498-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7564513815384116498-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7564513815384116498-3.jpg"
+      ],
+      "title": "This one came straight from the heart 🫶🏼 Sheeran 🫰🏼",
+      "caption": "Something warm for the middle of the day. This one came straight from the heart 🫶🏼 Sheeran 🫰🏼",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-24T09:05:11Z"
+    },
+    {
+      "id": "tt-7482079182034341162",
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7482079182034341162",
+      "platform": "tiktok",
+      "duration": 61.4,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7482079182034341162.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7482079182034341162-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7482079182034341162-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7482079182034341162-3.jpg"
+      ],
+      "title": "why it’s good that flying is suddenly dangerous ❤️",
+      "caption": "This one earns the replay. why it’s good that flying is suddenly dangerous ❤️",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T09:04:32Z"
+    },
+    {
+      "id": "tt-7406458142877437230",
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7406458142877437230",
+      "platform": "tiktok",
+      "duration": 47.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7406458142877437230.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7406458142877437230-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7406458142877437230-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7406458142877437230-3.jpg"
+      ],
+      "title": "I haven’t opened up like this with y’all in a while but I am finally taking a moment to",
+      "caption": "A sharp little bit of comedy. I haven’t opened up like this with y’all in a while but I am finally taking a moment to reflect on the past few months (and years) which have been one of the craziest chapters of my life.. from the James Beard Awards, to the White House, to",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T09:03:51Z"
+    },
     {
       "id": "tt-7438260086109261086",
       "source_url": "https://www.tiktok.com/@benoftheweek/video/7438260086109261086",
@@ -355,96 +449,6 @@
       "lane": "funny",
       "youtube_category_id": "23",
       "queued_at": "2026-10-22T09:04:42Z"
-    },
-    {
-      "id": "tt-7435047097629494570",
-      "source_url": "https://www.tiktok.com/@madewithlau/video/7435047097629494570",
-      "platform": "tiktok",
-      "duration": 53.9,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7435047097629494570.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7435047097629494570-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7435047097629494570-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7435047097629494570-3.jpg"
-      ],
-      "title": "Got leftover ingredients in your fridge?",
-      "caption": "A sharp little bit of comedy. Got leftover ingredients in your fridge? Let’s use them to make Scrambled Eggs & Chives (韭菜炒蛋)! The pungent blades of garlic chives add the most drool-worthy flavor to scrambled eggs, making for an easy weeknight dinner 🍳 Find the full recipe on",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-22T09:03:50Z"
-    },
-    {
-      "id": "tt-7434170075264847134",
-      "source_url": "https://www.tiktok.com/@benoftheweek/video/7434170075264847134",
-      "platform": "tiktok",
-      "duration": 62.6,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7434170075264847134.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7434170075264847134-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7434170075264847134-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7434170075264847134-3.jpg"
-      ],
-      "title": "trump winning is my fault yall im sorry",
-      "caption": "This one earns the replay. trump winning is my fault yall im sorry",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-22T01:08:29Z"
-    },
-    {
-      "id": "tt-7657688650016263437",
-      "source_url": "https://www.tiktok.com/@madewithlau/video/7657688650016263437",
-      "platform": "tiktok",
-      "duration": 63.4,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7657688650016263437.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7657688650016263437-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7657688650016263437-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7657688650016263437-3.jpg"
-      ],
-      "title": "Here’s how to make a Lau family favorite: my dad’s POPCORN CHICKEN!",
-      "caption": "A sharp little bit of comedy. Here’s how to make a Lau family favorite: my dad’s POPCORN CHICKEN!",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-22T01:07:43Z"
-    },
-    {
-      "id": "tt-7685073137913892110",
-      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7685073137913892110",
-      "platform": "tiktok",
-      "duration": 54.8,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7685073137913892110.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685073137913892110-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685073137913892110-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685073137913892110-3.jpg"
-      ],
-      "title": "Honestly I don’t have the words to describe what I’m feeling even right now 🫶🏽 Wembley",
-      "caption": "Something warm for the middle of the day. Honestly I don’t have the words to describe what I’m feeling even right now 🫶🏽 Wembley was not just a Concert 🫶🏽 it was HISTORY 🙏🏽 SHUKAR SHUKAR 🫶🏽 LOVE YOU GUYS ❤️ BAUT PYAR Te RESPECT",
-      "status": "ready",
-      "lane": "feelgood",
-      "youtube_category_id": "10",
-      "queued_at": "2026-10-22T01:06:57Z"
-    },
-    {
-      "id": "tt-7671658063291485453",
-      "source_url": "https://www.tiktok.com/@zachking/video/7671658063291485453",
-      "platform": "tiktok",
-      "duration": 35.6,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7671658063291485453.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7671658063291485453-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7671658063291485453-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7671658063291485453-3.jpg"
-      ],
-      "title": "Bath pirates 🏴‍☠️",
-      "caption": "This one earns the replay. Bath pirates 🏴‍☠️",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-22T01:06:03Z"
     }
   ]
 }

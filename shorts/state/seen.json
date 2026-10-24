@@ -440,6 +440,51 @@
       "reason": "",
       "duration": 61.8,
       "seen_at": "2026-10-24T01:07:00Z"
+    },
+    "tt-7406458142877437230": {
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7406458142877437230",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 47.7,
+      "seen_at": "2026-10-24T09:03:51Z"
+    },
+    "tt-7482079182034341162": {
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7482079182034341162",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 61.4,
+      "seen_at": "2026-10-24T09:04:32Z"
+    },
+    "tt-7564513815384116498": {
+      "source_url": "https://www.tiktok.com/@jonitamusic/video/7564513815384116498",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 70.0,
+      "seen_at": "2026-10-24T09:05:11Z"
+    },
+    "tt-7418951366325931306": {
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7418951366325931306",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 58.1,
+      "seen_at": "2026-10-24T09:05:45Z"
+    },
+    "tt-7501669584592817451": {
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7501669584592817451",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 66.3,
+      "seen_at": "2026-10-24T09:06:36Z"
     }
   }
 }
