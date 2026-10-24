@@ -6,8 +6,9 @@
    nearly exhausted (<$500 remaining or >80% paid out) Whop campaigns/bounties.
 2. Maps each post to a campaign that explicitly pays that platform. YouTube
    Shorts (`Denzen` / `@denzen0`) uses Dishpilot and Mr. Pa. Instagram Reels
-   (`@benreelr`) uses Rascals and Dishpilot. X (`@chadriyo`) uses Dishpilot.
-   FastLoanPilot and Nova are closed.
+   (`@benreelr`) uses Rascals, Dishpilot, and Mr. Pa. X (`@chadriyo`) uses
+   Dishpilot. FastLoanPilot and Nova are closed. `build-daily-30` selects 30
+   unseen clips and, on the daily GitHub Actions run, commits the feed.
 3. Focuses on high-retention lanes for YouTube Shorts (`Denzen` / `@denzen0`)
    and X (`@chadriyo`):
    - `anime`: 4K/HD anime fight & emotional edits
@@ -26,9 +27,12 @@ from __future__ import annotations
 
 import argparse
 import json
+import os
 import shutil
 import subprocess
 import sys
+import time
+import urllib.error
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -42,7 +46,14 @@ ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent
 CAMPAIGNS_PATH = ROOT / "campaigns.json"
 FEED_PATH = ROOT / "feed" / "whop_ready_feed.json"
+DAILY_FEED_PATH = ROOT / "feed" / "daily_30_ready.json"
+DAILY_SEEN_PATH = ROOT / "state" / "seen_daily.json"
 MANIFEST_PATH = ROOT / "manifest.json"
+BUFFER_GRAPHQL_URL = "https://api.buffer.com/graphql"
+_BUFFER_MUTATION = (
+    "mutation CreatePost($input: CreatePostInput!) { "
+    "createPost(input: $input) { __typename } }"
+)
 SHORTS_FEED_PATH = REPO_ROOT / "shorts" / "feed" / "shorts_queue.json"
 LOGOS_DIR = ROOT / "logos"
 WORK_DIR = ROOT / "work"
@@ -688,12 +699,169 @@ def build_whop_ready_feed() -> dict:
     return feed_data
 
 
+def should_publish_daily(env: dict | None = None) -> bool:
+    """Commit the daily files only from the scheduled or dispatched main run.
+
+    Unit tests and pull-request jobs leave the files uncommitted. Set
+    WHOP_SKIP_PUBLISH=1 to force that even on Actions. Set WHOP_PUBLISH_DAILY=1
+    on main (or with no ref) to publish outside Actions.
+    """
+    current = os.environ if env is None else env
+    if str(current.get("WHOP_SKIP_PUBLISH") or "") == "1":
+        return False
+    on_actions = str(current.get("GITHUB_ACTIONS") or "") == "true"
+    forced = str(current.get("WHOP_PUBLISH_DAILY") or "") == "1"
+    if not on_actions and not forced:
+        return False
+    event = str(current.get("GITHUB_EVENT_NAME") or "")
+    ref = str(current.get("GITHUB_REF_NAME") or "")
+    if on_actions and event not in ("schedule", "workflow_dispatch"):
+        return False
+    if ref and ref != "main":
+        return False
+    return True
+
+
+def _post_buffer(token: str, body: dict) -> tuple[bool, str]:
+    payload = json.dumps({"query": _BUFFER_MUTATION, "variables": {"input": body}}).encode("utf-8")
+    request = urllib.request.Request(
+        BUFFER_GRAPHQL_URL,
+        data=payload,
+        headers={
+            "Authorization": f"Bearer {token}",
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": USER_AGENT,
+        },
+        method="POST",
+    )
+    try:
+        with urllib.request.urlopen(request, timeout=20) as response:
+            raw = response.read().decode("utf-8", errors="replace")
+            status = getattr(response, "status", 200)
+    except urllib.error.HTTPError as exc:
+        exc.read()
+        log(f"buffer HTTP {exc.code} for channel {body.get('channelId')}")
+        return False, ""
+    except Exception as exc:
+        log(f"buffer request failed for channel {body.get('channelId')}: {exc}")
+        return False, ""
+    if status < 200 or status >= 300:
+        return False, ""
+    try:
+        parsed = json.loads(raw)
+    except json.JSONDecodeError:
+        return False, ""
+    if parsed.get("errors"):
+        log(f"buffer rejected channel {body.get('channelId')}")
+        return False, ""
+    created = (parsed.get("data") or {}).get("createPost")
+    if not isinstance(created, dict):
+        return False, ""
+    return True, str(created.get("id") or "")
+
+
+def schedule_unscheduled_items(feed: dict, token: str, poster=None) -> int:
+    """Best-effort Buffer scheduling. Failures stay pending and do not raise."""
+    if not token.strip():
+        return 0
+    scheduled = 0
+    for item in feed.get("items") or []:
+        if not isinstance(item, dict) or item.get("buffer_status") == "scheduled":
+            continue
+        body = platform_map.buffer_create_post_body(item)
+        try:
+            ok, post_id = poster(body) if poster is not None else _post_buffer(token, body)
+        except Exception as exc:
+            log(f"buffer schedule failed for {item.get('clip_id')}: {exc}")
+            item["buffer_status"] = "pending"
+            continue
+        if ok:
+            item["buffer_status"] = "scheduled"
+            if post_id:
+                item["buffer_post_id"] = post_id
+            scheduled += 1
+        else:
+            item["buffer_status"] = "pending"
+    return scheduled
+
+
+def publish_daily_files(paths: list[Path], env: dict | None = None) -> bool:
+    """Commit the feed and seen log, then push them to main."""
+    if not should_publish_daily(env):
+        log("daily files left uncommitted for the morning Buffer run")
+        return False
+    rels = [str(path.relative_to(REPO_ROOT)) for path in paths]
+    subprocess.run(["git", "add", "--", *rels], cwd=REPO_ROOT, check=True)
+    quiet = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=REPO_ROOT)
+    if quiet.returncode == 0:
+        log("no daily feed change to commit")
+        return False
+    subprocess.run(
+        ["git", "config", "user.name", "github-actions[bot]"],
+        cwd=REPO_ROOT,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "config", "user.email", "41898282+github-actions[bot]@users.noreply.github.com"],
+        cwd=REPO_ROOT,
+        check=True,
+    )
+    subprocess.run(
+        ["git", "commit", "-m", "chore(whop): publish daily 30 clip feed"],
+        cwd=REPO_ROOT,
+        check=True,
+    )
+    for attempt in range(1, 5):
+        pull = subprocess.run(["git", "pull", "--rebase", "origin", "main"], cwd=REPO_ROOT)
+        push = (
+            subprocess.run(["git", "push", "origin", "HEAD:main"], cwd=REPO_ROOT)
+            if pull.returncode == 0
+            else None
+        )
+        if pull.returncode == 0 and push is not None and push.returncode == 0:
+            log("pushed daily feed and seen log to main")
+            return True
+        log(f"push to main failed, retrying ({attempt})")
+        time.sleep(5)
+    raise RuntimeError("could not push the daily feed to main")
+
+
+def build_daily_30_command() -> dict:
+    """Select today's 30 clips, optionally schedule Buffer, then publish on Actions."""
+    cfg = load_json(CAMPAIGNS_PATH, {})
+    today = datetime.now(timezone.utc).date()
+    existing = load_json(DAILY_FEED_PATH, {})
+    seen = load_json(DAILY_SEEN_PATH, {"ids": [], "uses": {}})
+    if platform_map.daily_feed_is_current(existing, today):
+        feed = existing
+        log(f"keeping today's {feed.get('count')} clips in {DAILY_FEED_PATH}")
+    else:
+        feed, seen = platform_map.build_daily_30(cfg, seen, today=today)
+        save_json(DAILY_FEED_PATH, feed)
+        save_json(DAILY_SEEN_PATH, seen)
+        log(f"wrote {DAILY_FEED_PATH} ({feed['count']} clips) and {DAILY_SEEN_PATH}")
+    token = os.environ.get("BUFFER_API_TOKEN", "")
+    if token.strip():
+        scheduled = schedule_unscheduled_items(feed, token)
+        save_json(DAILY_FEED_PATH, feed)
+        log(f"buffer scheduled {scheduled} pending slots")
+    else:
+        log("BUFFER_API_TOKEN unset; leaving slots pending for the morning Buffer run")
+    publish_daily_files([DAILY_FEED_PATH, DAILY_SEEN_PATH])
+    return feed
+
+
 def main(argv: list[str]) -> int:
     parser = argparse.ArgumentParser(description="Whop Ultra-Crisp Auto-Clipper & Pool Guard")
     sub = parser.add_subparsers(dest="command", required=True)
 
     sub.add_parser("check-pools", help="Run Pool/Budget Guard and print active vs skipped Whop campaigns")
     sub.add_parser("build-feed", help="Generate whop/feed/whop_ready_feed.json with Pool Guard checks")
+    sub.add_parser(
+        "build-daily-30",
+        help="Select 30 unseen daily clips and write whop/feed/daily_30_ready.json",
+    )
 
     clip_p = sub.add_parser("clip", help="Download and encode a single source URL in Ultra-Crisp 9:16 HD")
     clip_p.add_argument("--url", required=True, help="Source video URL or local path")
@@ -711,6 +879,9 @@ def main(argv: list[str]) -> int:
         return 0
     if args.command == "build-feed":
         build_whop_ready_feed()
+        return 0
+    if args.command == "build-daily-30":
+        build_daily_30_command()
         return 0
     if args.command == "clip":
         src_path = Path(args.url)

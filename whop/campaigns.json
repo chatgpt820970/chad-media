@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-24T17:50:00Z",
+  "updated_at": "2026-10-24T18:40:00Z",
   "whop_user": "@bi60",
   "whop_user_id": "user_JUKQo7VMHc6IS",
   "supported_viral_categories": [
@@ -49,7 +49,8 @@
       "daily_slots": 10,
       "campaigns": [
         "rascals-theme-pages",
-        "dishpilot-clipping"
+        "dishpilot-clipping",
+        "mr-pa-clipping"
       ],
       "categories": [
         "funny",
@@ -88,6 +89,7 @@
     "instagram": {
       "handle": "@benreelr",
       "username": "@benreelr",
+      "buffer_channel_id": "6ac93d936a5c39ccb66624d7",
       "aspect": "9:16",
       "links_blocked": false
     }
@@ -118,7 +120,8 @@
       "primary_campaign_id": "rascals-theme-pages",
       "campaign_ids": [
         "rascals-theme-pages",
-        "dishpilot-clipping"
+        "dishpilot-clipping",
+        "mr-pa-clipping"
       ]
     }
   },
@@ -345,9 +348,10 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$1.25 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — YouTube Shorts Denzen)",
+      "payout": "$1.25 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — Instagram Reels and YouTube Shorts)",
       "accepted_platforms": [
-        "youtube_shorts"
+        "youtube_shorts",
+        "instagram_reels"
       ],
       "allowed_lanes": [
         "funny",
@@ -378,7 +382,7 @@
         "logo_text": "dishpilot",
         "logo_style": "subtle"
       },
-      "requirements": "YouTube Shorts on Denzen. One subtle top-left dishpilot mark. Caption is a hook plus #Dishpilot #Shorts. No loan text."
+      "requirements": "Instagram Reels (@benreelr) and YouTube Shorts (Denzen). One subtle top-left corner mark. YouTube reads dishpilot with #Dishpilot #Shorts. Instagram reads rascals · dishpilot with #Rascals #Dishpilot #Reels. No loan text."
     },
     {
       "id": "finsta-ugc-clipping",

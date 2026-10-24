@@ -1,11 +1,14 @@
 name: Whop Clipper
 
-# Platform mapping for Whop Content Rewards.
-# X (@chadriyo) slots must be campaigns whose accepted_platforms includes x.
-# YouTube Shorts (Denzen / @denzen0) slots must be campaigns whose
-# accepted_platforms includes youtube_shorts. Pool Guard rejects high-denial
-# bounties (whop-ai-shane-gillis at 99.8%). No repo secrets.
+# Platform mapping for Whop Content Rewards, plus the daily 30-clip feed.
+# 00:15 UTC is 05:45 IST. 01:15 UTC is the 06:45 IST backup.
+# X (@chadriyo) is Dishpilot. YouTube Shorts (Denzen) is Dishpilot and Mr. Pa.
+# Instagram Reels (@benreelr) is Rascals, Dishpilot, and Mr. Pa.
+# Pool Guard rejects high-denial bounties (whop-ai-shane-gillis at 99.8%).
 on:
+  schedule:
+    - cron: "15 0 * * *"
+    - cron: "15 1 * * *"
   push:
     branches: [main]
     paths:
@@ -18,7 +21,7 @@ on:
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: whop-clipper-${{ github.ref }}
@@ -27,9 +30,11 @@ concurrency:
 jobs:
   platform-mapping:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
 
       - uses: actions/setup-python@v5
         with:
@@ -40,3 +45,10 @@ jobs:
 
       - name: Verify the 10-slot manifest pays X and YouTube Shorts separately
         run: python whop/clipper.py verify-manifest
+
+      - name: Build the daily 30-clip feed
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+        run: python whop/whop_clipper.py build-daily-30
