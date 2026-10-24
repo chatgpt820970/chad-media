@@ -33,6 +33,7 @@ ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent
 CAMPAIGNS_PATH = ROOT / "campaigns.json"
 FEED_PATH = ROOT / "feed" / "whop_ready_feed.json"
+MANIFEST_PATH = ROOT / "manifest.json"
 SHORTS_FEED_PATH = REPO_ROOT / "shorts" / "feed" / "shorts_queue.json"
 LOGOS_DIR = ROOT / "logos"
 WORK_DIR = ROOT / "work"
@@ -615,7 +616,8 @@ def build_whop_ready_feed() -> dict:
         "items": ready_clips,
     }
     save_json(FEED_PATH, feed_data)
-    log(f"wrote {FEED_PATH} with {len(healthy)} healthy campaigns and {len(ready_clips)} ready clips")
+    save_json(MANIFEST_PATH, feed_data)
+    log(f"wrote {FEED_PATH} and {MANIFEST_PATH} with {len(healthy)} healthy campaigns and {len(ready_clips)} ready clips")
     return feed_data
 
 
