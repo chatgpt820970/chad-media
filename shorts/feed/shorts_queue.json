@@ -1,23 +1,109 @@
 {
-  "generated_at": "2026-10-23T20:31:44Z",
-  "ready_today": 10,
+  "generated_at": "2026-10-24T01:07:00Z",
+  "ready_today": 5,
   "daily_target": 7,
   "collects_today": [
     {
-      "at": "2026-10-23T01:08:00Z",
-      "added": 5
-    },
-    {
-      "at": "2026-10-23T09:47:55Z",
+      "at": "2026-10-24T01:07:00Z",
       "added": 5
     }
   ],
   "sources": {
-    "tiktok": "ok",
+    "tiktok": "ok: public play file",
     "x": "ok",
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7438260086109261086",
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7438260086109261086",
+      "platform": "tiktok",
+      "duration": 61.8,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7438260086109261086.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7438260086109261086-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7438260086109261086-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7438260086109261086-3.jpg"
+      ],
+      "title": "bring back booing with tomatoes",
+      "caption": "This one earns the replay. bring back booing with tomatoes",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T01:07:00Z"
+    },
+    {
+      "id": "tt-6838102367699832065",
+      "source_url": "https://www.tiktok.com/@thefoodranger/video/6838102367699832065",
+      "platform": "tiktok",
+      "duration": 60.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-6838102367699832065.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699832065-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699832065-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699832065-3.jpg"
+      ],
+      "title": "amazing liuxiang noodle in china6 !",
+      "caption": "A sharp little bit of comedy. amazing liuxiang noodle in china6 !",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T01:06:11Z"
+    },
+    {
+      "id": "tt-7548779492546825473",
+      "source_url": "https://www.tiktok.com/@armaanmalik/video/7548779492546825473",
+      "platform": "tiktok",
+      "duration": 40.9,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7548779492546825473.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548779492546825473-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548779492546825473-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548779492546825473-3.jpg"
+      ],
+      "title": "for everyone who’s ever loved and lost…this one’s for you 🩶",
+      "caption": "Something warm for the middle of the day. for everyone who’s ever loved and lost…this one’s for you 🩶",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-24T01:05:18Z"
+    },
+    {
+      "id": "tt-7691740195418377502",
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7691740195418377502",
+      "platform": "tiktok",
+      "duration": 34.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7691740195418377502.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691740195418377502-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691740195418377502-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691740195418377502-3.jpg"
+      ],
+      "title": "Just give me 5 more minutes 😭",
+      "caption": "This one earns the replay. Just give me 5 more minutes 😭",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T01:04:57Z"
+    },
+    {
+      "id": "tt-7423544912349646126",
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7423544912349646126",
+      "platform": "tiktok",
+      "duration": 49.6,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7423544912349646126.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7423544912349646126-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7423544912349646126-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7423544912349646126-3.jpg"
+      ],
+      "title": "Bring on the nostalgia!",
+      "caption": "A sharp little bit of comedy. Bring on the nostalgia! Today we’re making Fuzzy Melon with Vermicelli & Shrimp (節瓜粉絲蝦煲), a dish that reminds of us of our parents’ and grandparents’ home cooking. We’ll show you the best way to handle fuzzy melon, as well as how beautifully it",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T01:04:37Z"
+    },
     {
       "id": "tt-7625798204092632333",
       "source_url": "https://www.tiktok.com/@spencerx/video/7625798204092632333",
@@ -359,96 +445,6 @@
       "lane": "funny",
       "youtube_category_id": "23",
       "queued_at": "2026-10-22T01:06:03Z"
-    },
-    {
-      "id": "tt-7693338746955042070",
-      "source_url": "https://www.tiktok.com/@mrnigelng/video/7693338746955042070",
-      "platform": "tiktok",
-      "duration": 144.6,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7693338746955042070.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7693338746955042070-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7693338746955042070-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7693338746955042070-3.jpg"
-      ],
-      "title": "Only 29 more days till cookbook drops, please pre-order and you can become a wizard at",
-      "caption": "A sharp little bit of comedy. Only 29 more days till cookbook drops, please pre-order and you can become a wizard at Asian cooking",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-22T01:05:23Z"
-    },
-    {
-      "id": "tt-7696622610125278478",
-      "source_url": "https://www.tiktok.com/@dudeperfect/video/7696622610125278478",
-      "platform": "tiktok",
-      "duration": 57.1,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7696622610125278478.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696622610125278478-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696622610125278478-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696622610125278478-3.jpg"
-      ],
-      "title": "we shoulda switched level hard and impossible 😭✌️ Olawole SQUAD",
-      "caption": "This one earns the replay. we shoulda switched level hard and impossible 😭✌️ Olawole SQUAD",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-21T09:06:00Z"
-    },
-    {
-      "id": "tt-7687356600364846358",
-      "source_url": "https://www.tiktok.com/@mrnigelng/video/7687356600364846358",
-      "platform": "tiktok",
-      "duration": 40.3,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7687356600364846358.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7687356600364846358-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7687356600364846358-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7687356600364846358-3.jpg"
-      ],
-      "title": "Who looked at peanut butter and said put this in instant noodle?!",
-      "caption": "A sharp little bit of comedy. Who looked at peanut butter and said put this in instant noodle?!",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-21T09:05:16Z"
-    },
-    {
-      "id": "tt-7685768407307930894",
-      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7685768407307930894",
-      "platform": "tiktok",
-      "duration": 44.2,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7685768407307930894.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685768407307930894-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685768407307930894-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7685768407307930894-3.jpg"
-      ],
-      "title": "A little warmth for today",
-      "caption": "Something warm for the middle of the day. Pyar 🫶🏽",
-      "status": "ready",
-      "lane": "feelgood",
-      "youtube_category_id": "10",
-      "queued_at": "2026-10-21T09:04:46Z"
-    },
-    {
-      "id": "tt-7681719358225239326",
-      "source_url": "https://www.tiktok.com/@khaby.lame/video/7681719358225239326",
-      "platform": "tiktok",
-      "duration": 48.7,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7681719358225239326.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7681719358225239326-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7681719358225239326-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7681719358225239326-3.jpg"
-      ],
-      "title": "Well… that didn’t go as planned",
-      "caption": "This one earns the replay. Well… that didn’t go as planned",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-21T09:04:10Z"
     }
   ]
 }
