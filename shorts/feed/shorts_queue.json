@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-24T12:17:27Z",
-  "ready_today": 15,
-  "daily_target": 7,
+  "generated_at": "2026-10-24T13:25:04Z",
+  "ready_today": 20,
+  "daily_target": 10,
   "collects_today": [
     {
       "at": "2026-10-24T01:07:00Z",
@@ -14,6 +14,10 @@
     {
       "at": "2026-10-24T12:17:27Z",
       "added": 5
+    },
+    {
+      "at": "2026-10-24T13:25:04Z",
+      "added": 5
     }
   ],
   "sources": {
@@ -22,6 +26,96 @@
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7625357476250111246",
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7625357476250111246",
+      "platform": "tiktok",
+      "duration": 66.5,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7625357476250111246.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625357476250111246-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625357476250111246-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625357476250111246-3.jpg"
+      ],
+      "title": "There are cameras watching you in the coca cola machines",
+      "caption": "This one earns the replay. There are cameras watching you in the coca cola machines",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T13:25:04Z"
+    },
+    {
+      "id": "tt-7648672314342591757",
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7648672314342591757",
+      "platform": "tiktok",
+      "duration": 65.2,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7648672314342591757.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7648672314342591757-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7648672314342591757-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7648672314342591757-3.jpg"
+      ],
+      "title": "My parents' first time at a concert!",
+      "caption": "A sharp little bit of comedy. My parents' first time at a concert! Thank you and Elim Chan for a great night!",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T13:23:10Z"
+    },
+    {
+      "id": "tt-7084999101812722945",
+      "source_url": "https://www.tiktok.com/@yoyohoneysingh/video/7084999101812722945",
+      "platform": "tiktok",
+      "duration": 37.6,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7084999101812722945.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7084999101812722945-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7084999101812722945-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7084999101812722945-3.jpg"
+      ],
+      "title": "Jab Cross n some power kiks",
+      "caption": "Something warm for the middle of the day. Jab Cross n some power kiks",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-24T13:21:14Z"
+    },
+    {
+      "id": "tt-7604992179328535822",
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7604992179328535822",
+      "platform": "tiktok",
+      "duration": 60.5,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7604992179328535822.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7604992179328535822-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7604992179328535822-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7604992179328535822-3.jpg"
+      ],
+      "title": "these are our favorite things we did on our trip to milan Burns",
+      "caption": "This one earns the replay. these are our favorite things we did on our trip to milan Burns",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T13:20:00Z"
+    },
+    {
+      "id": "tt-6838102367699815681",
+      "source_url": "https://www.tiktok.com/@thefoodranger/video/6838102367699815681",
+      "platform": "tiktok",
+      "duration": 58.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-6838102367699815681.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699815681-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699815681-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699815681-3.jpg"
+      ],
+      "title": "amazing liuxiang noodle in china4 !",
+      "caption": "A sharp little bit of comedy. amazing liuxiang noodle in china4 !",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T13:18:19Z"
+    },
     {
       "id": "tt-6838105025865207041",
       "source_url": "https://www.tiktok.com/@thefoodranger/video/6838105025865207041",
