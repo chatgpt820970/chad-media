@@ -69,7 +69,7 @@ jobs:
               curl -fsSL "https://raw.githubusercontent.com/chatgpt820970/x-news-collector/main/data/$f" -o "site/feed/$f" || true
             fi
           done
-          # grok-feed-stamp: 2026-10-24T01:10:49.503299Z
+          # grok-feed-stamp: 2026-10-24T06:31:53.646087Z
           du -sh site
 
       - name: Attach the shorts queue and media
