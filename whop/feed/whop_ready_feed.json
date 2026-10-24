@@ -1,7 +1,8 @@
 {
-  "generated_at": "2026-10-24T13:40:01Z",
+  "generated_at": "2026-10-24T14:12:48Z",
   "whop_user": "@bi60",
   "quality_profile": "1080x1920_lanczos_cas_crf18_8mbps",
+  "platform_mapping": "youtube_shorts=Denzen uses a campaign that lists youtube_shorts; x=@chadriyo uses a campaign that lists x",
   "pool_guard_rules": {
     "min_remaining_budget_usd": 500.0,
     "max_paid_out_fraction": 0.8,
@@ -12,10 +13,12 @@
   "healthy_campaigns_count": 6,
   "healthy_campaigns": [
     {
-      "id": "fastloanpilot-logo",
+      "id": "flp-logo-clipping",
+      "product_id": "prod_DyuwRHNCz3vpv",
       "whop_id": "prod_DyuwRHNCz3vpv",
       "company_id": "biz_5YI3waGC8KB79n",
       "membership_id": "mem_ZJgSTCC8nXRFyb",
+      "experience_id": "exp_cqVzB3tgaTR5tB",
       "content_rewards_experience_id": "exp_cqVzB3tgaTR5tB",
       "submission_url": "https://whop.com/joined/fast-loan-pilot-logo-clipping/exp_cqVzB3tgaTR5tB/app/",
       "type": "type2_logo_overlay",
@@ -23,18 +26,22 @@
       "url": "https://whop.com/fast-loan-pilot-logo-clipping",
       "status": "open",
       "joined": true,
+      "total_pool_usd": 10000.0,
       "budget_total_usd": 10000.0,
       "paid_out_usd": 0.0,
+      "remaining_pool_usd": 10000.0,
       "remaining_budget_usd": 10000.0,
       "paid_out_percent": 0.0,
-      "spots_remaining": 999,
-      "unlimited_budget": true,
-      "payout": "$2.00 per 1,000 views (4.86★, 3,105 members — Joined & Active)",
+      "rate_per_1k_views_usd": 2.0,
       "cpm_usd": 2.0,
+      "denial_rate": 0.05,
+      "spots_remaining": 999,
+      "unlimited_budget": false,
+      "payout": "$2.00 per 1,000 views ($10,000 pool left — YouTube Shorts, Reels, TikTok; does not pay X)",
       "accepted_platforms": [
         "youtube_shorts",
-        "tiktok",
-        "instagram_reels"
+        "instagram_reels",
+        "tiktok"
       ],
       "allowed_lanes": [
         "funny",
@@ -49,6 +56,16 @@
       "banner_video_path": "whop/logos/fastloan_banner.mp4",
       "watermark_text": "FASTLOANPILOT.COM",
       "cta_text": "Only Available on FASTLOANPILOT.COM",
+      "rules": {
+        "min_duration_sec": 6,
+        "max_duration_sec": 15,
+        "logo_overlay_required": true,
+        "mandatory_caption": "Visit FastLoanPilot.com Looking for a quick loan from $200 to $5000.",
+        "hashtags": [
+          "#shorts",
+          "#FastLoanPilot"
+        ]
+      },
       "required_captions": [
         "Up to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap",
         "No hard credit check / Even with bad credit / No hidden fees / Instant/quick/free/fast approval / Apply for a loan at Fastloanpilot.com",
@@ -59,95 +76,41 @@
         "If you need supercar / money / house / Try Fastloanpilot.com",
         "Need cash to pay rent/bills/groceries / Check this out Fastloanpilot.com"
       ],
-      "requirements": "Overlay official neon-blue FastLoanPilot logo + scroll-stopping top hook + 'Only Available on FASTLOANPILOT.COM' bottom CTA onto viral clips, include an engaging curiosity caption + official loan caption in the post text, and submit on Whop Content Rewards.",
+      "requirements": "Overlay the FastLoanPilot logo on YouTube Shorts (Denzen / @denzen0), Reels, or TikTok. This campaign does not accept X (@chadriyo).",
       "pool_guard_status": "OK (remaining=$10000, paid=0.0%, spots=999)"
     },
     {
-      "id": "whop-ai-shane-gillis",
-      "whop_id": "bnty_iJpOl5HbBoDQu",
-      "type": "type1_creator_clipping",
-      "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
-      "url": "https://whop.com/whop-ai",
+      "id": "dishpilot-x-clipping",
+      "product_id": "prod_rVLVD9nqnZquK",
+      "whop_id": "prod_rVLVD9nqnZquK",
+      "account_id": "biz_yHrLny75uFGcUZ",
+      "company_id": "biz_yHrLny75uFGcUZ",
+      "experience_id": "exp_U5YGkStRz0N9SR",
+      "content_rewards_experience_id": "exp_U5YGkStRz0N9SR",
+      "submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "type": "type2_logo_overlay",
+      "title": "Dishpilot Clipping Program",
+      "url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "status": "open",
-      "budget_total_usd": 1000.0,
-      "paid_out_usd": 30.0,
-      "remaining_budget_usd": 970.0,
-      "paid_out_percent": 3.0,
-      "spots_remaining": 97,
-      "unlimited_budget": false,
-      "payout": "$10 per 5-clip submission ($970 / $1,000 remaining — 97% pool left, 97 spots open, India allowed)",
-      "cpm_usd": 10.0,
-      "accepted_platforms": [
-        "x",
-        "youtube_shorts",
-        "tiktok",
-        "instagram_reels"
-      ],
-      "allowed_lanes": [
-        "funny",
-        "celebrity",
-        "podcast"
-      ],
-      "watermark_text": "WHOP AI • ENTERTAINMENT",
-      "cta_text": "Full clip on Whop AI",
-      "requirements": "Cut 30-60s funny standalone Shane Gillis moments (stand-up, podcasts, interviews) in crisp HD MP4.",
-      "pool_guard_status": "OK (remaining=$970, paid=3.0%, spots=97)"
-    },
-    {
-      "id": "clip-influence-hub",
-      "whop_id": "prod_E72V5pvr59GNU",
-      "type": "hub_type1_and_type2",
-      "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
-      "url": "https://whop.com/clip-influence",
-      "status": "open",
-      "budget_total_usd": 50000.0,
+      "joined": true,
+      "total_pool_usd": 5000.0,
+      "budget_total_usd": 5000.0,
       "paid_out_usd": 0.0,
-      "remaining_budget_usd": 50000.0,
+      "remaining_pool_usd": 5000.0,
+      "remaining_budget_usd": 5000.0,
       "paid_out_percent": 0.0,
-      "spots_remaining": 9999,
-      "unlimited_budget": true,
-      "payout": "$0.50 - $3.00+ per 1,000 views across rotating infinite-budget campaigns (4.91★, 464 reviews)",
-      "cpm_usd": 2.5,
-      "accepted_platforms": [
-        "x",
-        "youtube_shorts",
-        "tiktok",
-        "instagram_reels"
-      ],
-      "allowed_lanes": [
-        "funny",
-        "ai",
-        "knowledge",
-        "movie",
-        "anime",
-        "celebrity",
-        "concert"
-      ],
-      "watermark_text": "",
-      "cta_text": "",
-      "requirements": "Join free on Whop to access active music/concert, anime/edit, movie, AI, and logo campaigns on X and YouTube.",
-      "pool_guard_status": "OK (remaining=$50000, paid=0.0%, spots=9999)"
-    },
-    {
-      "id": "dark-room-unlimited",
-      "whop_id": "prod_VNZEYlBBA5rGH",
-      "type": "type2_viral_clipping",
-      "title": "DARK Room — $2 per 1,000+ Views Video (UNLIMITED BUDGET)",
-      "url": "https://whop.com/2-per-1-000-views-video",
-      "status": "open",
-      "budget_total_usd": 25000.0,
-      "paid_out_usd": 0.0,
-      "remaining_budget_usd": 25000.0,
-      "paid_out_percent": 0.0,
-      "spots_remaining": 999,
-      "unlimited_budget": true,
-      "payout": "$2.00 per 1,000 views (Explicitly marked UNLIMITED BUDGET, 5.0★)",
+      "rate_per_1k_views_usd": 2.0,
       "cpm_usd": 2.0,
+      "denial_rate": 0.05,
+      "spots_remaining": 999,
+      "unlimited_budget": false,
+      "payout": "$2.00 per 1,000 views ($5,000 pool — pays X @chadriyo and YouTube Shorts Denzen)",
       "accepted_platforms": [
         "x",
         "youtube_shorts",
+        "instagram_reels",
         "tiktok",
-        "instagram_reels"
+        "facebook"
       ],
       "allowed_lanes": [
         "funny",
@@ -158,31 +121,54 @@
         "celebrity",
         "concert"
       ],
-      "watermark_text": "",
-      "cta_text": "",
-      "requirements": "Clip & post high-retention viral videos across Shorts and X.",
-      "pool_guard_status": "OK (remaining=$25000, paid=0.0%, spots=999)"
+      "watermark_text": "DISHPILOT",
+      "cta_text": "Dishpilot.com • Viral Food & AI Clips",
+      "rules": {
+        "min_duration_sec": 8,
+        "max_duration_sec": 35,
+        "logo_overlay_required": true,
+        "logo_text": "DISHPILOT",
+        "logo_subtext": "Dishpilot.com • Viral Food & AI Clips",
+        "mandatory_caption": "Check out Dishpilot for the smartest kitchen & food AI tools! #Dishpilot",
+        "hashtags": [
+          "#Dishpilot",
+          "#viral"
+        ]
+      },
+      "requirements": "Banner reads DISHPILOT. Pays X (@chadriyo) and YouTube Shorts (Denzen) views at $2 per 1,000.",
+      "pool_guard_status": "OK (remaining=$5000, paid=0.0%, spots=999)"
     },
     {
-      "id": "finsta-ugc-ongoing",
+      "id": "finsta-ugc-clipping",
+      "product_id": "prod_02kkwyeSx8c8j",
       "whop_id": "prod_02kkwyeSx8c8j",
+      "account_id": "biz_WSF21qcVFpaecW",
+      "company_id": "biz_WSF21qcVFpaecW",
+      "experience_id": "exp_SYZ6aEApPQwrYy",
+      "content_rewards_experience_id": "exp_SYZ6aEApPQwrYy",
+      "submission_url": "https://whop.com/joined/finsta-app/exp_SYZ6aEApPQwrYy/app/",
       "type": "type1_and_type2_ugc",
-      "title": "Finsta App — $2 per 1,000 Views (Always Ongoing)",
+      "title": "UGC content for Finsta App",
       "url": "https://whop.com/ugc-content-for-finsta-app-always-ongoing",
       "status": "open",
-      "budget_total_usd": 15000.0,
-      "paid_out_usd": 0.0,
-      "remaining_budget_usd": 15000.0,
-      "paid_out_percent": 0.0,
-      "spots_remaining": 999,
-      "unlimited_budget": true,
-      "payout": "$2.00 per 1,000 views (Min $10, Max $250/video — Always Ongoing)",
+      "joined": true,
+      "total_pool_usd": 5000.0,
+      "budget_total_usd": 5000.0,
+      "paid_out_usd": 200.0,
+      "remaining_pool_usd": 4800.0,
+      "remaining_budget_usd": 4800.0,
+      "paid_out_percent": 4.0,
+      "rate_per_1k_views_usd": 2.0,
       "cpm_usd": 2.0,
+      "denial_rate": 0.05,
+      "spots_remaining": 999,
+      "unlimited_budget": false,
+      "payout": "$2.00 per 1,000 views ($4,800 of $5,000 left — pays X @chadriyo and YouTube Shorts Denzen)",
       "accepted_platforms": [
         "x",
         "youtube_shorts",
-        "tiktok",
-        "instagram_reels"
+        "instagram_reels",
+        "tiktok"
       ],
       "allowed_lanes": [
         "ai",
@@ -191,28 +177,111 @@
         "movie"
       ],
       "watermark_text": "FINSTA APP",
-      "cta_text": "Download Finsta on App Store",
-      "requirements": "AI-generated and real content both accepted; include CTA to download Finsta from App Store.",
-      "pool_guard_status": "OK (remaining=$15000, paid=0.0%, spots=999)"
+      "cta_text": "Download Finsta on the App Store",
+      "rules": {
+        "min_duration_sec": 8,
+        "max_duration_sec": 35,
+        "logo_overlay_required": true,
+        "logo_text": "FINSTA APP",
+        "logo_subtext": "Download Finsta on the App Store",
+        "mandatory_caption": "Download Finsta on the App Store — monetize your fanbase with paid calls, texts & digital products! #FinstaApp",
+        "hashtags": [
+          "#FinstaApp",
+          "#viral"
+        ]
+      },
+      "requirements": "Banner reads FINSTA APP. Pays X (@chadriyo) and YouTube Shorts (Denzen) views at $2 per 1,000.",
+      "pool_guard_status": "OK (remaining=$4800, paid=4.0%, spots=999)"
     },
     {
-      "id": "gambana-logo",
-      "whop_id": "prod_GY4Ma7YDNImaO",
-      "type": "type2_logo_overlay",
-      "title": "Gambana Logo Clipping",
-      "url": "https://whop.com/gambana-logo-clipping-e6",
+      "id": "darkroom-clipping",
+      "product_id": "prod_VNZEYlBBA5rGH",
+      "whop_id": "prod_VNZEYlBBA5rGH",
+      "account_id": "biz_jeexKjoMaNjY3y",
+      "company_id": "biz_jeexKjoMaNjY3y",
+      "experience_id": "exp_AbwcENr6X2Gj7B",
+      "content_rewards_experience_id": "exp_AbwcENr6X2Gj7B",
+      "submission_url": "https://whop.com/joined/darktrading/exp_AbwcENr6X2Gj7B/app/",
+      "type": "type2_viral_clipping",
+      "title": "DARK Room — $2 per 1,000+ views video",
+      "url": "https://whop.com/2-per-1-000-views-video",
       "status": "open",
-      "budget_total_usd": 5000.0,
+      "joined": true,
+      "total_pool_usd": 10000.0,
+      "budget_total_usd": 10000.0,
       "paid_out_usd": 0.0,
-      "remaining_budget_usd": 5000.0,
+      "remaining_pool_usd": 10000.0,
+      "remaining_budget_usd": 10000.0,
       "paid_out_percent": 0.0,
-      "spots_remaining": 999,
-      "unlimited_budget": true,
-      "payout": "$2.00 per 1,000 views (981 members)",
+      "rate_per_1k_views_usd": 2.0,
       "cpm_usd": 2.0,
+      "denial_rate": 0.05,
+      "spots_remaining": 999,
+      "unlimited_budget": false,
+      "payout": "$2.00 per 1,000 views ($10,000 pool — pays X @chadriyo and YouTube Shorts Denzen)",
       "accepted_platforms": [
+        "x",
         "youtube_shorts",
+        "instagram_reels",
+        "tiktok"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
+      "watermark_text": "DARK ROOM",
+      "cta_text": "Clip & Print • @chadriyo",
+      "rules": {
+        "min_duration_sec": 8,
+        "max_duration_sec": 35,
+        "logo_overlay_required": true,
+        "logo_text": "DARK ROOM",
+        "logo_subtext": "Clip & Print • @chadriyo",
+        "mandatory_caption": "Lock in with DARK Room — elite mindset & daily execution. #DarkRoom",
+        "hashtags": [
+          "#DarkRoom",
+          "#viral"
+        ]
+      },
+      "requirements": "Banner reads DARK ROOM. Pays X (@chadriyo) and YouTube Shorts (Denzen) views at $2 per 1,000.",
+      "pool_guard_status": "OK (remaining=$10000, paid=0.0%, spots=999)"
+    },
+    {
+      "id": "nova-x-clipping",
+      "title": "Nova Clipping ($5 / 1K Views on X)",
+      "whop_product_id": "prod_3juzE1FqAXBsj",
+      "product_id": "prod_3juzE1FqAXBsj",
+      "whop_id": "prod_3juzE1FqAXBsj",
+      "whop_experience_id": "exp_zB6vOQWkg5RKa6",
+      "experience_id": "exp_zB6vOQWkg5RKa6",
+      "content_rewards_experience_id": "exp_zB6vOQWkg5RKa6",
+      "submission_url": "https://whop.com/joined/nova-content/exp_zB6vOQWkg5RKa6/app/",
+      "type": "type2_logo_overlay",
+      "url": "https://whop.com/joined/nova-content/exp_zB6vOQWkg5RKa6/app/",
+      "status": "open",
+      "joined": true,
+      "cpm_usd": 5.0,
+      "rate_per_1k_views_usd": 5.0,
+      "pool_remaining_usd": 1000.0,
+      "remaining_pool_usd": 1000.0,
+      "remaining_budget_usd": 1000.0,
+      "total_pool_usd": 1000.0,
+      "budget_total_usd": 1000.0,
+      "paid_out_usd": 0.0,
+      "paid_out_percent": 0.0,
+      "denial_rate": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": false,
+      "payout": "$5.00 per 1,000 views on X (@chadriyo) — $1,000 pool left",
+      "accepted_platforms": [
+        "x",
         "tiktok",
+        "youtube_shorts",
         "instagram_reels"
       ],
       "allowed_lanes": [
@@ -224,14 +293,107 @@
         "celebrity",
         "concert"
       ],
-      "logo_url": "https://assets-2-prod.whop.com/public/uploads/user_20188843/image/bots/2026-03-27/692a0ec9-de63-4b58-9497-8133af5d0fd2.png",
-      "watermark_text": "GAMBANA",
-      "cta_text": "Gambana",
-      "requirements": "Place Gambana logo overlay onto viral clips and post on YouTube Shorts, TikTok, or Reels.",
-      "pool_guard_status": "OK (remaining=$5000, paid=0.0%, spots=999)"
+      "min_duration_sec": 10,
+      "max_duration_sec": 60,
+      "required_caption": "Check out Nova ✨ #Nova #Viral #Clips",
+      "watermark_text": "NOVA",
+      "cta_text": "Check out Nova",
+      "rules": {
+        "min_duration_sec": 10,
+        "max_duration_sec": 60,
+        "logo_overlay_required": true,
+        "logo_text": "NOVA",
+        "logo_subtext": "Check out Nova",
+        "mandatory_caption": "Check out Nova ✨ #Nova #Viral #Clips",
+        "hashtags": [
+          "#Nova",
+          "#Viral",
+          "#Clips"
+        ]
+      },
+      "requirements": "Dark header badge reads NOVA. Pays X (@chadriyo) views at $5 per 1,000.",
+      "pool_guard_status": "OK (remaining=$1000, paid=0.0%, spots=999)"
+    },
+    {
+      "id": "cravin-x-clipping",
+      "title": "Cravin Clipping Program ($2 / 1K Views on X)",
+      "whop_product_id": "prod_636gGffOtD5Vc",
+      "product_id": "prod_636gGffOtD5Vc",
+      "whop_id": "prod_636gGffOtD5Vc",
+      "whop_experience_id": "exp_v8e0kiUai6qGnf",
+      "experience_id": "exp_v8e0kiUai6qGnf",
+      "content_rewards_experience_id": "exp_v8e0kiUai6qGnf",
+      "submission_url": "https://whop.com/joined/cravin-clipping/exp_v8e0kiUai6qGnf/app/",
+      "type": "type2_logo_overlay",
+      "url": "https://whop.com/joined/cravin-clipping/exp_v8e0kiUai6qGnf/app/",
+      "status": "open",
+      "joined": true,
+      "cpm_usd": 2.0,
+      "rate_per_1k_views_usd": 2.0,
+      "pool_remaining_usd": 1000.0,
+      "remaining_pool_usd": 1000.0,
+      "remaining_budget_usd": 1000.0,
+      "total_pool_usd": 1000.0,
+      "budget_total_usd": 1000.0,
+      "paid_out_usd": 0.0,
+      "paid_out_percent": 0.0,
+      "denial_rate": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": false,
+      "payout": "$2.00 per 1,000 views on X (@chadriyo) — $1,000 pool left",
+      "accepted_platforms": [
+        "x",
+        "tiktok",
+        "youtube_shorts",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
+      "min_duration_sec": 10,
+      "max_duration_sec": 60,
+      "required_caption": "Cravin hits different 🔥 #Cravin #FoodTok #Viral",
+      "watermark_text": "CRAVIN",
+      "cta_text": "Cravin hits different",
+      "rules": {
+        "min_duration_sec": 10,
+        "max_duration_sec": 60,
+        "logo_overlay_required": true,
+        "logo_text": "CRAVIN",
+        "logo_subtext": "Cravin hits different",
+        "mandatory_caption": "Cravin hits different 🔥 #Cravin #FoodTok #Viral",
+        "hashtags": [
+          "#Cravin",
+          "#FoodTok",
+          "#Viral"
+        ]
+      },
+      "requirements": "Dark header badge reads CRAVIN. Pays X (@chadriyo) views at $2 per 1,000.",
+      "pool_guard_status": "OK (remaining=$1000, paid=0.0%, spots=999)"
+    }
+  ],
+  "rejected_by_pool_guard": [
+    {
+      "id": "whop-ai-shane-gillis",
+      "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+      "denial_rate": 0.998,
+      "reason": "denial rate 99.8% exceeds 50% cap"
     }
   ],
   "skipped_campaigns": [
+    {
+      "id": "whop-ai-shane-gillis",
+      "whop_id": "bnty_iJpOl5HbBoDQu",
+      "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+      "denial_rate": 0.998,
+      "reason": "REJECTED BY POOL GUARD: 99.8% denial rate (denial_rate 0.998 exceeds max_denial_rate 0.50)."
+    },
     {
       "whop_id": "bnty_B5WoyERaKyVhK",
       "title": "Waterloo Roofers",
@@ -248,187 +410,160 @@
       "reason": "SKIPPED BY GEO/RATING GUARD: Strict 60%+ USA audience required (auto-rejects Indian audience) and low 2.5★ review rating."
     }
   ],
-  "ready_clips_count": 10,
+  "ready_clips_count": 3,
   "items": [
     {
       "id": "flp-speedcube-lockin",
-      "campaign_id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
       "title": "He solved the Rubik's Cube BEFORE his opponent even blinked 🤯🧩 #shorts #viral",
       "hook_text": "WATCH HIS HANDS AT 4.41 SECONDS",
-      "caption_x": "Bro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\nIn a tight spot? / Get up to a $5,000 loan today / All credit scores / No banks involved / No paperwork / Check out Fastloanpilot.com\n\n#viral #speedcubing #rubikscube #shorts",
-      "caption_youtube": "Bro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\nIn a tight spot?\nGet up to a $5,000 loan today\nAll credit scores\nNo banks involved\nNo paperwork\nCheck out Fastloanpilot.com\n\n#shorts #viral #rubikscube #speedcubing #mindblowing",
+      "description": "Bro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!",
       "lane": "funny",
-      "duration": 34.7,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-speedcube-lockin.mp4",
+      "duration": 12.5,
+      "x_duration_sec": 30.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
+      "x_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-1.mp4",
       "logo_used": "whop/logos/fastloanpilot.png",
       "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
       "channels": {
         "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
         "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
+      },
+      "campaign_id": "flp-logo-clipping",
+      "whop_id": "prod_DyuwRHNCz3vpv",
+      "youtube_campaign": "flp-logo-clipping",
+      "youtube_caption": "WATCH HIS HANDS AT 4.41 SECONDS\n\nBro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\nVisit FastLoanPilot.com Looking for a quick loan from $200 to $5000.\n\n#shorts #FastLoanPilot",
+      "youtube_submission_url": "https://whop.com/joined/fast-loan-pilot-logo-clipping/exp_cqVzB3tgaTR5tB/app/",
+      "caption_youtube": "WATCH HIS HANDS AT 4.41 SECONDS\n\nBro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\nVisit FastLoanPilot.com Looking for a quick loan from $200 to $5000.\n\n#shorts #FastLoanPilot",
+      "youtube_duration_ok": true,
+      "youtube_duration_reason": "duration ok",
+      "x_campaign": "dishpilot-x-clipping",
+      "x_caption": "WATCH HIS HANDS AT 4.41 SECONDS\n\nBro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\nCheck out Dishpilot for the smartest kitchen & food AI tools! #Dishpilot\n\n#viral",
+      "x_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "caption_x": "WATCH HIS HANDS AT 4.41 SECONDS\n\nBro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\nCheck out Dishpilot for the smartest kitchen & food AI tools! #Dishpilot\n\n#viral",
+      "x_duration_ok": true,
+      "x_duration_reason": "duration ok",
+      "overlay": {
+        "mode": "platform_specific_variants",
+        "youtube_shorts": {
+          "logo_overlay_required": true,
+          "logo_text": "",
+          "logo_subtext": "",
+          "logo_path": "whop/logos/fastloanpilot.png",
+          "min_duration_sec": 6,
+          "max_duration_sec": 15
+        },
+        "x": {
+          "logo_overlay_required": true,
+          "logo_text": "DISHPILOT",
+          "logo_subtext": "Dishpilot.com • Viral Food & AI Clips",
+          "logo_path": "",
+          "min_duration_sec": 8,
+          "max_duration_sec": 35
+        }
+      },
+      "x_render": "platform_specific_variants"
     },
     {
       "id": "flp-language-gauntlet",
-      "campaign_id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
       "title": "Almost nobody passes the 5th country flag 😭🌍 Can you name them all? #shorts #viral",
       "hook_text": "ALMOST NOBODY PASSES THE 5TH FLAG",
-      "caption_x": "How many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\nUp to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap\n\n#viral #challenge #languages #shorts",
-      "caption_youtube": "How many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\nUp to $5,000\nApply online in minutes\nGet funds within 24 hours after approval\nCheck Fastloanpilot.com if you need a loan asap\n\n#shorts #viral #challenge #trivia #funny",
+      "description": "How many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!",
       "lane": "knowledge",
-      "duration": 38.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-language-gauntlet.mp4",
+      "duration": 12.5,
+      "x_duration_sec": 30.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-2.mp4",
+      "x_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-2.mp4",
       "logo_used": "whop/logos/fastloanpilot.png",
       "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
       "channels": {
         "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
         "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
+      },
+      "campaign_id": "flp-logo-clipping",
+      "whop_id": "prod_DyuwRHNCz3vpv",
+      "youtube_campaign": "flp-logo-clipping",
+      "youtube_caption": "ALMOST NOBODY PASSES THE 5TH FLAG\n\nHow many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\nVisit FastLoanPilot.com Looking for a quick loan from $200 to $5000.\n\n#shorts #FastLoanPilot",
+      "youtube_submission_url": "https://whop.com/joined/fast-loan-pilot-logo-clipping/exp_cqVzB3tgaTR5tB/app/",
+      "caption_youtube": "ALMOST NOBODY PASSES THE 5TH FLAG\n\nHow many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\nVisit FastLoanPilot.com Looking for a quick loan from $200 to $5000.\n\n#shorts #FastLoanPilot",
+      "youtube_duration_ok": true,
+      "youtube_duration_reason": "duration ok",
+      "x_campaign": "finsta-ugc-clipping",
+      "x_caption": "ALMOST NOBODY PASSES THE 5TH FLAG\n\nHow many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\nDownload Finsta on the App Store — monetize your fanbase with paid calls, texts & digital products! #FinstaApp\n\n#viral",
+      "x_submission_url": "https://whop.com/joined/finsta-app/exp_SYZ6aEApPQwrYy/app/",
+      "caption_x": "ALMOST NOBODY PASSES THE 5TH FLAG\n\nHow many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\nDownload Finsta on the App Store — monetize your fanbase with paid calls, texts & digital products! #FinstaApp\n\n#viral",
+      "x_duration_ok": true,
+      "x_duration_reason": "duration ok",
+      "overlay": {
+        "mode": "platform_specific_variants",
+        "youtube_shorts": {
+          "logo_overlay_required": true,
+          "logo_text": "",
+          "logo_subtext": "",
+          "logo_path": "whop/logos/fastloanpilot.png",
+          "min_duration_sec": 6,
+          "max_duration_sec": 15
+        },
+        "x": {
+          "logo_overlay_required": true,
+          "logo_text": "FINSTA APP",
+          "logo_subtext": "Download Finsta on the App Store",
+          "logo_path": "",
+          "min_duration_sec": 8,
+          "max_duration_sec": 35
+        }
+      },
+      "x_render": "platform_specific_variants"
     },
     {
       "id": "flp-concert-vibes",
-      "campaign_id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
       "title": "When Ed Sheeran harmonizes in Hindi & English live on acoustic guitar ✨🎶 #shorts #music",
       "hook_text": "WAIT FOR THE HIGH NOTE AT 0.08",
-      "caption_x": "Unplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\nNo hard credit check / Even with bad credit / No hidden fees / Instant/quick/free/fast approval / Apply for a loan at Fastloanpilot.com\n\n#music #edsheeran #concert #viral #shorts",
-      "caption_youtube": "Unplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\nNo hard credit check\nEven with bad credit\nNo hidden fees\nInstant/quick/free/fast approval\nApply for a loan at Fastloanpilot.com\n\n#shorts #music #edsheeran #concert #live #viral",
+      "description": "Unplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!",
       "lane": "concert",
-      "duration": 70.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-concert-vibes.mp4",
+      "duration": 12.5,
+      "x_duration_sec": 30.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-3.mp4",
+      "x_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-3.mp4",
       "logo_used": "whop/logos/fastloanpilot.png",
       "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
       "channels": {
         "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
         "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
-    },
-    {
-      "id": "flp-anime-sakuga",
-      "campaign_id": "fastloanpilot-logo",
+      },
+      "campaign_id": "flp-logo-clipping",
       "whop_id": "prod_DyuwRHNCz3vpv",
-      "title": "Show me a better anime fight scene than this 4K sakuga masterpiece 🔥⚔️ #shorts #anime",
-      "hook_text": "SHOW ME A BETTER ANIME FIGHT SCENE",
-      "caption_x": "Show me a fight scene better than this in the history of anime 🔥⚔️ The animation budget went completely off the charts!\n\nSpecial deals: / Approval in 10 minutes Funding within 24 hours / Up to $5,000 / Just visit Fastloanpilot.com\n\n#anime #sakuga #viral #shorts",
-      "caption_youtube": "Show me a fight scene better than this in the history of anime 🔥⚔️ The animation budget went completely off the charts!\n\nSpecial deals:\nApproval in 10 minutes Funding within 24 hours\nUp to $5,000\nJust visit Fastloanpilot.com\n\n#shorts #anime #sakuga #viral #animation",
-      "lane": "anime",
-      "duration": 54.1,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-anime-sakuga.mp4",
-      "logo_used": "whop/logos/fastloanpilot.png",
-      "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
-      "channels": {
-        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
-        "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
-    },
-    {
-      "id": "flp-diljit-worldtour",
-      "campaign_id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
-      "title": "When Diljit Dosanjh walks out and the entire stadium loses its mind 🔥🎤 #shorts #concert",
-      "hook_text": "WAIT FOR THE STADIUM DROP AT 0.14",
-      "caption_x": "Wait for the crowd roar at 0:14 — Diljit Dosanjh World Tour energy is unmatched 🔥🎤🏟️\n\nInterest Rate just 4.95% / Up to $5,000 / Any credit score is accepted / Monthly Payment $80.54 / Not affect your credit history / Visit Fastloanpilot.com\n\n#diljitdosanjh #concert #music #viral #shorts",
-      "caption_youtube": "Wait for the crowd roar at 0:14 — Diljit Dosanjh World Tour energy is unmatched 🔥🎤🏟️\n\nInterest Rate just 4.95%\nUp to $5,000\nAny credit score is accepted\nMonthly Payment $80.54\nNot affect your credit history\nVisit Fastloanpilot.com\n\n#shorts #diljitdosanjh #concert #music #viral",
-      "lane": "concert",
-      "duration": 53.1,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-diljit-worldtour.mp4",
-      "logo_used": "whop/logos/fastloanpilot.png",
-      "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
-      "channels": {
-        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
-        "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
-    },
-    {
-      "id": "flp-khaby-lifehack",
-      "campaign_id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
-      "title": "Khaby Lame tested the unbreakable glasses with a real hammer 😭👓🔨 #shorts #funny",
-      "hook_text": "HE TESTED THE UNBREAKABLE GLASSES",
-      "caption_x": "Bro really brought out a hammer to test the unbreakable glasses 😭👓🔨 His facial expression says it all!\n\nNeed money today? / Apply for a loan at Fastloanpilot.com\n\n#khabylame #funny #comedy #viral #shorts",
-      "caption_youtube": "Bro really brought out a hammer to test the unbreakable glasses 😭👓🔨 His facial expression says it all!\n\nNeed money today? / Apply for a loan at Fastloanpilot.com\n\n#shorts #khabylame #funny #comedy #viral",
-      "lane": "funny",
-      "duration": 37.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-khaby-lifehack.mp4",
-      "logo_used": "whop/logos/fastloanpilot.png",
-      "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
-      "channels": {
-        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
-        "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
-    },
-    {
-      "id": "flp-honeysingh-vibe",
-      "campaign_id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
-      "title": "When Yo Yo Honey Singh drops this classic beat live on stage 🔥🎶 #shorts #music",
-      "hook_text": "WHEN THIS BEAT DROPS EVERYONE LOCKS IN",
-      "caption_x": "Pure nostalgia when Yo Yo Honey Singh drops this track — nobody can stay still 🔥🎶🕺\n\nIf you need supercar / money / house / Try Fastloanpilot.com\n\n#yoyohoneysingh #music #celebrity #viral #shorts",
-      "caption_youtube": "Pure nostalgia when Yo Yo Honey Singh drops this track — nobody can stay still 🔥🎶🕺\n\nIf you need supercar / money / house / Try Fastloanpilot.com\n\n#shorts #yoyohoneysingh #music #celebrity #viral",
-      "lane": "celebrity",
-      "duration": 60.1,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-honeysingh-vibe.mp4",
-      "logo_used": "whop/logos/fastloanpilot.png",
-      "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
-      "channels": {
-        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
-        "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
-    },
-    {
-      "id": "flp-tea-science",
-      "campaign_id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
-      "title": "99% of people ruin their tea by making this 1 mistake 🍵🧠 #shorts #knowledge",
-      "hook_text": "99 PERCENT OF PEOPLE RUIN THEIR TEA",
-      "caption_x": "99% of people over-steep their tea without realizing what it does to the flavor chemistry 🍵🧠 Watch a 50-year master explain the exact second to stop!\n\nNeed cash to pay rent/bills/groceries / Check this out Fastloanpilot.com\n\n#knowledge #lifehacks #foodscience #viral #shorts",
-      "caption_youtube": "99% of people over-steep their tea without realizing what it does to the flavor chemistry 🍵🧠 Watch a 50-year master explain the exact second to stop!\n\nNeed cash to pay rent/bills/groceries / Check this out Fastloanpilot.com\n\n#shorts #knowledge #lifehacks #foodscience #viral",
-      "lane": "knowledge",
-      "duration": 50.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-tea-science.mp4",
-      "logo_used": "whop/logos/fastloanpilot.png",
-      "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
-      "channels": {
-        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
-        "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
-    },
-    {
-      "id": "flp-nyc-doorman",
-      "campaign_id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
-      "title": "This dog refuses to walk past a building he doesn't even live in 🥺🐶 #shorts #wholesome",
-      "hook_text": "THIS DOG REFUSES TO WALK PAST HIM",
-      "caption_x": "Only in New York does a dog have a best friend doorman at a building he doesn't even live in 🥺🐶❤️ Wait for the tail wag!\n\nIn a tight spot? / Get up to a $5,000 loan today / All credit scores / No banks involved / No paperwork / Check out Fastloanpilot.com\n\n#wholesome #dogs #nyc #viral #shorts",
-      "caption_youtube": "Only in New York does a dog have a best friend doorman at a building he doesn't even live in 🥺🐶❤️ Wait for the tail wag!\n\nIn a tight spot? / Get up to a $5,000 loan today / All credit scores / No banks involved / No paperwork / Check out Fastloanpilot.com\n\n#shorts #wholesome #dogs #nyc #viral",
-      "lane": "movie",
-      "duration": 34.8,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-nyc-doorman.mp4",
-      "logo_used": "whop/logos/fastloanpilot.png",
-      "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
-      "channels": {
-        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
-        "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
-    },
-    {
-      "id": "flp-president-speech",
-      "campaign_id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
-      "title": "If bro actually ran for President with this speech he'd win 100% of the vote 😂🎤 #shorts #funny",
-      "hook_text": "IF BRO RAN FOR PRESIDENT HED WIN",
-      "caption_x": "If bro ran for President with this platform he'd win in a landslide 😂🎤 Wait for his 3rd promise!\n\nUp to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap\n\n#comedy #funny #viral #shorts",
-      "caption_youtube": "If bro ran for President with this platform he'd win in a landslide 😂🎤 Wait for his 3rd promise!\n\nUp to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap\n\n#shorts #comedy #funny #viral",
-      "lane": "funny",
-      "duration": 66.3,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-president-speech.mp4",
-      "logo_used": "whop/logos/fastloanpilot.png",
-      "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
-      "channels": {
-        "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
-        "yt_denzen": "6ac4da806a5c39ccb62eab64"
-      }
+      "youtube_campaign": "flp-logo-clipping",
+      "youtube_caption": "WAIT FOR THE HIGH NOTE AT 0.08\n\nUnplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\nVisit FastLoanPilot.com Looking for a quick loan from $200 to $5000.\n\n#shorts #FastLoanPilot",
+      "youtube_submission_url": "https://whop.com/joined/fast-loan-pilot-logo-clipping/exp_cqVzB3tgaTR5tB/app/",
+      "caption_youtube": "WAIT FOR THE HIGH NOTE AT 0.08\n\nUnplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\nVisit FastLoanPilot.com Looking for a quick loan from $200 to $5000.\n\n#shorts #FastLoanPilot",
+      "youtube_duration_ok": true,
+      "youtube_duration_reason": "duration ok",
+      "x_campaign": "darkroom-clipping",
+      "x_caption": "WAIT FOR THE HIGH NOTE AT 0.08\n\nUnplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\nLock in with DARK Room — elite mindset & daily execution. #DarkRoom\n\n#viral",
+      "x_submission_url": "https://whop.com/joined/darktrading/exp_AbwcENr6X2Gj7B/app/",
+      "caption_x": "WAIT FOR THE HIGH NOTE AT 0.08\n\nUnplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\nLock in with DARK Room — elite mindset & daily execution. #DarkRoom\n\n#viral",
+      "x_duration_ok": true,
+      "x_duration_reason": "duration ok",
+      "overlay": {
+        "mode": "platform_specific_variants",
+        "youtube_shorts": {
+          "logo_overlay_required": true,
+          "logo_text": "",
+          "logo_subtext": "",
+          "logo_path": "whop/logos/fastloanpilot.png",
+          "min_duration_sec": 6,
+          "max_duration_sec": 15
+        },
+        "x": {
+          "logo_overlay_required": true,
+          "logo_text": "DARK ROOM",
+          "logo_subtext": "Clip & Print • @chadriyo",
+          "logo_path": "",
+          "min_duration_sec": 8,
+          "max_duration_sec": 35
+        }
+      },
+      "x_render": "platform_specific_variants"
     }
   ]
 }

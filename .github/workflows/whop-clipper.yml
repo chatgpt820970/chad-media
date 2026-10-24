@@ -1,0 +1,42 @@
+name: Whop Clipper
+
+# Platform mapping for Whop Content Rewards.
+# X (@chadriyo) slots must be campaigns whose accepted_platforms includes x.
+# YouTube Shorts (Denzen / @denzen0) slots must be campaigns whose
+# accepted_platforms includes youtube_shorts. Pool Guard rejects high-denial
+# bounties (whop-ai-shane-gillis at 99.8%). No repo secrets.
+on:
+  push:
+    branches: [main]
+    paths:
+      - "whop/**"
+      - ".github/workflows/whop-clipper.yml"
+  pull_request:
+    paths:
+      - "whop/**"
+      - ".github/workflows/whop-clipper.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: whop-clipper-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  platform-mapping:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Test platform campaign mapping and Pool Guard
+        run: python -m unittest whop.test_clipper -v
+
+      - name: Verify the 10-slot manifest pays X and YouTube Shorts separately
+        run: python whop/clipper.py verify-manifest
