@@ -698,6 +698,15 @@ class IngestUrlPipelineTest(unittest.TestCase):
                         source_metadata={"nsfw": False, "rating": "general"},
                     )
                 )
+        self.assertTrue(
+            check_community_guidelines_safe(
+                {
+                    "title": "Glamorous romantic scene",
+                    "caption": "4K movie edit #Movie4K",
+                    "category": "movie_4k",
+                }
+            )
+        )
 
         blocked = (
             "NSFW edit",

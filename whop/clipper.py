@@ -65,8 +65,9 @@ INGEST_CATEGORIES = (*PRIORITY_CATEGORIES, "funny", "knowledge", "concert", "oth
 X_VIRAL_CATEGORIES = ("funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert")
 COMMUNITY_GUIDELINES_BLOCKED_PATTERNS = (
     ("adult sexual content", re.compile(
-        r"\b(?:nsfw|porn(?:ography|ographic)?|xxx|18\s*\+|onlyfans|nude|nudity|"
-        r"naked|explicit\s+sex(?:ual)?|sexually\s+explicit|hentai|fetish)\b",
+        r"(?:\b(?:nsfw|porn(?:ography|ographic)?|xxx|onlyfans|nude|nudity|"
+        r"naked|explicit\s+sex(?:ual)?|sexually\s+explicit|hentai|fetish)\b|"
+        r"(?<!\w)18\s*\+(?!\w))",
         re.IGNORECASE,
     )),
     ("sexual exploitation", re.compile(
@@ -377,7 +378,7 @@ def _metadata_scalars(value, path: str = "source_metadata"):
                 if child is True or (isinstance(child, str) and child.casefold() in {"true", "yes", "1"}):
                     yield child_path, normalized
                 elif normalized.endswith("_score") and isinstance(child, (int, float)) and child > 0:
-                    yield child_path, str(child)
+                    yield child_path, flag_name
             yield from _metadata_scalars(child, child_path)
     elif isinstance(value, (list, tuple, set)):
         for index, child in enumerate(value):
@@ -423,15 +424,30 @@ def community_guidelines_violations(
 
 
 def check_community_guidelines_safe(
-    *,
-    title: str = "",
+    title: str | dict = "",
     hook: str = "",
     tags=(),
     source_metadata=None,
 ) -> bool:
-    """True only when text and supplied source metadata pass all four platforms."""
+    """True only when text and supplied source metadata pass all four platforms.
+
+    A feed/catalog item dictionary can be passed as the first argument for
+    callers that already have the complete content record.
+    """
+    if isinstance(title, dict):
+        item = title
+        caption = str(item.get("caption") or "")
+        title = str(item.get("title") or "")
+        hook = str(item.get("hook") or caption)
+        tags = item.get("tags") or _HASHTAG_RE.findall(caption)
+        source_metadata = {
+            "category": item.get("category"),
+            "source": item.get("source"),
+            "source_url": item.get("source_url") or item.get("video_url"),
+            "source_metadata": item.get("source_metadata"),
+        }
     return not community_guidelines_violations(
-        title=title,
+        title=str(title),
         hook=hook,
         tags=tags,
         source_metadata=source_metadata,
@@ -473,6 +489,18 @@ def assert_feed_item_community_guidelines_safe(item: dict) -> None:
         },
         context=f"feed item {item.get('clip_id') or '<unknown>'}",
     )
+
+
+def _safe_caption(caption: str, hook: str, platform: str) -> str:
+    cleaned = caption.strip()
+    assert_community_guidelines_safe(
+        title=hook,
+        hook=cleaned,
+        tags=_HASHTAG_RE.findall(cleaned),
+        source_metadata={"platform": platform},
+        context=f"{platform} caption",
+    )
+    return cleaned
 
 
 def load_campaigns(path: Path | None = None) -> dict:
@@ -759,7 +787,7 @@ def build_platform_caption(
             caption = _LOAN_SPAM_RE.sub("", caption)
             caption = re.sub(r"[ \t]{2,}", " ", caption)
             caption = re.sub(r"\n{3,}", "\n\n", caption).strip()
-        return caption.strip()
+        return _safe_caption(caption, hook_text, platform)
     if style == "hook_and_hashtags":
         limit = int(rules.get("max_hashtags") or 2)
         extras = _extra_hashtags(hook_text, campaign, limit)
@@ -781,7 +809,7 @@ def build_platform_caption(
         caption = _LOAN_SPAM_RE.sub("", caption)
         caption = re.sub(r"[ \t]{2,}", " ", caption)
         caption = re.sub(r"\n{3,}", "\n\n", caption).strip()
-    return caption.strip()
+    return _safe_caption(caption, hook_text, platform)
 
 
 def x_links_blocked(campaigns_data: dict) -> bool:
