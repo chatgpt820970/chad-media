@@ -1,21 +1,24 @@
 #!/usr/bin/env python3
 """Keyless Ultra-HD/4K-Crisp Whop Content Rewards & Viral Auto-Clipper.
 
-1. Enforces Whop Pool/Budget Guard (`campaign_passes_pool_guard`) so we NEVER clip
-   for empty, paused, high-denial-rate, or nearly exhausted (<$500 remaining or
-   >80% paid out) Whop campaigns/bounties.
-2. Focuses on high-retention lanes for YouTube Shorts (`Denzen` / `@denzen0`)
+1. Enforces Whop Pool/Budget Guard (`check_campaign_pool_guard`) so we NEVER clip
+   for empty, paused, high-denial-rate (for example Shane Gillis at 99.8%), or
+   nearly exhausted (<$500 remaining or >80% paid out) Whop campaigns/bounties.
+2. Maps each post to a campaign that explicitly pays that platform. YouTube
+   Shorts (`Denzen` / `@denzen0`) uses FastLoanPilot. X (`@chadriyo`) uses only
+   campaigns whose `accepted_platforms` includes `x` (Dishpilot, Finsta, DARK Room).
+3. Focuses on high-retention lanes for YouTube Shorts (`Denzen` / `@denzen0`)
    and X (`@chadriyo`):
    - `anime`: 4K/HD anime fight & emotional edits
    - `movie`: iconic cinema & movie/TV scenes
    - `podcast`: funny stand-up (Shane Gillis, etc.) & high-retention viral challenges
-3. Downloads the highest available bitrate/resolution via `yt-dlp`
+4. Downloads the highest available bitrate/resolution via `yt-dlp`
    (`bestvideo[height>=1080]+bestaudio/bestvideo+bestaudio/best`) or clean raw source.
-4. Encodes Ultra-Crisp 1080x1920 (9:16 vertical for YouTube Shorts `Denzen` &
+5. Encodes Ultra-Crisp 1080x1920 (9:16 vertical for YouTube Shorts `Denzen` &
    X `@chadriyo`) using Lanczos scaling, CAS/unsharp 4K-style contrast-adaptive
    sharpening, CRF 18, 8M maxrate, 192k AAC audio, persistent scroll-stopping top hook
    banner, centered Whop Type-2 campaign logo PNG overlay, and centered bottom CTA.
-5. Zero API keys or secrets in code.
+6. Zero API keys or secrets in code.
 """
 
 from __future__ import annotations
@@ -28,6 +31,11 @@ import sys
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
+
+try:
+    import clipper as platform_map
+except ImportError:
+    from whop import clipper as platform_map
 
 ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent
@@ -64,30 +72,8 @@ def save_json(path: Path, data: dict) -> None:
 
 
 def campaign_passes_pool_guard(campaign: dict, rules: dict) -> tuple[bool, str]:
-    """Verify campaign has a healthy remaining reward pool before clipping."""
-    status = str(campaign.get("status") or "open").lower()
-    if rules.get("skip_paused_or_closed", True) and status not in ("open", "active", "live"):
-        return False, f"status is {status}"
-
-    unlimited = bool(campaign.get("unlimited_budget", False))
-    min_rem = float(rules.get("min_remaining_budget_usd", 500.0))
-    max_paid_frac = float(rules.get("max_paid_out_fraction", 0.80))
-    min_spots = int(rules.get("min_spots_remaining", 5))
-
-    total = float(campaign.get("budget_total_usd") or 0.0)
-    paid = float(campaign.get("paid_out_usd") or 0.0)
-    remaining = float(campaign.get("remaining_budget_usd") or (total - paid))
-    spots = int(campaign.get("spots_remaining") or 0)
-
-    if not unlimited:
-        if remaining < min_rem:
-            return False, f"remaining pool ${remaining:.2f} < ${min_rem:.2f} minimum"
-        if total > 0 and (paid / total) > max_paid_frac:
-            return False, f"pool {(paid / total) * 100:.1f}% exhausted (> {max_paid_frac * 100:.0f}% cap)"
-        if spots < min_spots:
-            return False, f"only {spots} spots remaining (< {min_spots})"
-
-    return True, f"OK (remaining=${remaining:.0f}, paid={paid / total * 100 if total else 0:.1f}%, spots={spots})"
+    """Pool guard plus the denial-rate cap. See clipper.check_campaign_pool_guard."""
+    return platform_map.check_campaign_pool_guard(campaign, rules)
 
 
 def select_healthy_campaigns(lane: str | None = None) -> list[dict]:
@@ -199,6 +185,8 @@ def encode_ultra_crisp_whop(
     hook_text: str = "",
     watermark_text: str = "",
     logo_path: Path | None = None,
+    logo_text: str = "",
+    logo_subtext: str = "",
 ) -> None:
     """Encode 1080x1920 9:16 vertical MP4 with Lanczos scaling + CAS/unsharp 4K-style crispness."""
     info = probe_video(src)
@@ -248,8 +236,16 @@ def encode_ultra_crisp_whop(
         )
         current_label = "[vlogo]"
 
-    # 3. Centered bottom website CTA ("Only Available on" / "FASTLOANPILOT.COM")
-    if watermark_text:
+    # 3. Campaign banner (logo_text / logo_subtext) or the FastLoanPilot bottom CTA.
+    if logo_text or logo_subtext:
+        banner_filter, current_label = platform_map.ffmpeg_banner_filter(
+            {"logo_text": logo_text, "logo_subtext": logo_subtext},
+            current_label,
+            font_path,
+        )
+        if banner_filter:
+            chains.append(banner_filter)
+    elif watermark_text:
         safe_wm = escape_drawtext(watermark_text.upper()[:34])
         chains.append(
             f"{current_label}drawtext=fontfile='{font_path}':text='Only Available on':"
@@ -314,6 +310,78 @@ def encode_ultra_crisp_whop(
         raise RuntimeError(f"ffmpeg ultra-crisp encode failed: {(res.stderr or '')[-500:]}")
 
 
+def _rejected_by_pool_guard(cfg: dict) -> list[dict]:
+    rules = cfg.get("pool_guard_rules") or {}
+    rejected: list[dict] = []
+    for campaign in cfg.get("active_campaigns") or []:
+        ok, reason = platform_map.check_campaign_pool_guard(campaign, rules)
+        if ok:
+            continue
+        rejected.append(
+            {
+                "id": campaign.get("id"),
+                "title": campaign.get("title"),
+                "denial_rate": campaign.get("denial_rate"),
+                "reason": reason,
+            }
+        )
+    return rejected
+
+
+def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
+    """Attach a YouTube payer and a separate X payer. Never pair @chadriyo with FastLoanPilot."""
+    youtube = platform_map.bind_clip_to_campaign(
+        platform_map.select_campaign_for_platform(cfg, "youtube_shorts"),
+        "youtube_shorts",
+    )
+    x_campaigns = [
+        platform_map.bind_clip_to_campaign(campaign, "x")
+        for campaign in platform_map.campaigns_for_platform(cfg, "x")
+    ]
+    if not x_campaigns:
+        raise platform_map.CampaignPlatformError(
+            "No Pool-Guard-passing campaign accepts x (@chadriyo)."
+        )
+    links_blocked = platform_map.x_links_blocked(cfg)
+    for index, clip in enumerate(clips):
+        x_campaign = x_campaigns[index % len(x_campaigns)]
+        hook = platform_map.compose_post_hook(
+            str(clip.get("hook_text") or ""),
+            str(clip.get("description") or ""),
+        )
+        youtube_caption = platform_map.build_platform_caption(
+            hook,
+            youtube,
+            "youtube_shorts",
+            links_blocked=False,
+        )
+        x_caption = platform_map.build_platform_caption(
+            hook,
+            x_campaign,
+            "x",
+            links_blocked=links_blocked,
+        )
+        duration_ok, duration_reason = platform_map.duration_fits(youtube, clip.get("duration"))
+        x_duration_ok, x_duration_reason = platform_map.duration_fits(x_campaign, clip.get("duration"))
+        clip["campaign_id"] = youtube.get("id")
+        clip["whop_id"] = youtube.get("product_id") or youtube.get("whop_id")
+        clip["youtube_campaign"] = youtube.get("id")
+        clip["youtube_caption"] = youtube_caption
+        clip["youtube_submission_url"] = youtube.get("submission_url")
+        clip["caption_youtube"] = youtube_caption
+        clip["youtube_duration_ok"] = duration_ok
+        clip["youtube_duration_reason"] = duration_reason
+        clip["x_campaign"] = x_campaign.get("id")
+        clip["x_caption"] = x_caption
+        clip["x_submission_url"] = x_campaign.get("submission_url")
+        clip["caption_x"] = x_caption
+        clip["x_duration_ok"] = x_duration_ok
+        clip["x_duration_reason"] = x_duration_reason
+        clip["overlay"] = platform_map.overlay_plan(youtube, x_campaign)
+        clip["x_mp4_url"] = None
+        clip["x_render"] = clip["overlay"]["mode"]
+
+
 def build_whop_ready_feed() -> dict:
     """Build whop_ready_feed.json combining Pool Guard status + ready HD clips."""
     cfg = load_json(CAMPAIGNS_PATH, {})
@@ -323,24 +391,11 @@ def build_whop_ready_feed() -> dict:
     ready_clips = [
         {
             "id": "flp-speedcube-lockin",
-            "campaign_id": "fastloanpilot-logo",
-            "whop_id": "prod_DyuwRHNCz3vpv",
             "title": "He solved the Rubik's Cube BEFORE his opponent even blinked 🤯🧩 #shorts #viral",
             "hook_text": "WATCH HIS HANDS AT 4.41 SECONDS",
-            "caption_x": (
-                "Bro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\n"
-                "In a tight spot? / Get up to a $5,000 loan today / All credit scores / No banks involved / No paperwork / Check out Fastloanpilot.com\n\n"
-                "#viral #speedcubing #rubikscube #shorts"
-            ),
-            "caption_youtube": (
-                "Bro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\n"
-                "In a tight spot?\n"
-                "Get up to a $5,000 loan today\n"
-                "All credit scores\n"
-                "No banks involved\n"
-                "No paperwork\n"
-                "Check out Fastloanpilot.com\n\n"
-                "#shorts #viral #rubikscube #speedcubing #mindblowing"
+            "description": (
+                "Bro entered an official Rubik's Cube tournament and solved it faster than "
+                "humanly possible 🤯🧩 Wait for his opponent's reaction at the end!"
             ),
             "lane": "funny",
             "duration": 34.7,
@@ -354,22 +409,11 @@ def build_whop_ready_feed() -> dict:
         },
         {
             "id": "flp-language-gauntlet",
-            "campaign_id": "fastloanpilot-logo",
-            "whop_id": "prod_DyuwRHNCz3vpv",
             "title": "Almost nobody passes the 5th country flag 😭🌍 Can you name them all? #shorts #viral",
             "hook_text": "ALMOST NOBODY PASSES THE 5TH FLAG",
-            "caption_x": (
-                "How many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\n"
-                "Up to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap\n\n"
-                "#viral #challenge #languages #shorts"
-            ),
-            "caption_youtube": (
-                "How many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\n"
-                "Up to $5,000\n"
-                "Apply online in minutes\n"
-                "Get funds within 24 hours after approval\n"
-                "Check Fastloanpilot.com if you need a loan asap\n\n"
-                "#shorts #viral #challenge #trivia #funny"
+            "description": (
+                "How many of these languages could you actually get right on the first try? "
+                "😭🌍 The ending caught him completely off guard!"
             ),
             "lane": "knowledge",
             "duration": 38.0,
@@ -383,23 +427,11 @@ def build_whop_ready_feed() -> dict:
         },
         {
             "id": "flp-concert-vibes",
-            "campaign_id": "fastloanpilot-logo",
-            "whop_id": "prod_DyuwRHNCz3vpv",
             "title": "When Ed Sheeran harmonizes in Hindi & English live on acoustic guitar ✨🎶 #shorts #music",
             "hook_text": "WAIT FOR THE HIGH NOTE AT 0.08",
-            "caption_x": (
-                "Unplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\n"
-                "No hard credit check / Even with bad credit / No hidden fees / Instant/quick/free/fast approval / Apply for a loan at Fastloanpilot.com\n\n"
-                "#music #edsheeran #concert #viral #shorts"
-            ),
-            "caption_youtube": (
-                "Unplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\n"
-                "No hard credit check\n"
-                "Even with bad credit\n"
-                "No hidden fees\n"
-                "Instant/quick/free/fast approval\n"
-                "Apply for a loan at Fastloanpilot.com\n\n"
-                "#shorts #music #edsheeran #concert #live #viral"
+            "description": (
+                "Unplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 "
+                "Goosebumps every single time!"
             ),
             "lane": "concert",
             "duration": 70.0,
@@ -412,14 +444,21 @@ def build_whop_ready_feed() -> dict:
             },
         },
     ]
+    _apply_platform_mapping(ready_clips, cfg)
+    rejected = _rejected_by_pool_guard(cfg)
 
     feed_data = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "whop_user": cfg.get("whop_user", "@bi60"),
         "quality_profile": "1080x1920_lanczos_cas_crf18_8mbps",
+        "platform_mapping": (
+            "youtube_shorts=Denzen uses a campaign that lists youtube_shorts; "
+            "x=@chadriyo uses a campaign that lists x"
+        ),
         "pool_guard_rules": rules,
         "healthy_campaigns_count": len(healthy),
         "healthy_campaigns": healthy,
+        "rejected_by_pool_guard": rejected,
         "skipped_campaigns": cfg.get("skipped_low_pool_or_baited_campaigns") or [],
         "ready_clips_count": len(ready_clips),
         "items": ready_clips,
@@ -442,6 +481,8 @@ def main(argv: list[str]) -> int:
     clip_p.add_argument("--hook", default="", help="Top scroll-stopping hook banner text")
     clip_p.add_argument("--watermark", default="", help="Bottom centered CTA domain text")
     clip_p.add_argument("--logo", default="", help="Optional PNG logo path to overlay")
+    clip_p.add_argument("--logo-text", default="", help="Campaign banner text (logo_text)")
+    clip_p.add_argument("--logo-subtext", default="", help="Campaign banner subtext (logo_subtext)")
 
     args = parser.parse_args(argv)
     if args.command == "check-pools":
@@ -466,6 +507,8 @@ def main(argv: list[str]) -> int:
             hook_text=args.hook,
             watermark_text=args.watermark,
             logo_path=logo_p,
+            logo_text=args.logo_text,
+            logo_subtext=args.logo_subtext,
         )
         if tmp_src and tmp_src.exists():
             tmp_src.unlink(missing_ok=True)

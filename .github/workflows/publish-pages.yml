@@ -139,6 +139,7 @@ jobs:
           set -euo pipefail
           mkdir -p site/whop/v site/whop/feed site/whop/logos
           curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/whop/feed/whop_ready_feed.json" -o site/whop/feed/whop_ready_feed.json || true
+          curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/whop/manifest.json" -o site/whop/manifest.json || true
           curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/whop/logos/fastloanpilot.png" -o site/whop/logos/fastloanpilot.png || true
           for clip in flp-speedcube-lockin.mp4 flp-language-gauntlet.mp4 flp-concert-vibes.mp4; do
             curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/whop/v/$clip" -o "site/whop/v/$clip" || true
