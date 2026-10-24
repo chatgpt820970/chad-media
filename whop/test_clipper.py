@@ -26,13 +26,7 @@ from whop.clipper import (
     verify_manifest_data,
 )
 
-X_PAYING_IDS = {
-    "dishpilot-clipping",
-    "finsta-ugc-clipping",
-    "darkroom-clipping",
-    "nova-x-clipping",
-    "cravin-x-clipping",
-}
+X_PAYING_IDS = {"dishpilot-clipping"}
 INDIAN_CATEGORIES = {"indian_actor_reels", "indian_movie_scenes"}
 LOAN_SPAM = r"(?i)fastloan|fast\s*loan|loan|instant\s+cash|\$\s*5,?000|\$\s*200"
 
@@ -47,42 +41,28 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             if campaign["id"] == "fast-loan-pilot"
         )
 
-    def test_fastloanpilot_rejected_for_x_and_selected_for_youtube_shorts(self) -> None:
+    def test_fastloanpilot_is_closed_and_not_selected(self) -> None:
+        self.assertEqual(self.flp["status"], "closed")
         self.assertEqual(self.flp["product_id"], "prod_DyuwRHNCz3vpv")
         self.assertEqual(self.flp["experience_id"], "exp_cqVzB3tgaTR5tB")
-        self.assertEqual(
-            self.flp["submission_url"],
-            "https://whop.com/joined/fast-loan-pilot-logo-clipping/exp_cqVzB3tgaTR5tB/app/",
-        )
-        self.assertEqual(self.flp["accepted_platforms"], ["youtube_shorts", "instagram_reels", "tiktok"])
         self.assertNotIn("x", self.flp["accepted_platforms"])
-        self.assertEqual(self.flp["rules"]["min_duration_sec"], 6)
-        self.assertEqual(self.flp["rules"]["max_duration_sec"], 15)
-        self.assertEqual(self.flp["rate_per_1k_views_usd"], 2.0)
-        self.assertEqual(self.flp["remaining_pool_usd"], 10000.0)
 
         with self.assertRaises(CampaignPlatformError) as caught:
             bind_clip_to_campaign(self.flp, "x")
         self.assertIn("@chadriyo", str(caught.exception))
         self.assertIn("fast-loan-pilot", str(caught.exception))
 
-        flp_only = {
-            "pool_guard_rules": self.guard,
-            "active_campaigns": [self.flp],
-            "platform_routing": {},
-        }
-        with self.assertRaises(CampaignPlatformError) as caught:
-            select_campaign_for_platform(flp_only, "x")
-        self.assertIn("@chadriyo", str(caught.exception))
-
-        youtube_only = select_campaign_for_platform(flp_only, "youtube_shorts")
-        self.assertEqual(youtube_only["id"], "fast-loan-pilot")
+        closed_ok, closed_reason = check_campaign_pool_guard(self.flp, self.guard)
+        self.assertFalse(closed_ok)
+        self.assertIn("closed", closed_reason)
 
         youtube = select_campaign_for_platform(self.data, "youtube_shorts")
-        self.assertEqual(youtube["id"], "fast-loan-pilot")
+        self.assertEqual(youtube["id"], "dishpilot-clipping")
         self.assertIn("youtube_shorts", youtube["accepted_platforms"])
-        self.assertNotIn("x", youtube["accepted_platforms"])
-        self.assertEqual(youtube["rules"]["logo_overlay_required"], True)
+        self.assertEqual(youtube["rules"]["logo_text"], "dishpilot")
+        routed = [campaign["id"] for campaign in campaigns_for_platform(self.data, "youtube_shorts")]
+        self.assertEqual(routed, ["dishpilot-clipping", "mr-pa-clipping"])
+        self.assertNotIn("fast-loan-pilot", routed)
 
     def test_select_x_campaign_accepts_x_and_passes_pool_guard(self) -> None:
         chosen = select_campaign_for_platform(self.data, "x")
@@ -96,16 +76,7 @@ class PlatformCampaignMappingTest(unittest.TestCase):
 
         paying = campaigns_for_platform(self.data, "x")
         paying_ids = [campaign["id"] for campaign in paying]
-        self.assertEqual(
-            paying_ids,
-            [
-                "dishpilot-clipping",
-                "finsta-ugc-clipping",
-                "darkroom-clipping",
-                "nova-x-clipping",
-                "cravin-x-clipping",
-            ],
-        )
+        self.assertEqual(paying_ids, ["dishpilot-clipping"])
         best = max(paying, key=lambda campaign: campaign["remaining_pool_usd"])
         self.assertEqual(chosen["id"], best["id"])
         for campaign in paying:
@@ -157,23 +128,23 @@ class PlatformCampaignMappingTest(unittest.TestCase):
 
         x_ids = {slot["x_campaign"] for slot in manifest["slots"]}
         self.assertEqual(x_ids, X_PAYING_IDS)
-        self.assertEqual(manifest["slots"][0]["x_campaign"], "dishpilot-clipping")
-        self.assertEqual(manifest["slots"][1]["x_campaign"], "finsta-ugc-clipping")
-        self.assertEqual(manifest["slots"][2]["x_campaign"], "darkroom-clipping")
-        self.assertEqual(manifest["slots"][3]["x_campaign"], "nova-x-clipping")
-        self.assertEqual(manifest["slots"][3]["x_rate_per_1k_views_usd"], 5.0)
-        self.assertEqual(manifest["slots"][4]["x_campaign"], "cravin-x-clipping")
+        self.assertTrue(all(slot["x_campaign"] == "dishpilot-clipping" for slot in manifest["slots"]))
+        self.assertEqual(manifest["slots"][0]["instagram_campaign"], "rascals-theme-pages")
+        self.assertEqual(manifest["slots"][0]["instagram_rate_per_1k_views_usd"], 3.0)
+        self.assertEqual(manifest["slots"][1]["instagram_campaign"], "dishpilot-clipping")
 
-        flp_cta = self.flp["rules"]["mandatory_caption"]
         locked_x = {"funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"}
         for slot in manifest["slots"]:
-            self.assertIn(slot["youtube_campaign"], ("fast-loan-pilot", "mr-pa-clipping"))
+            self.assertIn(slot["youtube_campaign"], ("dishpilot-clipping", "mr-pa-clipping"))
             self.assertEqual(slot["youtube_handle"], "Denzen")
             self.assertEqual(slot["youtube_username"], "@denzen0")
             self.assertIn(slot["hook"], slot["youtube_caption"])
+            self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["youtube_caption"]), ["#Dishpilot", "#Shorts"])
+            self.assertNotRegex(slot["youtube_caption"], LOAN_SPAM)
             self.assertIn(slot["x_campaign"], X_PAYING_IDS)
             self.assertEqual(slot["x_handle"], "@chadriyo")
-            self.assertIn(slot["x_rate_per_1k_views_usd"], (2.0, 5.0))
+            self.assertEqual(slot["x_rate_per_1k_views_usd"], 2.0)
+            self.assertEqual(slot["x_badge"], "dishpilot")
             self.assertIn(slot["x_category"], locked_x)
             self.assertTrue(slot["youtube_duration_ok"])
             self.assertEqual(slot["youtube_duration_sec"], 12.5)
@@ -188,33 +159,35 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertNotRegex(slot["x_caption"], LOAN_SPAM)
             self.assertIn(slot["hook"], slot["x_caption"])
             self.assertNotEqual(slot["x_campaign"], "fast-loan-pilot")
-            self.assertEqual(slot["overlay"]["mode"], "platform_specific_variants")
+            self.assertNotEqual(slot["x_campaign"], "nova-x-clipping")
+            self.assertEqual(slot["overlay"]["mode"], "dual_compatible")
             self.assertTrue(slot["x_submission_url"].startswith("https://"))
-            for side in ("x", "youtube_shorts"):
+            self.assertEqual(slot["overlay"]["x"]["logo_text"], "dishpilot")
+            self.assertEqual(slot["overlay"]["youtube_shorts"]["logo_text"], "dishpilot")
+            self.assertEqual(slot["overlay"]["instagram_reels"]["logo_text"], "rascals · dishpilot")
+            for side in ("x", "youtube_shorts", "instagram_reels"):
                 badge = slot["overlay"][side]
-                self.assertLessEqual(badge["logo_count"], 1)
-                self.assertIn(badge["logo_placement"], ("corner", "none"))
+                self.assertEqual(badge["logo_count"], 1)
+                self.assertEqual(badge["logo_placement"], "corner")
                 self.assertEqual(badge["logo_subtext"], "")
-            if slot["youtube_campaign"] == "fast-loan-pilot":
-                self.assertIn(flp_cta, slot["youtube_caption"])
+            if slot["youtube_category"] in INDIAN_CATEGORIES:
+                self.assertEqual(slot["youtube_campaign"], "dishpilot-clipping")
                 self.assertEqual(slot["youtube_rate_per_1k_views_usd"], 2.0)
-                self.assertEqual(slot["youtube_remaining_pool_usd"], 10000.0)
-                self.assertEqual(slot["overlay"]["youtube_shorts"]["logo_count"], 1)
-                self.assertEqual(slot["overlay"]["youtube_shorts"]["logo_placement"], "corner")
-                self.assertNotIn(slot["youtube_category"], INDIAN_CATEGORIES)
             else:
                 self.assertEqual(slot["youtube_campaign"], "mr-pa-clipping")
-                self.assertIn("#mrpa", slot["youtube_caption"].lower())
-                self.assertNotRegex(slot["youtube_caption"], LOAN_SPAM)
                 self.assertEqual(slot["youtube_rate_per_1k_views_usd"], 1.25)
                 self.assertEqual(slot["youtube_remaining_pool_usd"], 8507.0)
-                self.assertEqual(slot["overlay"]["youtube_shorts"]["logo_count"], 0)
-                self.assertIn(slot["youtube_category"], INDIAN_CATEGORIES)
-            if slot["x_campaign"] == "dishpilot-clipping":
-                tags = re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["x_caption"])
-                self.assertGreaterEqual(len(tags), 1)
-                self.assertLessEqual(len(tags), 2)
-                self.assertNotIn("FastLoanPilot", slot["x_caption"])
+            tags = re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["x_caption"])
+            self.assertEqual(tags, ["#Dishpilot"])
+            self.assertNotIn("FastLoanPilot", slot["x_caption"])
+            self.assertEqual(slot["instagram_handle"], "@benreelr")
+            self.assertEqual(
+                re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["instagram_caption"]),
+                ["#Rascals", "#Dishpilot", "#Reels"],
+            )
+            self.assertIn(slot["instagram_campaign"], ("rascals-theme-pages", "dishpilot-clipping"))
+            self.assertTrue(slot["instagram_duration_ok"])
+            self.assertEqual(slot["instagram_duration_sec"], 15.0)
 
         on_disk = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
         self.assertEqual(on_disk["slots"], manifest["slots"])
@@ -224,29 +197,18 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertTrue(all(item["youtube_duration_ok"] for item in feed["items"]))
         self.assertTrue(all(str(item["x_mp4_url"]).endswith((".mp4",)) for item in feed["items"]))
 
-    def test_nova_and_cravin_accept_x(self) -> None:
+    def test_nova_is_closed_because_its_app_only_returns_ok(self) -> None:
         nova = next(campaign for campaign in self.data["active_campaigns"] if campaign["id"] == "nova-x-clipping")
         cravin = next(campaign for campaign in self.data["active_campaigns"] if campaign["id"] == "cravin-x-clipping")
-        self.assertEqual(nova["title"], "Nova Clipping ($5 / 1K Views on X)")
+        self.assertEqual(nova["status"], "closed")
+        self.assertEqual(nova["whop_app_id"], "app_JsryI0fVLVpeYi")
         self.assertEqual(nova["whop_product_id"], "prod_3juzE1FqAXBsj")
-        self.assertEqual(nova["whop_experience_id"], "exp_zB6vOQWkg5RKa6")
-        self.assertEqual(
-            nova["submission_url"],
-            "https://whop.com/joined/nova-content/exp_zB6vOQWkg5RKa6/app/",
-        )
-        self.assertEqual(nova["cpm_usd"], 5.0)
-        self.assertEqual(nova["pool_remaining_usd"], 1000.0)
-        self.assertEqual(nova["denial_rate"], 0.0)
-        self.assertEqual(
-            nova["accepted_platforms"],
-            ["x", "tiktok", "youtube_shorts", "instagram_reels"],
-        )
-        self.assertEqual(nova["min_duration_sec"], 10)
-        self.assertEqual(nova["max_duration_sec"], 60)
-        self.assertEqual(nova["required_caption"], "Check out Nova ✨ #Nova #Viral #Clips")
         nova_ok, nova_reason = check_campaign_pool_guard(nova, self.guard)
-        self.assertTrue(nova_ok, nova_reason)
-        bind_clip_to_campaign(nova, "x")
+        self.assertFalse(nova_ok)
+        self.assertIn("closed", nova_reason)
+        routed = [campaign["id"] for campaign in campaigns_for_platform(self.data, "x")]
+        self.assertNotIn("nova-x-clipping", routed)
+        self.assertNotIn("cravin-x-clipping", routed)
 
         self.assertEqual(cravin["title"], "Cravin Clipping Program ($2 / 1K Views on X)")
         self.assertEqual(cravin["whop_product_id"], "prod_636gGffOtD5Vc")
@@ -290,16 +252,20 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             for campaign in self.data["active_campaigns"]
             if campaign["id"] == "dishpilot-clipping"
         )
-        plan = overlay_plan(self.flp, dishpilot)
+        rascals = next(
+            campaign
+            for campaign in self.data["active_campaigns"]
+            if campaign["id"] == "rascals-theme-pages"
+        )
+        plan = overlay_plan(rascals, dishpilot)
         self.assertEqual(plan["mode"], "platform_specific_variants")
-        self.assertEqual(plan["x"]["logo_text"], "DISHPILOT")
+        self.assertEqual(plan["x"]["logo_text"], "dishpilot")
         self.assertEqual(plan["x"]["logo_subtext"], "")
         self.assertEqual(plan["x"]["logo_count"], 1)
         self.assertEqual(plan["x"]["logo_placement"], "corner")
-        self.assertEqual(plan["youtube_shorts"]["logo_path"], "whop/logos/fastloanpilot.png")
+        self.assertEqual(plan["youtube_shorts"]["logo_text"], "rascals · dishpilot")
         self.assertEqual(plan["youtube_shorts"]["logo_count"], 1)
         self.assertEqual(plan["youtube_shorts"]["logo_placement"], "corner")
-        self.assertTrue(plan["youtube_shorts"]["logo_overlay_required"])
 
         same = {
             "logo_path": "",
@@ -310,44 +276,43 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertEqual(overlay_plan(same, same)["x"]["logo_subtext"], "")
 
         graph, label = ffmpeg_banner_filter(banner_overlay_spec(dishpilot), "[vbase]", "Sans")
-        self.assertIn("text='Dishpilot'", graph)
-        self.assertIn("fontsize=24:fontcolor=white@0.42:shadowcolor=black@0.28:shadowx=1:shadowy=1", graph)
+        self.assertIn("text='dishpilot'", graph)
+        self.assertIn("fontcolor=white@0.58", graph)
+        self.assertIn("shadowx=1:shadowy=1", graph)
+        self.assertIn("x=w*0.025:y=h*0.03", graph)
         self.assertNotIn("Dishpilot.com", graph)
         self.assertNotIn("box=", graph)
         self.assertNotIn("drawbox", graph)
-        self.assertIn("y=h-text_h-28", graph)
         self.assertEqual(graph.count("drawtext"), 1)
         self.assertEqual(label, "[vbadge]")
-        nova_graph, _nova_label = ffmpeg_banner_filter(
-            {"logo_text": "NOVA", "logo_count": 1, "logo_placement": "corner"},
-            "[vbase]",
-            "Sans",
-        )
-        self.assertIn("w-text_w-40", nova_graph)
-        self.assertIn("box=1", nova_graph)
+        reels_graph, _reels_label = ffmpeg_banner_filter(banner_overlay_spec(rascals), "[vbase]", "Sans")
+        self.assertIn("text='rascals · dishpilot'", reels_graph)
+        self.assertIn("x=w*0.025:y=h*0.03", reels_graph)
+        self.assertNotIn("box=", reels_graph)
+        self.assertEqual(reels_graph.count("drawtext"), 1)
 
-        self.assertFalse(duration_fits(self.flp, 34.7)[0])
-        self.assertTrue(duration_fits(self.flp, 12)[0])
-        self.assertTrue(duration_fits(dishpilot, 34.7)[0])
+        self.assertTrue(duration_fits(dishpilot, 12.5)[0])
+        self.assertTrue(duration_fits(dishpilot, 30)[0])
         self.assertFalse(duration_fits(dishpilot, 70)[0])
+        self.assertTrue(duration_fits(rascals, 15)[0])
 
     def test_single_corner_logo_never_two_center_logos(self) -> None:
         manifest = build_daily_manifest(self.data, generated_at="2026-10-24T00:00:00Z")
         for slot in manifest["slots"]:
-            for side in ("x", "youtube_shorts"):
+            for side in ("x", "youtube_shorts", "instagram_reels"):
                 badge = slot["overlay"][side]
-                self.assertLessEqual(badge["logo_count"], 1)
-                self.assertIn(badge["logo_placement"], ("corner", "none"))
+                self.assertEqual(badge["logo_count"], 1)
+                self.assertEqual(badge["logo_placement"], "corner")
                 self.assertNotEqual(badge["logo_placement"], "center")
                 self.assertFalse(badge["logo_subtext"])
         graph, _label = ffmpeg_banner_filter(
-            {"logo_text": "DISHPILOT", "logo_subtext": "SECOND", "logo_count": 1, "logo_placement": "corner"},
+            {"logo_text": "dishpilot", "logo_subtext": "SECOND", "logo_count": 1, "logo_placement": "corner"},
             "[vbase]",
             "Sans",
         )
         self.assertEqual(graph.count("drawtext"), 1)
-        self.assertIn("text='Dishpilot'", graph)
-        self.assertIn("fontcolor=white@0.42", graph)
+        self.assertIn("text='dishpilot'", graph)
+        self.assertIn("fontcolor=white@0.58", graph)
         self.assertNotIn("box=", graph)
         self.assertNotIn("SECOND", graph)
         cleaned = dishpilot_clip_filter(
@@ -358,7 +323,8 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             clean_bottom_strip=True,
         )
         self.assertIn("crop=1080:1720:0:0", cleaned)
-        self.assertIn("text='Dishpilot'", cleaned)
+        self.assertIn("text='dishpilot'", cleaned)
+        self.assertIn("x=w*0.025:y=h*0.03", cleaned)
         self.assertNotIn("drawbox", cleaned)
         self.assertIn("60\\,000", cleaned)
 
@@ -370,8 +336,7 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertEqual(slot["x_handle"], "@chadriyo")
             self.assertIn(slot["hook"], slot["x_caption"])
             tags = re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["x_caption"])
-            self.assertGreaterEqual(len(tags), 1)
-            self.assertLessEqual(len(tags), 2)
+            self.assertEqual(tags, ["#Dishpilot"])
             self.assertNotRegex(slot["x_caption"], LOAN_SPAM)
             self.assertNotIn("FastLoanPilot", slot["x_caption"])
             self.assertNotIn("http", slot["x_caption"].lower())
@@ -390,7 +355,8 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertTrue(all(slot["youtube_username"] == "@denzen0" for slot in indian))
         global_slots = [slot for slot in manifest["slots"] if slot not in indian]
         self.assertEqual(len(global_slots), 2)
-        self.assertTrue(all(slot["youtube_campaign"] == "fast-loan-pilot" for slot in global_slots))
+        self.assertTrue(all(slot["youtube_campaign"] == "mr-pa-clipping" for slot in global_slots))
+        self.assertTrue(all(slot["youtube_campaign"] == "dishpilot-clipping" for slot in indian))
         locked = {"funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"}
         self.assertTrue(all(slot["x_category"] in locked for slot in manifest["slots"]))
         self.assertEqual({slot["x_category"] for slot in manifest["slots"]}, locked)
@@ -417,8 +383,8 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             path, hook = expected[number]
             self.assertEqual(slot["campaign"], "dishpilot-clipping")
             self.assertEqual(slot["handle"], "@chadriyo")
-            self.assertEqual(slot["badge"], "Dishpilot")
-            self.assertEqual(slot["logo_text"], "Dishpilot")
+            self.assertEqual(slot["badge"], "dishpilot")
+            self.assertEqual(slot["logo_text"], "dishpilot")
             self.assertEqual(slot["logo_count"], 1)
             self.assertEqual(slot["logo_placement"], "corner")
             self.assertEqual(slot["hook"], hook)

@@ -1,16 +1,15 @@
 #!/usr/bin/env python3
-"""Platform-specific Whop campaign mapping for X (@chadriyo) and YouTube Shorts (Denzen).
+"""Platform-specific Whop campaign mapping.
 
-Every X view is paired with a campaign whose accepted_platforms includes "x".
-Every YouTube Shorts view is paired with a campaign whose accepted_platforms
-includes "youtube_shorts". FastLoanPilot does not pay for X. Pool Guard rejects
-bounties whose denial rate is above the configured cap (Shane Gillis is 99.8%).
+X (@chadriyo) posts to Dishpilot. Instagram Reels (@benreelr) posts to Rascals
+and Dishpilot. YouTube Shorts (Denzen) posts to Dishpilot and Mr. Pa. FastLoanPilot
+and Nova are closed: Nova's legacy app app_JsryI0fVLVpeYi only returns "ok".
+Pool Guard rejects bounties whose denial rate is above the configured cap
+(Shane Gillis is 99.8%).
 
-Visual rule: at most one subtle side/corner badge. Never two logos, and never a
-logo stacked in the middle of the frame. Caption copy follows each campaign:
-Dishpilot on X is a hook plus one or two hashtags (no loan text), Mr. Pa is a
-clean hook plus #mrpa, and the FastLoanPilot line is only used on YouTube
-Shorts slots assigned to fast-loan-pilot.
+Visual rule: one subtle top-left corner mark. Never two logos, and never a logo
+stacked in the middle of the frame. X and YouTube read "dishpilot". Instagram
+reads "rascals · dishpilot".
 """
 
 from __future__ import annotations
@@ -31,19 +30,21 @@ MEDIA_DIR = ROOT / "v"
 PAGES_MEDIA_BASE = "https://chatgpt820970.github.io/chad-media/whop/v/"
 BOLD_FONT = "/usr/share/fonts/truetype/macos/Inter-Bold.ttf"
 
-SUPPORTED_PLATFORMS = ("x", "youtube_shorts")
+SUPPORTED_PLATFORMS = ("x", "youtube_shorts", "instagram_reels")
 PLATFORM_ACCOUNTS = {
     "x": "@chadriyo",
     "youtube_shorts": "Denzen (@denzen0)",
+    "instagram_reels": "@benreelr",
 }
-X_CAMPAIGN_IDS = (
-    "dishpilot-clipping",
-    "finsta-ugc-clipping",
-    "darkroom-clipping",
-)
-YOUTUBE_PRIMARY_ID = "fast-loan-pilot"
+X_CAMPAIGN_IDS = ("dishpilot-clipping",)
+YOUTUBE_PRIMARY_ID = "dishpilot-clipping"
 MR_PA_ID = "mr-pa-clipping"
+RASCALS_ID = "rascals-theme-pages"
 DISHPILOT_ID = "dishpilot-clipping"
+CLOSED_CAMPAIGN_IDS = ("fast-loan-pilot", "nova-x-clipping")
+# Full HD encode. No bitrate cap: CRF 17 with the fast preset.
+ENCODE_PRESET = "fast"
+ENCODE_CRF = "17"
 DAILY_SLOT_COUNT = 10
 OPEN_STATUSES = ("open", "active", "live")
 INDIAN_CATEGORIES = ("indian_actor_reels", "indian_movie_scenes")
@@ -61,18 +62,24 @@ X_SLOT_CATEGORIES = (
     "knowledge",
     "movie",
 )
-# 8 of 10 Denzen slots are Indian actor / cinema lanes. The other 2 stay global.
+# 8 of 10 Denzen slots are Indian actor / cinema lanes on Dishpilot ($2/1K).
+# The other 2 stay global on Mr. Pa ($1.25/1K).
 YOUTUBE_SLOT_PLAN = (
-    {"campaign_id": MR_PA_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
-    {"campaign_id": MR_PA_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
-    {"campaign_id": MR_PA_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
-    {"campaign_id": MR_PA_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
-    {"campaign_id": MR_PA_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
-    {"campaign_id": MR_PA_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
-    {"campaign_id": MR_PA_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
-    {"campaign_id": MR_PA_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
-    {"campaign_id": YOUTUBE_PRIMARY_ID, "category": "funny", "file": "yt-flp-3.mp4"},
-    {"campaign_id": YOUTUBE_PRIMARY_ID, "category": "movie", "file": "yt-flp-3.mp4"},
+    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
+    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
+    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
+    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
+    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
+    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
+    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
+    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
+    {"campaign_id": MR_PA_ID, "category": "funny", "file": "yt-flp-3.mp4"},
+    {"campaign_id": MR_PA_ID, "category": "movie", "file": "yt-flp-3.mp4"},
+)
+# Rascals ($3/1K) leads. Dishpilot ($2/1K) fills the alternating Reels slots.
+INSTAGRAM_SLOT_PLAN = tuple(
+    {"campaign_id": RASCALS_ID if index % 2 == 0 else DISHPILOT_ID}
+    for index in range(DAILY_SLOT_COUNT)
 )
 
 # Ten posting slots. X campaigns rotate in routing order so each paying
@@ -98,10 +105,21 @@ _YT_MP4_RE = re.compile(
     r"^https://chatgpt820970\.github\.io/chad-media/whop/v/yt-flp-[123]\.mp4$"
 )
 
-# YouTube Shorts files are 12.5s (inside FastLoanPilot's 6–15s window) at 60fps.
-# X files are 30s (inside the 20–35s render window) with a dark header over y=0..180.
+# YouTube Shorts are 12.5s and Instagram Reels are 15s, both inside the 8–35s
+# Dishpilot window. X files are 30s.
 YOUTUBE_DURATION_SEC = 12.5
+INSTAGRAM_DURATION_SEC = 15.0
 X_DURATION_SEC = 30.0
+PLATFORM_WATERMARK = {
+    "x": "dishpilot",
+    "youtube_shorts": "dishpilot",
+    "instagram_reels": "rascals · dishpilot",
+}
+PLATFORM_HASHTAGS = {
+    "x": ["#Dishpilot"],
+    "youtube_shorts": ["#Dishpilot", "#Shorts"],
+    "instagram_reels": ["#Rascals", "#Dishpilot", "#Reels"],
+}
 YOUTUBE_VARIANTS = (
     {
         "file": "yt-flp-1.mp4",
@@ -129,23 +147,23 @@ X_VARIANTS = (
     {
         "file": "x-clip-1.mp4",
         "source": "flp-speedcube-lockin.mp4",
-        "badge": "NOVA",
+        "badge": "dishpilot",
         "hook": "WATCH HIS HANDS",
-        "campaign_id": "nova-x-clipping",
+        "campaign_id": DISHPILOT_ID,
     },
     {
         "file": "x-clip-2.mp4",
         "source": "flp-language-gauntlet.mp4",
-        "badge": "DISHPILOT",
+        "badge": "dishpilot",
         "hook": "NAME EVERY FLAG",
         "campaign_id": DISHPILOT_ID,
     },
     {
         "file": "x-clip-3.mp4",
         "source": "flp-concert-vibes.mp4",
-        "badge": "CRAVIN",
+        "badge": "dishpilot",
         "hook": "WAIT FOR THE NOTE",
-        "campaign_id": "cravin-x-clipping",
+        "campaign_id": DISHPILOT_ID,
     },
 )
 LIBRARY_SOURCES = (
@@ -347,8 +365,8 @@ def campaigns_for_platform(campaigns_data: dict, platform: str) -> list[dict]:
 def select_campaign_for_platform(campaigns_data: dict, platform: str) -> dict:
     """Pick one campaign that passes Pool Guard and explicitly accepts `platform`.
 
-    YouTube Shorts (Denzen) prefers the routed primary, FastLoanPilot.
-    X (@chadriyo) prefers the healthiest routed campaign that lists "x".
+    Each platform prefers its routed primary: Dishpilot on X and YouTube Shorts,
+    Rascals on Instagram Reels. Closed campaigns (FastLoanPilot, Nova) never win.
     Pairing a clip with a campaign that omits the platform raises CampaignPlatformError.
     """
     if platform not in SUPPORTED_PLATFORMS:
@@ -442,16 +460,31 @@ def build_platform_caption(
 ) -> str:
     """Build the post caption from that campaign's terms.
 
-    hook_and_hashtags: scroll-stopping hook plus at most two hashtags.
-    Dishpilot on X and Mr. Pa use this so loan copy never lands on those posts.
-    hook_cta_hashtags: hook plus the campaign's mandatory caption. FastLoanPilot
-    uses this, and only on slots assigned to that campaign.
+    Routed Dishpilot, Rascals, and Mr. Pa posts use the platform's required tags:
+    X is #Dishpilot, YouTube Shorts is #Dishpilot #Shorts, and Instagram Reels is
+    #Rascals #Dishpilot #Reels. Other campaigns keep their own caption style.
     X drops raw links when the channel blocks them, and loan phrasing is removed
     from every X caption.
     """
     rules = _rules(campaign)
     style = caption_style(campaign)
     hook_text = hook.strip()
+    platform_tags = PLATFORM_HASHTAGS.get(platform) if campaign.get("id") in {
+        DISHPILOT_ID,
+        MR_PA_ID,
+        RASCALS_ID,
+    } else None
+    if platform_tags:
+        caption = f"{hook_text}\n\n{' '.join(platform_tags)}" if hook_text else " ".join(platform_tags)
+        if links_blocked is None:
+            links_blocked = platform == "x"
+        if links_blocked:
+            caption = _strip_links(caption)
+        if platform == "x":
+            caption = _LOAN_SPAM_RE.sub("", caption)
+            caption = re.sub(r"[ \t]{2,}", " ", caption)
+            caption = re.sub(r"\n{3,}", "\n\n", caption).strip()
+        return caption.strip()
     if style == "hook_and_hashtags":
         limit = int(rules.get("max_hashtags") or 2)
         extras = _extra_hashtags(hook_text, campaign, limit)
@@ -484,7 +517,8 @@ def x_links_blocked(campaigns_data: dict) -> bool:
     return bool(channel.get("links_blocked", True))
 
 
-DISHPILOT_WATERMARK_TEXT = "Dishpilot"
+DISHPILOT_WATERMARK_TEXT = "dishpilot"
+RASCALS_WATERMARK_TEXT = "rascals · dishpilot"
 # Pixels cut from the bottom of a 1080x1920 master before it is scaled back.
 # The baked fastloanpilot wordmark sits in this strip (around y=1818–1872).
 BOTTOM_STRIP_CROP_PX = 200
@@ -505,15 +539,37 @@ def is_dishpilot_badge(text: str) -> bool:
     return letters in {"dishpilot", "dishpilotcom"}
 
 
-def dishpilot_watermark_drawtext(font_path: str) -> str:
-    """Small semi-transparent creator mark along the bottom. No pill."""
-    text = escape_drawtext(DISHPILOT_WATERMARK_TEXT)
+def is_subtle_corner_badge(text: str) -> bool:
+    letters = "".join(ch for ch in text.casefold() if ch.isalpha())
+    return letters in {"dishpilot", "dishpilotcom", "rascalsdishpilot"}
+
+
+def subtle_corner_drawtext(font_path: str, text: str) -> str:
+    """Top-left mark: white at 0.58 alpha, a 1px shadow, and no box."""
+    safe = escape_drawtext(text)
     return (
-        f"drawtext=fontfile='{font_path}':text='{text}':"
-        "fontsize=24:fontcolor=white@0.42:"
-        "shadowcolor=black@0.28:shadowx=1:shadowy=1:"
-        "x=(w-text_w)/2:y=h-text_h-28"
+        f"drawtext=fontfile='{font_path}':text='{safe}':"
+        "fontsize=22:fontcolor=white@0.58:"
+        "shadowcolor=black@0.40:shadowx=1:shadowy=1:"
+        "x=w*0.025:y=h*0.03"
     )
+
+
+def dishpilot_watermark_drawtext(font_path: str) -> str:
+    """Small semi-transparent dishpilot mark in the top-left corner. No pill."""
+    return subtle_corner_drawtext(font_path, DISHPILOT_WATERMARK_TEXT)
+
+
+def platform_overlay_spec(platform: str) -> dict:
+    """The single corner mark required on that platform."""
+    return {
+        "logo_overlay_required": True,
+        "logo_placement": "corner",
+        "logo_count": 1,
+        "logo_text": PLATFORM_WATERMARK[platform],
+        "logo_subtext": "",
+        "logo_path": "",
+    }
 
 
 def banner_overlay_spec(campaign: dict) -> dict:
@@ -559,8 +615,8 @@ def ffmpeg_banner_filter(spec: dict, input_label: str, font_path: str) -> tuple[
     if int(spec.get("logo_count") or 0) != 1:
         return "", input_label
     raw_logo = str(spec.get("logo_text") or "")
-    if is_dishpilot_badge(raw_logo):
-        graph = f"{input_label}{dishpilot_watermark_drawtext(font_path)}[vbadge]"
+    if is_subtle_corner_badge(raw_logo):
+        graph = f"{input_label}{subtle_corner_drawtext(font_path, raw_logo)}[vbadge]"
         return graph, "[vbadge]"
     logo_text = escape_drawtext(raw_logo)
     if not logo_text:
@@ -576,13 +632,20 @@ def ffmpeg_banner_filter(spec: dict, input_label: str, font_path: str) -> tuple[
 
 def platform_account(campaigns_data: dict, platform: str) -> dict:
     routing = _routing(campaigns_data, platform)
+    channels = campaigns_data.get("channels") or {}
     if platform == "x":
-        channel = (campaigns_data.get("channels") or {}).get("x") or {}
+        channel = channels.get("x") or {}
         return {
             "handle": routing.get("handle") or channel.get("handle") or "@chadriyo",
             "username": routing.get("username") or channel.get("username") or "",
         }
-    channel = (campaigns_data.get("channels") or {}).get("youtube") or {}
+    if platform == "instagram_reels":
+        channel = channels.get("instagram") or {}
+        return {
+            "handle": routing.get("handle") or channel.get("handle") or "@benreelr",
+            "username": routing.get("username") or channel.get("username") or "@benreelr",
+        }
+    channel = channels.get("youtube") or {}
     return {
         "handle": routing.get("handle") or channel.get("handle") or "Denzen",
         "username": routing.get("username") or channel.get("username") or "@denzen0",
@@ -624,6 +687,13 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
         bind_clip_to_campaign(youtube_campaign, "youtube_shorts")
         x_campaign = x_campaigns[index % len(x_campaigns)]
         bind_clip_to_campaign(x_campaign, "x")
+        ig_plan = INSTAGRAM_SLOT_PLAN[index]
+        instagram_campaign = _campaign_by_id(campaigns_data, str(ig_plan["campaign_id"]))
+        if instagram_campaign is None:
+            raise CampaignPlatformError(
+                f"Slot {spec['slot']} Instagram campaign {ig_plan['campaign_id']!r} is missing"
+            )
+        bind_clip_to_campaign(instagram_campaign, "instagram_reels")
         hook = str(spec["hook"])
         x_caption = build_platform_caption(hook, x_campaign, "x", links_blocked=links_blocked)
         youtube_caption = build_platform_caption(
@@ -632,24 +702,26 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
             "youtube_shorts",
             links_blocked=False,
         )
+        instagram_caption = build_platform_caption(
+            hook,
+            instagram_campaign,
+            "instagram_reels",
+            links_blocked=False,
+        )
         if links_blocked and _LINK_RE.search(x_caption):
             raise CampaignPlatformError(
                 f"Slot {spec['slot']} X caption still contains a link for {x_campaign.get('id')}"
             )
-        if contains_loan_spam(x_caption):
+        if contains_loan_spam(x_caption) or contains_loan_spam(youtube_caption) or contains_loan_spam(instagram_caption):
             raise CampaignPlatformError(
-                f"Slot {spec['slot']} X caption still contains loan text for {x_campaign.get('id')}"
+                f"Slot {spec['slot']} caption still contains loan text"
             )
         if x_campaign.get("id") == DISHPILOT_ID:
             tags = _HASHTAG_RE.findall(x_caption)
-            if not (1 <= len(tags) <= 2):
+            if tags != ["#Dishpilot"]:
                 raise CampaignPlatformError(
-                    f"Slot {spec['slot']} Dishpilot X caption must be a hook plus 1-2 hashtags"
+                    f"Slot {spec['slot']} Dishpilot X caption must be a hook plus #Dishpilot"
                 )
-        if youtube_campaign.get("id") != YOUTUBE_PRIMARY_ID and contains_loan_spam(youtube_caption):
-            raise CampaignPlatformError(
-                f"Slot {spec['slot']} YouTube caption has loan text on {youtube_campaign.get('id')}"
-            )
         x_category = X_SLOT_CATEGORIES[index]
         if x_category not in X_VIRAL_CATEGORIES:
             raise CampaignPlatformError(f"Slot {spec['slot']} X category {x_category!r} is outside the locked mix")
@@ -657,6 +729,7 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
         x_variant = X_VARIANTS[index % len(X_VARIANTS)]
         youtube_ok, youtube_reason = duration_fits(youtube_campaign, YOUTUBE_DURATION_SEC)
         x_ok, x_reason = duration_fits(x_campaign, X_DURATION_SEC)
+        instagram_ok, instagram_reason = duration_fits(instagram_campaign, INSTAGRAM_DURATION_SEC)
         if not youtube_ok:
             raise CampaignPlatformError(
                 f"Slot {spec['slot']} YouTube render is outside the campaign window: {youtube_reason}"
@@ -665,15 +738,23 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
             raise CampaignPlatformError(
                 f"Slot {spec['slot']} X render is outside the campaign window: {x_reason}"
             )
-        overlay = overlay_plan(youtube_campaign, x_campaign)
-        for side in ("youtube_shorts", "x"):
+        if not instagram_ok:
+            raise CampaignPlatformError(
+                f"Slot {spec['slot']} Instagram render is outside the campaign window: {instagram_reason}"
+            )
+        overlay = {
+            "mode": "dual_compatible",
+            "youtube_shorts": platform_overlay_spec("youtube_shorts"),
+            "x": platform_overlay_spec("x"),
+            "instagram_reels": platform_overlay_spec("instagram_reels"),
+        }
+        if overlay["x"]["logo_text"] != overlay["youtube_shorts"]["logo_text"]:
+            overlay["mode"] = "platform_specific_variants"
+        for side in ("youtube_shorts", "x", "instagram_reels"):
             side_spec = overlay[side]
-            if int(side_spec.get("logo_count") or 0) > 1 or side_spec.get("logo_placement") not in (
-                "corner",
-                "none",
-            ):
+            if int(side_spec.get("logo_count") or 0) != 1 or side_spec.get("logo_placement") != "corner":
                 raise CampaignPlatformError(
-                    f"Slot {spec['slot']} {side} overlay must be a single corner badge or no logo"
+                    f"Slot {spec['slot']} {side} overlay must be a single corner badge"
                 )
         slots.append(
             {
@@ -706,6 +787,18 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 "x_duration_ok": x_ok,
                 "x_duration_reason": x_reason,
                 "x_badge": x_variant["badge"],
+                "instagram_campaign": instagram_campaign.get("id"),
+                "instagram_campaign_title": instagram_campaign.get("title"),
+                "instagram_category": x_category,
+                "instagram_rate_per_1k_views_usd": _rate(instagram_campaign),
+                "instagram_remaining_pool_usd": _remaining_pool(instagram_campaign),
+                "instagram_caption": instagram_caption,
+                "instagram_submission_url": instagram_campaign.get("submission_url"),
+                "instagram_handle": platform_account(campaigns_data, "instagram_reels")["handle"],
+                "instagram_mp4_url": PAGES_MEDIA_BASE + str(plan["file"]),
+                "instagram_duration_sec": INSTAGRAM_DURATION_SEC,
+                "instagram_duration_ok": instagram_ok,
+                "instagram_duration_reason": instagram_reason,
                 "overlay": overlay,
             }
         )
@@ -720,11 +813,12 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
         or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "slot_count": len(slots),
         "guarantee": (
-            "Every X (@chadriyo) slot is paid by a campaign whose accepted_platforms "
-            "includes x, with no loan text in the caption. Every YouTube Shorts "
-            "(Denzen / @denzen0) slot is paid by a campaign whose accepted_platforms "
-            "includes youtube_shorts. At least 80% of YouTube slots are Indian actor "
-            "reels or Indian cinema scenes. Each overlay is a single corner badge or no logo."
+            "Every X (@chadriyo) slot is Dishpilot with #Dishpilot and no loan text. "
+            "Every Instagram Reel (@benreelr) is Rascals or Dishpilot with "
+            "#Rascals #Dishpilot #Reels. Every YouTube Shorts (Denzen / @denzen0) slot "
+            "is Dishpilot or Mr. Pa with #Dishpilot #Shorts. At least 80% of YouTube "
+            "slots are Indian actor reels or Indian cinema scenes. Each platform draws "
+            "one top-left corner mark."
         ),
         "slots": slots,
     }
@@ -772,8 +866,8 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
         if youtube_campaign is None:
             errors.append(f"slot {slot_no} youtube_campaign {youtube_id!r} is missing from active_campaigns")
             continue
-        if x_id == YOUTUBE_PRIMARY_ID:
-            errors.append(f"slot {slot_no} pairs X with FastLoanPilot, which does not accept x")
+        if x_id in CLOSED_CAMPAIGN_IDS:
+            errors.append(f"slot {slot_no} pairs X with closed campaign {x_id}")
         if x_id not in x_ids:
             errors.append(f"slot {slot_no} x_campaign {x_id!r} is not an active X-paying campaign")
             continue
@@ -797,29 +891,23 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
             errors.append(f"slot {slot_no} x rate does not match the campaign")
         youtube_caption = str(slot.get("youtube_caption") or "")
         x_caption = str(slot.get("x_caption") or "")
-        youtube_style = caption_style(youtube_campaign)
         x_style = caption_style(x_campaign)
-        youtube_cta = str(_rules(youtube_campaign).get("mandatory_caption") or "")
         x_cta = str(_rules(x_campaign).get("mandatory_caption") or "")
-        if youtube_id == YOUTUBE_PRIMARY_ID:
-            if youtube_cta and youtube_cta not in youtube_caption:
-                errors.append(f"slot {slot_no} youtube_caption is missing the FastLoanPilot CTA")
-        elif youtube_cta and youtube_cta in youtube_caption:
-            errors.append(f"slot {slot_no} youtube_caption includes another campaign's CTA")
         if contains_loan_spam(x_caption):
             errors.append(f"slot {slot_no} x_caption contains loan text")
-        if youtube_id != YOUTUBE_PRIMARY_ID and contains_loan_spam(youtube_caption):
+        if contains_loan_spam(youtube_caption):
             errors.append(f"slot {slot_no} youtube_caption contains loan text")
         if x_style == "hook_cta_hashtags" and x_cta and x_cta not in x_caption:
             errors.append(f"slot {slot_no} x_caption is missing the {x_id} CTA")
         if x_id == DISHPILOT_ID:
             tags = _HASHTAG_RE.findall(x_caption)
-            if not (1 <= len(tags) <= 2):
-                errors.append(f"slot {slot_no} Dishpilot X caption must be a hook plus 1-2 hashtags")
+            if tags != ["#Dishpilot"]:
+                errors.append(f"slot {slot_no} Dishpilot X caption must be a hook plus #Dishpilot")
             if x_cta and x_cta in x_caption:
                 errors.append(f"slot {slot_no} Dishpilot X caption includes a CTA past the hook and hashtags")
-        if youtube_id == MR_PA_ID and "#mrpa" not in youtube_caption.lower():
-            errors.append(f"slot {slot_no} Mr. Pa caption is missing #mrpa")
+        yt_tags = _HASHTAG_RE.findall(youtube_caption)
+        if yt_tags != ["#Dishpilot", "#Shorts"]:
+            errors.append(f"slot {slot_no} YouTube caption must include #Dishpilot #Shorts")
         hook = str(slot.get("hook") or "")
         if hook and hook not in x_caption:
             errors.append(f"slot {slot_no} x_caption is missing the hook")
@@ -842,9 +930,14 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
         overlay = slot.get("overlay") or {}
         if overlay.get("mode") not in ("platform_specific_variants", "dual_compatible"):
             errors.append(f"slot {slot_no} overlay mode is missing")
-        expected_x = banner_overlay_spec(x_campaign)
-        expected_yt = banner_overlay_spec(youtube_campaign)
-        for side, expected in (("x", expected_x), ("youtube_shorts", expected_yt)):
+        expected_x = platform_overlay_spec("x")
+        expected_yt = platform_overlay_spec("youtube_shorts")
+        expected_ig = platform_overlay_spec("instagram_reels")
+        for side, expected in (
+            ("x", expected_x),
+            ("youtube_shorts", expected_yt),
+            ("instagram_reels", expected_ig),
+        ):
             actual = overlay.get(side) or {}
             placement = str(actual.get("logo_placement") or "")
             count = int(actual.get("logo_count") or 0)
@@ -864,6 +957,41 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
             errors.append(f"slot {slot_no} x_handle is not @chadriyo")
         if slot.get("youtube_handle") != platform_account(campaigns_data, "youtube_shorts")["handle"]:
             errors.append(f"slot {slot_no} youtube_handle is not Denzen")
+        instagram_id = slot.get("instagram_campaign")
+        instagram_ids = [
+            campaign.get("id") for campaign in campaigns_for_platform(campaigns_data, "instagram_reels")
+        ]
+        if instagram_id not in instagram_ids:
+            errors.append(
+                f"slot {slot_no} instagram_campaign {instagram_id!r} is not an active Instagram Reels campaign"
+            )
+        else:
+            instagram_campaign = _campaign_by_id(campaigns_data, str(instagram_id))
+            if instagram_campaign is None:
+                errors.append(f"slot {slot_no} instagram_campaign {instagram_id!r} is missing")
+            else:
+                try:
+                    bind_clip_to_campaign(instagram_campaign, "instagram_reels")
+                except CampaignPlatformError as exc:
+                    errors.append(f"slot {slot_no}: {exc}")
+                if slot.get("instagram_submission_url") != instagram_campaign.get("submission_url"):
+                    errors.append(f"slot {slot_no} instagram_submission_url does not match the campaign")
+                if float(slot.get("instagram_rate_per_1k_views_usd") or 0) != _rate(instagram_campaign):
+                    errors.append(f"slot {slot_no} instagram rate does not match the campaign")
+                instagram_caption = str(slot.get("instagram_caption") or "")
+                if contains_loan_spam(instagram_caption):
+                    errors.append(f"slot {slot_no} instagram_caption contains loan text")
+                if _HASHTAG_RE.findall(instagram_caption) != ["#Rascals", "#Dishpilot", "#Reels"]:
+                    errors.append(f"slot {slot_no} Instagram caption must include #Rascals #Dishpilot #Reels")
+                if hook and hook not in instagram_caption:
+                    errors.append(f"slot {slot_no} instagram_caption is missing the hook")
+                if slot.get("instagram_handle") != platform_account(campaigns_data, "instagram_reels")["handle"]:
+                    errors.append(f"slot {slot_no} instagram_handle is not @benreelr")
+                if slot.get("instagram_duration_ok") is not True:
+                    errors.append(f"slot {slot_no} instagram_duration_ok must be true")
+                instagram_seconds = slot.get("instagram_duration_sec")
+                if instagram_seconds is None or not duration_fits(instagram_campaign, float(instagram_seconds))[0]:
+                    errors.append(f"slot {slot_no} Instagram duration is outside {instagram_id}'s window")
         if slot.get("youtube_duration_ok") is not True:
             errors.append(f"slot {slot_no} youtube_duration_ok must be true")
         youtube_seconds = slot.get("youtube_duration_sec")
@@ -931,8 +1059,8 @@ def _hook_and_badge_filter(hook: str, badge: str, *, fps: int) -> str:
             "borderw=3:bordercolor=black:x=(w-text_w)/2:y=78"
         )
     if badge.strip():
-        if is_dishpilot_badge(badge):
-            chain += "," + dishpilot_watermark_drawtext(font)
+        if is_subtle_corner_badge(badge):
+            chain += "," + subtle_corner_drawtext(font, badge)
         else:
             badge_text = escape_drawtext(badge)
             chain += (
@@ -1033,9 +1161,9 @@ def render_dishpilot_clip(
             "-c:v",
             "libx264",
             "-preset",
-            "veryfast",
+            ENCODE_PRESET,
             "-crf",
-            "23",
+            ENCODE_CRF,
             "-r",
             str(fps),
             "-pix_fmt",
@@ -1081,9 +1209,9 @@ def _encode_variant(
                 "-c:v",
                 "libx264",
                 "-preset",
-                "veryfast",
+                ENCODE_PRESET,
                 "-crf",
-                "23",
+                ENCODE_CRF,
                 "-r",
                 str(fps),
                 "-pix_fmt",
@@ -1122,9 +1250,9 @@ def _encode_variant(
             "-c:v",
             "libx264",
             "-preset",
-            "veryfast",
+            ENCODE_PRESET,
             "-crf",
-            "23",
+            ENCODE_CRF,
             "-r",
             str(fps),
             "-pix_fmt",

@@ -5,8 +5,9 @@
    for empty, paused, high-denial-rate (for example Shane Gillis at 99.8%), or
    nearly exhausted (<$500 remaining or >80% paid out) Whop campaigns/bounties.
 2. Maps each post to a campaign that explicitly pays that platform. YouTube
-   Shorts (`Denzen` / `@denzen0`) uses FastLoanPilot. X (`@chadriyo`) uses only
-   campaigns whose `accepted_platforms` includes `x` (Dishpilot, Finsta, DARK Room).
+   Shorts (`Denzen` / `@denzen0`) uses Dishpilot and Mr. Pa. Instagram Reels
+   (`@benreelr`) uses Rascals and Dishpilot. X (`@chadriyo`) uses Dishpilot.
+   FastLoanPilot and Nova are closed.
 3. Focuses on high-retention lanes for YouTube Shorts (`Denzen` / `@denzen0`)
    and X (`@chadriyo`):
    - `anime`: 4K/HD anime fight & emotional edits
@@ -16,7 +17,7 @@
    (`bestvideo[height>=1080]+bestaudio/bestvideo+bestaudio/best`) or clean raw source.
 5. Encodes Ultra-Crisp 1080x1920 (9:16 vertical for YouTube Shorts `Denzen` &
    X `@chadriyo`) using Lanczos scaling, CAS/unsharp 4K-style contrast-adaptive
-   sharpening, CRF 18, 8M maxrate, 192k AAC audio, persistent scroll-stopping top hook
+   sharpening, CRF 17, the fast preset, 192k AAC audio, persistent scroll-stopping top hook
    banner, one subtle corner campaign badge, and no second center logo.
 6. Zero API keys or secrets in code.
 """
@@ -271,11 +272,7 @@ def encode_ultra_crisp_whop(
         "-preset",
         "fast",
         "-crf",
-        "18",
-        "-maxrate",
-        "8M",
-        "-bufsize",
-        "16M",
+        "17",
         "-r",
         "30",
         "-c:a",
@@ -332,13 +329,27 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
         x_campaign = x_campaigns[index % len(x_campaigns)]
         preferred_id = str(clip.get("youtube_campaign") or "")
         preferred = platform_map._campaign_by_id(cfg, preferred_id) if preferred_id else None
-        if preferred is not None and "youtube_shorts" in (preferred.get("accepted_platforms") or []):
+        preferred_ok = False
+        if preferred is not None:
+            preferred_ok, _reason = platform_map.check_campaign_pool_guard(
+                preferred, cfg.get("pool_guard_rules") or {}
+            )
+        if (
+            preferred is not None
+            and preferred_ok
+            and "youtube_shorts" in (preferred.get("accepted_platforms") or [])
+        ):
             try:
                 youtube_for_clip = platform_map.bind_clip_to_campaign(preferred, "youtube_shorts")
             except platform_map.CampaignPlatformError:
                 youtube_for_clip = youtube
         else:
             youtube_for_clip = youtube
+        instagram_campaigns = [
+            platform_map.bind_clip_to_campaign(campaign, "instagram_reels")
+            for campaign in platform_map.campaigns_for_platform(cfg, "instagram_reels")
+        ]
+        instagram_campaign = instagram_campaigns[index % len(instagram_campaigns)] if instagram_campaigns else None
         hook = platform_map.compose_post_hook(
             str(clip.get("hook_text") or ""),
             str(clip.get("description") or ""),
@@ -372,11 +383,30 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
         clip["caption_x"] = x_caption
         clip["x_duration_ok"] = x_duration_ok
         clip["x_duration_reason"] = x_duration_reason
-        clip["overlay"] = platform_map.overlay_plan(youtube_for_clip, x_campaign)
+        clip["overlay"] = {
+            "mode": "dual_compatible",
+            "youtube_shorts": platform_map.platform_overlay_spec("youtube_shorts"),
+            "x": platform_map.platform_overlay_spec("x"),
+            "instagram_reels": platform_map.platform_overlay_spec("instagram_reels"),
+        }
         clip["x_duration_sec"] = x_seconds
         if not clip.get("x_mp4_url"):
             clip["x_mp4_url"] = None
         clip["x_render"] = clip["overlay"]["mode"]
+        clip["logo_used"] = ""
+        clip["on_screen_cta"] = platform_map.PLATFORM_WATERMARK["youtube_shorts"]
+        if instagram_campaign is not None:
+            instagram_caption = platform_map.build_platform_caption(
+                hook,
+                instagram_campaign,
+                "instagram_reels",
+                links_blocked=False,
+            )
+            clip["instagram_campaign"] = instagram_campaign.get("id")
+            clip["instagram_caption"] = instagram_caption
+            clip["instagram_submission_url"] = instagram_campaign.get("submission_url")
+            clip["instagram_handle"] = "@benreelr"
+            clip["instagram_rate_per_1k_views_usd"] = platform_map._rate(instagram_campaign)
 
 
 def build_whop_ready_feed() -> dict:
@@ -388,9 +418,9 @@ def build_whop_ready_feed() -> dict:
     ready_clips = [
         {
             "id": "flp-speedcube-lockin",
-            "youtube_campaign": "mr-pa-clipping",
+            "youtube_campaign": "dishpilot-clipping",
             "youtube_category": "indian_actor_reels",
-            "title": "Diljit walks out and the whole stadium loses it 🔥🎤 #mrpa",
+            "title": "Diljit walks out and the whole stadium loses it 🔥🎤 #Dishpilot #Shorts",
             "hook_text": "WAIT FOR THE DROP",
             "description": "Diljit Dosanjh hits the stage and the stadium comes apart.",
             "lane": "indian_actor_reels",
@@ -407,9 +437,9 @@ def build_whop_ready_feed() -> dict:
         },
         {
             "id": "flp-language-gauntlet",
-            "youtube_campaign": "mr-pa-clipping",
+            "youtube_campaign": "dishpilot-clipping",
             "youtube_category": "indian_actor_reels",
-            "title": "When this beat drops nobody stays in their seat 🔥🎶 #mrpa",
+            "title": "When this beat drops nobody stays in their seat 🔥🎶 #Dishpilot #Shorts",
             "hook_text": "WHEN THE BEAT DROPS",
             "description": "Yo Yo Honey Singh locks the room in the second the beat hits.",
             "lane": "indian_actor_reels",
@@ -426,7 +456,7 @@ def build_whop_ready_feed() -> dict:
         },
         {
             "id": "flp-concert-vibes",
-            "youtube_campaign": "fast-loan-pilot",
+            "youtube_campaign": "mr-pa-clipping",
             "youtube_category": "funny",
             "title": "He solved the cube before his opponent even blinked 🤯🧩 #shorts",
             "hook_text": "WATCH HIS HANDS",
@@ -640,7 +670,7 @@ def build_whop_ready_feed() -> dict:
     feed_data = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "whop_user": cfg.get("whop_user", "@bi60"),
-        "quality_profile": "1080x1920_lanczos_cas_crf18_8mbps",
+        "quality_profile": "1080x1920_lanczos_cas_crf17_fast",
         "platform_mapping": (
             "youtube_shorts=Denzen uses a campaign that lists youtube_shorts; "
             "x=@chadriyo uses a campaign that lists x"
