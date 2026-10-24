@@ -17,7 +17,7 @@
 5. Encodes Ultra-Crisp 1080x1920 (9:16 vertical for YouTube Shorts `Denzen` &
    X `@chadriyo`) using Lanczos scaling, CAS/unsharp 4K-style contrast-adaptive
    sharpening, CRF 18, 8M maxrate, 192k AAC audio, persistent scroll-stopping top hook
-   banner, centered Whop Type-2 campaign logo PNG overlay, and centered bottom CTA.
+   banner, one subtle corner campaign badge, and no second center logo.
 6. Zero API keys or secrets in code.
 """
 
@@ -214,50 +214,34 @@ def encode_ultra_crisp_whop(
     current_label = "[vbase]"
     chains = [base_chain]
 
-    # 1. Scroll-stopping hook banner at top-center (persistent across the video for max retention)
-    logo_y = 140
+    # 1. Clean top hook. No full-width banner behind it.
     if hook_text:
         safe_hook = escape_drawtext(hook_text.upper()[:46])
         chains.append(
             f"{current_label}drawtext=fontfile='{font_path}':text='{safe_hook}':"
-            f"fontcolor=white:fontsize=46:borderw=4:bordercolor=black:"
-            f"box=1:boxcolor=black@0.72:boxborderw=18:"
-            f"x=(w-text_w)/2:y=95[vhook]"
+            f"fontcolor=white:fontsize=46:borderw=3:bordercolor=black:"
+            f"x=(w-text_w)/2:y=78[vhook]"
         )
         current_label = "[vhook]"
-        logo_y = 185
 
-    # 2. Centered campaign logo at the top (matching FastLoanPilot's official reference video)
+    # 2. At most one subtle corner badge. Never a second line and never a center stack.
     inputs = ["-i", str(src)]
     if logo_path and logo_path.exists():
         inputs.extend(["-i", str(logo_path)])
         chains.append(
-            f"[1:v]scale=580:-1:flags=lanczos,format=rgba[logo];"
-            f"{current_label}[logo]overlay=(W-w)/2:{logo_y}[vlogo]"
+            f"[1:v]scale=200:-1:flags=lanczos,format=rgba[logo];"
+            f"{current_label}[logo]overlay=W-w-36:H-h-48[vlogo]"
         )
         current_label = "[vlogo]"
-
-    # 3. Campaign banner (logo_text / logo_subtext) or the FastLoanPilot bottom CTA.
-    if logo_text or logo_subtext:
+    elif logo_text or watermark_text:
+        badge = logo_text or watermark_text
         banner_filter, current_label = platform_map.ffmpeg_banner_filter(
-            {"logo_text": logo_text, "logo_subtext": logo_subtext},
+            {"logo_text": badge, "logo_count": 1, "logo_placement": "corner"},
             current_label,
             font_path,
         )
         if banner_filter:
             chains.append(banner_filter)
-    elif watermark_text:
-        safe_wm = escape_drawtext(watermark_text.upper()[:34])
-        chains.append(
-            f"{current_label}drawtext=fontfile='{font_path}':text='Only Available on':"
-            f"fontcolor=white:fontsize=36:borderw=3:bordercolor=black:"
-            f"x=(w-text_w)/2:y=h-320[vcta1];"
-            f"[vcta1]drawtext=fontfile='{font_path}':text='{safe_wm}':"
-            f"fontcolor=0x00E5FF:fontsize=52:borderw=4:bordercolor=black:"
-            f"box=1:boxcolor=black@0.65:boxborderw=14:"
-            f"x=(w-text_w)/2:y=h-265[vwm]"
-        )
-        current_label = "[vwm]"
 
     filter_complex = ";".join(chains)
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -346,13 +330,22 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
     links_blocked = platform_map.x_links_blocked(cfg)
     for index, clip in enumerate(clips):
         x_campaign = x_campaigns[index % len(x_campaigns)]
+        preferred_id = str(clip.get("youtube_campaign") or "")
+        preferred = platform_map._campaign_by_id(cfg, preferred_id) if preferred_id else None
+        if preferred is not None and "youtube_shorts" in (preferred.get("accepted_platforms") or []):
+            try:
+                youtube_for_clip = platform_map.bind_clip_to_campaign(preferred, "youtube_shorts")
+            except platform_map.CampaignPlatformError:
+                youtube_for_clip = youtube
+        else:
+            youtube_for_clip = youtube
         hook = platform_map.compose_post_hook(
             str(clip.get("hook_text") or ""),
             str(clip.get("description") or ""),
         )
         youtube_caption = platform_map.build_platform_caption(
             hook,
-            youtube,
+            youtube_for_clip,
             "youtube_shorts",
             links_blocked=False,
         )
@@ -362,14 +355,14 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
             "x",
             links_blocked=links_blocked,
         )
-        duration_ok, duration_reason = platform_map.duration_fits(youtube, clip.get("duration"))
+        duration_ok, duration_reason = platform_map.duration_fits(youtube_for_clip, clip.get("duration"))
         x_seconds = clip.get("x_duration_sec", clip.get("duration"))
         x_duration_ok, x_duration_reason = platform_map.duration_fits(x_campaign, x_seconds)
-        clip["campaign_id"] = youtube.get("id")
-        clip["whop_id"] = youtube.get("product_id") or youtube.get("whop_id")
-        clip["youtube_campaign"] = youtube.get("id")
+        clip["campaign_id"] = youtube_for_clip.get("id")
+        clip["whop_id"] = youtube_for_clip.get("product_id") or youtube_for_clip.get("whop_id")
+        clip["youtube_campaign"] = youtube_for_clip.get("id")
         clip["youtube_caption"] = youtube_caption
-        clip["youtube_submission_url"] = youtube.get("submission_url")
+        clip["youtube_submission_url"] = youtube_for_clip.get("submission_url")
         clip["caption_youtube"] = youtube_caption
         clip["youtube_duration_ok"] = duration_ok
         clip["youtube_duration_reason"] = duration_reason
@@ -379,7 +372,7 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
         clip["caption_x"] = x_caption
         clip["x_duration_ok"] = x_duration_ok
         clip["x_duration_reason"] = x_duration_reason
-        clip["overlay"] = platform_map.overlay_plan(youtube, x_campaign)
+        clip["overlay"] = platform_map.overlay_plan(youtube_for_clip, x_campaign)
         clip["x_duration_sec"] = x_seconds
         if not clip.get("x_mp4_url"):
             clip["x_mp4_url"] = None
@@ -395,13 +388,12 @@ def build_whop_ready_feed() -> dict:
     ready_clips = [
         {
             "id": "flp-speedcube-lockin",
-            "title": "He solved the Rubik's Cube BEFORE his opponent even blinked 🤯🧩 #shorts #viral",
-            "hook_text": "WATCH HIS HANDS AT 4.41 SECONDS",
-            "description": (
-                "Bro entered an official Rubik's Cube tournament and solved it faster than "
-                "humanly possible 🤯🧩 Wait for his opponent's reaction at the end!"
-            ),
-            "lane": "funny",
+            "youtube_campaign": "mr-pa-clipping",
+            "youtube_category": "indian_actor_reels",
+            "title": "Diljit walks out and the whole stadium loses it 🔥🎤 #mrpa",
+            "hook_text": "WAIT FOR THE DROP",
+            "description": "Diljit Dosanjh hits the stage and the stadium comes apart.",
+            "lane": "indian_actor_reels",
             "duration": 12.5,
             "x_duration_sec": 30.0,
             "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
@@ -415,13 +407,12 @@ def build_whop_ready_feed() -> dict:
         },
         {
             "id": "flp-language-gauntlet",
-            "title": "Almost nobody passes the 5th country flag 😭🌍 Can you name them all? #shorts #viral",
-            "hook_text": "ALMOST NOBODY PASSES THE 5TH FLAG",
-            "description": (
-                "How many of these languages could you actually get right on the first try? "
-                "😭🌍 The ending caught him completely off guard!"
-            ),
-            "lane": "knowledge",
+            "youtube_campaign": "mr-pa-clipping",
+            "youtube_category": "indian_actor_reels",
+            "title": "When this beat drops nobody stays in their seat 🔥🎶 #mrpa",
+            "hook_text": "WHEN THE BEAT DROPS",
+            "description": "Yo Yo Honey Singh locks the room in the second the beat hits.",
+            "lane": "indian_actor_reels",
             "duration": 12.5,
             "x_duration_sec": 30.0,
             "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-2.mp4",
@@ -435,13 +426,12 @@ def build_whop_ready_feed() -> dict:
         },
         {
             "id": "flp-concert-vibes",
-            "title": "When Ed Sheeran harmonizes in Hindi & English live on acoustic guitar ✨🎶 #shorts #music",
-            "hook_text": "WAIT FOR THE HIGH NOTE AT 0.08",
-            "description": (
-                "Unplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 "
-                "Goosebumps every single time!"
-            ),
-            "lane": "concert",
+            "youtube_campaign": "fast-loan-pilot",
+            "youtube_category": "funny",
+            "title": "He solved the cube before his opponent even blinked 🤯🧩 #shorts",
+            "hook_text": "WATCH HIS HANDS",
+            "description": "One look at his hands and the round is already over.",
+            "lane": "funny",
             "duration": 12.5,
             "x_duration_sec": 30.0,
             "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-3.mp4",
@@ -664,8 +654,7 @@ def build_whop_ready_feed() -> dict:
         "items": ready_clips,
     }
     save_json(FEED_PATH, feed_data)
-    save_json(MANIFEST_PATH, feed_data)
-    log(f"wrote {FEED_PATH} and {MANIFEST_PATH} with {len(healthy)} healthy campaigns and {len(ready_clips)} ready clips")
+    log(f"wrote {FEED_PATH} with {len(healthy)} healthy campaigns and {len(ready_clips)} ready clips")
     return feed_data
 
 

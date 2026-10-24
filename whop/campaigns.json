@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-24T14:20:00Z",
+  "updated_at": "2026-10-24T15:10:00Z",
   "whop_user": "@bi60",
   "whop_user_id": "user_JUKQo7VMHc6IS",
   "supported_viral_categories": [
@@ -11,6 +11,21 @@
     "celebrity",
     "concert"
   ],
+  "content_mix": {
+    "x": {
+      "handle": "@chadriyo",
+      "daily_slots": 10,
+      "categories": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"]
+    },
+    "youtube_shorts": {
+      "handle": "Denzen",
+      "username": "@denzen0",
+      "daily_slots": 10,
+      "min_indian_fraction": 0.8,
+      "indian_categories": ["indian_actor_reels", "indian_movie_scenes"],
+      "other_categories": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"]
+    }
+  },
   "pool_guard_rules": {
     "min_remaining_budget_usd": 500.0,
     "max_paid_out_fraction": 0.80,
@@ -40,7 +55,7 @@
       "handle": "@chadriyo",
       "links_blocked": true,
       "campaign_ids": [
-        "dishpilot-x-clipping",
+        "dishpilot-clipping",
         "finsta-ugc-clipping",
         "darkroom-clipping",
         "nova-x-clipping",
@@ -51,10 +66,11 @@
       "handle": "Denzen",
       "username": "@denzen0",
       "links_blocked": false,
-      "primary_campaign_id": "flp-logo-clipping",
+      "primary_campaign_id": "fast-loan-pilot",
       "campaign_ids": [
-        "flp-logo-clipping",
-        "dishpilot-x-clipping",
+        "fast-loan-pilot",
+        "mr-pa-clipping",
+        "dishpilot-clipping",
         "finsta-ugc-clipping",
         "darkroom-clipping",
         "nova-x-clipping",
@@ -64,7 +80,7 @@
   },
   "active_campaigns": [
     {
-      "id": "flp-logo-clipping",
+      "id": "fast-loan-pilot",
       "product_id": "prod_DyuwRHNCz3vpv",
       "whop_id": "prod_DyuwRHNCz3vpv",
       "company_id": "biz_5YI3waGC8KB79n",
@@ -99,6 +115,10 @@
         "min_duration_sec": 6,
         "max_duration_sec": 15,
         "logo_overlay_required": true,
+        "logo_placement": "corner",
+        "logo_count": 1,
+        "logo_style": "subtle",
+        "caption_style": "hook_cta_hashtags",
         "mandatory_caption": "Visit FastLoanPilot.com Looking for a quick loan from $200 to $5000.",
         "hashtags": ["#shorts", "#FastLoanPilot"]
       },
@@ -112,10 +132,10 @@
         "If you need supercar / money / house / Try Fastloanpilot.com",
         "Need cash to pay rent/bills/groceries / Check this out Fastloanpilot.com"
       ],
-      "requirements": "Overlay the FastLoanPilot logo on YouTube Shorts (Denzen / @denzen0), Reels, or TikTok. This campaign does not accept X (@chadriyo)."
+      "requirements": "One small subtle corner logo on YouTube Shorts slots assigned to fast-loan-pilot. Never two logos and never a center stack. The loan caption is only used on those FastLoanPilot slots. This campaign does not accept X (@chadriyo)."
     },
     {
-      "id": "dishpilot-x-clipping",
+      "id": "dishpilot-clipping",
       "product_id": "prod_rVLVD9nqnZquK",
       "whop_id": "prod_rVLVD9nqnZquK",
       "account_id": "biz_yHrLny75uFGcUZ",
@@ -148,12 +168,58 @@
         "min_duration_sec": 8,
         "max_duration_sec": 35,
         "logo_overlay_required": true,
+        "logo_placement": "corner",
+        "logo_count": 1,
+        "logo_style": "subtle",
         "logo_text": "DISHPILOT",
-        "logo_subtext": "Dishpilot.com • Viral Food & AI Clips",
-        "mandatory_caption": "Check out Dishpilot for the smartest kitchen & food AI tools! #Dishpilot",
+        "caption_style": "hook_and_hashtags",
+        "max_hashtags": 2,
+        "mandatory_caption": "",
         "hashtags": ["#Dishpilot", "#viral"]
       },
-      "requirements": "Banner reads DISHPILOT. Pays X (@chadriyo) and YouTube Shorts (Denzen) views at $2 per 1,000."
+      "requirements": "One subtle corner badge reads DISHPILOT. X (@chadriyo) captions are a scroll-stopping hook plus 1-2 hashtags. Dishpilot terms do not require FastLoanPilot loan text. Pays X and YouTube Shorts at $2 per 1,000."
+    },
+    {
+      "id": "mr-pa-clipping",
+      "title": "Mr. Pa Clipping",
+      "content_rewards_campaign_id": "5944ed5a-9ee0-47d1-8545-2bbf614ac18b",
+      "experience_id": "5944ed5a-9ee0-47d1-8545-2bbf614ac18b",
+      "content_rewards_experience_id": "5944ed5a-9ee0-47d1-8545-2bbf614ac18b",
+      "submission_url": "https://contentrewards.com/c/campaigns/5944ed5a-9ee0-47d1-8545-2bbf614ac18b",
+      "type": "type2_viral_clipping",
+      "parent_hub": "clip-influence-hub",
+      "agency": "Clip Influence",
+      "url": "https://whop.com/clip-influence",
+      "status": "open",
+      "joined": true,
+      "total_pool_usd": 10000.0,
+      "budget_total_usd": 10000.0,
+      "paid_out_usd": 1493.0,
+      "remaining_pool_usd": 8507.0,
+      "remaining_budget_usd": 8507.0,
+      "paid_out_percent": 14.93,
+      "rate_per_1k_views_usd": 1.25,
+      "cpm_usd": 1.25,
+      "denial_rate": 0.05,
+      "spots_remaining": 999,
+      "unlimited_budget": false,
+      "payout": "$1.25 per 1,000 views ($8,507 of $10,000 left — YouTube Shorts, Clip Influence)",
+      "accepted_platforms": ["youtube_shorts"],
+      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert", "indian_actor_reels", "indian_movie_scenes"],
+      "watermark_text": "",
+      "cta_text": "",
+      "rules": {
+        "min_duration_sec": 6,
+        "max_duration_sec": 60,
+        "logo_overlay_required": false,
+        "logo_placement": "none",
+        "logo_count": 0,
+        "caption_style": "hook_and_hashtags",
+        "max_hashtags": 2,
+        "mandatory_caption": "",
+        "hashtags": ["#mrpa"]
+      },
+      "requirements": "Clean viral caption plus #mrpa. No FastLoanPilot loan text. Mr. Pa does not require a logo; if a mark is used it is one subtle corner badge, never two center logos."
     },
     {
       "id": "finsta-ugc-clipping",
