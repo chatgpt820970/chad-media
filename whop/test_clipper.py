@@ -5,6 +5,7 @@ from __future__ import annotations
 import json
 import re
 import unittest
+from pathlib import Path
 
 from whop.clipper import (
     FEED_JSON_PATH,
@@ -370,6 +371,41 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         locked = {"funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"}
         self.assertTrue(all(slot["x_category"] in locked for slot in manifest["slots"]))
         self.assertEqual({slot["x_category"] for slot in manifest["slots"]}, locked)
+
+    def test_schedule_x_slots_3_to_10_use_dishpilot_files(self) -> None:
+        schedule = json.loads(Path("whop/schedule_10x10.json").read_text(encoding="utf-8"))
+        slots = schedule["x_slots"]
+        self.assertEqual(len(slots), 10)
+        self.assertEqual(len(schedule["youtube_slots"]), 10)
+        expected = {
+            3: ("whop/v/x-dishpilot-3.mp4", "THIS ANIMATION IS INSANE"),
+            4: ("whop/v/x-dishpilot-4.mp4", "WAIT FOR THE DROP"),
+            5: ("whop/v/x-dishpilot-5.mp4", "HIS REACTION AT THE END"),
+            6: ("whop/v/x-dishpilot-6.mp4", "60,000 PEOPLE IN SYNC"),
+            7: ("whop/v/x-dishpilot-7.mp4", "WHEN THE BEAT DROPS"),
+            8: ("whop/v/x-dishpilot-8.mp4", "WAIT FOR THE REVEAL"),
+            9: ("whop/v/x-dishpilot-9.mp4", "NYC DOORMAN PLOT TWIST"),
+            10: ("whop/v/x-dishpilot-10.mp4", "NOBODY EXPECTED THIS"),
+        }
+        for slot in slots:
+            number = slot["slot"]
+            if number < 3:
+                continue
+            path, hook = expected[number]
+            self.assertEqual(slot["campaign"], "dishpilot-clipping")
+            self.assertEqual(slot["handle"], "@chadriyo")
+            self.assertEqual(slot["badge"], "DISHPILOT")
+            self.assertEqual(slot["logo_text"], "DISHPILOT")
+            self.assertEqual(slot["logo_count"], 1)
+            self.assertEqual(slot["logo_placement"], "corner")
+            self.assertEqual(slot["hook"], hook)
+            self.assertEqual(slot["mp4"], path)
+            self.assertTrue(slot["mp4_url"].endswith(path.split("/")[-1]))
+            self.assertIn(hook, slot["caption"])
+            self.assertIn("#Dishpilot", slot["caption"])
+            self.assertLessEqual(len(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["caption"])), 2)
+            self.assertNotRegex(slot["caption"], LOAN_SPAM)
+            self.assertTrue(Path(path).is_file())
 
 
 if __name__ == "__main__":
