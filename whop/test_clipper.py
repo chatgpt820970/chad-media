@@ -5,16 +5,23 @@ from __future__ import annotations
 import json
 import re
 import unittest
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from whop.clipper import (
+    BUFFER_ORGANIZATION_ID,
     DAILY_30_INDIAN_SLOTS,
+    DAILY_30_PER_PLATFORM,
     DAILY_30_TIMES_IST,
     DAILY_CHANNEL_IDS,
     DAILY_CLIP_CATALOG,
+    SUPPORTED_PLATFORMS,
     FEED_JSON_PATH,
     INDIAN_CATEGORIES as CLIPPER_INDIAN_CATEGORIES,
+    INGEST_CRF,
+    INGEST_SHARPEN,
+    PRIORITY_CATEGORIES,
+    YTDLP_FORMAT,
     MANIFEST_PATH,
     CampaignPlatformError,
     banner_overlay_spec,
@@ -22,19 +29,30 @@ from whop.clipper import (
     buffer_create_post_body,
     build_daily_30,
     build_daily_manifest,
+    build_ingest_items,
     build_platform_caption,
     campaigns_for_platform,
+    check_community_guidelines_safe,
     check_campaign_pool_guard,
+    community_guidelines_violations,
     daily_feed_is_current,
+    download_attempt_plan,
     duration_fits,
+    extract_mp4,
+    ingest_ffmpeg_command,
     dishpilot_clip_filter,
     ffmpeg_banner_filter,
     load_campaigns,
     overlay_plan,
+    parse_source_url,
+    priority_rank,
+    resolve_clean_mp4_url,
     select_campaign_for_platform,
+    single_campaign_drawtext,
     verify_manifest_data,
+    _catalog_clip,
 )
-from whop.whop_clipper import should_publish_daily
+from whop.whop_clipper import schedule_unscheduled_items, should_publish_daily
 
 X_PAYING_IDS = {"dishpilot-clipping"}
 INDIAN_CATEGORIES = {"indian_actor_reels", "indian_movie_scenes"}
@@ -149,7 +167,12 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertEqual(slot["youtube_handle"], "Denzen")
             self.assertEqual(slot["youtube_username"], "@denzen0")
             self.assertIn(slot["hook"], slot["youtube_caption"])
-            self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["youtube_caption"]), ["#Dishpilot", "#Shorts"])
+            expected_yt_tags = (
+                ["#MrPa", "#Shorts"]
+                if slot["youtube_campaign"] == "mr-pa-clipping"
+                else ["#Dishpilot", "#Shorts"]
+            )
+            self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["youtube_caption"]), expected_yt_tags)
             self.assertNotRegex(slot["youtube_caption"], LOAN_SPAM)
             self.assertIn(slot["x_campaign"], X_PAYING_IDS)
             self.assertEqual(slot["x_handle"], "@chadriyo")
@@ -170,10 +193,14 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertIn(slot["hook"], slot["x_caption"])
             self.assertNotEqual(slot["x_campaign"], "fast-loan-pilot")
             self.assertNotEqual(slot["x_campaign"], "nova-x-clipping")
-            self.assertEqual(slot["overlay"]["mode"], "dual_compatible")
             self.assertTrue(slot["x_submission_url"].startswith("https://"))
             self.assertEqual(slot["overlay"]["x"]["logo_text"], "dishpilot")
-            self.assertEqual(slot["overlay"]["youtube_shorts"]["logo_text"], "dishpilot")
+            yt_mark = "mr. pa" if slot["youtube_campaign"] == "mr-pa-clipping" else "dishpilot"
+            self.assertEqual(slot["overlay"]["youtube_shorts"]["logo_text"], yt_mark)
+            if yt_mark == "dishpilot":
+                self.assertEqual(slot["overlay"]["mode"], "dual_compatible")
+            else:
+                self.assertEqual(slot["overlay"]["mode"], "platform_specific_variants")
             self.assertEqual(slot["overlay"]["instagram_reels"]["logo_text"], {"dishpilot-clipping": "dishpilot", "rascals-theme-pages": "rascals", "mr-pa-clipping": "mr. pa"}[slot["instagram_campaign"]])
             self.assertNotIn("·", slot["overlay"]["instagram_reels"]["logo_text"])
             for side in ("x", "youtube_shorts", "instagram_reels"):
@@ -420,13 +447,16 @@ class DailyThirtyPipelineTest(unittest.TestCase):
 
     def test_build_daily_30_selects_thirty_pool_guarded_clips(self) -> None:
         self.assertEqual(self.feed["date"], "2026-10-24")
-        self.assertEqual(self.feed["count"], 30)
-        self.assertEqual(len(self.items), 30)
+        expected = DAILY_30_PER_PLATFORM * len(SUPPORTED_PLATFORMS)
+        self.assertEqual(expected, 40)
+        self.assertEqual(self.feed["count"], expected)
+        self.assertEqual(len(self.items), expected)
         self.assertEqual(len(self._platform("x")), 10)
         self.assertEqual(len(self._platform("youtube_shorts")), 10)
         self.assertEqual(len(self._platform("instagram_reels")), 10)
-        self.assertEqual(len({item["clip_id"] for item in self.items}), 30)
-        self.assertEqual(len(self.seen["ids"]), 30)
+        self.assertEqual(len(self._platform("tiktok")), 10)
+        self.assertEqual(len({item["clip_id"] for item in self.items}), expected)
+        self.assertEqual(len(self.seen["ids"]), expected)
 
         youtube = self._platform("youtube_shorts")
         indian = [item for item in youtube if item["category"] in CLIPPER_INDIAN_CATEGORIES]
@@ -463,7 +493,8 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         x_items = self._platform("x")
         self.assertTrue(all(item["campaign_id"] == "dishpilot-clipping" for item in x_items))
         self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in x_items))
-        self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in youtube))
+        self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in indian))
+        self.assertTrue(all(item["watermark_text"] == "mr. pa" for item in global_slots))
         reels = self._platform("instagram_reels")
         for item in reels:
             self.assertEqual(item["watermark_text"], {"dishpilot-clipping": "dishpilot", "rascals-theme-pages": "rascals", "mr-pa-clipping": "mr. pa"}[item["campaign_id"]])
@@ -471,10 +502,22 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         for item in x_items:
             self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]), ["#Dishpilot"])
         for item in youtube:
-            self.assertEqual(
-                re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]),
-                ["#Dishpilot", "#Shorts"],
+            expected_tags = (
+                ["#MrPa", "#Shorts"] if item["campaign_id"] == "mr-pa-clipping" else ["#Dishpilot", "#Shorts"]
             )
+            self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]), expected_tags)
+        tiktok = self._platform("tiktok")
+        self.assertEqual(
+            [item["campaign_id"] for item in tiktok],
+            ["dishpilot-clipping" if slot % 2 else "rascals-theme-pages" for slot in range(1, 11)],
+        )
+        self.assertEqual(tiktok[0]["channel_id"], DAILY_CHANNEL_IDS["tiktok"])
+        for item in self.items:
+            tags = re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"])
+            campaign_tags = [tag for tag in tags if tag in ("#Dishpilot", "#Rascals", "#MrPa")]
+            self.assertEqual(len(campaign_tags), 1)
+            self.assertNotIn("·", item["watermark_text"])
+            self.assertNotIn("rascals · dishpilot", json.dumps(item))
         for item in reels:
             self.assertEqual(
                 re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]),
@@ -509,7 +552,7 @@ class DailyThirtyPipelineTest(unittest.TestCase):
 
         feed2, seen2 = build_daily_30(self.data, self.seen, today=date(2026, 10, 25))
         day2_items = feed2["items"]
-        self.assertEqual(len({item["clip_id"] for item in day2_items}), 30)
+        self.assertEqual(len({item["clip_id"] for item in day2_items}), DAILY_30_PER_PLATFORM * len(SUPPORTED_PLATFORMS))
         day1_ids = {item["clip_id"] for item in self.items}
         day2_ids = {item["clip_id"] for item in day2_items}
         self.assertTrue(unused)
@@ -527,8 +570,10 @@ class DailyThirtyPipelineTest(unittest.TestCase):
 
     def test_buffer_body_and_publish_gate(self) -> None:
         sample = self._platform("instagram_reels")[0]
-        body = buffer_create_post_body(sample)
+        before_slot = datetime(2026, 10, 24, 0, 0, tzinfo=timezone.utc)
+        body = buffer_create_post_body(sample, now=before_slot)
         self.assertEqual(body["channelId"], DAILY_CHANNEL_IDS["instagram_reels"])
+        self.assertEqual(body["schedulingType"], "automatic")
         self.assertEqual(body["mode"], "customScheduled")
         self.assertTrue(body["dueAt"].endswith("+00:00"))
         self.assertEqual(body["assets"][0]["video"]["url"], sample["video_url"])
@@ -536,9 +581,18 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         self.assertNotIn("token", json.dumps(body).lower())
         self.assertNotIn("FastLoanPilot", json.dumps(body))
 
-        youtube = buffer_create_post_body(self._platform("youtube_shorts")[0])
+        late = buffer_create_post_body(sample, now=datetime(2026, 10, 25, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(late["mode"], "addToQueue")
+        self.assertNotIn("dueAt", late)
+        self.assertEqual(late["schedulingType"], "automatic")
+        for platform in SUPPORTED_PLATFORMS:
+            posted = buffer_create_post_body(self._platform(platform)[0], now=before_slot)
+            self.assertEqual(posted["channelId"], DAILY_CHANNEL_IDS[platform])
+            self.assertEqual(posted["schedulingType"], "automatic")
+
+        youtube = buffer_create_post_body(self._platform("youtube_shorts")[0], now=before_slot)
         self.assertEqual(youtube["metadata"]["youtube"]["categoryId"], "24")
-        self.assertNotIn("metadata", buffer_create_post_body(self._platform("x")[0]))
+        self.assertNotIn("metadata", buffer_create_post_body(self._platform("x")[0], now=before_slot))
 
         self.assertFalse(should_publish_daily({}))
         self.assertFalse(
@@ -599,6 +653,313 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         self.assertLess(text.index("unittest whop.test_clipper"), text.index("verify-manifest"))
         self.assertLess(text.index("verify-manifest"), text.index("build-daily-30"))
         self.assertIn("github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'", text)
+        self.assertIn("source_urls:", text)
+        self.assertIn("ingest-urls", text)
+        self.assertIn("6add07e4778b240e2fb35110", json.dumps(self.data))
+        self.assertEqual(BUFFER_ORGANIZATION_ID, "6ac41da09a0b5aca7c671500")
+
+
+class IngestUrlPipelineTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.data = load_campaigns()
+        self.day = date(2026, 10, 24)
+        self.feed, _seen = build_daily_30(self.data, {"ids": [], "uses": {}}, today=self.day)
+        self.items = self.feed["items"]
+
+    def _platform(self, platform: str) -> list[dict]:
+        return [item for item in self.items if item["platform"] == platform]
+
+    def test_classifies_x_and_tiktok_links(self) -> None:
+        status = parse_source_url("https://x.com/chadriyo/status/2110725157686063105")
+        self.assertEqual(status["kind"], "x")
+        self.assertEqual(status["id"], "2110725157686063105")
+        twitter = parse_source_url("https://twitter.com/someone/status/99")
+        self.assertEqual(twitter["kind"], "x")
+        tiktok = parse_source_url("https://www.tiktok.com/@bi67325/video/1234567890123456789")
+        self.assertEqual(tiktok["kind"], "tiktok")
+        self.assertEqual(tiktok["id"], "1234567890123456789")
+        short = parse_source_url("https://vm.tiktok.com/ZMabc123/")
+        self.assertEqual(short["kind"], "tiktok")
+        self.assertEqual(short["id"], "ZMabc123")
+
+    def test_four_platform_community_guidelines_safety_filter(self) -> None:
+        allowed = (
+            "Attractive glamorous couple in a romantic movie scene",
+            "4K anime edit",
+            "Top 4K movie scene",
+        )
+        for title in allowed:
+            with self.subTest(title=title):
+                self.assertTrue(
+                    check_community_guidelines_safe(
+                        title=title,
+                        hook="Wait for the reveal",
+                        tags=("#Anime4K", "#Movie4K"),
+                        source_metadata={"nsfw": False, "rating": "general"},
+                    )
+                )
+        self.assertTrue(
+            check_community_guidelines_safe(
+                {
+                    "title": "Glamorous romantic scene",
+                    "caption": "4K movie edit #Movie4K",
+                    "category": "movie_4k",
+                }
+            )
+        )
+
+        blocked = (
+            "NSFW edit",
+            "18+ uncensored",
+            "explicit nudity",
+            "graphic violence compilation",
+            "gory beheading scene",
+            "hate speech",
+            "terrorist propaganda",
+            "self-harm tutorial",
+            "fake giveaway phishing",
+        )
+        for title in blocked:
+            with self.subTest(title=title):
+                self.assertFalse(check_community_guidelines_safe(title=title))
+                self.assertTrue(community_guidelines_violations(title=title))
+
+        self.assertFalse(
+            check_community_guidelines_safe(
+                title="Ordinary title",
+                source_metadata={"moderation": {"nsfw": True}},
+            )
+        )
+        self.assertFalse(
+            check_community_guidelines_safe(
+                title="Ordinary title",
+                source_metadata={"safety": {"graphic_violence_score": 0.2}},
+            )
+        )
+        self.assertTrue(
+            check_community_guidelines_safe(
+                title="Romantic scene",
+                source_metadata={"nsfw": False, "graphic_violence_score": 0},
+            )
+        )
+
+    def test_unsafe_catalog_feed_and_buffer_posts_fail_closed(self) -> None:
+        with self.assertRaisesRegex(CampaignPlatformError, "Community Guidelines"):
+            _catalog_clip(
+                ("unsafe", "movie_4k", "Explicit nudity scene", "https://example.com/unsafe.mp4")
+            )
+        with self.assertRaisesRegex(CampaignPlatformError, "Community Guidelines"):
+            build_ingest_items(
+                self.data,
+                source_url="https://x.com/a/status/42",
+                source_id="unsafe-42",
+                video_url="https://example.com/unsafe.mp4",
+                campaign_alias="dishpilot",
+                platforms="x",
+                hook="Watch this",
+                today=self.day,
+                category="movie_4k",
+                source_metadata={"moderation": {"adult_content": True}},
+            )
+
+        unsafe = dict(self.items[0])
+        unsafe["title"] = "NSFW 18+"
+        unsafe["caption"] = "NSFW 18+ #Dishpilot"
+        unsafe_feed = {
+            "date": self.day.isoformat(),
+            "items": [unsafe, *self.items[1:]],
+        }
+        self.assertFalse(daily_feed_is_current(unsafe_feed, self.day))
+        with self.assertRaisesRegex(CampaignPlatformError, "Community Guidelines"):
+            buffer_create_post_body(unsafe)
+        calls = []
+        with self.assertRaisesRegex(CampaignPlatformError, "Community Guidelines"):
+            schedule_unscheduled_items(
+                {"items": [unsafe]},
+                "token",
+                poster=lambda body: calls.append(body) or (True, "post"),
+            )
+        self.assertEqual(calls, [])
+
+    def test_download_chain_prefers_clean_apis(self) -> None:
+        x_plan = download_attempt_plan(parse_source_url("https://x.com/a/status/42"))
+        self.assertEqual([step["via"] for step in x_plan], ["vxtwitter", "fixupx", "ytdlp"])
+        tiktok_plan = download_attempt_plan(parse_source_url("https://www.tiktok.com/@a/video/7"))
+        self.assertEqual(tiktok_plan[0]["via"], "tikwm")
+        self.assertIn("tikwm.com/api/", tiktok_plan[0]["url"])
+        self.assertEqual(tiktok_plan[-1]["via"], "ytdlp")
+        found = resolve_clean_mp4_url(
+            "https://x.com/a/status/42",
+            lambda _url: {
+                "media_extended": [
+                    {"type": "video", "url": "https://video.twimg.com/low.mp4", "bitrate": 100},
+                    {"type": "video", "url": "https://video.twimg.com/high.mp4", "bitrate": 900},
+                ]
+            },
+        )
+        self.assertEqual(found, "https://video.twimg.com/high.mp4")
+        hd = extract_mp4(
+            "tikwm",
+            {"data": {"play": "https://cdn.example/a.mp4", "hdplay": "https://cdn.example/hd.mp4"}},
+        )
+        self.assertEqual(hd, "https://cdn.example/hd.mp4")
+
+    def test_one_campaign_watermark_queues_paid_platforms(self) -> None:
+        with self.assertRaises(CampaignPlatformError):
+            single_campaign_drawtext("Sans", "rascals · dishpilot")
+        draw = single_campaign_drawtext("Sans", "dishpilot")
+        self.assertIn("text='dishpilot'", draw)
+        self.assertIn("fontcolor=white@0.78", draw)
+        self.assertIn("box=1:boxcolor=black@0.28:boxborderw=8", draw)
+        self.assertIn("x=w*0.025:y=h*0.03", draw)
+        self.assertEqual(draw.count("drawtext"), 1)
+
+        commands = [
+            ingest_ffmpeg_command(Path("in.mp4"), Path(f"out-{platform}.mp4"), platform, "rascals", "Sans")
+            for platform in SUPPORTED_PLATFORMS
+        ]
+        filters = [command[command.index("-vf") + 1] for command in commands]
+        self.assertEqual(len(set(filters)), 4)
+        for command in commands:
+            joined = " ".join(command)
+            self.assertIn("-crf", command)
+            self.assertEqual(command[command.index("-crf") + 1], "16")
+            self.assertEqual(INGEST_CRF, "16")
+            self.assertIn("flags=lanczos", joined)
+            self.assertIn("unsharp=3:3:0.6:3:3:0.0", joined)
+            self.assertEqual(INGEST_SHARPEN, "unsharp=3:3:0.6:3:3:0.0")
+            self.assertIn("1080:1920", joined)
+            self.assertIn("text='rascals'", joined)
+            self.assertNotIn("·", joined)
+            self.assertNotIn("dishpilot", joined)
+
+        items = build_ingest_items(
+            self.data,
+            source_url="https://x.com/a/status/42",
+            source_id="42",
+            video_url="https://chatgpt820970.github.io/chad-media/whop/v/ingest-42-x.mp4",
+            campaign_alias="dishpilot",
+            platforms="all",
+            hook="Wait for the drop",
+            today=date(2026, 10, 24),
+        )
+        self.assertEqual({item["platform"] for item in items}, set(SUPPORTED_PLATFORMS))
+        self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in items))
+        self.assertTrue(all(item["campaign_id"] == "dishpilot-clipping" for item in items))
+        self.assertTrue(all(item["channel_id"] == DAILY_CHANNEL_IDS[item["platform"]] for item in items))
+        self.assertTrue(all(item["source"] == "ingest" for item in items))
+
+        rascals = build_ingest_items(
+            self.data,
+            source_url="https://www.tiktok.com/@a/video/7",
+            source_id="7",
+            video_url="https://example.com/r.mp4",
+            campaign_alias="rascals",
+            platforms="x,instagram_reels,youtube_shorts,tiktok",
+            hook="Wait for the drop",
+            today=date(2026, 10, 24),
+        )
+        self.assertEqual({item["platform"] for item in rascals}, {"instagram_reels", "tiktok"})
+        self.assertTrue(all(item["watermark_text"] == "rascals" for item in rascals))
+        self.assertTrue(all("#Rascals" in item["caption"] and "#Dishpilot" not in item["caption"] for item in rascals))
+
+        mrpa = build_ingest_items(
+            self.data,
+            source_url="https://x.com/a/status/42",
+            source_id="42b",
+            video_url="https://example.com/m.mp4",
+            campaign_alias="mrpa",
+            platforms="all",
+            hook="Wait for the drop",
+            today=date(2026, 10, 24),
+        )
+        self.assertEqual({item["platform"] for item in mrpa}, {"youtube_shorts", "instagram_reels"})
+        self.assertTrue(all(item["watermark_text"] == "mr. pa" for item in mrpa))
+        self.assertTrue(all("#MrPa" in item["caption"] and "#Dishpilot" not in item["caption"] for item in mrpa))
+
+    def test_highest_resolution_stream_wins(self) -> None:
+        picked = extract_mp4(
+            "vxtwitter",
+            {
+                "media_extended": [
+                    {"url": "https://video.twimg.com/a/vid/avc1/1280x720/lo.mp4", "bitrate": 2_000_000},
+                    {"url": "https://video.twimg.com/a/vid/avc1/3840x2160/uhd.mp4", "bitrate": 800_000},
+                    {"url": "https://video.twimg.com/a/vid/avc1/1920x1080/hd.mp4", "bitrate": 9_000_000},
+                ]
+            },
+        )
+        self.assertEqual(picked, "https://video.twimg.com/a/vid/avc1/3840x2160/uhd.mp4")
+        sized = extract_mp4(
+            "vxtwitter",
+            {
+                "media_extended": [
+                    {"url": "https://cdn.example/a30.mp4", "size": {"width": 1920, "height": 1080}, "fps": 30},
+                    {"url": "https://cdn.example/a60.mp4", "size": {"width": 1920, "height": 1080}, "fps": 60},
+                ]
+            },
+        )
+        self.assertEqual(sized, "https://cdn.example/a60.mp4")
+        fx = extract_mp4(
+            "fixupx",
+            {
+                "tweet": {
+                    "media": {
+                        "videos": [
+                            {"url": "https://cdn.example/f720.mp4", "width": 720, "height": 1280},
+                            {"url": "https://cdn.example/f1080.mp4", "width": 1080, "height": 1920},
+                        ]
+                    }
+                }
+            },
+        )
+        self.assertEqual(fx, "https://cdn.example/f1080.mp4")
+        self.assertEqual(YTDLP_FORMAT, "bestvideo+bestaudio/best")
+        tiktok_plan = download_attempt_plan(parse_source_url("https://www.tiktok.com/@a/video/7"))
+        self.assertIn("hd=1", tiktok_plan[0]["url"])
+
+    def test_priority_categories_lead_the_daily_catalog(self) -> None:
+        self.assertEqual(PRIORITY_CATEGORIES[0], "anime_4k")
+        self.assertLess(priority_rank("anime_4k"), priority_rank("glamorous_girls"))
+        self.assertLess(priority_rank("glamorous_girls"), priority_rank("movie_4k"))
+        self.assertLess(priority_rank("movie_4k"), priority_rank("funny"))
+        categories = {clip["category"] for clip in DAILY_CLIP_CATALOG}
+        self.assertTrue({"anime_4k", "glamorous_girls", "movie_4k"} <= categories)
+        for platform in ("x", "instagram_reels", "tiktok"):
+            ranks = [priority_rank(item["category"]) for item in self._platform(platform)]
+            self.assertEqual(ranks, sorted(ranks), platform)
+            self.assertTrue(self._platform(platform)[0]["priority"])
+            self.assertEqual(self._platform(platform)[0]["category"], "anime_4k")
+        tagged = build_ingest_items(
+            self.data,
+            source_url="https://x.com/a/status/42",
+            source_id="42c",
+            video_url="https://example.com/c.mp4",
+            campaign_alias="dishpilot",
+            platforms="all",
+            hook="Wait for the drop",
+            today=self.day,
+            category="anime_4k",
+        )
+        self.assertTrue(all(item["category"] == "anime_4k" and item["priority"] for item in tagged))
+        with self.assertRaises(CampaignPlatformError):
+            build_ingest_items(
+                self.data,
+                source_url="https://x.com/a/status/42",
+                source_id="42d",
+                video_url="https://example.com/d.mp4",
+                campaign_alias="dishpilot",
+                platforms="x",
+                hook="Wait",
+                today=self.day,
+                category="nonsense",
+            )
+
+    def test_every_daily_item_carries_one_campaign_mark_and_channel(self) -> None:
+        for item in self.items:
+            self.assertIn(item["watermark_text"], {"dishpilot", "rascals", "mr. pa"})
+            self.assertEqual(item["watermark_position"]["x"], "w*0.025")
+            self.assertEqual(item["watermark_position"]["y"], "h*0.03")
+            self.assertEqual(item["channel_id"], DAILY_CHANNEL_IDS[item["platform"]])
 
 
 if __name__ == "__main__":

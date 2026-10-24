@@ -1,16 +1,17 @@
 #!/usr/bin/env python3
 """Platform-specific Whop campaign mapping.
 
-X (@chadriyo) posts to Dishpilot. Instagram Reels (@benreelr) posts to Rascals,
-Dishpilot, and Mr. Pa. YouTube Shorts (Denzen) posts to Dishpilot and Mr. Pa.
-FastLoanPilot and Nova are closed: Nova's legacy app app_JsryI0fVLVpeYi only
-returns "ok". The daily 30-clip feed (10 per platform) is built by build_daily_30.
+X (@chadriyo) posts to Dishpilot. YouTube Shorts (Denzen) posts to Dishpilot
+and Mr. Pa. Instagram Reels (@benreelr) posts to Rascals, Dishpilot, and Mr. Pa.
+TikTok (@bi67325) posts to Dishpilot and Rascals. FastLoanPilot and Nova are
+closed. build_daily_30 fills 10 slots on each of the four Buffer channels.
+ingest-urls downloads an X or TikTok link, stamps one campaign name, and queues it.
 Pool Guard rejects bounties whose denial rate is above the configured cap
 (Shane Gillis is 99.8%).
 
-Visual rule: one subtle top-left corner mark. Never two logos, and never a logo
-stacked in the middle of the frame. X and YouTube read "dishpilot". Instagram
-reads one campaign name only (dishpilot, rascals, or mr. pa).
+Visual rule: one top-left campaign name only — "dishpilot", "rascals", or
+"mr. pa". Never two names, and never "rascals · dishpilot". The caption carries
+that campaign's single hashtag.
 """
 
 from __future__ import annotations
@@ -22,6 +23,7 @@ import subprocess
 import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
+from urllib.parse import quote
 
 ROOT = Path(__file__).resolve().parent
 CAMPAIGNS_PATH = ROOT / "campaigns.json"
@@ -31,12 +33,14 @@ MEDIA_DIR = ROOT / "v"
 PAGES_MEDIA_BASE = "https://chatgpt820970.github.io/chad-media/whop/v/"
 BOLD_FONT = "/usr/share/fonts/truetype/macos/Inter-Bold.ttf"
 
-SUPPORTED_PLATFORMS = ("x", "youtube_shorts", "instagram_reels")
+SUPPORTED_PLATFORMS = ("x", "youtube_shorts", "instagram_reels", "tiktok")
 PLATFORM_ACCOUNTS = {
     "x": "@chadriyo",
     "youtube_shorts": "Denzen (@denzen0)",
     "instagram_reels": "@benreelr",
+    "tiktok": "@bi67325",
 }
+BUFFER_ORGANIZATION_ID = "6ac41da09a0b5aca7c671500"
 X_CAMPAIGN_IDS = ("dishpilot-clipping",)
 YOUTUBE_PRIMARY_ID = "dishpilot-clipping"
 MR_PA_ID = "mr-pa-clipping"
@@ -46,10 +50,76 @@ CLOSED_CAMPAIGN_IDS = ("fast-loan-pilot", "nova-x-clipping")
 # Full HD encode. No bitrate cap: CRF 17 with the fast preset.
 ENCODE_PRESET = "fast"
 ENCODE_CRF = "17"
+# Ingested X/TikTok sources are the sharpest the platforms serve, so they get a lower CRF.
+INGEST_CRF = "16"
+INGEST_SHARPEN = "unsharp=3:3:0.6:3:3:0.0"
+YTDLP_FORMAT = "bestvideo+bestaudio/best"
+YTDLP_SORT = "res,fps,br"
 DAILY_SLOT_COUNT = 10
 OPEN_STATUSES = ("open", "active", "live")
 INDIAN_CATEGORIES = ("indian_actor_reels", "indian_movie_scenes")
+# Daily catalog and ingest priority, highest first: 4K anime edits, glamorous girls
+# and couple scenes, then top 4K movie scenes. Everything else keeps catalog order.
+PRIORITY_CATEGORIES = ("anime_4k", "glamorous_girls", "celebrity", "movie_4k")
+INGEST_CATEGORIES = (*PRIORITY_CATEGORIES, "funny", "knowledge", "concert", "other")
 X_VIRAL_CATEGORIES = ("funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert")
+COMMUNITY_GUIDELINES_BLOCKED_PATTERNS = (
+    ("adult sexual content", re.compile(
+        r"(?:\b(?:nsfw|porn(?:ography|ographic)?|xxx|onlyfans|nude|nudity|"
+        r"naked|explicit\s+sex(?:ual)?|sexually\s+explicit|hentai|fetish)\b|"
+        r"(?<!\w)18\s*\+(?!\w))",
+        re.IGNORECASE,
+    )),
+    ("sexual exploitation", re.compile(
+        r"\b(?:sexual\s+exploitation|revenge\s+porn|non[- ]consensual|"
+        r"child\s+(?:porn|sexual)|underage\s+sex)\b",
+        re.IGNORECASE,
+    )),
+    ("graphic violence", re.compile(
+        r"\b(?:graphic\s+violence|gore|gory|bloodbath|behead(?:ing|ed)?|"
+        r"decapitat(?:ion|ed)|dismember(?:ment|ed)?|mutilat(?:ion|ed)|snuff)\b",
+        re.IGNORECASE,
+    )),
+    ("hate or extremism", re.compile(
+        r"\b(?:hate\s+speech|racial\s+slur|white\s+supremac(?:y|ist)|"
+        r"neo[- ]?nazi|terrorist\s+propaganda|violent\s+extremis(?:m|t))\b",
+        re.IGNORECASE,
+    )),
+    ("self-harm", re.compile(
+        r"\b(?:self[- ]harm|suicide\s+(?:method|tutorial|challenge)|"
+        r"how\s+to\s+(?:self[- ]harm|commit\s+suicide))\b",
+        re.IGNORECASE,
+    )),
+    ("dangerous or illegal activity", re.compile(
+        r"\b(?:drug\s+dealing|buy\s+illegal\s+drugs|bomb[- ]making|"
+        r"weapon[- ]making|human\s+trafficking|animal\s+cruelty)\b",
+        re.IGNORECASE,
+    )),
+    ("scam or platform manipulation", re.compile(
+        r"\b(?:phishing|credential\s+stealing|engagement\s+bot|fake\s+giveaway|"
+        r"guaranteed\s+money|ban\s+evasion)\b",
+        re.IGNORECASE,
+    )),
+)
+COMMUNITY_GUIDELINES_UNSAFE_FLAGS = frozenset({
+    "adult",
+    "adult_content",
+    "age_restricted",
+    "explicit",
+    "graphic_violence",
+    "hate",
+    "hate_speech",
+    "nsfw",
+    "nudity",
+    "porn",
+    "restricted",
+    "self_harm",
+    "sexual",
+    "sexual_content",
+    "terrorism",
+    "unsafe",
+    "violence_graphic",
+})
 # Locked @chadriyo mix. Every category appears at least once across the 10 slots.
 X_SLOT_CATEGORIES = (
     "funny",
@@ -115,37 +185,72 @@ PLATFORM_WATERMARK = {
     "x": "dishpilot",
     "youtube_shorts": "dishpilot",
     "instagram_reels": "rascals",
+    "tiktok": "dishpilot",
 }
-# Instagram Reels carry exactly one campaign name, matching the slot's campaign.
+# One name and one campaign hashtag. Platform suffixes (#Shorts, #Reels) are not a second brand.
+CAMPAIGN_MARK = {
+    "dishpilot-clipping": ("dishpilot", "#Dishpilot"),
+    "rascals-theme-pages": ("rascals", "#Rascals"),
+    "mr-pa-clipping": ("mr. pa", "#MrPa"),
+}
+PLATFORM_SUFFIX_TAGS = {
+    "x": [],
+    "youtube_shorts": ["#Shorts"],
+    "instagram_reels": ["#Reels"],
+    "tiktok": [],
+}
 INSTAGRAM_CAMPAIGN_WATERMARK = {
-    "dishpilot-clipping": "dishpilot",
-    "rascals-theme-pages": "rascals",
-    "mr-pa-clipping": "mr. pa",
+    campaign_id: mark[0] for campaign_id, mark in CAMPAIGN_MARK.items()
 }
 INSTAGRAM_CAMPAIGN_HASHTAGS = {
-    "dishpilot-clipping": ["#Dishpilot", "#Reels"],
-    "rascals-theme-pages": ["#Rascals", "#Reels"],
-    "mr-pa-clipping": ["#MrPa", "#Reels"],
+    campaign_id: [mark[1], *PLATFORM_SUFFIX_TAGS["instagram_reels"]]
+    for campaign_id, mark in CAMPAIGN_MARK.items()
 }
 PLATFORM_HASHTAGS = {
     "x": ["#Dishpilot"],
     "youtube_shorts": ["#Dishpilot", "#Shorts"],
     "instagram_reels": ["#Rascals", "#Reels"],
+    "tiktok": ["#Dishpilot"],
 }
+CAMPAIGN_ALIASES = {
+    "dishpilot": "dishpilot-clipping",
+    "dishpilot-clipping": "dishpilot-clipping",
+    "rascals": "rascals-theme-pages",
+    "rascals-theme-pages": "rascals-theme-pages",
+    "mrpa": "mr-pa-clipping",
+    "mr. pa": "mr-pa-clipping",
+    "mr-pa": "mr-pa-clipping",
+    "mr-pa-clipping": "mr-pa-clipping",
+}
+SINGLE_CAMPAIGN_NAMES = frozenset({"dishpilot", "rascals", "mr. pa"})
+SINGLE_CAMPAIGN_TAGS = ("#Dishpilot", "#Rascals", "#MrPa")
 
 
 def platform_watermark(platform: str, campaign_id: str | None = None) -> str:
     """The one campaign name drawn on that post. Never two names."""
-    if platform == "instagram_reels" and campaign_id in INSTAGRAM_CAMPAIGN_WATERMARK:
-        return INSTAGRAM_CAMPAIGN_WATERMARK[campaign_id]
-    return PLATFORM_WATERMARK[platform]
+    if campaign_id in CAMPAIGN_MARK:
+        return CAMPAIGN_MARK[campaign_id][0]
+    text = PLATFORM_WATERMARK[platform]
+    if text not in SINGLE_CAMPAIGN_NAMES:
+        raise CampaignPlatformError(f"Refusing combined watermark {text!r}")
+    return text
 
 
 def platform_hashtags(platform: str, campaign_id: str | None = None) -> list[str]:
-    """One campaign hashtag per post, matching its single campaign."""
-    if platform == "instagram_reels" and campaign_id in INSTAGRAM_CAMPAIGN_HASHTAGS:
-        return list(INSTAGRAM_CAMPAIGN_HASHTAGS[campaign_id])
+    """One campaign hashtag, plus a platform suffix that does not name a second brand."""
+    if campaign_id in CAMPAIGN_MARK:
+        return [CAMPAIGN_MARK[campaign_id][1], *PLATFORM_SUFFIX_TAGS[platform]]
     return list(PLATFORM_HASHTAGS[platform])
+
+
+def campaign_id_from_alias(alias: str) -> str:
+    key = alias.strip().casefold()
+    campaign_id = CAMPAIGN_ALIASES.get(key)
+    if campaign_id is None:
+        raise CampaignPlatformError(
+            f"Unknown campaign {alias!r}. Expected dishpilot, rascals, or mrpa."
+        )
+    return campaign_id
 
 
 # Buffer channel ids. Instagram is the @benreelr channel supplied for the daily run.
@@ -153,6 +258,7 @@ DAILY_CHANNEL_IDS = {
     "x": "6ac41eb06a5c39ccb625fdf1",
     "youtube_shorts": "6ac4da806a5c39ccb62eab64",
     "instagram_reels": "6ac93d936a5c39ccb66624d7",
+    "tiktok": "6add07e4778b240e2fb35110",
 }
 # Two hours apart. 00:00 and 02:00 are the next IST night, which is still the
 # same UTC date as the 00:15 UTC cron (05:45 IST).
@@ -178,6 +284,8 @@ DAILY_WATERMARK_POSITION = {
 }
 # Rascals leads, then Dishpilot, then Mr. Pa. Repeats across the 10 Reels slots.
 INSTAGRAM_DAILY_ROTATION = (RASCALS_ID, DISHPILOT_ID, MR_PA_ID)
+# TikTok pays Dishpilot ($2/1K) and Rascals ($3/1K). Dishpilot leads.
+TIKTOK_DAILY_ROTATION = (DISHPILOT_ID, RASCALS_ID)
 SHORTS_MEDIA_BASE = "https://chatgpt820970.github.io/chad-media/shorts/v/"
 _IST_OFFSET_MINUTES = 5 * 60 + 30
 YOUTUBE_VARIANTS = (
@@ -258,6 +366,141 @@ _HASHTAG_RE = re.compile(r"#[A-Za-z][A-Za-z0-9_]*")
 
 class CampaignPlatformError(ValueError):
     """A clip was paired with a campaign that does not pay for that platform."""
+
+
+def _metadata_scalars(value, path: str = "source_metadata"):
+    if isinstance(value, dict):
+        for key, child in value.items():
+            normalized = re.sub(r"[^a-z0-9]+", "_", str(key).casefold()).strip("_")
+            child_path = f"{path}.{normalized}"
+            flag_name = normalized.removesuffix("_score")
+            if flag_name in COMMUNITY_GUIDELINES_UNSAFE_FLAGS:
+                if child is True or (isinstance(child, str) and child.casefold() in {"true", "yes", "1"}):
+                    yield child_path, normalized
+                elif normalized.endswith("_score") and isinstance(child, (int, float)) and child > 0:
+                    yield child_path, flag_name
+            yield from _metadata_scalars(child, child_path)
+    elif isinstance(value, (list, tuple, set)):
+        for index, child in enumerate(value):
+            yield from _metadata_scalars(child, f"{path}[{index}]")
+    elif value is not None and value is not False:
+        yield path, str(value)
+
+
+def community_guidelines_violations(
+    *,
+    title: str = "",
+    hook: str = "",
+    tags=(),
+    source_metadata=None,
+) -> list[str]:
+    """Return four-platform textual/metadata safety violations.
+
+    This deliberately permits glamorous, attractive, romantic, anime, and
+    movie-scene labels. It blocks explicit/adult content and high-risk safety
+    labels shared by X, Instagram, YouTube, and TikTok.
+    """
+    if isinstance(tags, str):
+        tag_values = [tags]
+    else:
+        tag_values = [str(tag) for tag in tags or ()]
+    fields = [("title", title), ("hook", hook)]
+    fields.extend((f"tags[{index}]", tag) for index, tag in enumerate(tag_values))
+    fields.extend(_metadata_scalars(source_metadata or {}))
+    violations: list[str] = []
+    for field, raw_value in fields:
+        value = str(raw_value)
+        for label, pattern in COMMUNITY_GUIDELINES_BLOCKED_PATTERNS:
+            if pattern.search(value):
+                finding = f"{field}: {label}"
+                if finding not in violations:
+                    violations.append(finding)
+        normalized_value = re.sub(r"[^a-z0-9]+", "_", value.casefold()).strip("_")
+        if normalized_value in COMMUNITY_GUIDELINES_UNSAFE_FLAGS:
+            finding = f"{field}: unsafe safety flag"
+            if finding not in violations:
+                violations.append(finding)
+    return violations
+
+
+def check_community_guidelines_safe(
+    title: str | dict = "",
+    hook: str = "",
+    tags=(),
+    source_metadata=None,
+) -> bool:
+    """True only when text and supplied source metadata pass all four platforms.
+
+    A feed/catalog item dictionary can be passed as the first argument for
+    callers that already have the complete content record.
+    """
+    if isinstance(title, dict):
+        item = title
+        caption = str(item.get("caption") or "")
+        title = str(item.get("title") or "")
+        hook = str(item.get("hook") or caption)
+        tags = item.get("tags") or _HASHTAG_RE.findall(caption)
+        source_metadata = {
+            "category": item.get("category"),
+            "source": item.get("source"),
+            "source_url": item.get("source_url") or item.get("video_url"),
+            "source_metadata": item.get("source_metadata"),
+        }
+    return not community_guidelines_violations(
+        title=str(title),
+        hook=hook,
+        tags=tags,
+        source_metadata=source_metadata,
+    )
+
+
+def assert_community_guidelines_safe(
+    *,
+    title: str = "",
+    hook: str = "",
+    tags=(),
+    source_metadata=None,
+    context: str = "clip",
+) -> None:
+    violations = community_guidelines_violations(
+        title=title,
+        hook=hook,
+        tags=tags,
+        source_metadata=source_metadata,
+    )
+    if violations:
+        raise CampaignPlatformError(
+            f"{context} failed four-platform Community Guidelines safety: "
+            + "; ".join(violations)
+        )
+
+
+def assert_feed_item_community_guidelines_safe(item: dict) -> None:
+    caption = str(item.get("caption") or "")
+    assert_community_guidelines_safe(
+        title=str(item.get("title") or ""),
+        hook=caption,
+        tags=_HASHTAG_RE.findall(caption),
+        source_metadata={
+            "category": item.get("category"),
+            "source": item.get("source"),
+            "source_url": item.get("source_url"),
+            "source_metadata": item.get("source_metadata"),
+        },
+        context=f"feed item {item.get('clip_id') or '<unknown>'}",
+    )
+
+
+def _safe_caption(caption: str, hook: str, platform: str) -> str:
+    cleaned = caption.strip()
+    assert_community_guidelines_safe(
+        title=hook,
+        hook=cleaned,
+        tags=_HASHTAG_RE.findall(cleaned),
+        source_metadata={"platform": platform},
+        context=f"{platform} caption",
+    )
+    return cleaned
 
 
 def load_campaigns(path: Path | None = None) -> dict:
@@ -520,9 +763,9 @@ def build_platform_caption(
 ) -> str:
     """Build the post caption from that campaign's terms.
 
-    Routed Dishpilot, Rascals, and Mr. Pa posts use the platform's required tags:
-    X is #Dishpilot, YouTube Shorts is #Dishpilot #Shorts, and Instagram Reels is
-    the slot campaign's single tag plus #Reels (#Dishpilot, #Rascals, or #MrPa). Other campaigns keep their own caption style.
+    Routed Dishpilot, Rascals, and Mr. Pa posts use one campaign hashtag that
+    matches the watermark: #Dishpilot, #Rascals, or #MrPa. YouTube also adds
+    #Shorts and Instagram also adds #Reels. Other campaigns keep their own caption style.
     X drops raw links when the channel blocks them, and loan phrasing is removed
     from every X caption.
     """
@@ -544,7 +787,7 @@ def build_platform_caption(
             caption = _LOAN_SPAM_RE.sub("", caption)
             caption = re.sub(r"[ \t]{2,}", " ", caption)
             caption = re.sub(r"\n{3,}", "\n\n", caption).strip()
-        return caption.strip()
+        return _safe_caption(caption, hook_text, platform)
     if style == "hook_and_hashtags":
         limit = int(rules.get("max_hashtags") or 2)
         extras = _extra_hashtags(hook_text, campaign, limit)
@@ -566,7 +809,7 @@ def build_platform_caption(
         caption = _LOAN_SPAM_RE.sub("", caption)
         caption = re.sub(r"[ \t]{2,}", " ", caption)
         caption = re.sub(r"\n{3,}", "\n\n", caption).strip()
-    return caption.strip()
+    return _safe_caption(caption, hook_text, platform)
 
 
 def x_links_blocked(campaigns_data: dict) -> bool:
@@ -706,6 +949,12 @@ def platform_account(campaigns_data: dict, platform: str) -> dict:
             "handle": routing.get("handle") or channel.get("handle") or "@benreelr",
             "username": routing.get("username") or channel.get("username") or "@benreelr",
         }
+    if platform == "tiktok":
+        channel = channels.get("tiktok") or {}
+        return {
+            "handle": routing.get("handle") or channel.get("handle") or "@bi67325",
+            "username": routing.get("username") or channel.get("username") or "@bi67325",
+        }
     channel = channels.get("youtube") or {}
     return {
         "handle": routing.get("handle") or channel.get("handle") or "Denzen",
@@ -805,8 +1054,8 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
             )
         overlay = {
             "mode": "dual_compatible",
-            "youtube_shorts": platform_overlay_spec("youtube_shorts"),
-            "x": platform_overlay_spec("x"),
+            "youtube_shorts": platform_overlay_spec("youtube_shorts", youtube_campaign.get("id")),
+            "x": platform_overlay_spec("x", x_campaign.get("id")),
             "instagram_reels": platform_overlay_spec("instagram_reels", instagram_campaign.get("id")),
         }
         if overlay["x"]["logo_text"] != overlay["youtube_shorts"]["logo_text"]:
@@ -875,9 +1124,9 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
         "slot_count": len(slots),
         "guarantee": (
             "Every X (@chadriyo) slot is Dishpilot with #Dishpilot and no loan text. "
-            "Every Instagram Reel (@benreelr) is Rascals or Dishpilot with "
-            "one campaign tag (#Rascals, #Dishpilot, or #MrPa) plus #Reels and one matching watermark. Every YouTube Shorts (Denzen / @denzen0) slot "
-            "is Dishpilot or Mr. Pa with #Dishpilot #Shorts. At least 80% of YouTube "
+            "Every Instagram Reel (@benreelr) and TikTok (@bi67325) post carries one "
+            "campaign name and its matching tag. Every YouTube Shorts (Denzen / @denzen0) slot "
+            "is Dishpilot (#Dishpilot #Shorts) or Mr. Pa (#MrPa #Shorts). At least 80% of YouTube "
             "slots are Indian actor reels or Indian cinema scenes. Each platform draws "
             "one top-left corner mark."
         ),
@@ -967,8 +1216,11 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
             if x_cta and x_cta in x_caption:
                 errors.append(f"slot {slot_no} Dishpilot X caption includes a CTA past the hook and hashtags")
         yt_tags = _HASHTAG_RE.findall(youtube_caption)
-        if yt_tags != ["#Dishpilot", "#Shorts"]:
-            errors.append(f"slot {slot_no} YouTube caption must include #Dishpilot #Shorts")
+        expected_yt_tags = platform_hashtags("youtube_shorts", str(youtube_id))
+        if yt_tags != expected_yt_tags:
+            errors.append(
+                f"slot {slot_no} YouTube caption must be {' '.join(expected_yt_tags)}"
+            )
         hook = str(slot.get("hook") or "")
         if hook and hook not in x_caption:
             errors.append(f"slot {slot_no} x_caption is missing the hook")
@@ -991,8 +1243,8 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
         overlay = slot.get("overlay") or {}
         if overlay.get("mode") not in ("platform_specific_variants", "dual_compatible"):
             errors.append(f"slot {slot_no} overlay mode is missing")
-        expected_x = platform_overlay_spec("x")
-        expected_yt = platform_overlay_spec("youtube_shorts")
+        expected_x = platform_overlay_spec("x", str(x_id or ""))
+        expected_yt = platform_overlay_spec("youtube_shorts", str(youtube_id or ""))
         expected_ig = platform_overlay_spec("instagram_reels", str(slot.get("instagram_campaign") or ""))
         for side, expected in (
             ("x", expected_x),
@@ -1423,18 +1675,18 @@ _DAILY_CLIP_ROWS = (
     ("x-virat-mumbai", "indian_actor_reels", "Virat walks into Mumbai", "https://video.twimg.com/amplify_video/2112746643015778304/vid/avc1/480x852/G9NkYIKWNf3avnSU.mp4"),
     ("x-allu", "indian_actor_reels", "Allu takes the stage", "https://video.twimg.com/amplify_video/2108890651677151232/vid/avc1/480x852/lKMyE_VzG7YtqVmU.mp4"),
     ("x-hardik", "indian_actor_reels", "Hardik's celebration takes over", "https://video.twimg.com/amplify_video/2110911489867669504/vid/avc1/480x852/MeUuwscm1dCEjM4Y.mp4"),
-    ("x-user-2", "celebrity", "The chemistry in this scene with Agustin Bernasconi and Wanda Nara is unreal", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-2.mp4"),
-    ("x-user-5", "celebrity", "Kim Ji-won owning the stage with pure elegance and confidence", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-5.mp4"),
-    ("x-user-7", "celebrity", "LISA Tarantino Official Music Video visuals are on another level", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-7.mp4"),
-    ("x-user-1", "anime", "This animation is insane", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-1.mp4"),
+    ("x-user-2", "glamorous_girls", "The chemistry in this scene with Agustin Bernasconi and Wanda Nara is unreal", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-2.mp4"),
+    ("x-user-5", "glamorous_girls", "Kim Ji-won owning the stage with pure elegance and confidence", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-5.mp4"),
+    ("x-user-7", "glamorous_girls", "LISA Tarantino Official Music Video visuals are on another level", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-7.mp4"),
+    ("x-user-1", "anime_4k", "This animation is insane", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-1.mp4"),
     ("x-user-3", "celebrity", "When the beat drops and the whole room loses it", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-3.mp4"),
-    ("x-user-4", "movie", "Still one of the funniest scenes in Hotel Transylvania", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-4.mp4"),
+    ("x-user-4", "movie_4k", "Still one of the funniest scenes in Hotel Transylvania", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-4.mp4"),
     ("x-user-6", "celebrity", "Shenzhen at night looks straight out of 2050", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-6.mp4"),
     ("x-user-8", "celebrity", "Every fandom when their favorite character gets the spotlight", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-8.mp4"),
     ("x-user-9", "celebrity", "Inside Japan luxury seaside inn with its own giant live pool", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-9.mp4"),
     ("flp-concert-vibes", "concert", "Wait for the note", _pages_url("flp-concert-vibes.mp4")),
     ("x-clip-3", "concert", "Wait for the note", _pages_url("x-clip-3.mp4")),
-    ("flp-anime-sakuga", "anime", "This animation is insane", _pages_url("flp-anime-sakuga.mp4")),
+    ("flp-anime-sakuga", "anime_4k", "This animation is insane", _pages_url("flp-anime-sakuga.mp4")),
     ("flp-nyc-doorman", "funny", "NYC doorman plot twist", _pages_url("flp-nyc-doorman.mp4")),
     ("flp-khaby-lifehack", "funny", "He did it the simple way", _pages_url("flp-khaby-lifehack.mp4")),
     ("flp-speedcube-lockin", "funny", "Watch his hands", _pages_url("flp-speedcube-lockin.mp4")),
@@ -1445,12 +1697,32 @@ _DAILY_CLIP_ROWS = (
     ("flp-president-speech", "funny", "Wait for the third promise", _pages_url("flp-president-speech.mp4")),
     ("flp-language-gauntlet", "knowledge", "Name every flag", _pages_url("flp-language-gauntlet.mp4")),
     ("x-clip-2", "knowledge", "Name every flag", _pages_url("x-clip-2.mp4")),
+    ("tt-7688400123809893662", "funny", "The glasses stay on", _shorts_url("tt-7688400123809893662")),
+    ("tt-7501669584592817451", "funny", "Do I have your vote", _shorts_url("tt-7501669584592817451")),
+    ("tt-7482079182034341162", "funny", "Flying got interesting", _shorts_url("tt-7482079182034341162")),
+    ("tt-7438260086109261086", "funny", "Bring back the tomatoes", _shorts_url("tt-7438260086109261086")),
+    ("tt-7691740195418377502", "funny", "Just five more minutes", _shorts_url("tt-7691740195418377502")),
+    ("tt-7625798204092632333", "funny", "Beatbox challenge", _shorts_url("tt-7625798204092632333")),
+    ("tt-7699120594402479373", "celebrity", "The dog knows the doorman", _shorts_url("tt-7699120594402479373")),
+    ("tt-7694335322922044703", "funny", "Was the ball out", _shorts_url("tt-7694335322922044703")),
+    ("tt-7564513815384116498", "celebrity", "This one came from the heart", _shorts_url("tt-7564513815384116498")),
+    ("tt-7548779492546825473", "celebrity", "For everyone who has loved", _shorts_url("tt-7548779492546825473")),
+    ("x-2105358655927517442", "anime_4k", "Show me a better fight scene", _shorts_url("x-2105358655927517442")),
+    ("tt-7408963192170335534", "knowledge", "The kitchen reveal", _shorts_url("tt-7408963192170335534")),
 )
 
 
 def _catalog_clip(row: tuple[str, str, str, str]) -> dict:
     clip_id, category, hook, video_url = row
-    return {"id": clip_id, "category": category, "hook": hook, "video_url": video_url}
+    clip = {"id": clip_id, "category": category, "hook": hook, "video_url": video_url}
+    assert_community_guidelines_safe(
+        title=hook,
+        hook=hook,
+        tags=(category,),
+        source_metadata={"source_url": video_url, "category": category},
+        context=f"catalog clip {clip_id}",
+    )
+    return clip
 
 
 DAILY_CLIP_CATALOG = tuple(_catalog_clip(row) for row in _DAILY_CLIP_ROWS)
@@ -1472,7 +1744,12 @@ def daily_due_at_utc(run_date: date, time_ist: str) -> str:
 
 
 def daily_channel_id(campaigns_data: dict, platform: str) -> str:
-    channel_key = {"x": "x", "youtube_shorts": "youtube", "instagram_reels": "instagram"}[platform]
+    channel_key = {
+        "x": "x",
+        "youtube_shorts": "youtube",
+        "instagram_reels": "instagram",
+        "tiktok": "tiktok",
+    }[platform]
     channel = (campaigns_data.get("channels") or {}).get(channel_key) or {}
     found = str(channel.get("buffer_channel_id") or "")
     if re.fullmatch(r"[a-f\d]{24}", found):
@@ -1481,12 +1758,26 @@ def daily_channel_id(campaigns_data: dict, platform: str) -> str:
 
 
 def daily_feed_is_current(feed: dict, today: date) -> bool:
+    """True when today's X, YouTube, and Instagram slots are already filled.
+
+    A same-day 30-clip feed is kept so a manual run does not replace it.
+    A fresh build also includes 10 TikTok slots; that feed stays current too.
+    """
     items = feed.get("items")
-    return (
-        feed.get("date") == today.isoformat()
-        and isinstance(items, list)
-        and len(items) == DAILY_30_PER_PLATFORM * len(SUPPORTED_PLATFORMS)
-    )
+    if feed.get("date") != today.isoformat() or not isinstance(items, list):
+        return False
+    counts = {platform: 0 for platform in SUPPORTED_PLATFORMS}
+    for item in items:
+        if not isinstance(item, dict):
+            return False
+        try:
+            assert_feed_item_community_guidelines_safe(item)
+        except CampaignPlatformError:
+            return False
+        if item.get("platform") in counts:
+            counts[str(item["platform"])] += 1
+    core = ("x", "youtube_shorts", "instagram_reels")
+    return all(counts[platform] >= DAILY_30_PER_PLATFORM for platform in core)
 
 
 def _seen_lists(seen: dict | None) -> tuple[list[str], dict[str, str]]:
@@ -1500,6 +1791,13 @@ def _seen_lists(seen: dict | None) -> tuple[list[str], dict[str, str]]:
     return ids, uses
 
 
+def priority_rank(category: str) -> int:
+    """0 for the top priority category; len(PRIORITY_CATEGORIES) for everything else."""
+    if category in PRIORITY_CATEGORIES:
+        return PRIORITY_CATEGORIES.index(category)
+    return len(PRIORITY_CATEGORIES)
+
+
 def _rank_unseen(
     catalog: tuple[dict, ...],
     predicate,
@@ -1507,6 +1805,7 @@ def _rank_unseen(
     used_today: set[str],
     uses: dict[str, str],
 ) -> list[dict]:
+    """Fresh clips first, then recycled by oldest use; priority categories lead each group."""
     order = {clip["id"]: index for index, clip in enumerate(catalog)}
     fresh: list[dict] = []
     recycled: list[dict] = []
@@ -1518,7 +1817,14 @@ def _rank_unseen(
             recycled.append(clip)
         else:
             fresh.append(clip)
-    recycled.sort(key=lambda clip: (uses.get(str(clip["id"]), ""), order[str(clip["id"])]))
+    fresh.sort(key=lambda clip: (priority_rank(str(clip["category"])), order[str(clip["id"])]))
+    recycled.sort(
+        key=lambda clip: (
+            priority_rank(str(clip["category"])),
+            uses.get(str(clip["id"]), ""),
+            order[str(clip["id"])],
+        )
+    )
     return fresh + recycled
 
 
@@ -1570,6 +1876,19 @@ def _take_preferring_global(
     return chosen
 
 
+def _deal_preferring_global(
+    catalog: tuple[dict, ...],
+    lanes: int,
+    count: int,
+    seen_ids: set[str],
+    used_today: set[str],
+    uses: dict[str, str],
+) -> list[list[dict]]:
+    """Deal ranked clips round-robin so each lane gets a share of the priority categories."""
+    pool = _take_preferring_global(catalog, lanes * count, seen_ids, used_today, uses)
+    return [pool[lane::lanes] for lane in range(lanes)]
+
+
 def _campaign_for_daily_slot(campaigns_data: dict, campaign_id: str, platform: str) -> dict:
     eligible = campaigns_for_platform(campaigns_data, platform)
     chosen = next((campaign for campaign in eligible if campaign.get("id") == campaign_id), None)
@@ -1600,7 +1919,18 @@ def _daily_item(
     caption = build_platform_caption(hook, campaign, platform, links_blocked=links_blocked)
     if contains_loan_spam(caption) or contains_loan_spam(hook):
         raise CampaignPlatformError(f"{clip['id']} caption contains loan text")
-    return {
+    assert_community_guidelines_safe(
+        title=hook,
+        hook=hook,
+        tags=_HASHTAG_RE.findall(caption),
+        source_metadata={
+            "category": clip.get("category"),
+            "source_url": clip.get("video_url"),
+            "source_metadata": clip.get("source_metadata"),
+        },
+        context=f"{platform} clip {clip['id']}",
+    )
+    item = {
         "slot": slot,
         "platform": platform,
         "channel_id": daily_channel_id(campaigns_data, platform),
@@ -1614,8 +1944,11 @@ def _daily_item(
         "caption": caption,
         "clip_id": clip["id"],
         "category": clip["category"],
+        "priority": priority_rank(str(clip["category"])) < len(PRIORITY_CATEGORIES),
         "buffer_status": "pending",
     }
+    assert_feed_item_community_guidelines_safe(item)
+    return item
 
 
 def build_daily_30(
@@ -1625,12 +1958,15 @@ def build_daily_30(
     today: date | None = None,
     catalog: tuple[dict, ...] | None = None,
 ) -> tuple[dict, dict]:
-    """Pick 30 unseen clips and the seen-id log that records them.
+    """Pick 10 unseen clips for each of X, YouTube, Instagram, and TikTok.
 
     YouTube Shorts takes 8 Indian actor/cinema clips on Dishpilot and 2 global
-    clips on Mr. Pa. X takes 10 Dishpilot clips. Instagram rotates Rascals,
-    Dishpilot, and Mr. Pa. A clip already in `seen` is reused only after every
-    unseen clip of that kind is gone, and never twice on the same day.
+    clips on Mr. Pa. X, Instagram, and TikTok pick first from the priority
+    categories (4K anime, glamorous girls and couples, 4K movie scenes), then
+    YouTube's two global slots take what is left. X takes 10 Dishpilot clips. Instagram rotates Rascals,
+    Dishpilot, and Mr. Pa. TikTok alternates Dishpilot and Rascals. A clip
+    already in `seen` is reused only after every unseen clip of that kind is
+    gone, and never twice on the same day.
     """
     run_day = today or datetime.now(timezone.utc).date()
     source = catalog if catalog is not None else DAILY_CLIP_CATALOG
@@ -1647,23 +1983,17 @@ def build_daily_30(
         used_today,
         uses,
     )
+    x_clips, instagram_clips, tiktok_clips = _deal_preferring_global(
+        source,
+        3,
+        DAILY_30_PER_PLATFORM,
+        seen_ids,
+        used_today,
+        uses,
+    )
     youtube_global = _take_preferring_global(
         source,
         DAILY_30_PER_PLATFORM - DAILY_30_INDIAN_SLOTS,
-        seen_ids,
-        used_today,
-        uses,
-    )
-    x_clips = _take_preferring_global(
-        source,
-        DAILY_30_PER_PLATFORM,
-        seen_ids,
-        used_today,
-        uses,
-    )
-    instagram_clips = _take_preferring_global(
-        source,
-        DAILY_30_PER_PLATFORM,
         seen_ids,
         used_today,
         uses,
@@ -1712,8 +2042,23 @@ def build_daily_30(
                 links_blocked=False,
             )
         )
-    if len(items) != DAILY_30_PER_PLATFORM * len(SUPPORTED_PLATFORMS):
-        raise CampaignPlatformError(f"Expected 30 daily items, built {len(items)}")
+    for slot, clip in enumerate(tiktok_clips, start=1):
+        campaign_id = TIKTOK_DAILY_ROTATION[(slot - 1) % len(TIKTOK_DAILY_ROTATION)]
+        campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "tiktok")
+        items.append(
+            _daily_item(
+                slot=slot,
+                platform="tiktok",
+                clip=clip,
+                campaign=campaign,
+                campaigns_data=campaigns_data,
+                run_date=run_day,
+                links_blocked=False,
+            )
+        )
+    expected_count = DAILY_30_PER_PLATFORM * len(SUPPORTED_PLATFORMS)
+    if len(items) != expected_count:
+        raise CampaignPlatformError(f"Expected {expected_count} daily items, built {len(items)}")
     clip_ids = [str(item["clip_id"]) for item in items]
     if len(set(clip_ids)) != len(clip_ids):
         raise CampaignPlatformError("Daily feed reused a clip inside the same day")
@@ -1737,19 +2082,35 @@ def build_daily_30(
     return feed, seen_state
 
 
-def buffer_create_post_body(item: dict) -> dict:
-    """Buffer createPost input for one daily slot. The token is never included."""
+def _is_future(due_iso: str, now: datetime | None) -> bool:
+    try:
+        due = datetime.fromisoformat(due_iso)
+    except ValueError:
+        return False
+    return due > (now or datetime.now(timezone.utc))
+
+
+def buffer_create_post_body(item: dict, now: datetime | None = None) -> dict:
+    """Buffer createPost input for one daily slot. The token is never included.
+
+    A slot whose time already passed (for example an ingest run late in the day)
+    goes to the channel queue instead, since Buffer rejects past `dueAt` values.
+    """
+    assert_feed_item_community_guidelines_safe(item)
     due = str(item["due_at_utc"])
     if due.endswith("Z"):
         due = due[:-1] + "+00:00"
     body: dict = {
         "channelId": item["channel_id"],
         "schedulingType": "automatic",
-        "mode": "customScheduled",
-        "dueAt": due,
         "text": item["caption"],
         "assets": [{"video": {"url": item["video_url"]}}],
     }
+    if _is_future(due, now):
+        body["mode"] = "customScheduled"
+        body["dueAt"] = due
+    else:
+        body["mode"] = "addToQueue"
     platform = item["platform"]
     if platform == "youtube_shorts":
         body["metadata"] = {
@@ -1766,7 +2127,367 @@ def buffer_create_post_body(item: dict) -> dict:
                 "shouldShareToFeed": True,
             }
         }
+    elif platform == "tiktok":
+        body["metadata"] = {"tiktok": {"title": str(item["title"])[:150]}}
     return body
+
+
+_X_STATUS_RE = re.compile(
+    r"https?://(?:www\.)?(?:x|twitter)\.com/[^/]+/status/(\d+)",
+    re.IGNORECASE,
+)
+_TIKTOK_VIDEO_RE = re.compile(
+    r"https?://(?:www\.)?tiktok\.com/@[^/]+/video/(\d+)",
+    re.IGNORECASE,
+)
+_TIKTOK_SHORT_RE = re.compile(
+    r"https?://(?:vm|vt)\.tiktok\.com/[A-Za-z0-9]+/?",
+    re.IGNORECASE,
+)
+_DIRECT_MP4_RE = re.compile(r"https?://\S+\.mp4(?:\?\S*)?$", re.IGNORECASE)
+PLATFORM_ALIASES = {
+    "ig": "instagram_reels",
+    "instagram": "instagram_reels",
+    "reels": "instagram_reels",
+    "yt": "youtube_shorts",
+    "youtube": "youtube_shorts",
+    "shorts": "youtube_shorts",
+    "twitter": "x",
+    "tt": "tiktok",
+}
+# Slight crop, speed, and metadata differences so the four uploads do not share a hash.
+PLATFORM_ENCODE_TWEAK = {
+    "x": {"crop_x": "0", "crop_y": "0", "atempo": "1.010", "comment": "whop-x-chadriyo"},
+    "youtube_shorts": {"crop_x": "4", "crop_y": "0", "atempo": "1.015", "comment": "whop-yt-denzen"},
+    "instagram_reels": {"crop_x": "0", "crop_y": "4", "atempo": "1.020", "comment": "whop-ig-benreelr"},
+    "tiktok": {"crop_x": "2", "crop_y": "2", "atempo": "1.025", "comment": "whop-tt-bi67325"},
+}
+
+
+def parse_platform_list(text: str) -> tuple[str, ...]:
+    raw = (text or "all").strip().casefold()
+    if raw in ("", "all", "*"):
+        return SUPPORTED_PLATFORMS
+    chosen: list[str] = []
+    for part in re.split(r"[\s,]+", raw):
+        if not part:
+            continue
+        name = PLATFORM_ALIASES.get(part, part)
+        if name not in SUPPORTED_PLATFORMS:
+            raise CampaignPlatformError(
+                f"Unknown platform {part!r}. Expected all or {', '.join(SUPPORTED_PLATFORMS)}."
+            )
+        if name not in chosen:
+            chosen.append(name)
+    if not chosen:
+        raise CampaignPlatformError("No platforms selected")
+    return tuple(chosen)
+
+
+def platforms_for_campaign(campaigns_data: dict, campaign_id: str, requested: tuple[str, ...]) -> tuple[str, ...]:
+    """Platforms in `requested` that this funded campaign actually pays."""
+    accepted: list[str] = []
+    for platform in requested:
+        eligible = {str(campaign.get("id")) for campaign in campaigns_for_platform(campaigns_data, platform)}
+        if campaign_id in eligible:
+            accepted.append(platform)
+    if not accepted:
+        raise CampaignPlatformError(
+            f"{campaign_id} does not pass Pool Guard on any of {', '.join(requested)}"
+        )
+    return tuple(accepted)
+
+
+def parse_source_url(url: str) -> dict:
+    text = url.strip()
+    status = _X_STATUS_RE.search(text)
+    if status:
+        return {"kind": "x", "id": status.group(1), "url": text}
+    video = _TIKTOK_VIDEO_RE.search(text)
+    if video:
+        return {"kind": "tiktok", "id": video.group(1), "url": text}
+    short = _TIKTOK_SHORT_RE.search(text)
+    if short:
+        token = short.group(0).rstrip("/").rsplit("/", 1)[-1]
+        return {"kind": "tiktok", "id": token, "url": text}
+    if _DIRECT_MP4_RE.match(text):
+        stem = text.rstrip("/").rsplit("/", 1)[-1].split(".", 1)[0]
+        safe = re.sub(r"[^A-Za-z0-9_-]", "", stem)[:40] or "clip"
+        return {"kind": "mp4", "id": safe, "url": text}
+    raise CampaignPlatformError(
+        f"Unsupported link {text!r}. Expected an X status, a TikTok video, or a direct MP4."
+    )
+
+
+def download_attempt_plan(parsed: dict) -> list[dict]:
+    """Ordered clean-download attempts. JSON APIs come before yt-dlp."""
+    kind = parsed["kind"]
+    source = parsed["url"]
+    if kind == "mp4":
+        return [{"via": "direct", "url": source}]
+    if kind == "x":
+        status_id = parsed["id"]
+        return [
+            {"via": "vxtwitter", "url": f"https://api.vxtwitter.com/Twitter/status/{status_id}"},
+            {"via": "fixupx", "url": f"https://api.fxtwitter.com/status/{status_id}"},
+            {"via": "ytdlp", "url": source},
+        ]
+    if kind == "tiktok":
+        return [
+            {"via": "tikwm", "url": "https://tikwm.com/api/?hd=1&url=" + quote(source, safe="")},
+            {"via": "ytdlp", "url": source},
+        ]
+    raise CampaignPlatformError(f"No downloader for {kind}")
+
+
+_URL_DIMENSIONS_RE = re.compile(r"/(\d{3,4})x(\d{3,4})/")
+
+
+def _stream_score(media: dict, url: str) -> tuple[int, int, int]:
+    """Rank a stream by pixels, then frame rate, then bitrate so 4K and 1080p60 win."""
+    width = int(media.get("width") or 0)
+    height = int(media.get("height") or 0)
+    size = media.get("size") if isinstance(media.get("size"), dict) else {}
+    width = width or int(size.get("width") or 0)
+    height = height or int(size.get("height") or 0)
+    if not (width and height):
+        match = _URL_DIMENSIONS_RE.search(url)
+        if match:
+            width, height = int(match.group(1)), int(match.group(2))
+    fps = int(float(media.get("fps") or media.get("frame_rate") or 0))
+    bitrate = int(media.get("bitrate") or 0)
+    return (width * height, fps, bitrate)
+
+
+def _highest_mp4(candidates: list[tuple[tuple[int, int, int], str]]) -> str:
+    ranked = [(score, url) for score, url in candidates if url.startswith("http") and ".mp4" in url.lower()]
+    if not ranked:
+        return ""
+    ranked.sort(key=lambda item: item[0], reverse=True)
+    return ranked[0][1]
+
+
+def _media_entries(payload: dict) -> list[dict]:
+    entries = [media for media in payload.get("media_extended") or [] if isinstance(media, dict)]
+    tweet = payload.get("tweet") if isinstance(payload.get("tweet"), dict) else {}
+    media_block = tweet.get("media") if isinstance(tweet.get("media"), dict) else {}
+    for video in media_block.get("videos") or []:
+        if isinstance(video, dict):
+            entries.append(video)
+    for variant in payload.get("variants") or []:
+        if isinstance(variant, dict):
+            entries.append(variant)
+    return entries
+
+
+def extract_mp4(via: str, payload: dict) -> str:
+    """Pull the highest-resolution MP4 URL out of a vxtwitter, fixupx, or tikwm payload."""
+    if not isinstance(payload, dict):
+        return ""
+    if via == "tikwm":
+        data = payload.get("data") if isinstance(payload.get("data"), dict) else payload
+        hd = str(data.get("hdplay") or "")
+        play = str(data.get("play") or "")
+        return _highest_mp4([((2, 0, 0), hd), ((1, 0, 0), play)])
+    if via in ("vxtwitter", "fixupx"):
+        scored: list[tuple[tuple[int, int, int], str]] = []
+        for media in _media_entries(payload):
+            url = str(media.get("url") or "")
+            if "mp4" not in url.lower():
+                continue
+            scored.append((_stream_score(media, url), url))
+        for url in payload.get("mediaURLs") or payload.get("media_urls") or []:
+            text = str(url)
+            scored.append((_stream_score({}, text), text))
+        return _highest_mp4(scored)
+    return ""
+
+
+_SAFETY_METADATA_KEY_RE = re.compile(
+    r"(?:title|desc|caption|tag|label|safety|moderation|sensitive|nsfw|adult|"
+    r"explicit|nudity|sexual|violence|hate|restricted|rating)",
+    re.IGNORECASE,
+)
+
+
+def source_safety_metadata(payload, depth: int = 0):
+    """Keep only API metadata that can describe or safety-label the source."""
+    if depth > 5:
+        return None
+    if isinstance(payload, dict):
+        selected = {}
+        for key, value in payload.items():
+            if _SAFETY_METADATA_KEY_RE.search(str(key)):
+                selected[str(key)] = value
+            elif isinstance(value, (dict, list)):
+                nested = source_safety_metadata(value, depth + 1)
+                if nested:
+                    selected[str(key)] = nested
+        return selected
+    if isinstance(payload, list):
+        selected = [source_safety_metadata(value, depth + 1) for value in payload]
+        return [value for value in selected if value]
+    return None
+
+
+def resolve_clean_mp4_url(url: str, fetch_json, metadata_sink: dict | None = None) -> str | None:
+    """Return a clean MP4 URL, or None when the caller should fall back to yt-dlp."""
+    parsed = parse_source_url(url)
+    if metadata_sink is not None:
+        metadata_sink.update({"source_kind": parsed["kind"], "source_id": parsed["id"]})
+    for attempt in download_attempt_plan(parsed):
+        if attempt["via"] == "direct":
+            return attempt["url"]
+        if attempt["via"] == "ytdlp":
+            return None
+        try:
+            payload = fetch_json(attempt["url"])
+        except Exception:
+            continue
+        if metadata_sink is not None and isinstance(payload, dict):
+            metadata_sink["provider"] = attempt["via"]
+            metadata_sink["safety"] = source_safety_metadata(payload)
+        found = extract_mp4(attempt["via"], payload if isinstance(payload, dict) else {})
+        if found:
+            return found
+    return None
+
+
+def single_campaign_drawtext(font_path: str, text: str) -> str:
+    """Ingest watermark: one campaign name, top-left, white 0.78 on a thin dark box."""
+    if text not in SINGLE_CAMPAIGN_NAMES or "·" in text:
+        raise CampaignPlatformError(
+            f"Watermark must be one of {sorted(SINGLE_CAMPAIGN_NAMES)}, not {text!r}"
+        )
+    safe = escape_drawtext(text)
+    return (
+        f"drawtext=fontfile='{font_path}':text='{safe}':"
+        "fontsize=22:fontcolor=white@0.78:"
+        "box=1:boxcolor=black@0.28:boxborderw=8:"
+        "x=w*0.025:y=h*0.03"
+    )
+
+
+def ingest_ffmpeg_command(
+    src: Path,
+    dest: Path,
+    platform: str,
+    watermark: str,
+    font_path: str,
+) -> list[str]:
+    """1080x1920 CRF 16 encode with lanczos scaling and a light sharpen.
+
+    Each platform gets its own crop and speed so the four hashes differ.
+    """
+    if platform not in PLATFORM_ENCODE_TWEAK:
+        raise CampaignPlatformError(f"No encode tweak for {platform}")
+    tweak = PLATFORM_ENCODE_TWEAK[platform]
+    draw = single_campaign_drawtext(font_path, watermark)
+    video_filter = (
+        "scale=1088:1928:flags=lanczos:force_original_aspect_ratio=increase,"
+        f"crop=1080:1920:{tweak['crop_x']}:{tweak['crop_y']},"
+        f"{INGEST_SHARPEN},"
+        f"setpts=PTS/{tweak['atempo']},"
+        f"{draw}"
+    )
+    return [
+        "ffmpeg",
+        "-y",
+        "-i",
+        str(src),
+        "-vf",
+        video_filter,
+        "-filter:a",
+        f"atempo={tweak['atempo']}",
+        "-c:v",
+        "libx264",
+        "-preset",
+        ENCODE_PRESET,
+        "-crf",
+        INGEST_CRF,
+        "-pix_fmt",
+        "yuv420p",
+        "-c:a",
+        "aac",
+        "-b:a",
+        "192k",
+        "-movflags",
+        "+faststart",
+        "-metadata",
+        f"comment={tweak['comment']}",
+        str(dest),
+    ]
+
+
+def build_ingest_items(
+    campaigns_data: dict,
+    *,
+    source_url: str,
+    source_id: str,
+    video_url: str,
+    campaign_alias: str,
+    platforms: str,
+    hook: str,
+    today: date | None = None,
+    slot: int = 1,
+    category: str = "glamorous_girls",
+    source_metadata: dict | None = None,
+) -> list[dict]:
+    """Queue one rendered file onto each platform that campaign pays."""
+    if category not in INGEST_CATEGORIES:
+        raise CampaignPlatformError(
+            f"Unknown category {category!r}. Expected one of {', '.join(INGEST_CATEGORIES)}."
+        )
+    assert_community_guidelines_safe(
+        title=hook,
+        hook=hook,
+        tags=(category,),
+        source_metadata={
+            "source_url": source_url,
+            "category": category,
+            "api": source_metadata or {},
+        },
+        context=f"ingest source {source_id}",
+    )
+    run_day = today or datetime.now(timezone.utc).date()
+    campaign_id = campaign_id_from_alias(campaign_alias)
+    selected = platforms_for_campaign(campaigns_data, campaign_id, parse_platform_list(platforms))
+    campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, selected[0])
+    links_blocked = x_links_blocked(campaigns_data)
+    if slot < 1 or slot > DAILY_30_PER_PLATFORM:
+        raise CampaignPlatformError(f"Ingest slot must be 1..{DAILY_30_PER_PLATFORM}")
+    items: list[dict] = []
+    for platform in selected:
+        bound = _campaign_for_daily_slot(campaigns_data, campaign_id, platform)
+        item = _daily_item(
+            slot=slot,
+            platform=platform,
+            clip={
+                "id": f"ingest-{source_id}-{platform}",
+                "hook": hook.strip() or "Watch this",
+                "category": category,
+                "video_url": video_url,
+            },
+            campaign=bound,
+            campaigns_data=campaigns_data,
+            run_date=run_day,
+            links_blocked=links_blocked and platform == "x",
+        )
+        mark = str(item["watermark_text"])
+        tags = _HASHTAG_RE.findall(str(item["caption"]))
+        campaign_tags = [tag for tag in tags if tag in SINGLE_CAMPAIGN_TAGS]
+        if mark not in SINGLE_CAMPAIGN_NAMES or len(campaign_tags) != 1:
+            raise CampaignPlatformError(f"Ingest item for {platform} does not have one campaign mark")
+        if CAMPAIGN_MARK[campaign_id][1] not in campaign_tags:
+            raise CampaignPlatformError(f"Ingest caption for {platform} does not match {campaign_id}")
+        item["source"] = "ingest"
+        item["source_url"] = source_url
+        item["source_metadata"] = source_metadata or {}
+        assert_feed_item_community_guidelines_safe(item)
+        items.append(item)
+    if campaign.get("id") != campaign_id:
+        raise CampaignPlatformError("Ingest campaign did not bind")
+    return items
 
 
 def main(argv: list[str]) -> int:

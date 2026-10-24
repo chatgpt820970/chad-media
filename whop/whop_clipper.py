@@ -28,6 +28,7 @@ from __future__ import annotations
 import argparse
 import json
 import os
+import re
 import shutil
 import subprocess
 import sys
@@ -48,6 +49,8 @@ CAMPAIGNS_PATH = ROOT / "campaigns.json"
 FEED_PATH = ROOT / "feed" / "whop_ready_feed.json"
 DAILY_FEED_PATH = ROOT / "feed" / "daily_30_ready.json"
 DAILY_SEEN_PATH = ROOT / "state" / "seen_daily.json"
+URLS_QUEUE_PATH = ROOT / "urls_queue.json"
+INGEST_MEDIA_DIR = ROOT / "v"
 MANIFEST_PATH = ROOT / "manifest.json"
 BUFFER_GRAPHQL_URL = "https://api.buffer.com/graphql"
 _BUFFER_MUTATION = (
@@ -126,7 +129,9 @@ def download_hd_source(source_url: str, dest: Path) -> None:
     cmd = [
         ytdlp,
         "-f",
-        "bestvideo[height>=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height>=720]+bestaudio/best[ext=mp4]/best",
+        platform_map.YTDLP_FORMAT,
+        "-S",
+        platform_map.YTDLP_SORT,
         "--merge-output-format",
         "mp4",
         "--no-playlist",
@@ -396,16 +401,25 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
         clip["x_duration_reason"] = x_duration_reason
         clip["overlay"] = {
             "mode": "dual_compatible",
-            "youtube_shorts": platform_map.platform_overlay_spec("youtube_shorts"),
-            "x": platform_map.platform_overlay_spec("x"),
-            "instagram_reels": platform_map.platform_overlay_spec("instagram_reels"),
+            "youtube_shorts": platform_map.platform_overlay_spec(
+                "youtube_shorts", youtube_for_clip.get("id")
+            ),
+            "x": platform_map.platform_overlay_spec("x", x_campaign.get("id")),
+            "instagram_reels": platform_map.platform_overlay_spec(
+                "instagram_reels",
+                instagram_campaign.get("id") if instagram_campaign is not None else None,
+            ),
         }
+        if clip["overlay"]["x"]["logo_text"] != clip["overlay"]["youtube_shorts"]["logo_text"]:
+            clip["overlay"]["mode"] = "platform_specific_variants"
         clip["x_duration_sec"] = x_seconds
         if not clip.get("x_mp4_url"):
             clip["x_mp4_url"] = None
         clip["x_render"] = clip["overlay"]["mode"]
         clip["logo_used"] = ""
-        clip["on_screen_cta"] = platform_map.PLATFORM_WATERMARK["youtube_shorts"]
+        clip["on_screen_cta"] = platform_map.platform_watermark(
+            "youtube_shorts", youtube_for_clip.get("id")
+        )
         if instagram_campaign is not None:
             instagram_caption = platform_map.build_platform_caption(
                 hook,
@@ -769,6 +783,7 @@ def schedule_unscheduled_items(feed: dict, token: str, poster=None) -> int:
     for item in feed.get("items") or []:
         if not isinstance(item, dict) or item.get("buffer_status") == "scheduled":
             continue
+        platform_map.assert_feed_item_community_guidelines_safe(item)
         body = platform_map.buffer_create_post_body(item)
         try:
             ok, post_id = poster(body) if poster is not None else _post_buffer(token, body)
@@ -827,6 +842,230 @@ def publish_daily_files(paths: list[Path], env: dict | None = None) -> bool:
     raise RuntimeError("could not push the daily feed to main")
 
 
+def _split_urls(text: str) -> list[str]:
+    return [part.strip() for part in re.split(r"[\s,]+", text or "") if part.strip().startswith("http")]
+
+
+def load_queue_category() -> str:
+    data = load_json(URLS_QUEUE_PATH, {})
+    return str(data.get("category") or "glamorous_girls")
+
+
+def load_queue_urls() -> tuple[list[str], str, str]:
+    data = load_json(URLS_QUEUE_PATH, {"urls": [], "campaign": "dishpilot", "platforms": "all"})
+    urls = [str(url).strip() for url in data.get("urls") or [] if str(url).strip()]
+    return urls, str(data.get("campaign") or "dishpilot"), str(data.get("platforms") or "all")
+
+
+def merge_ingested_items(existing: dict, feed: dict) -> dict:
+    for item in feed.get("items") or []:
+        if not isinstance(item, dict):
+            raise platform_map.CampaignPlatformError("daily feed contains a non-object item")
+        platform_map.assert_feed_item_community_guidelines_safe(item)
+    if existing.get("date") != feed.get("date"):
+        return feed
+    have = {item.get("clip_id") for item in feed.get("items") or []}
+    extras = [
+        item
+        for item in existing.get("items") or []
+        if isinstance(item, dict) and item.get("source") == "ingest" and item.get("clip_id") not in have
+    ]
+    for item in extras:
+        platform_map.assert_feed_item_community_guidelines_safe(item)
+    if not extras:
+        return feed
+    merged = dict(feed)
+    merged["items"] = list(feed.get("items") or []) + extras
+    merged["count"] = len(merged["items"])
+    return merged
+
+
+def append_items_to_daily_feed(items: list[dict], today) -> dict:
+    feed = load_json(DAILY_FEED_PATH, {})
+    if feed.get("date") != today.isoformat():
+        feed = {
+            "generated_at": today.isoformat() + "T00:15:00Z",
+            "date": today.isoformat(),
+            "count": 0,
+            "items": [],
+        }
+    for item in feed.get("items") or []:
+        if not isinstance(item, dict):
+            raise platform_map.CampaignPlatformError("daily feed contains a non-object item")
+        platform_map.assert_feed_item_community_guidelines_safe(item)
+    for item in items:
+        platform_map.assert_feed_item_community_guidelines_safe(item)
+    have = {item.get("clip_id") for item in feed.get("items") or []}
+    for item in items:
+        if item.get("clip_id") not in have:
+            feed.setdefault("items", []).append(item)
+            have.add(item.get("clip_id"))
+    feed["count"] = len(feed["items"])
+    feed["generated_at"] = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
+    save_json(DAILY_FEED_PATH, feed)
+    seen = load_json(DAILY_SEEN_PATH, {"ids": [], "uses": {}})
+    ids = [str(clip_id) for clip_id in seen.get("ids") or []]
+    uses = {str(key): str(value) for key, value in (seen.get("uses") or {}).items()}
+    day_text = today.isoformat()
+    for item in items:
+        clip_id = str(item.get("clip_id") or "")
+        if not clip_id:
+            continue
+        if clip_id not in uses:
+            ids.append(clip_id)
+        uses[clip_id] = day_text
+    save_json(DAILY_SEEN_PATH, {"ids": ids, "uses": uses})
+    return feed
+
+
+def _fetch_json(url: str) -> dict:
+    request = urllib.request.Request(
+        url,
+        headers={"User-Agent": USER_AGENT, "Accept": "application/json"},
+    )
+    with urllib.request.urlopen(request, timeout=30) as response:
+        return json.loads(response.read().decode("utf-8", errors="replace"))
+
+
+def _download_mp4(url: str, dest: Path) -> None:
+    dest.parent.mkdir(parents=True, exist_ok=True)
+    request = urllib.request.Request(url, headers={"User-Agent": USER_AGENT})
+    with urllib.request.urlopen(request, timeout=120) as response:
+        dest.write_bytes(response.read())
+
+
+def probe_source_metadata(path: Path) -> dict:
+    """Read container/stream tags used by the four-platform safety gate."""
+    command = [
+        "ffprobe",
+        "-v",
+        "error",
+        "-show_entries",
+        "format_tags:stream_tags",
+        "-of",
+        "json",
+        str(path),
+    ]
+    try:
+        result = subprocess.run(command, capture_output=True, text=True, timeout=30, check=False)
+    except (OSError, subprocess.SubprocessError):
+        return {}
+    if result.returncode != 0:
+        return {}
+    try:
+        metadata = json.loads(result.stdout)
+    except json.JSONDecodeError:
+        return {}
+    return metadata if isinstance(metadata, dict) else {}
+
+
+def ingest_urls_command(
+    urls: list[str],
+    campaign: str,
+    platforms: str,
+    *,
+    encode: bool = True,
+    fetch_json=None,
+    download_file=None,
+    category: str = "",
+) -> list[dict]:
+    """Download each X/TikTok URL, stamp one campaign, and queue it on Buffer channels.
+
+    Sources are fetched at the highest resolution available and encoded with
+    lanczos scaling, a light sharpen, and CRF 16. `category` tags each post
+    (default `glamorous_girls`) so priority categories sort to the top.
+    """
+    queue_urls, queue_campaign, queue_platforms = load_queue_urls()
+    chosen_urls = list(urls)
+    if not chosen_urls:
+        chosen_urls = list(queue_urls)
+        campaign = campaign or queue_campaign
+        platforms = platforms or queue_platforms
+        category = category or load_queue_category()
+    category = category or "glamorous_girls"
+    if not chosen_urls:
+        log("no X or TikTok URLs to ingest")
+        return []
+    cfg = load_json(CAMPAIGNS_PATH, {})
+    today = datetime.now(timezone.utc).date()
+    fetch = fetch_json or _fetch_json
+    download = download_file or _download_mp4
+    font = find_font()
+    created: list[dict] = []
+    rendered: list[Path] = []
+    for index, source_url in enumerate(chosen_urls):
+        parsed = platform_map.parse_source_url(source_url)
+        source_metadata: dict = {}
+        clean_url = platform_map.resolve_clean_mp4_url(source_url, fetch, source_metadata)
+        raw_path = ROOT / "work" / "ingest" / f"{parsed['id']}.mp4"
+        if clean_url:
+            download(clean_url, raw_path)
+        else:
+            download_hd_source(source_url, raw_path)
+        source_metadata["container"] = probe_source_metadata(raw_path)
+        platform_map.assert_community_guidelines_safe(
+            title="Watch this",
+            hook="Watch this",
+            tags=(category,),
+            source_metadata=source_metadata,
+            context=f"downloaded source {parsed['id']}",
+        )
+        hosted_by_platform: dict[str, str] = {}
+        campaign_id = platform_map.campaign_id_from_alias(campaign)
+        selected = platform_map.platforms_for_campaign(
+            cfg, campaign_id, platform_map.parse_platform_list(platforms)
+        )
+        watermark = platform_map.platform_watermark(selected[0], campaign_id)
+        for platform in selected:
+            filename = f"ingest-{parsed['id']}-{platform}.mp4"
+            dest = INGEST_MEDIA_DIR / filename
+            if encode:
+                command = platform_map.ingest_ffmpeg_command(raw_path, dest, platform, watermark, font)
+                subprocess.run(command, check=True, timeout=600)
+                rendered.append(dest)
+            hosted_by_platform[platform] = platform_map.PAGES_MEDIA_BASE + filename
+        # One shared pages URL per platform file. Build items one platform at a time
+        # so each item points at its own encoded file.
+        for platform, video_url in hosted_by_platform.items():
+            created.extend(
+                platform_map.build_ingest_items(
+                    cfg,
+                    source_url=source_url,
+                    source_id=str(parsed["id"]),
+                    video_url=video_url,
+                    campaign_alias=campaign,
+                    platforms=platform,
+                    hook="Watch this",
+                    today=today,
+                    slot=(index % platform_map.DAILY_30_PER_PLATFORM) + 1,
+                    category=category,
+                    source_metadata=source_metadata,
+                )
+            )
+    if not created:
+        return []
+    append_items_to_daily_feed(created, today)
+    token = os.environ.get("BUFFER_API_TOKEN", "")
+    if token.strip():
+        feed = load_json(DAILY_FEED_PATH, {})
+        schedule_unscheduled_items(feed, token)
+        save_json(DAILY_FEED_PATH, feed)
+    else:
+        log("BUFFER_API_TOKEN unset; ingested slots stay pending")
+    processed_queue = [url for url in queue_urls if url in chosen_urls]
+    if processed_queue:
+        queued = load_json(URLS_QUEUE_PATH, {})
+        queued["urls"] = [url for url in queue_urls if url not in chosen_urls]
+        queued.setdefault("campaign", "dishpilot")
+        queued.setdefault("platforms", "all")
+        queued.setdefault("category", category)
+        save_json(URLS_QUEUE_PATH, queued)
+    publish_paths = [DAILY_FEED_PATH, DAILY_SEEN_PATH, URLS_QUEUE_PATH, *rendered]
+    publish_daily_files([path for path in publish_paths if path.exists()])
+    log(f"ingested {len(created)} platform posts from {len(chosen_urls)} links")
+    return created
+
+
 def build_daily_30_command() -> dict:
     """Select today's 30 clips, optionally schedule Buffer, then publish on Actions."""
     cfg = load_json(CAMPAIGNS_PATH, {})
@@ -838,6 +1077,7 @@ def build_daily_30_command() -> dict:
         log(f"keeping today's {feed.get('count')} clips in {DAILY_FEED_PATH}")
     else:
         feed, seen = platform_map.build_daily_30(cfg, seen, today=today)
+        feed = merge_ingested_items(existing, feed)
         save_json(DAILY_FEED_PATH, feed)
         save_json(DAILY_SEEN_PATH, seen)
         log(f"wrote {DAILY_FEED_PATH} ({feed['count']} clips) and {DAILY_SEEN_PATH}")
@@ -860,7 +1100,24 @@ def main(argv: list[str]) -> int:
     sub.add_parser("build-feed", help="Generate whop/feed/whop_ready_feed.json with Pool Guard checks")
     sub.add_parser(
         "build-daily-30",
-        help="Select 30 unseen daily clips and write whop/feed/daily_30_ready.json",
+        help="Select 10 unseen clips for each Buffer channel and write whop/feed/daily_30_ready.json",
+    )
+    ingest_p = sub.add_parser(
+        "ingest-urls",
+        help="Download X or TikTok links, stamp one campaign watermark, and queue the posts",
+    )
+    ingest_p.add_argument("--urls", default="", help="Comma or space separated X or TikTok URLs")
+    ingest_p.add_argument("--campaign", default="", help="dishpilot, rascals, or mrpa")
+    ingest_p.add_argument("--platforms", default="", help="all or a comma-separated platform list")
+    ingest_p.add_argument(
+        "--category",
+        default="",
+        help="Category tag: " + ", ".join(platform_map.INGEST_CATEGORIES),
+    )
+    ingest_p.add_argument(
+        "--from-queue",
+        action="store_true",
+        help="Also read whop/urls_queue.json",
     )
 
     clip_p = sub.add_parser("clip", help="Download and encode a single source URL in Ultra-Crisp 9:16 HD")
@@ -882,6 +1139,25 @@ def main(argv: list[str]) -> int:
         return 0
     if args.command == "build-daily-30":
         build_daily_30_command()
+        return 0
+    if args.command == "ingest-urls":
+        urls = _split_urls(args.urls)
+        urls.extend(_split_urls(os.environ.get("SOURCE_URLS", "")))
+        campaign = args.campaign or os.environ.get("INGEST_CAMPAIGN", "") or "dishpilot"
+        platforms = args.platforms or os.environ.get("INGEST_PLATFORMS", "") or "all"
+        category = args.category or os.environ.get("INGEST_CATEGORY", "")
+        if args.from_queue or not urls:
+            queued, queue_campaign, queue_platforms = load_queue_urls()
+            for url in queued:
+                if url not in urls:
+                    urls.append(url)
+            if not args.campaign and not os.environ.get("INGEST_CAMPAIGN"):
+                campaign = queue_campaign or campaign
+            if not args.platforms and not os.environ.get("INGEST_PLATFORMS"):
+                platforms = queue_platforms or platforms
+            if not category:
+                category = load_queue_category()
+        ingest_urls_command(urls, campaign, platforms, category=category)
         return 0
     if args.command == "clip":
         src_path = Path(args.url)

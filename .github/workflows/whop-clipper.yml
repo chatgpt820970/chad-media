@@ -4,6 +4,7 @@ name: Whop Clipper
 # 00:15 UTC is 05:45 IST. 01:15 UTC is the 06:45 IST backup.
 # X (@chadriyo) is Dishpilot. YouTube Shorts (Denzen) is Dishpilot and Mr. Pa.
 # Instagram Reels (@benreelr) is Rascals, Dishpilot, and Mr. Pa.
+# TikTok (@bi67325) is Dishpilot and Rascals. One campaign name per video.
 # Pool Guard rejects high-denial bounties (whop-ai-shane-gillis at 99.8%).
 on:
   schedule:
@@ -19,6 +20,40 @@ on:
       - "whop/**"
       - ".github/workflows/whop-clipper.yml"
   workflow_dispatch:
+    inputs:
+      source_urls:
+        description: "Comma or space separated X or TikTok URLs"
+        required: false
+        default: ""
+        type: string
+      campaign:
+        description: "Single campaign watermark"
+        required: false
+        default: dishpilot
+        type: choice
+        options:
+          - dishpilot
+          - rascals
+          - mrpa
+      platforms:
+        description: "all or a comma-separated list (x, youtube_shorts, instagram_reels, tiktok)"
+        required: false
+        default: all
+        type: string
+      category:
+        description: "Priority category tag for the ingested links"
+        required: false
+        default: glamorous_girls
+        type: choice
+        options:
+          - anime_4k
+          - glamorous_girls
+          - celebrity
+          - movie_4k
+          - funny
+          - knowledge
+          - concert
+          - other
 
 permissions:
   contents: write
@@ -30,7 +65,7 @@ concurrency:
 jobs:
   platform-mapping:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 45
     steps:
       - uses: actions/checkout@v4
         with:
@@ -45,6 +80,21 @@ jobs:
 
       - name: Verify the 10-slot manifest pays X and YouTube Shorts separately
         run: python whop/clipper.py verify-manifest
+
+      - name: Install ffmpeg
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg
+
+      - name: Ingest X and TikTok links
+        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          GITHUB_EVENT_NAME: ${{ github.event_name }}
+          SOURCE_URLS: ${{ github.event.inputs.source_urls || '' }}
+          INGEST_CAMPAIGN: ${{ github.event.inputs.campaign || '' }}
+          INGEST_PLATFORMS: ${{ github.event.inputs.platforms || '' }}
+          INGEST_CATEGORY: ${{ github.event.inputs.category || '' }}
+        run: python whop/whop_clipper.py ingest-urls --from-queue
 
       - name: Build the daily 30-clip feed
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
