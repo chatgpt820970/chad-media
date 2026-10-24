@@ -4,7 +4,9 @@
 X (@chadriyo) posts to Dishpilot. YouTube Shorts (Denzen) posts to Dishpilot
 and Mr. Pa. Instagram Reels (@benreelr) posts to Rascals, Dishpilot, and Mr. Pa.
 TikTok (@bi67325) posts to Dishpilot and Rascals. FastLoanPilot and Nova are
-closed. build_daily_30 fills 10 slots on each of the four Buffer channels.
+closed. The daily run (build_daily_30, also exposed as build-daily-40) fills 10
+slots on each of the four Buffer channels, 40 posts a day, stamped Dishpilot or
+Rascals only.
 ingest-urls downloads an X or TikTok link, stamps one campaign name, and queues it.
 Pool Guard rejects bounties whose denial rate is above the configured cap
 (Shane Gillis is 99.8%).
@@ -58,9 +60,10 @@ YTDLP_SORT = "res,fps,br"
 DAILY_SLOT_COUNT = 10
 OPEN_STATUSES = ("open", "active", "live")
 INDIAN_CATEGORIES = ("indian_actor_reels", "indian_movie_scenes")
-# Daily catalog and ingest priority, highest first: 4K anime edits, glamorous girls
-# and couple scenes, then top 4K movie scenes. Everything else keeps catalog order.
-PRIORITY_CATEGORIES = ("anime_4k", "glamorous_girls", "celebrity", "movie_4k")
+# Daily catalog and ingest priority, highest first: romantic and kissing couple
+# scenes, glamorous girls, 4K anime edits, then 4K movie edits. Everything else keeps
+# catalog order.
+PRIORITY_CATEGORIES = ("romantic_couples", "glamorous_girls", "anime_4k", "movie_4k", "celebrity")
 INGEST_CATEGORIES = (*PRIORITY_CATEGORIES, "funny", "knowledge", "concert", "other")
 X_VIRAL_CATEGORIES = ("funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert")
 COMMUNITY_GUIDELINES_BLOCKED_PATTERNS = (
@@ -276,14 +279,23 @@ DAILY_30_TIMES_IST = (
 )
 DAILY_30_PER_PLATFORM = 10
 DAILY_30_INDIAN_SLOTS = 8
+DAILY_40_PER_PLATFORM = DAILY_30_PER_PLATFORM
+DAILY_40_TOTAL_POSTS = DAILY_40_PER_PLATFORM * 4
+# Key used for each platform inside the schedule's `slots` object.
+DAILY_SLOT_KEYS = {
+    "x": "x",
+    "youtube_shorts": "youtube",
+    "instagram_reels": "instagram",
+    "tiktok": "tiktok",
+}
 DAILY_WATERMARK_POSITION = {
     "placement": "top-left",
     "x": "w*0.025",
     "y": "h*0.03",
     "expr": "x=w*0.025:y=h*0.03",
 }
-# Rascals leads, then Dishpilot, then Mr. Pa. Repeats across the 10 Reels slots.
-INSTAGRAM_DAILY_ROTATION = (RASCALS_ID, DISHPILOT_ID, MR_PA_ID)
+# The daily run stamps Dishpilot or Rascals only. Rascals leads the Reels rotation.
+INSTAGRAM_DAILY_ROTATION = (RASCALS_ID, DISHPILOT_ID)
 # TikTok pays Dishpilot ($2/1K) and Rascals ($3/1K). Dishpilot leads.
 TIKTOK_DAILY_ROTATION = (DISHPILOT_ID, RASCALS_ID)
 SHORTS_MEDIA_BASE = "https://chatgpt820970.github.io/chad-media/shorts/v/"
@@ -1661,6 +1673,9 @@ def _shorts_url(clip_id: str) -> str:
 # eight unseen ones and still leave some for the next day. Global rows fill X,
 # Instagram, and the two non-Indian YouTube slots. Raw twimg links are the
 # hd-live source; packaged files use the Pages URL.
+RAW_MEDIA_BASE = "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/"
+# A fifth element locks a clip to one campaign because that campaign's name is already
+# burned into the pixels (ig-hd-1..5 and Spider-Man are dishpilot, ig-hd-6..9 are rascals).
 _DAILY_CLIP_ROWS = (
     ("flp-diljit-worldtour", "indian_actor_reels", "Diljit shut the stadium down", _pages_url("flp-diljit-worldtour.mp4")),
     ("flp-honeysingh-vibe", "indian_actor_reels", "Honey Singh takes the drop", _pages_url("flp-honeysingh-vibe.mp4")),
@@ -1675,15 +1690,16 @@ _DAILY_CLIP_ROWS = (
     ("x-virat-mumbai", "indian_actor_reels", "Virat walks into Mumbai", "https://video.twimg.com/amplify_video/2112746643015778304/vid/avc1/480x852/G9NkYIKWNf3avnSU.mp4"),
     ("x-allu", "indian_actor_reels", "Allu takes the stage", "https://video.twimg.com/amplify_video/2108890651677151232/vid/avc1/480x852/lKMyE_VzG7YtqVmU.mp4"),
     ("x-hardik", "indian_actor_reels", "Hardik's celebration takes over", "https://video.twimg.com/amplify_video/2110911489867669504/vid/avc1/480x852/MeUuwscm1dCEjM4Y.mp4"),
-    ("x-user-2", "glamorous_girls", "The chemistry in this scene with Agustin Bernasconi and Wanda Nara is unreal", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-2.mp4"),
-    ("x-user-5", "glamorous_girls", "Kim Ji-won owning the stage with pure elegance and confidence", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-5.mp4"),
-    ("x-user-7", "glamorous_girls", "LISA Tarantino Official Music Video visuals are on another level", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-7.mp4"),
-    ("x-user-1", "anime_4k", "This animation is insane", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-1.mp4"),
-    ("x-user-3", "celebrity", "When the beat drops and the whole room loses it", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-3.mp4"),
-    ("x-user-4", "movie_4k", "Still one of the funniest scenes in Hotel Transylvania", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-4.mp4"),
-    ("x-user-6", "celebrity", "Shenzhen at night looks straight out of 2050", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-6.mp4"),
-    ("x-user-8", "celebrity", "Every fandom when their favorite character gets the spotlight", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-8.mp4"),
-    ("x-user-9", "celebrity", "Inside Japan luxury seaside inn with its own giant live pool", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-9.mp4"),
+    ("x-user-2", "romantic_couples", "The chemistry in this scene with Agustin Bernasconi and Wanda Nara is unreal", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-2.mp4", DISHPILOT_ID),
+    ("x-user-5", "glamorous_girls", "Kim Ji-won owning the stage with pure elegance and confidence", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-5.mp4", DISHPILOT_ID),
+    ("x-user-7", "glamorous_girls", "LISA Tarantino Official Music Video visuals are on another level", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-7.mp4", RASCALS_ID),
+    ("x-user-1", "anime_4k", "This animation is insane", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-1.mp4", DISHPILOT_ID),
+    ("spiderman-4k-dishpilot", "movie_4k", "Tom Holland's Spider-Man edit hits different", f"{RAW_MEDIA_BASE}spiderman-4k-dishpilot.mp4", DISHPILOT_ID),
+    ("x-user-3", "celebrity", "When the beat drops and the whole room loses it", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-3.mp4", DISHPILOT_ID),
+    ("x-user-4", "movie_4k", "Still one of the funniest scenes in Hotel Transylvania", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-4.mp4", DISHPILOT_ID),
+    ("x-user-6", "celebrity", "Shenzhen at night looks straight out of 2050", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-6.mp4", RASCALS_ID),
+    ("x-user-8", "celebrity", "Every fandom when their favorite character gets the spotlight", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-8.mp4", RASCALS_ID),
+    ("x-user-9", "celebrity", "Inside Japan luxury seaside inn with its own giant live pool", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-9.mp4", RASCALS_ID),
     ("flp-concert-vibes", "concert", "Wait for the note", _pages_url("flp-concert-vibes.mp4")),
     ("x-clip-3", "concert", "Wait for the note", _pages_url("x-clip-3.mp4")),
     ("flp-anime-sakuga", "anime_4k", "This animation is insane", _pages_url("flp-anime-sakuga.mp4")),
@@ -1712,9 +1728,11 @@ _DAILY_CLIP_ROWS = (
 )
 
 
-def _catalog_clip(row: tuple[str, str, str, str]) -> dict:
-    clip_id, category, hook, video_url = row
+def _catalog_clip(row: tuple) -> dict:
+    clip_id, category, hook, video_url, *locked = row
     clip = {"id": clip_id, "category": category, "hook": hook, "video_url": video_url}
+    if locked:
+        clip["campaign_lock"] = locked[0]
     assert_community_guidelines_safe(
         title=hook,
         hook=hook,
@@ -1758,10 +1776,10 @@ def daily_channel_id(campaigns_data: dict, platform: str) -> str:
 
 
 def daily_feed_is_current(feed: dict, today: date) -> bool:
-    """True when today's X, YouTube, and Instagram slots are already filled.
+    """True when today's 10 slots on each of the four platforms are already built.
 
-    A same-day 30-clip feed is kept so a manual run does not replace it.
-    A fresh build also includes 10 TikTok slots; that feed stays current too.
+    Ingested extras do not count toward the 40, and a same-day feed is kept so a
+    manual run does not replace it.
     """
     items = feed.get("items")
     if feed.get("date") != today.isoformat() or not isinstance(items, list):
@@ -1774,10 +1792,56 @@ def daily_feed_is_current(feed: dict, today: date) -> bool:
             assert_feed_item_community_guidelines_safe(item)
         except CampaignPlatformError:
             return False
-        if item.get("platform") in counts:
+        if item.get("source") != "ingest" and item.get("platform") in counts:
             counts[str(item["platform"])] += 1
-    core = ("x", "youtube_shorts", "instagram_reels")
-    return all(counts[platform] >= DAILY_30_PER_PLATFORM for platform in core)
+    return all(counts[platform] >= DAILY_40_PER_PLATFORM for platform in SUPPORTED_PLATFORMS)
+
+
+def build_daily_40_schedule(feed: dict, campaigns_data: dict | None = None) -> dict:
+    """Group a daily feed into `slots.x|youtube|instagram|tiktok`, 10 each, 40 total.
+
+    Ingested posts are listed separately so `total_posts` stays the 40 scheduled
+    clips. Every slot is re-checked for one campaign mark, its channel id, and the
+    four-platform Community Guidelines.
+    """
+    items = [item for item in feed.get("items") or [] if isinstance(item, dict)]
+    scheduled = [item for item in items if item.get("source") != "ingest"]
+    slots: dict[str, list[dict]] = {key: [] for key in DAILY_SLOT_KEYS.values()}
+    for item in scheduled:
+        platform = str(item.get("platform"))
+        if platform not in DAILY_SLOT_KEYS:
+            raise CampaignPlatformError(f"Unknown daily platform {platform!r}")
+        mark = str(item.get("watermark_text"))
+        if mark not in ("dishpilot", "rascals"):
+            raise CampaignPlatformError(
+                f"Daily {platform} slot {item.get('slot')} has watermark {mark!r}; expected dishpilot or rascals"
+            )
+        if item.get("channel_id") != DAILY_CHANNEL_IDS[platform]:
+            raise CampaignPlatformError(f"Daily {platform} slot {item.get('slot')} has the wrong channel id")
+        assert_feed_item_community_guidelines_safe(item)
+        slots[DAILY_SLOT_KEYS[platform]].append(item)
+    for key, rows in slots.items():
+        rows.sort(key=lambda row: int(row.get("slot") or 0))
+        if [int(row.get("slot") or 0) for row in rows] != list(range(1, DAILY_40_PER_PLATFORM + 1)):
+            raise CampaignPlatformError(f"Daily {key} needs exactly slots 1..{DAILY_40_PER_PLATFORM}")
+    total = sum(len(rows) for rows in slots.values())
+    if total != DAILY_40_TOTAL_POSTS:
+        raise CampaignPlatformError(f"Expected {DAILY_40_TOTAL_POSTS} daily posts, found {total}")
+    channels = {
+        DAILY_SLOT_KEYS[platform]: daily_channel_id(campaigns_data, platform)
+        if campaigns_data
+        else DAILY_CHANNEL_IDS[platform]
+        for platform in SUPPORTED_PLATFORMS
+    }
+    return {
+        "generated_at": feed.get("generated_at"),
+        "date": feed.get("date"),
+        "total_posts": total,
+        "posts_per_platform": DAILY_40_PER_PLATFORM,
+        "channels": channels,
+        "slots": slots,
+        "ingested": [item for item in items if item.get("source") == "ingest"],
+    }
 
 
 def _seen_lists(seen: dict | None) -> tuple[list[str], dict[str, str]]:
@@ -1852,11 +1916,13 @@ def _take_preferring_global(
     seen_ids: set[str],
     used_today: set[str],
     uses: dict[str, str],
+    eligible=None,
 ) -> list[dict]:
     """Fill from non-Indian clips first so Denzen keeps the Indian inventory."""
+    allowed = eligible or (lambda _clip: True)
     ranked = _rank_unseen(
         catalog,
-        lambda clip: clip["category"] not in INDIAN_CATEGORIES,
+        lambda clip: clip["category"] not in INDIAN_CATEGORIES and allowed(clip),
         seen_ids,
         used_today,
         uses,
@@ -1866,7 +1932,7 @@ def _take_preferring_global(
         held = set(used_today)
         held.update(str(clip["id"]) for clip in chosen)
         chosen.extend(
-            _rank_unseen(catalog, lambda _clip: True, seen_ids, held, uses)[: count - len(chosen)]
+            _rank_unseen(catalog, allowed, seen_ids, held, uses)[: count - len(chosen)]
         )
     if len(chosen) < count:
         raise CampaignPlatformError(
@@ -1876,17 +1942,39 @@ def _take_preferring_global(
     return chosen
 
 
+def _dishpilot_compatible(clip: dict) -> bool:
+    """X and YouTube Shorts only pay Dishpilot, so a rascals-marked clip cannot go there."""
+    return clip.get("campaign_lock") in (None, DISHPILOT_ID)
+
+
 def _deal_preferring_global(
     catalog: tuple[dict, ...],
-    lanes: int,
     count: int,
     seen_ids: set[str],
     used_today: set[str],
     uses: dict[str, str],
-) -> list[list[dict]]:
-    """Deal ranked clips round-robin so each lane gets a share of the priority categories."""
-    pool = _take_preferring_global(catalog, lanes * count, seen_ids, used_today, uses)
-    return [pool[lane::lanes] for lane in range(lanes)]
+) -> tuple[list[dict], list[dict], list[dict]]:
+    """Deal ranked clips round-robin to X, Instagram, and TikTok.
+
+    Each lane gets a share of the priority categories. The X lane skips clips with a
+    rascals mark burned in, since X only pays Dishpilot.
+    """
+    pool = _take_preferring_global(catalog, 3 * count, seen_ids, used_today, uses)
+    lanes: tuple[list[dict], list[dict], list[dict]] = ([], [], [])
+    cursor = 0
+    for clip in pool:
+        for offset in range(3):
+            lane = (cursor + offset) % 3
+            if len(lanes[lane]) >= count or (lane == 0 and not _dishpilot_compatible(clip)):
+                continue
+            lanes[lane].append(clip)
+            cursor = (lane + 1) % 3
+            break
+        else:
+            raise CampaignPlatformError(f"No lane can take clip {clip['id']}")
+    if any(len(lane) != count for lane in lanes):
+        raise CampaignPlatformError("Daily lanes could not be filled with compatible clips")
+    return lanes
 
 
 def _campaign_for_daily_slot(campaigns_data: dict, campaign_id: str, platform: str) -> dict:
@@ -1945,6 +2033,7 @@ def _daily_item(
         "clip_id": clip["id"],
         "category": clip["category"],
         "priority": priority_rank(str(clip["category"])) < len(PRIORITY_CATEGORIES),
+        "pre_stamped": bool(clip.get("campaign_lock")),
         "buffer_status": "pending",
     }
     assert_feed_item_community_guidelines_safe(item)
@@ -1958,15 +2047,16 @@ def build_daily_30(
     today: date | None = None,
     catalog: tuple[dict, ...] | None = None,
 ) -> tuple[dict, dict]:
-    """Pick 10 unseen clips for each of X, YouTube, Instagram, and TikTok.
+    """Pick 10 unseen clips for each of X, YouTube, Instagram, and TikTok (40 a day).
 
-    YouTube Shorts takes 8 Indian actor/cinema clips on Dishpilot and 2 global
-    clips on Mr. Pa. X, Instagram, and TikTok pick first from the priority
-    categories (4K anime, glamorous girls and couples, 4K movie scenes), then
-    YouTube's two global slots take what is left. X takes 10 Dishpilot clips. Instagram rotates Rascals,
-    Dishpilot, and Mr. Pa. TikTok alternates Dishpilot and Rascals. A clip
-    already in `seen` is reused only after every unseen clip of that kind is
-    gone, and never twice on the same day.
+    Every post is stamped Dishpilot or Rascals, never both. X and YouTube Shorts
+    are Dishpilot. Instagram alternates Rascals and Dishpilot. TikTok alternates
+    Dishpilot and Rascals. A clip with a burned-in mark (`campaign_lock`) always
+    gets that campaign. YouTube keeps 8 Indian actor/cinema clips. X, Instagram,
+    and TikTok pick first from the priority categories (romantic couples,
+    glamorous girls, 4K anime, 4K movie edits), then YouTube's two global slots
+    take what is left. A clip already in `seen` is reused only after every
+    unseen clip of that kind is gone, and never twice on the same day.
     """
     run_day = today or datetime.now(timezone.utc).date()
     source = catalog if catalog is not None else DAILY_CLIP_CATALOG
@@ -1985,7 +2075,6 @@ def build_daily_30(
     )
     x_clips, instagram_clips, tiktok_clips = _deal_preferring_global(
         source,
-        3,
         DAILY_30_PER_PLATFORM,
         seen_ids,
         used_today,
@@ -1997,6 +2086,7 @@ def build_daily_30(
         seen_ids,
         used_today,
         uses,
+        eligible=_dishpilot_compatible,
     )
     links_blocked = x_links_blocked(campaigns_data)
     items: list[dict] = []
@@ -2015,7 +2105,7 @@ def build_daily_30(
         )
     youtube_clips = indian + youtube_global
     for slot, clip in enumerate(youtube_clips, start=1):
-        campaign_id = DISHPILOT_ID if clip["category"] in INDIAN_CATEGORIES else MR_PA_ID
+        campaign_id = DISHPILOT_ID
         campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "youtube_shorts")
         items.append(
             _daily_item(
@@ -2029,7 +2119,9 @@ def build_daily_30(
             )
         )
     for slot, clip in enumerate(instagram_clips, start=1):
-        campaign_id = INSTAGRAM_DAILY_ROTATION[(slot - 1) % len(INSTAGRAM_DAILY_ROTATION)]
+        campaign_id = clip.get("campaign_lock") or INSTAGRAM_DAILY_ROTATION[
+            (slot - 1) % len(INSTAGRAM_DAILY_ROTATION)
+        ]
         campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "instagram_reels")
         items.append(
             _daily_item(
@@ -2043,7 +2135,9 @@ def build_daily_30(
             )
         )
     for slot, clip in enumerate(tiktok_clips, start=1):
-        campaign_id = TIKTOK_DAILY_ROTATION[(slot - 1) % len(TIKTOK_DAILY_ROTATION)]
+        campaign_id = clip.get("campaign_lock") or TIKTOK_DAILY_ROTATION[
+            (slot - 1) % len(TIKTOK_DAILY_ROTATION)
+        ]
         campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "tiktok")
         items.append(
             _daily_item(
@@ -2088,6 +2182,11 @@ def _is_future(due_iso: str, now: datetime | None) -> bool:
     except ValueError:
         return False
     return due > (now or datetime.now(timezone.utc))
+
+
+def build_daily_40(*args, **kwargs) -> tuple[dict, dict]:
+    """Four-platform 40-a-day name for `build_daily_30`."""
+    return build_daily_30(*args, **kwargs)
 
 
 def buffer_create_post_body(item: dict, now: datetime | None = None) -> dict:

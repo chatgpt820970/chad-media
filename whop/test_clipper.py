@@ -4,8 +4,10 @@ from __future__ import annotations
 
 import json
 import re
+import tempfile
 import unittest
-from datetime import date, datetime, timezone
+from unittest import mock
+from datetime import date, datetime, timedelta, timezone
 from pathlib import Path
 
 from whop.clipper import (
@@ -28,6 +30,8 @@ from whop.clipper import (
     bind_clip_to_campaign,
     buffer_create_post_body,
     build_daily_30,
+    build_daily_40,
+    build_daily_40_schedule,
     build_daily_manifest,
     build_ingest_items,
     build_platform_caption,
@@ -52,6 +56,7 @@ from whop.clipper import (
     verify_manifest_data,
     _catalog_clip,
 )
+from whop import whop_clipper as runner
 from whop.whop_clipper import schedule_unscheduled_items, should_publish_daily
 
 X_PAYING_IDS = {"dishpilot-clipping"}
@@ -465,9 +470,9 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         self.assertTrue(all(item["campaign_id"] == "dishpilot-clipping" for item in indian))
         global_slots = [item for item in youtube if item not in indian]
         self.assertEqual(len(global_slots), 2)
-        self.assertTrue(all(item["campaign_id"] == "mr-pa-clipping" for item in global_slots))
+        self.assertTrue(all(item["campaign_id"] == "dishpilot-clipping" for item in global_slots))
 
-        rotation = ("rascals-theme-pages", "dishpilot-clipping", "mr-pa-clipping")
+        rotation = ("rascals-theme-pages", "dishpilot-clipping")
         for item in self.items:
             self.assertIn(item["slot"], range(1, 11))
             self.assertEqual(item["channel_id"], DAILY_CHANNEL_IDS[item["platform"]])
@@ -494,34 +499,42 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         self.assertTrue(all(item["campaign_id"] == "dishpilot-clipping" for item in x_items))
         self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in x_items))
         self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in indian))
-        self.assertTrue(all(item["watermark_text"] == "mr. pa" for item in global_slots))
+        self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in global_slots))
         reels = self._platform("instagram_reels")
         for item in reels:
-            self.assertEqual(item["watermark_text"], {"dishpilot-clipping": "dishpilot", "rascals-theme-pages": "rascals", "mr-pa-clipping": "mr. pa"}[item["campaign_id"]])
-        self.assertEqual([item["campaign_id"] for item in reels], [rotation[(slot - 1) % 3] for slot in range(1, 11)])
+            self.assertEqual(item["watermark_text"], {"dishpilot-clipping": "dishpilot", "rascals-theme-pages": "rascals"}[item["campaign_id"]])
+        locks = {clip["id"]: clip["campaign_lock"] for clip in DAILY_CLIP_CATALOG if clip.get("campaign_lock")}
+        self.assertEqual(
+            [item["campaign_id"] for item in reels],
+            [locks.get(item["clip_id"], rotation[(item["slot"] - 1) % 2]) for item in reels],
+        )
         for item in x_items:
             self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]), ["#Dishpilot"])
         for item in youtube:
-            expected_tags = (
-                ["#MrPa", "#Shorts"] if item["campaign_id"] == "mr-pa-clipping" else ["#Dishpilot", "#Shorts"]
+            self.assertEqual(
+                re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]), ["#Dishpilot", "#Shorts"]
             )
-            self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]), expected_tags)
         tiktok = self._platform("tiktok")
         self.assertEqual(
             [item["campaign_id"] for item in tiktok],
-            ["dishpilot-clipping" if slot % 2 else "rascals-theme-pages" for slot in range(1, 11)],
+            [
+                locks.get(item["clip_id"], "dishpilot-clipping" if item["slot"] % 2 else "rascals-theme-pages")
+                for item in tiktok
+            ],
         )
         self.assertEqual(tiktok[0]["channel_id"], DAILY_CHANNEL_IDS["tiktok"])
         for item in self.items:
             tags = re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"])
             campaign_tags = [tag for tag in tags if tag in ("#Dishpilot", "#Rascals", "#MrPa")]
             self.assertEqual(len(campaign_tags), 1)
+            self.assertIn(item["watermark_text"], ("dishpilot", "rascals"))
+            self.assertIn(campaign_tags[0], ("#Dishpilot", "#Rascals"))
             self.assertNotIn("·", item["watermark_text"])
             self.assertNotIn("rascals · dishpilot", json.dumps(item))
         for item in reels:
             self.assertEqual(
                 re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]),
-                {"dishpilot-clipping": ["#Dishpilot", "#Reels"], "rascals-theme-pages": ["#Rascals", "#Reels"], "mr-pa-clipping": ["#MrPa", "#Reels"]}[item["campaign_id"]],
+                {"dishpilot-clipping": ["#Dishpilot", "#Reels"], "rascals-theme-pages": ["#Rascals", "#Reels"]}[item["campaign_id"]],
             )
 
         self.assertEqual(
@@ -536,6 +549,154 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         self.assertEqual(deltas, [7200] * 9)
         self.assertTrue(all(item["due_at_utc"].startswith("2026-10-24T") for item in self.items))
         self.assertTrue(all(item["due_at_utc"].endswith("Z") for item in self.items))
+
+    def test_daily_40_schedule_has_ten_slots_per_platform(self) -> None:
+        schedule = build_daily_40_schedule(self.feed, self.data)
+        self.assertEqual(schedule["total_posts"], 40)
+        self.assertEqual(set(schedule["slots"]), {"x", "youtube", "instagram", "tiktok"})
+        for key, rows in schedule["slots"].items():
+            self.assertEqual([row["slot"] for row in rows], list(range(1, 11)), key)
+        expected_channels = {
+            "x": "6ac41eb06a5c39ccb625fdf1",
+            "youtube": "6ac4da806a5c39ccb62eab64",
+            "instagram": "6ac93d936a5c39ccb66624d7",
+            "tiktok": "6add07e4778b240e2fb35110",
+        }
+        self.assertEqual(schedule["channels"], expected_channels)
+        for key, rows in schedule["slots"].items():
+            self.assertTrue(all(row["channel_id"] == expected_channels[key] for row in rows))
+            self.assertTrue(all(row["watermark_text"] in ("dishpilot", "rascals") for row in rows))
+        self.assertEqual(build_daily_40(self.data, {"ids": [], "uses": {}}, today=self.day)[0], self.feed)
+
+        extra = dict(self.items[0], clip_id="ingest-extra-x", source="ingest")
+        with_extra = dict(self.feed, items=[*self.items, extra])
+        self.assertEqual(build_daily_40_schedule(with_extra, self.data)["total_posts"], 40)
+        self.assertEqual(len(build_daily_40_schedule(with_extra, self.data)["ingested"]), 1)
+        self.assertTrue(daily_feed_is_current(with_extra, self.day))
+        no_tiktok = dict(self.feed, items=[item for item in self.items if item["platform"] != "tiktok"])
+        self.assertFalse(daily_feed_is_current(no_tiktok, self.day))
+        with self.assertRaises(CampaignPlatformError):
+            build_daily_40_schedule(no_tiktok, self.data)
+        mr_pa = dict(self.items[0], watermark_text="mr. pa")
+        with self.assertRaises(CampaignPlatformError):
+            build_daily_40_schedule(dict(self.feed, items=[mr_pa, *self.items[1:]]), self.data)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            out40 = Path(tmp) / "daily_40_ready.json"
+            out30 = Path(tmp) / "daily_30_ready.json"
+            with mock.patch.object(runner, "DAILY_40_SCHEDULE_PATH", out40), mock.patch.object(
+                runner, "DAILY_30_SCHEDULE_PATH", out30
+            ):
+                paths = runner.write_daily_schedules(self.feed, self.data)
+            self.assertEqual(paths, [out40, out30])
+            written = json.loads(out40.read_text(encoding="utf-8"))
+            self.assertEqual(written["total_posts"], 40)
+            self.assertEqual(json.loads(out30.read_text(encoding="utf-8")), written)
+            self.assertEqual({key: len(rows) for key, rows in written["slots"].items()}, {"x": 10, "youtube": 10, "instagram": 10, "tiktok": 10})
+
+    def test_burned_in_marks_lock_clips_to_their_campaign(self) -> None:
+        locks = {clip["id"]: clip["campaign_lock"] for clip in DAILY_CLIP_CATALOG if clip.get("campaign_lock")}
+        self.assertEqual(locks["spiderman-4k-dishpilot"], "dishpilot-clipping")
+        self.assertEqual({locks[f"x-user-{n}"] for n in (1, 2, 3, 4, 5)}, {"dishpilot-clipping"})
+        self.assertEqual({locks[f"x-user-{n}"] for n in (6, 7, 8, 9)}, {"rascals-theme-pages"})
+        day = date(2026, 10, 25)
+        seen = {"ids": [], "uses": {}}
+        for offset in range(8):
+            feed, seen = build_daily_30(self.data, seen, today=day + timedelta(days=offset))
+            for item in feed["items"]:
+                if item["clip_id"] in locks:
+                    self.assertEqual(item["campaign_id"], locks[item["clip_id"]])
+                    self.assertTrue(item["pre_stamped"])
+                    if locks[item["clip_id"]] == "rascals-theme-pages":
+                        self.assertIn(item["platform"], ("instagram_reels", "tiktok"))
+                else:
+                    self.assertFalse(item["pre_stamped"])
+        spider = next(item for item in self.items if item["clip_id"] == "spiderman-4k-dishpilot")
+        self.assertEqual(spider["watermark_text"], "dishpilot")
+        self.assertTrue(spider["video_url"].endswith("spiderman-4k-dishpilot.mp4"))
+
+    def test_daily_render_stamps_one_mark_and_never_sends_unhosted_clips(self) -> None:
+        items = [dict(item) for item in self.items]
+        feed = dict(self.feed, items=items)
+        commands: list[list[str]] = []
+        broken = next(item for item in items if not item["pre_stamped"])
+        broken_id = broken["clip_id"]
+
+        def fake_download(url: str, dest: Path) -> None:
+            if broken_id in str(dest):
+                raise OSError("down")
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            dest.write_bytes(b"x")
+
+        def fake_fallback(url: str, dest: Path) -> None:
+            raise RuntimeError("yt-dlp failed")
+
+        gh_calls: list[list[str]] = []
+
+        def fake_gh(command, **_kwargs):
+            gh_calls.append(list(command))
+            code = 1 if command[1:3] == ["release", "view"] else 0
+            out = json.dumps([{"tagName": "daily-2026-10-20"}, {"tagName": "daily-2026-10-24"}, {"tagName": "v1"}])
+            return mock.Mock(returncode=code, stdout=out if command[2] == "list" else "")
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            with mock.patch.object(runner, "REPO_ROOT", root), mock.patch.object(
+                runner, "WORK_DIR", root / "work"
+            ), mock.patch.object(runner, "DAILY_RENDER_DIR", root / "work" / "daily_render"):
+                rendered = runner.render_daily_items(
+                    feed,
+                    self.day,
+                    download_file=fake_download,
+                    fallback_download=fake_fallback,
+                    run_ffmpeg=commands.append,
+                )
+                self.assertTrue(all(item["render_status"] == "rendered_local" for item, _path in rendered))
+                hosted = runner.upload_daily_renders(
+                    rendered, self.day, runner=fake_gh, env={"GITHUB_REPOSITORY": "chatgpt820970/chad-media"}
+                )
+                removed = runner.prune_daily_releases(self.day, runner=fake_gh)
+        self.assertEqual(hosted, len(rendered))
+        self.assertEqual(removed, ["daily-2026-10-20"])
+        self.assertEqual(gh_calls[0][:3], ["gh", "release", "view"])
+        self.assertTrue(any(call[:3] == ["gh", "release", "create"] for call in gh_calls))
+        self.assertTrue(any(call[:3] == ["gh", "release", "upload"] and "--clobber" in call for call in gh_calls))
+        self.assertTrue(any(call[:3] == ["gh", "release", "delete"] and "daily-2026-10-20" in call for call in gh_calls))
+        self.assertFalse(any("daily-2026-10-24" in call for call in gh_calls if call[2] == "delete"))
+
+        stamped = [item for item in items if item.get("render_status") == "rendered"]
+        self.assertEqual(len(stamped), len(rendered))
+        self.assertEqual(len(commands), len(rendered))
+        self.assertEqual(broken["render_status"], "failed")
+        for item in stamped:
+            self.assertTrue(
+                item["video_url"].startswith(
+                    "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-24/"
+                )
+            )
+            self.assertTrue(item["source_video_url"])
+        for command in commands:
+            joined = " ".join(command)
+            self.assertEqual(command[command.index("-crf") + 1], "16")
+            self.assertIn("unsharp=3:3:0.6:3:3:0.0", joined)
+            self.assertEqual(joined.count("drawtext"), 1)
+            self.assertIn("x=w*0.025:y=h*0.03", joined)
+            self.assertNotIn("mr. pa", joined)
+        for item in items:
+            if item["pre_stamped"]:
+                self.assertNotIn("render_status", item)
+                self.assertNotIn("source_video_url", item)
+
+        local = dict(stamped[0], render_status="rendered_local")
+        posted: list[dict] = []
+        scheduled = schedule_unscheduled_items(
+            {"items": [broken, local, stamped[0]]},
+            "token",
+            poster=lambda body: posted.append(body) or (True, "post"),
+        )
+        self.assertEqual(scheduled, 1)
+        self.assertEqual(len(posted), 1)
+        self.assertEqual(broken["buffer_status"], "pending")
 
     def test_seen_ids_do_not_repeat_until_the_catalog_is_used(self) -> None:
         indian_ids = [
@@ -649,9 +810,10 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         self.assertIn("contents: write", text)
         self.assertIn("python -m unittest whop.test_clipper -v", text)
         self.assertIn("python whop/clipper.py verify-manifest", text)
-        self.assertIn("python whop/whop_clipper.py build-daily-30", text)
+        self.assertIn("python whop/whop_clipper.py build-daily-40", text)
+        self.assertIn("GH_TOKEN: ${{ github.token }}", text)
         self.assertLess(text.index("unittest whop.test_clipper"), text.index("verify-manifest"))
-        self.assertLess(text.index("verify-manifest"), text.index("build-daily-30"))
+        self.assertLess(text.index("verify-manifest"), text.index("build-daily-40"))
         self.assertIn("github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'", text)
         self.assertIn("source_urls:", text)
         self.assertIn("ingest-urls", text)
@@ -918,17 +1080,18 @@ class IngestUrlPipelineTest(unittest.TestCase):
         self.assertIn("hd=1", tiktok_plan[0]["url"])
 
     def test_priority_categories_lead_the_daily_catalog(self) -> None:
-        self.assertEqual(PRIORITY_CATEGORIES[0], "anime_4k")
-        self.assertLess(priority_rank("anime_4k"), priority_rank("glamorous_girls"))
-        self.assertLess(priority_rank("glamorous_girls"), priority_rank("movie_4k"))
+        self.assertEqual(PRIORITY_CATEGORIES[0], "romantic_couples")
+        self.assertLess(priority_rank("romantic_couples"), priority_rank("glamorous_girls"))
+        self.assertLess(priority_rank("glamorous_girls"), priority_rank("anime_4k"))
+        self.assertLess(priority_rank("anime_4k"), priority_rank("movie_4k"))
         self.assertLess(priority_rank("movie_4k"), priority_rank("funny"))
         categories = {clip["category"] for clip in DAILY_CLIP_CATALOG}
-        self.assertTrue({"anime_4k", "glamorous_girls", "movie_4k"} <= categories)
+        self.assertTrue({"romantic_couples", "glamorous_girls", "anime_4k", "movie_4k"} <= categories)
         for platform in ("x", "instagram_reels", "tiktok"):
             ranks = [priority_rank(item["category"]) for item in self._platform(platform)]
             self.assertEqual(ranks, sorted(ranks), platform)
             self.assertTrue(self._platform(platform)[0]["priority"])
-            self.assertEqual(self._platform(platform)[0]["category"], "anime_4k")
+        self.assertEqual(self._platform("x")[0]["category"], "romantic_couples")
         tagged = build_ingest_items(
             self.data,
             source_url="https://x.com/a/status/42",

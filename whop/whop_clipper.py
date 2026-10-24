@@ -7,8 +7,9 @@
 2. Maps each post to a campaign that explicitly pays that platform. YouTube
    Shorts (`Denzen` / `@denzen0`) uses Dishpilot and Mr. Pa. Instagram Reels
    (`@benreelr`) uses Rascals, Dishpilot, and Mr. Pa. X (`@chadriyo`) uses
-   Dishpilot. FastLoanPilot and Nova are closed. `build-daily-30` selects 30
-   unseen clips and, on the daily GitHub Actions run, commits the feed.
+   Dishpilot. FastLoanPilot and Nova are closed. `build-daily-40` (alias
+   `build-daily-30`) selects 40 unseen clips, 10 per platform, stamped Dishpilot or
+   Rascals, and, on the daily GitHub Actions run, commits the feed.
 3. Focuses on high-retention lanes for YouTube Shorts (`Denzen` / `@denzen0`)
    and X (`@chadriyo`):
    - `anime`: 4K/HD anime fight & emotional edits
@@ -48,7 +49,13 @@ REPO_ROOT = ROOT.parent
 CAMPAIGNS_PATH = ROOT / "campaigns.json"
 FEED_PATH = ROOT / "feed" / "whop_ready_feed.json"
 DAILY_FEED_PATH = ROOT / "feed" / "daily_30_ready.json"
+DAILY_30_SCHEDULE_PATH = ROOT / "daily_30_ready.json"
+DAILY_40_SCHEDULE_PATH = ROOT / "daily_40_ready.json"
 DAILY_SEEN_PATH = ROOT / "state" / "seen_daily.json"
+DAILY_RENDER_DIR = ROOT / "work" / "daily_render"
+DAILY_RELEASE_PREFIX = "daily-"
+DAILY_RELEASE_KEEP_DAYS = 2
+DEFAULT_REPO_SLUG = "chatgpt820970/chad-media"
 URLS_QUEUE_PATH = ROOT / "urls_queue.json"
 INGEST_MEDIA_DIR = ROOT / "v"
 MANIFEST_PATH = ROOT / "manifest.json"
@@ -783,6 +790,9 @@ def schedule_unscheduled_items(feed: dict, token: str, poster=None) -> int:
     for item in feed.get("items") or []:
         if not isinstance(item, dict) or item.get("buffer_status") == "scheduled":
             continue
+        if item.get("render_status") in ("failed", "rendered_local"):
+            log(f"skipping {item.get('clip_id')}: the stamped file is not hosted yet, so it is not sent to Buffer")
+            continue
         platform_map.assert_feed_item_community_guidelines_safe(item)
         body = platform_map.buffer_create_post_body(item)
         try:
@@ -807,7 +817,7 @@ def publish_daily_files(paths: list[Path], env: dict | None = None) -> bool:
         log("daily files left uncommitted for the morning Buffer run")
         return False
     rels = [str(path.relative_to(REPO_ROOT)) for path in paths]
-    subprocess.run(["git", "add", "--", *rels], cwd=REPO_ROOT, check=True)
+    subprocess.run(["git", "add", "-A", "--", *rels], cwd=REPO_ROOT, check=True)
     quiet = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=REPO_ROOT)
     if quiet.returncode == 0:
         log("no daily feed change to commit")
@@ -823,7 +833,7 @@ def publish_daily_files(paths: list[Path], env: dict | None = None) -> bool:
         check=True,
     )
     subprocess.run(
-        ["git", "commit", "-m", "chore(whop): publish daily 30 clip feed"],
+        ["git", "commit", "-m", "chore(whop): publish daily 40 clip feed"],
         cwd=REPO_ROOT,
         check=True,
     )
@@ -959,6 +969,137 @@ def probe_source_metadata(path: Path) -> dict:
     return metadata if isinstance(metadata, dict) else {}
 
 
+def _gh(args: list[str], runner=None, check: bool = True):
+    run = runner or subprocess.run
+    return run(["gh", *args], cwd=REPO_ROOT, capture_output=True, text=True, check=check)
+
+
+def daily_release_url(run_date, filename: str, env: dict | None = None) -> str:
+    repo = (os.environ if env is None else env).get("GITHUB_REPOSITORY") or DEFAULT_REPO_SLUG
+    tag = f"{DAILY_RELEASE_PREFIX}{run_date.isoformat()}"
+    return f"https://github.com/{repo}/releases/download/{tag}/{filename}"
+
+
+def upload_daily_renders(pairs: list[tuple[dict, Path]], run_date, runner=None, env: dict | None = None) -> int:
+    """Host the rendered clips as assets on a `daily-YYYY-MM-DD` GitHub release.
+
+    Rendered video stays out of git so 40 clips a day do not bloat the repository.
+    """
+    if not pairs:
+        return 0
+    tag = f"{DAILY_RELEASE_PREFIX}{run_date.isoformat()}"
+    exists = _gh(["release", "view", tag], runner, check=False)
+    if exists.returncode != 0:
+        _gh(
+            [
+                "release",
+                "create",
+                tag,
+                "--title",
+                f"Daily clips {run_date.isoformat()}",
+                "--notes",
+                "Rendered daily clips for the four Buffer channels.",
+            ],
+            runner,
+        )
+    uploaded = 0
+    for index in range(0, len(pairs), 10):
+        chunk = pairs[index : index + 10]
+        try:
+            _gh(["release", "upload", tag, *[str(path) for _item, path in chunk], "--clobber"], runner)
+        except subprocess.CalledProcessError:
+            log(f"release upload failed for {len(chunk)} clips; they stay unscheduled")
+            continue
+        for item, path in chunk:
+            item["video_url"] = daily_release_url(run_date, path.name, env)
+            item["render_status"] = "rendered"
+            uploaded += 1
+    return uploaded
+
+
+def prune_daily_releases(today, keep_days: int = DAILY_RELEASE_KEEP_DAYS, runner=None) -> list[str]:
+    """Delete `daily-*` releases older than `keep_days`."""
+    listing = _gh(["release", "list", "--limit", "60", "--json", "tagName"], runner, check=False)
+    if listing.returncode != 0:
+        return []
+    try:
+        tags = [str(row.get("tagName")) for row in json.loads(listing.stdout or "[]")]
+    except json.JSONDecodeError:
+        return []
+    removed: list[str] = []
+    for tag in tags:
+        if not tag.startswith(DAILY_RELEASE_PREFIX):
+            continue
+        try:
+            day = datetime.strptime(tag[len(DAILY_RELEASE_PREFIX) :], "%Y-%m-%d").date()
+        except ValueError:
+            continue
+        if (today - day).days >= keep_days:
+            _gh(["release", "delete", tag, "--cleanup-tag", "--yes"], runner, check=False)
+            removed.append(tag)
+    return removed
+
+
+def render_daily_items(
+    feed: dict,
+    run_date,
+    *,
+    download_file=None,
+    run_ffmpeg=None,
+    fallback_download=None,
+) -> list[tuple[dict, Path]]:
+    """Re-encode each daily clip in 1080x1920 CRF 16 with one campaign name top-left.
+
+    The source is fetched directly, falling back to yt-dlp. Clips whose mark is already
+    burned in (`pre_stamped`) are left alone so they never carry two names. Any clip that
+    cannot be rendered is flagged `render_status: failed`. Rendered clips are
+    `rendered_local` until `upload_daily_renders` hosts them.
+    """
+    download = download_file or _download_mp4
+    fallback = fallback_download or download_hd_source
+    encode = run_ffmpeg or (lambda command: subprocess.run(command, check=True, timeout=600))
+    font = find_font()
+    day_dir = DAILY_RENDER_DIR / run_date.isoformat()
+    rendered: list[tuple[dict, Path]] = []
+    for item in feed.get("items") or []:
+        if not isinstance(item, dict) or item.get("source") == "ingest":
+            continue
+        if item.get("pre_stamped") or item.get("render_status") == "rendered":
+            continue
+        source = str(item.get("source_video_url") or item["video_url"])
+        clip_id = str(item["clip_id"])
+        raw_path = WORK_DIR / "daily" / f"{clip_id}.mp4"
+        dest = day_dir / f"{item['platform']}-{int(item['slot']):02d}-{clip_id}.mp4"
+        try:
+            if not raw_path.exists():
+                try:
+                    download(source, raw_path)
+                except Exception:
+                    fallback(source, raw_path)
+            dest.parent.mkdir(parents=True, exist_ok=True)
+            command = platform_map.ingest_ffmpeg_command(
+                raw_path, dest, str(item["platform"]), str(item["watermark_text"]), font
+            )
+            encode(command)
+        except Exception as exc:
+            log(f"render failed for {clip_id} on {item['platform']}: {type(exc).__name__}")
+            item["render_status"] = "failed"
+            continue
+        item["source_video_url"] = source
+        item["render_status"] = "rendered_local"
+        rendered.append((item, dest))
+    return rendered
+
+
+def write_daily_schedules(feed: dict, cfg: dict | None = None) -> list[Path]:
+    """Write whop/daily_40_ready.json and whop/daily_30_ready.json (10 slots per platform)."""
+    schedule = platform_map.build_daily_40_schedule(feed, cfg)
+    for path in (DAILY_40_SCHEDULE_PATH, DAILY_30_SCHEDULE_PATH):
+        save_json(path, schedule)
+    log(f"wrote {DAILY_40_SCHEDULE_PATH} and {DAILY_30_SCHEDULE_PATH} (total_posts={schedule['total_posts']})")
+    return [DAILY_40_SCHEDULE_PATH, DAILY_30_SCHEDULE_PATH]
+
+
 def ingest_urls_command(
     urls: list[str],
     campaign: str,
@@ -1023,7 +1164,7 @@ def ingest_urls_command(
                 command = platform_map.ingest_ffmpeg_command(raw_path, dest, platform, watermark, font)
                 subprocess.run(command, check=True, timeout=600)
                 rendered.append(dest)
-            hosted_by_platform[platform] = platform_map.PAGES_MEDIA_BASE + filename
+            hosted_by_platform[platform] = platform_map.RAW_MEDIA_BASE + dest.relative_to(REPO_ROOT).as_posix()
         # One shared pages URL per platform file. Build items one platform at a time
         # so each item points at its own encoded file.
         for platform, video_url in hosted_by_platform.items():
@@ -1045,13 +1186,6 @@ def ingest_urls_command(
     if not created:
         return []
     append_items_to_daily_feed(created, today)
-    token = os.environ.get("BUFFER_API_TOKEN", "")
-    if token.strip():
-        feed = load_json(DAILY_FEED_PATH, {})
-        schedule_unscheduled_items(feed, token)
-        save_json(DAILY_FEED_PATH, feed)
-    else:
-        log("BUFFER_API_TOKEN unset; ingested slots stay pending")
     processed_queue = [url for url in queue_urls if url in chosen_urls]
     if processed_queue:
         queued = load_json(URLS_QUEUE_PATH, {})
@@ -1061,13 +1195,35 @@ def ingest_urls_command(
         queued.setdefault("category", category)
         save_json(URLS_QUEUE_PATH, queued)
     publish_paths = [DAILY_FEED_PATH, DAILY_SEEN_PATH, URLS_QUEUE_PATH, *rendered]
-    publish_daily_files([path for path in publish_paths if path.exists()])
+    try:
+        publish_paths.extend(write_daily_schedules(load_json(DAILY_FEED_PATH, {}), cfg))
+    except platform_map.CampaignPlatformError as exc:
+        log(f"daily 40 schedule not rewritten yet: {exc}")
+    existing_paths = [path for path in publish_paths if path.exists()]
+    publish_daily_files(existing_paths)
+    token = os.environ.get("BUFFER_API_TOKEN", "")
+    if token.strip():
+        feed = load_json(DAILY_FEED_PATH, {})
+        schedule_unscheduled_items(feed, token)
+        save_json(DAILY_FEED_PATH, feed)
+        publish_daily_files([DAILY_FEED_PATH])
+    else:
+        log("BUFFER_API_TOKEN unset; ingested slots stay pending")
     log(f"ingested {len(created)} platform posts from {len(chosen_urls)} links")
     return created
 
 
+def _render_enabled(env: dict | None = None) -> bool:
+    source = os.environ if env is None else env
+    return source.get("WHOP_SKIP_RENDER") != "1" and shutil.which("ffmpeg") is not None
+
+
 def build_daily_30_command() -> dict:
-    """Select today's 30 clips, optionally schedule Buffer, then publish on Actions."""
+    """Select today's 40 clips (10 per platform), stamp them, host them, then schedule Buffer.
+
+    Stamped files are uploaded to a daily GitHub release before Buffer is called so the
+    URLs resolve.
+    """
     cfg = load_json(CAMPAIGNS_PATH, {})
     today = datetime.now(timezone.utc).date()
     existing = load_json(DAILY_FEED_PATH, {})
@@ -1081,14 +1237,33 @@ def build_daily_30_command() -> dict:
         save_json(DAILY_FEED_PATH, feed)
         save_json(DAILY_SEEN_PATH, seen)
         log(f"wrote {DAILY_FEED_PATH} ({feed['count']} clips) and {DAILY_SEEN_PATH}")
+    hosting = should_publish_daily() and shutil.which("gh") is not None
+    if hosting:
+        removed = prune_daily_releases(today)
+        if removed:
+            log(f"removed old daily releases: {', '.join(removed)}")
+    if _render_enabled():
+        rendered = render_daily_items(feed, today)
+        log(f"rendered {len(rendered)} clips at CRF {platform_map.INGEST_CRF} with one campaign mark")
+        if hosting:
+            hosted = upload_daily_renders(rendered, today)
+            log(f"hosted {hosted} of {len(rendered)} rendered clips on the daily release")
+        else:
+            log("not publishing from here; rendered clips stay local and are not scheduled")
+    else:
+        log("ffmpeg unavailable or WHOP_SKIP_RENDER=1; leaving source URLs unrendered")
+    save_json(DAILY_FEED_PATH, feed)
+    schedule_paths = write_daily_schedules(feed, cfg)
+    publish_daily_files([DAILY_FEED_PATH, DAILY_SEEN_PATH, *schedule_paths])
     token = os.environ.get("BUFFER_API_TOKEN", "")
     if token.strip():
         scheduled = schedule_unscheduled_items(feed, token)
         save_json(DAILY_FEED_PATH, feed)
+        write_daily_schedules(feed, cfg)
         log(f"buffer scheduled {scheduled} pending slots")
+        publish_daily_files([DAILY_FEED_PATH, *schedule_paths])
     else:
         log("BUFFER_API_TOKEN unset; leaving slots pending for the morning Buffer run")
-    publish_daily_files([DAILY_FEED_PATH, DAILY_SEEN_PATH])
     return feed
 
 
@@ -1098,10 +1273,14 @@ def main(argv: list[str]) -> int:
 
     sub.add_parser("check-pools", help="Run Pool/Budget Guard and print active vs skipped Whop campaigns")
     sub.add_parser("build-feed", help="Generate whop/feed/whop_ready_feed.json with Pool Guard checks")
-    sub.add_parser(
-        "build-daily-30",
-        help="Select 10 unseen clips for each Buffer channel and write whop/feed/daily_30_ready.json",
-    )
+    for daily_name in ("build-daily-40", "build-daily-30"):
+        sub.add_parser(
+            daily_name,
+            help=(
+                "Select 10 unseen clips for each of the 4 Buffer channels (40 a day) and write "
+                "whop/feed/daily_30_ready.json, whop/daily_30_ready.json, and whop/daily_40_ready.json"
+            ),
+        )
     ingest_p = sub.add_parser(
         "ingest-urls",
         help="Download X or TikTok links, stamp one campaign watermark, and queue the posts",
@@ -1137,7 +1316,7 @@ def main(argv: list[str]) -> int:
     if args.command == "build-feed":
         build_whop_ready_feed()
         return 0
-    if args.command == "build-daily-30":
+    if args.command in ("build-daily-30", "build-daily-40"):
         build_daily_30_command()
         return 0
     if args.command == "ingest-urls":
