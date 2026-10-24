@@ -13,9 +13,9 @@
   ],
   "pool_guard_rules": {
     "min_remaining_budget_usd": 500.0,
-    "max_paid_out_fraction": 0.8,
+    "max_paid_out_fraction": 0.80,
     "min_spots_remaining": 5,
-    "max_denial_rate": 0.5,
+    "max_denial_rate": 0.50,
     "skip_paused_or_closed": true
   },
   "channels": {
@@ -370,21 +370,8 @@
       "unlimited_budget": true,
       "payout": "$0.50 - $3.00+ per 1,000 views across rotating infinite-budget campaigns (4.91★, 464 reviews)",
       "cpm_usd": 2.5,
-      "accepted_platforms": [
-        "x",
-        "youtube_shorts",
-        "tiktok",
-        "instagram_reels"
-      ],
-      "allowed_lanes": [
-        "funny",
-        "ai",
-        "knowledge",
-        "movie",
-        "anime",
-        "celebrity",
-        "concert"
-      ],
+      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
+      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
       "watermark_text": "",
       "cta_text": "",
       "requirements": "Hub only. Not a direct submission target for @chadriyo or Denzen."
@@ -405,20 +392,8 @@
       "unlimited_budget": true,
       "payout": "$2.00 per 1,000 views (981 members)",
       "cpm_usd": 2.0,
-      "accepted_platforms": [
-        "youtube_shorts",
-        "tiktok",
-        "instagram_reels"
-      ],
-      "allowed_lanes": [
-        "funny",
-        "ai",
-        "knowledge",
-        "movie",
-        "anime",
-        "celebrity",
-        "concert"
-      ],
+      "accepted_platforms": ["youtube_shorts", "tiktok", "instagram_reels"],
+      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
       "logo_url": "https://assets-2-prod.whop.com/public/uploads/user_20188843/image/bots/2026-03-27/692a0ec9-de63-4b58-9497-8133af5d0fd2.png",
       "watermark_text": "GAMBANA",
       "cta_text": "Gambana",
@@ -448,6 +423,5 @@
       "title": "MAC ENERGY Clipping Campaign",
       "reason": "SKIPPED BY GEO/RATING GUARD: Strict 60%+ USA audience required (auto-rejects Indian audience) and low 2.5★ review rating."
     }
-  ],
-  "daily_target_per_channel": 10
+  ]
 }
