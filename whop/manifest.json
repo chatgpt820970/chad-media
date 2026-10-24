@@ -1,7 +1,7 @@
 {
-  "generated_at": "2026-10-24T18:50:18Z",
+  "generated_at": "2026-10-24T20:03:17Z",
   "slot_count": 10,
-  "guarantee": "Every X (@chadriyo) slot is Dishpilot with #Dishpilot and no loan text. Every Instagram Reel (@benreelr) is Rascals or Dishpilot with one campaign tag (#Rascals, #Dishpilot, or #MrPa) plus #Reels and one matching watermark. Every YouTube Shorts (Denzen / @denzen0) slot is Dishpilot or Mr. Pa with #Dishpilot #Shorts. At least 80% of YouTube slots are Indian actor reels or Indian cinema scenes. Each platform draws one top-left corner mark.",
+  "guarantee": "Every X (@chadriyo) slot is Dishpilot with #Dishpilot and no loan text. Every Instagram Reel (@benreelr) and TikTok (@bi67325) post carries one campaign name and its matching tag. Every YouTube Shorts (Denzen / @denzen0) slot is Dishpilot (#Dishpilot #Shorts) or Mr. Pa (#MrPa #Shorts). At least 80% of YouTube slots are Indian actor reels or Indian cinema scenes. Each platform draws one top-left corner mark.",
   "slots": [
     {
       "slot": 1,
@@ -572,7 +572,7 @@
       "youtube_category": "funny",
       "youtube_rate_per_1k_views_usd": 1.25,
       "youtube_remaining_pool_usd": 8507.0,
-      "youtube_caption": "Wait for the ending\n\n#Dishpilot #Shorts",
+      "youtube_caption": "Wait for the ending\n\n#MrPa #Shorts",
       "youtube_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "youtube_handle": "Denzen",
       "youtube_username": "@denzen0",
@@ -606,12 +606,12 @@
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
           "logo_count": 1,
-          "logo_text": "dishpilot",
+          "logo_text": "mr. pa",
           "logo_subtext": "",
           "logo_path": ""
         },
@@ -642,7 +642,7 @@
       "youtube_category": "movie",
       "youtube_rate_per_1k_views_usd": 1.25,
       "youtube_remaining_pool_usd": 8507.0,
-      "youtube_caption": "Pause on the last second\n\n#Dishpilot #Shorts",
+      "youtube_caption": "Pause on the last second\n\n#MrPa #Shorts",
       "youtube_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "youtube_handle": "Denzen",
       "youtube_username": "@denzen0",
@@ -676,12 +676,12 @@
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
           "logo_count": 1,
-          "logo_text": "dishpilot",
+          "logo_text": "mr. pa",
           "logo_subtext": "",
           "logo_path": ""
         },

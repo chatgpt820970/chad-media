@@ -1,5 +1,6 @@
 {
-  "updated_at": "2026-10-24T18:40:00Z",
+  "updated_at": "2026-10-24T19:54:00Z",
+  "buffer_organization_id": "6ac41da09a0b5aca7c671500",
   "whop_user": "@bi60",
   "whop_user_id": "user_JUKQo7VMHc6IS",
   "supported_viral_categories": [
@@ -61,6 +62,23 @@
         "celebrity",
         "concert"
       ]
+    },
+    "tiktok": {
+      "handle": "@bi67325",
+      "daily_slots": 10,
+      "campaigns": [
+        "dishpilot-clipping",
+        "rascals-theme-pages"
+      ],
+      "categories": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ]
     }
   },
   "pool_guard_rules": {
@@ -90,6 +108,13 @@
       "handle": "@benreelr",
       "username": "@benreelr",
       "buffer_channel_id": "6ac93d936a5c39ccb66624d7",
+      "aspect": "9:16",
+      "links_blocked": false
+    },
+    "tiktok": {
+      "handle": "@bi67325",
+      "username": "@bi67325",
+      "buffer_channel_id": "6add07e4778b240e2fb35110",
       "aspect": "9:16",
       "links_blocked": false
     }
@@ -122,6 +147,16 @@
         "rascals-theme-pages",
         "dishpilot-clipping",
         "mr-pa-clipping"
+      ]
+    },
+    "tiktok": {
+      "handle": "@bi67325",
+      "username": "@bi67325",
+      "links_blocked": false,
+      "primary_campaign_id": "dishpilot-clipping",
+      "campaign_ids": [
+        "dishpilot-clipping",
+        "rascals-theme-pages"
       ]
     }
   },
@@ -221,7 +256,7 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$2.00 per 1,000 organic views (biz_yHrLny75uFGcUZ, exp_U5YGkStRz0N9SR — pays X @chadriyo, YouTube Shorts Denzen, and Instagram Reels @benreelr)",
+      "payout": "$2.00 per 1,000 organic views (biz_yHrLny75uFGcUZ, exp_U5YGkStRz0N9SR — pays X @chadriyo, YouTube Shorts Denzen, Instagram Reels @benreelr, and TikTok @bi67325)",
       "accepted_platforms": [
         "x",
         "youtube_shorts",
@@ -285,9 +320,10 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": true,
-      "payout": "$3.00 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — Instagram Reels @benreelr)",
+      "payout": "$3.00 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — Instagram Reels @benreelr and TikTok @bi67325)",
       "accepted_platforms": [
-        "instagram_reels"
+        "instagram_reels",
+        "tiktok"
       ],
       "allowed_lanes": [
         "funny",
@@ -363,7 +399,7 @@
         "indian_actor_reels",
         "indian_movie_scenes"
       ],
-      "watermark_text": "dishpilot",
+      "watermark_text": "mr. pa",
       "cta_text": "",
       "rules": {
         "min_duration_sec": 6,
@@ -375,13 +411,13 @@
         "max_hashtags": 2,
         "mandatory_caption": "",
         "hashtags": [
-          "#Dishpilot",
+          "#MrPa",
           "#Shorts"
         ],
-        "logo_text": "dishpilot",
+        "logo_text": "mr. pa",
         "logo_style": "subtle"
       },
-      "requirements": "Instagram Reels (@benreelr) and YouTube Shorts (Denzen). One subtle top-left corner mark. YouTube reads dishpilot with #Dishpilot #Shorts. Instagram reads rascals with #Rascals #Reels. No loan text."
+      "requirements": "YouTube Shorts (Denzen) and Instagram Reels (@benreelr). One top-left mark reads mr. pa. Captions use #MrPa plus the platform tag. No loan text."
     },
     {
       "id": "finsta-ugc-clipping",
