@@ -10,7 +10,7 @@ Pool Guard rejects bounties whose denial rate is above the configured cap
 
 Visual rule: one subtle top-left corner mark. Never two logos, and never a logo
 stacked in the middle of the frame. X and YouTube read "dishpilot". Instagram
-reads "rascals · dishpilot".
+reads one campaign name only (dishpilot, rascals, or mr. pa).
 """
 
 from __future__ import annotations
@@ -114,13 +114,40 @@ X_DURATION_SEC = 30.0
 PLATFORM_WATERMARK = {
     "x": "dishpilot",
     "youtube_shorts": "dishpilot",
-    "instagram_reels": "rascals · dishpilot",
+    "instagram_reels": "rascals",
+}
+# Instagram Reels carry exactly one campaign name, matching the slot's campaign.
+INSTAGRAM_CAMPAIGN_WATERMARK = {
+    "dishpilot-clipping": "dishpilot",
+    "rascals-theme-pages": "rascals",
+    "mr-pa-clipping": "mr. pa",
+}
+INSTAGRAM_CAMPAIGN_HASHTAGS = {
+    "dishpilot-clipping": ["#Dishpilot", "#Reels"],
+    "rascals-theme-pages": ["#Rascals", "#Reels"],
+    "mr-pa-clipping": ["#MrPa", "#Reels"],
 }
 PLATFORM_HASHTAGS = {
     "x": ["#Dishpilot"],
     "youtube_shorts": ["#Dishpilot", "#Shorts"],
-    "instagram_reels": ["#Rascals", "#Dishpilot", "#Reels"],
+    "instagram_reels": ["#Rascals", "#Reels"],
 }
+
+
+def platform_watermark(platform: str, campaign_id: str | None = None) -> str:
+    """The one campaign name drawn on that post. Never two names."""
+    if platform == "instagram_reels" and campaign_id in INSTAGRAM_CAMPAIGN_WATERMARK:
+        return INSTAGRAM_CAMPAIGN_WATERMARK[campaign_id]
+    return PLATFORM_WATERMARK[platform]
+
+
+def platform_hashtags(platform: str, campaign_id: str | None = None) -> list[str]:
+    """One campaign hashtag per post, matching its single campaign."""
+    if platform == "instagram_reels" and campaign_id in INSTAGRAM_CAMPAIGN_HASHTAGS:
+        return list(INSTAGRAM_CAMPAIGN_HASHTAGS[campaign_id])
+    return list(PLATFORM_HASHTAGS[platform])
+
+
 # Buffer channel ids. Instagram is the @benreelr channel supplied for the daily run.
 DAILY_CHANNEL_IDS = {
     "x": "6ac41eb06a5c39ccb625fdf1",
@@ -495,14 +522,14 @@ def build_platform_caption(
 
     Routed Dishpilot, Rascals, and Mr. Pa posts use the platform's required tags:
     X is #Dishpilot, YouTube Shorts is #Dishpilot #Shorts, and Instagram Reels is
-    #Rascals #Dishpilot #Reels. Other campaigns keep their own caption style.
+    the slot campaign's single tag plus #Reels (#Dishpilot, #Rascals, or #MrPa). Other campaigns keep their own caption style.
     X drops raw links when the channel blocks them, and loan phrasing is removed
     from every X caption.
     """
     rules = _rules(campaign)
     style = caption_style(campaign)
     hook_text = hook.strip()
-    platform_tags = PLATFORM_HASHTAGS.get(platform) if campaign.get("id") in {
+    platform_tags = platform_hashtags(platform, campaign.get("id")) if campaign.get("id") in {
         DISHPILOT_ID,
         MR_PA_ID,
         RASCALS_ID,
@@ -551,7 +578,8 @@ def x_links_blocked(campaigns_data: dict) -> bool:
 
 
 DISHPILOT_WATERMARK_TEXT = "dishpilot"
-RASCALS_WATERMARK_TEXT = "rascals · dishpilot"
+RASCALS_WATERMARK_TEXT = "rascals"
+MR_PA_WATERMARK_TEXT = "mr. pa"
 # Pixels cut from the bottom of a 1080x1920 master before it is scaled back.
 # The baked fastloanpilot wordmark sits in this strip (around y=1818–1872).
 BOTTOM_STRIP_CROP_PX = 200
@@ -574,7 +602,7 @@ def is_dishpilot_badge(text: str) -> bool:
 
 def is_subtle_corner_badge(text: str) -> bool:
     letters = "".join(ch for ch in text.casefold() if ch.isalpha())
-    return letters in {"dishpilot", "dishpilotcom", "rascalsdishpilot"}
+    return letters in {"dishpilot", "dishpilotcom", "rascals", "mrpa"}
 
 
 def subtle_corner_drawtext(font_path: str, text: str) -> str:
@@ -593,13 +621,13 @@ def dishpilot_watermark_drawtext(font_path: str) -> str:
     return subtle_corner_drawtext(font_path, DISHPILOT_WATERMARK_TEXT)
 
 
-def platform_overlay_spec(platform: str) -> dict:
+def platform_overlay_spec(platform: str, campaign_id: str | None = None) -> dict:
     """The single corner mark required on that platform."""
     return {
         "logo_overlay_required": True,
         "logo_placement": "corner",
         "logo_count": 1,
-        "logo_text": PLATFORM_WATERMARK[platform],
+        "logo_text": platform_watermark(platform, campaign_id),
         "logo_subtext": "",
         "logo_path": "",
     }
@@ -779,7 +807,7 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
             "mode": "dual_compatible",
             "youtube_shorts": platform_overlay_spec("youtube_shorts"),
             "x": platform_overlay_spec("x"),
-            "instagram_reels": platform_overlay_spec("instagram_reels"),
+            "instagram_reels": platform_overlay_spec("instagram_reels", instagram_campaign.get("id")),
         }
         if overlay["x"]["logo_text"] != overlay["youtube_shorts"]["logo_text"]:
             overlay["mode"] = "platform_specific_variants"
@@ -848,7 +876,7 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
         "guarantee": (
             "Every X (@chadriyo) slot is Dishpilot with #Dishpilot and no loan text. "
             "Every Instagram Reel (@benreelr) is Rascals or Dishpilot with "
-            "#Rascals #Dishpilot #Reels. Every YouTube Shorts (Denzen / @denzen0) slot "
+            "one campaign tag (#Rascals, #Dishpilot, or #MrPa) plus #Reels and one matching watermark. Every YouTube Shorts (Denzen / @denzen0) slot "
             "is Dishpilot or Mr. Pa with #Dishpilot #Shorts. At least 80% of YouTube "
             "slots are Indian actor reels or Indian cinema scenes. Each platform draws "
             "one top-left corner mark."
@@ -965,7 +993,7 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
             errors.append(f"slot {slot_no} overlay mode is missing")
         expected_x = platform_overlay_spec("x")
         expected_yt = platform_overlay_spec("youtube_shorts")
-        expected_ig = platform_overlay_spec("instagram_reels")
+        expected_ig = platform_overlay_spec("instagram_reels", str(slot.get("instagram_campaign") or ""))
         for side, expected in (
             ("x", expected_x),
             ("youtube_shorts", expected_yt),
@@ -1014,8 +1042,9 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
                 instagram_caption = str(slot.get("instagram_caption") or "")
                 if contains_loan_spam(instagram_caption):
                     errors.append(f"slot {slot_no} instagram_caption contains loan text")
-                if _HASHTAG_RE.findall(instagram_caption) != ["#Rascals", "#Dishpilot", "#Reels"]:
-                    errors.append(f"slot {slot_no} Instagram caption must include #Rascals #Dishpilot #Reels")
+                expected_tags = platform_hashtags("instagram_reels", instagram_campaign.get("id"))
+                if _HASHTAG_RE.findall(instagram_caption) != expected_tags:
+                    errors.append(f"slot {slot_no} Instagram caption must be {' '.join(expected_tags)} only")
                 if hook and hook not in instagram_caption:
                     errors.append(f"slot {slot_no} instagram_caption is missing the hook")
                 if slot.get("instagram_handle") != platform_account(campaigns_data, "instagram_reels")["handle"]:
@@ -1578,7 +1607,7 @@ def _daily_item(
         "scheduled_time_ist": time_ist,
         "due_at_utc": daily_due_at_utc(run_date, time_ist),
         "campaign_id": campaign.get("id"),
-        "watermark_text": PLATFORM_WATERMARK[platform],
+        "watermark_text": platform_watermark(platform, campaign.get("id")),
         "watermark_position": dict(DAILY_WATERMARK_POSITION),
         "video_url": clip["video_url"],
         "title": hook,

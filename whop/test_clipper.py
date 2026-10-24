@@ -174,7 +174,8 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertTrue(slot["x_submission_url"].startswith("https://"))
             self.assertEqual(slot["overlay"]["x"]["logo_text"], "dishpilot")
             self.assertEqual(slot["overlay"]["youtube_shorts"]["logo_text"], "dishpilot")
-            self.assertEqual(slot["overlay"]["instagram_reels"]["logo_text"], "rascals · dishpilot")
+            self.assertEqual(slot["overlay"]["instagram_reels"]["logo_text"], {"dishpilot-clipping": "dishpilot", "rascals-theme-pages": "rascals", "mr-pa-clipping": "mr. pa"}[slot["instagram_campaign"]])
+            self.assertNotIn("·", slot["overlay"]["instagram_reels"]["logo_text"])
             for side in ("x", "youtube_shorts", "instagram_reels"):
                 badge = slot["overlay"][side]
                 self.assertEqual(badge["logo_count"], 1)
@@ -193,7 +194,7 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertEqual(slot["instagram_handle"], "@benreelr")
             self.assertEqual(
                 re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["instagram_caption"]),
-                ["#Rascals", "#Dishpilot", "#Reels"],
+                {"dishpilot-clipping": ["#Dishpilot", "#Reels"], "rascals-theme-pages": ["#Rascals", "#Reels"], "mr-pa-clipping": ["#MrPa", "#Reels"]}[slot["instagram_campaign"]],
             )
             self.assertIn(slot["instagram_campaign"], ("rascals-theme-pages", "dishpilot-clipping"))
             self.assertTrue(slot["instagram_duration_ok"])
@@ -273,7 +274,7 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertEqual(plan["x"]["logo_subtext"], "")
         self.assertEqual(plan["x"]["logo_count"], 1)
         self.assertEqual(plan["x"]["logo_placement"], "corner")
-        self.assertEqual(plan["youtube_shorts"]["logo_text"], "rascals · dishpilot")
+        self.assertEqual(plan["youtube_shorts"]["logo_text"], "rascals")
         self.assertEqual(plan["youtube_shorts"]["logo_count"], 1)
         self.assertEqual(plan["youtube_shorts"]["logo_placement"], "corner")
 
@@ -296,7 +297,7 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertEqual(graph.count("drawtext"), 1)
         self.assertEqual(label, "[vbadge]")
         reels_graph, _reels_label = ffmpeg_banner_filter(banner_overlay_spec(rascals), "[vbase]", "Sans")
-        self.assertIn("text='rascals · dishpilot'", reels_graph)
+        self.assertIn("text='rascals'", reels_graph)
         self.assertIn("x=w*0.025:y=h*0.03", reels_graph)
         self.assertNotIn("box=", reels_graph)
         self.assertEqual(reels_graph.count("drawtext"), 1)
@@ -464,7 +465,8 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in x_items))
         self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in youtube))
         reels = self._platform("instagram_reels")
-        self.assertTrue(all(item["watermark_text"] == "rascals · dishpilot" for item in reels))
+        for item in reels:
+            self.assertEqual(item["watermark_text"], {"dishpilot-clipping": "dishpilot", "rascals-theme-pages": "rascals", "mr-pa-clipping": "mr. pa"}[item["campaign_id"]])
         self.assertEqual([item["campaign_id"] for item in reels], [rotation[(slot - 1) % 3] for slot in range(1, 11)])
         for item in x_items:
             self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]), ["#Dishpilot"])
@@ -476,7 +478,7 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         for item in reels:
             self.assertEqual(
                 re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]),
-                ["#Rascals", "#Dishpilot", "#Reels"],
+                {"dishpilot-clipping": ["#Dishpilot", "#Reels"], "rascals-theme-pages": ["#Rascals", "#Reels"], "mr-pa-clipping": ["#MrPa", "#Reels"]}[item["campaign_id"]],
             )
 
         self.assertEqual(
