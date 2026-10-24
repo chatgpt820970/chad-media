@@ -64,8 +64,12 @@ jobs:
           # Public read-only feed for the user's Grok (morning slots): same stories and media as BIBI uses.
           mkdir -p site/feed
           for f in candidates.json media_ready.json posted.json grok_queue.json grok_replies.json; do
-            [ -f "xnc/data/$f" ] && cp "xnc/data/$f" site/feed/ || true
+            if [ -f "xnc/data/$f" ]; then cp "xnc/data/$f" site/feed/; fi
+            if [ ! -s "site/feed/$f" ]; then
+              curl -fsSL "https://raw.githubusercontent.com/chatgpt820970/x-news-collector/main/data/$f" -o "site/feed/$f" || true
+            fi
           done
+          # grok-feed-stamp: 2026-10-24T01:10:49.503299Z
           du -sh site
 
       - name: Attach the shorts queue and media
