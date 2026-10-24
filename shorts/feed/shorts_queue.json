@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-24T13:25:04Z",
-  "ready_today": 0,
+  "generated_at": "2026-10-24T13:40:01Z",
+  "ready_today": 15,
   "daily_target": 10,
   "collects_today": [
     {
@@ -458,6 +458,5 @@
       "youtube_category_id": "23",
       "queued_at": "2026-10-23T01:05:54Z"
     }
-  ],
-  "ready_count": 24
+  ]
 }
