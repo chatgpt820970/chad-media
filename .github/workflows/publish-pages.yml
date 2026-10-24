@@ -132,6 +132,19 @@ jobs:
           PY
           du -sh site
 
+      - name: Attach Whop Content Rewards clips and feed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+          mkdir -p site/whop/v site/whop/feed site/whop/logos
+          curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/whop/feed/whop_ready_feed.json" -o site/whop/feed/whop_ready_feed.json || true
+          curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/whop/logos/fastloanpilot.png" -o site/whop/logos/fastloanpilot.png || true
+          for clip in flp-speedcube-lockin.mp4 flp-language-gauntlet.mp4 flp-concert-vibes.mp4; do
+            curl -fsSL "https://raw.githubusercontent.com/${GITHUB_REPOSITORY}/main/whop/v/$clip" -o "site/whop/v/$clip" || true
+          done
+          du -sh site/whop
+
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site
