@@ -584,11 +584,13 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         with tempfile.TemporaryDirectory() as tmp:
             out40 = Path(tmp) / "daily_40_ready.json"
             out30 = Path(tmp) / "daily_30_ready.json"
+            outfeed = Path(tmp) / "feed_daily_40_ready.json"
             with mock.patch.object(runner, "DAILY_40_SCHEDULE_PATH", out40), mock.patch.object(
                 runner, "DAILY_30_SCHEDULE_PATH", out30
-            ):
+            ), mock.patch.object(runner, "DAILY_40_FEED_PATH", outfeed):
                 paths = runner.write_daily_schedules(self.feed, self.data)
-            self.assertEqual(paths, [out40, out30])
+            self.assertEqual(paths, [out40, out30, outfeed])
+            self.assertEqual(json.loads(outfeed.read_text(encoding="utf-8"))["count"], 40)
             written = json.loads(out40.read_text(encoding="utf-8"))
             self.assertEqual(written["total_posts"], 40)
             self.assertEqual(json.loads(out30.read_text(encoding="utf-8")), written)

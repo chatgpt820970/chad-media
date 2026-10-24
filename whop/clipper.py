@@ -1841,6 +1841,8 @@ def build_daily_40_schedule(feed: dict, campaigns_data: dict | None = None) -> d
         "channels": channels,
         "slots": slots,
         "ingested": [item for item in items if item.get("source") == "ingest"],
+        "count": len(items),
+        "items": items,
     }
 
 

@@ -51,6 +51,7 @@ FEED_PATH = ROOT / "feed" / "whop_ready_feed.json"
 DAILY_FEED_PATH = ROOT / "feed" / "daily_30_ready.json"
 DAILY_30_SCHEDULE_PATH = ROOT / "daily_30_ready.json"
 DAILY_40_SCHEDULE_PATH = ROOT / "daily_40_ready.json"
+DAILY_40_FEED_PATH = ROOT / "feed" / "daily_40_ready.json"
 DAILY_SEEN_PATH = ROOT / "state" / "seen_daily.json"
 DAILY_RENDER_DIR = ROOT / "work" / "daily_render"
 DAILY_RELEASE_PREFIX = "daily-"
@@ -1092,12 +1093,13 @@ def render_daily_items(
 
 
 def write_daily_schedules(feed: dict, cfg: dict | None = None) -> list[Path]:
-    """Write whop/daily_40_ready.json and whop/daily_30_ready.json (10 slots per platform)."""
+    """Write the 40-a-day schedule (10 slots per platform) to every ready-file location."""
     schedule = platform_map.build_daily_40_schedule(feed, cfg)
-    for path in (DAILY_40_SCHEDULE_PATH, DAILY_30_SCHEDULE_PATH):
+    paths = [DAILY_40_SCHEDULE_PATH, DAILY_30_SCHEDULE_PATH, DAILY_40_FEED_PATH]
+    for path in paths:
         save_json(path, schedule)
-    log(f"wrote {DAILY_40_SCHEDULE_PATH} and {DAILY_30_SCHEDULE_PATH} (total_posts={schedule['total_posts']})")
-    return [DAILY_40_SCHEDULE_PATH, DAILY_30_SCHEDULE_PATH]
+    log(f"wrote {', '.join(str(path) for path in paths)} (total_posts={schedule['total_posts']})")
+    return paths
 
 
 def ingest_urls_command(
@@ -1278,7 +1280,8 @@ def main(argv: list[str]) -> int:
             daily_name,
             help=(
                 "Select 10 unseen clips for each of the 4 Buffer channels (40 a day) and write "
-                "whop/feed/daily_30_ready.json, whop/daily_30_ready.json, and whop/daily_40_ready.json"
+                "whop/feed/daily_30_ready.json, whop/feed/daily_40_ready.json, whop/daily_30_ready.json, "
+                "and whop/daily_40_ready.json"
             ),
         )
     ingest_p = sub.add_parser(
