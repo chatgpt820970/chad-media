@@ -5,18 +5,27 @@ from __future__ import annotations
 import json
 import re
 import unittest
+from datetime import date, datetime
 from pathlib import Path
 
 from whop.clipper import (
+    DAILY_30_INDIAN_SLOTS,
+    DAILY_30_TIMES_IST,
+    DAILY_CHANNEL_IDS,
+    DAILY_CLIP_CATALOG,
     FEED_JSON_PATH,
+    INDIAN_CATEGORIES as CLIPPER_INDIAN_CATEGORIES,
     MANIFEST_PATH,
     CampaignPlatformError,
     banner_overlay_spec,
     bind_clip_to_campaign,
+    buffer_create_post_body,
+    build_daily_30,
     build_daily_manifest,
     build_platform_caption,
     campaigns_for_platform,
     check_campaign_pool_guard,
+    daily_feed_is_current,
     duration_fits,
     dishpilot_clip_filter,
     ffmpeg_banner_filter,
@@ -25,6 +34,7 @@ from whop.clipper import (
     select_campaign_for_platform,
     verify_manifest_data,
 )
+from whop.whop_clipper import should_publish_daily
 
 X_PAYING_IDS = {"dishpilot-clipping"}
 INDIAN_CATEGORIES = {"indian_actor_reels", "indian_movie_scenes"}
@@ -395,6 +405,198 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertLessEqual(len(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["caption"])), 2)
             self.assertNotRegex(slot["caption"], LOAN_SPAM)
             self.assertTrue(Path(path).is_file())
+
+
+class DailyThirtyPipelineTest(unittest.TestCase):
+    def setUp(self) -> None:
+        self.data = load_campaigns()
+        self.day = date(2026, 10, 24)
+        self.feed, self.seen = build_daily_30(self.data, {"ids": [], "uses": {}}, today=self.day)
+        self.items = self.feed["items"]
+
+    def _platform(self, platform: str) -> list[dict]:
+        return [item for item in self.items if item["platform"] == platform]
+
+    def test_build_daily_30_selects_thirty_pool_guarded_clips(self) -> None:
+        self.assertEqual(self.feed["date"], "2026-10-24")
+        self.assertEqual(self.feed["count"], 30)
+        self.assertEqual(len(self.items), 30)
+        self.assertEqual(len(self._platform("x")), 10)
+        self.assertEqual(len(self._platform("youtube_shorts")), 10)
+        self.assertEqual(len(self._platform("instagram_reels")), 10)
+        self.assertEqual(len({item["clip_id"] for item in self.items}), 30)
+        self.assertEqual(len(self.seen["ids"]), 30)
+
+        youtube = self._platform("youtube_shorts")
+        indian = [item for item in youtube if item["category"] in CLIPPER_INDIAN_CATEGORIES]
+        self.assertGreaterEqual(len(indian), DAILY_30_INDIAN_SLOTS)
+        self.assertGreaterEqual(len(indian) / len(youtube), 0.8)
+        self.assertTrue(all(item["campaign_id"] == "dishpilot-clipping" for item in indian))
+        global_slots = [item for item in youtube if item not in indian]
+        self.assertEqual(len(global_slots), 2)
+        self.assertTrue(all(item["campaign_id"] == "mr-pa-clipping" for item in global_slots))
+
+        rotation = ("rascals-theme-pages", "dishpilot-clipping", "mr-pa-clipping")
+        for item in self.items:
+            self.assertIn(item["slot"], range(1, 11))
+            self.assertEqual(item["channel_id"], DAILY_CHANNEL_IDS[item["platform"]])
+            self.assertEqual(item["watermark_position"]["placement"], "top-left")
+            self.assertEqual(item["watermark_position"]["expr"], "x=w*0.025:y=h*0.03")
+            self.assertIn("x=w*0.025:y=h*0.03", json.dumps(item["watermark_position"]))
+            self.assertTrue(item["video_url"].startswith("https://"))
+            self.assertTrue(item["video_url"].endswith(".mp4"))
+            self.assertEqual(item["buffer_status"], "pending")
+            campaign = next(
+                row for row in self.data["active_campaigns"] if row["id"] == item["campaign_id"]
+            )
+            ok, reason = check_campaign_pool_guard(campaign, self.data["pool_guard_rules"])
+            self.assertTrue(ok, reason)
+            self.assertIn(item["platform"], campaign["accepted_platforms"])
+            self.assertNotIn("fast-loan-pilot", item["campaign_id"])
+            self.assertNotIn("nova-x-clipping", item["campaign_id"])
+            blob = json.dumps(item)
+            self.assertNotIn("FastLoanPilot", blob)
+            self.assertNotRegex(blob, LOAN_SPAM)
+            self.assertIn(item["title"], item["caption"])
+
+        x_items = self._platform("x")
+        self.assertTrue(all(item["campaign_id"] == "dishpilot-clipping" for item in x_items))
+        self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in x_items))
+        self.assertTrue(all(item["watermark_text"] == "dishpilot" for item in youtube))
+        reels = self._platform("instagram_reels")
+        self.assertTrue(all(item["watermark_text"] == "rascals · dishpilot" for item in reels))
+        self.assertEqual([item["campaign_id"] for item in reels], [rotation[(slot - 1) % 3] for slot in range(1, 11)])
+        for item in x_items:
+            self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]), ["#Dishpilot"])
+        for item in youtube:
+            self.assertEqual(
+                re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]),
+                ["#Dishpilot", "#Shorts"],
+            )
+        for item in reels:
+            self.assertEqual(
+                re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]),
+                ["#Rascals", "#Dishpilot", "#Reels"],
+            )
+
+        self.assertEqual(
+            [item["scheduled_time_ist"] for item in x_items],
+            list(DAILY_30_TIMES_IST),
+        )
+        stamps = [
+            datetime.strptime(item["due_at_utc"], "%Y-%m-%dT%H:%M:%SZ")
+            for item in x_items
+        ]
+        deltas = [(later - earlier).total_seconds() for earlier, later in zip(stamps, stamps[1:])]
+        self.assertEqual(deltas, [7200] * 9)
+        self.assertTrue(all(item["due_at_utc"].startswith("2026-10-24T") for item in self.items))
+        self.assertTrue(all(item["due_at_utc"].endswith("Z") for item in self.items))
+
+    def test_seen_ids_do_not_repeat_until_the_catalog_is_used(self) -> None:
+        indian_ids = [
+            clip["id"] for clip in DAILY_CLIP_CATALOG if clip["category"] in CLIPPER_INDIAN_CATEGORIES
+        ]
+        day1_indian = [
+            item["clip_id"]
+            for item in self._platform("youtube_shorts")
+            if item["category"] in CLIPPER_INDIAN_CATEGORIES
+        ]
+        self.assertEqual(day1_indian, indian_ids[:DAILY_30_INDIAN_SLOTS])
+        unused = indian_ids[DAILY_30_INDIAN_SLOTS:]
+        self.assertGreaterEqual(len(unused), 1)
+
+        feed2, seen2 = build_daily_30(self.data, self.seen, today=date(2026, 10, 25))
+        day2_items = feed2["items"]
+        self.assertEqual(len({item["clip_id"] for item in day2_items}), 30)
+        day1_ids = {item["clip_id"] for item in self.items}
+        day2_ids = {item["clip_id"] for item in day2_items}
+        self.assertTrue(unused)
+        self.assertTrue(set(unused).isdisjoint(day1_ids))
+        day2_indian = [
+            item["clip_id"]
+            for item in day2_items
+            if item["platform"] == "youtube_shorts" and item["category"] in CLIPPER_INDIAN_CATEGORIES
+        ]
+        self.assertEqual(day2_indian[: len(unused)], unused)
+        self.assertEqual(day2_indian[len(unused) :], indian_ids[: DAILY_30_INDIAN_SLOTS - len(unused)])
+        self.assertEqual(len(seen2["ids"]), len(day1_ids | day2_ids))
+        self.assertTrue(daily_feed_is_current(self.feed, self.day))
+        self.assertFalse(daily_feed_is_current(self.feed, date(2026, 10, 25)))
+
+    def test_buffer_body_and_publish_gate(self) -> None:
+        sample = self._platform("instagram_reels")[0]
+        body = buffer_create_post_body(sample)
+        self.assertEqual(body["channelId"], DAILY_CHANNEL_IDS["instagram_reels"])
+        self.assertEqual(body["mode"], "customScheduled")
+        self.assertTrue(body["dueAt"].endswith("+00:00"))
+        self.assertEqual(body["assets"][0]["video"]["url"], sample["video_url"])
+        self.assertEqual(body["metadata"]["instagram"]["type"], "reel")
+        self.assertNotIn("token", json.dumps(body).lower())
+        self.assertNotIn("FastLoanPilot", json.dumps(body))
+
+        youtube = buffer_create_post_body(self._platform("youtube_shorts")[0])
+        self.assertEqual(youtube["metadata"]["youtube"]["categoryId"], "24")
+        self.assertNotIn("metadata", buffer_create_post_body(self._platform("x")[0]))
+
+        self.assertFalse(should_publish_daily({}))
+        self.assertFalse(
+            should_publish_daily(
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "pull_request",
+                    "GITHUB_REF_NAME": "main",
+                }
+            )
+        )
+        self.assertFalse(
+            should_publish_daily(
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "schedule",
+                    "GITHUB_REF_NAME": "main",
+                    "WHOP_SKIP_PUBLISH": "1",
+                }
+            )
+        )
+        self.assertFalse(
+            should_publish_daily(
+                {
+                    "WHOP_PUBLISH_DAILY": "1",
+                    "GITHUB_REF_NAME": "cursor/daily-30-whop-pipeline-6d20",
+                }
+            )
+        )
+        self.assertTrue(
+            should_publish_daily(
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "schedule",
+                    "GITHUB_REF_NAME": "main",
+                }
+            )
+        )
+        self.assertTrue(
+            should_publish_daily(
+                {
+                    "GITHUB_ACTIONS": "true",
+                    "GITHUB_EVENT_NAME": "workflow_dispatch",
+                    "GITHUB_REF_NAME": "main",
+                }
+            )
+        )
+
+    def test_workflow_schedules_the_daily_build_after_tests(self) -> None:
+        text = Path(".github/workflows/whop-clipper.yml").read_text(encoding="utf-8")
+        self.assertIn('cron: "15 0 * * *"', text)
+        self.assertIn('cron: "15 1 * * *"', text)
+        self.assertIn("workflow_dispatch:", text)
+        self.assertIn("contents: write", text)
+        self.assertIn("python -m unittest whop.test_clipper -v", text)
+        self.assertIn("python whop/clipper.py verify-manifest", text)
+        self.assertIn("python whop/whop_clipper.py build-daily-30", text)
+        self.assertLess(text.index("unittest whop.test_clipper"), text.index("verify-manifest"))
+        self.assertLess(text.index("verify-manifest"), text.index("build-daily-30"))
+        self.assertIn("github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'", text)
 
 
 if __name__ == "__main__":

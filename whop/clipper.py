@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Platform-specific Whop campaign mapping.
 
-X (@chadriyo) posts to Dishpilot. Instagram Reels (@benreelr) posts to Rascals
-and Dishpilot. YouTube Shorts (Denzen) posts to Dishpilot and Mr. Pa. FastLoanPilot
-and Nova are closed: Nova's legacy app app_JsryI0fVLVpeYi only returns "ok".
+X (@chadriyo) posts to Dishpilot. Instagram Reels (@benreelr) posts to Rascals,
+Dishpilot, and Mr. Pa. YouTube Shorts (Denzen) posts to Dishpilot and Mr. Pa.
+FastLoanPilot and Nova are closed: Nova's legacy app app_JsryI0fVLVpeYi only
+returns "ok". The daily 30-clip feed (10 per platform) is built by build_daily_30.
 Pool Guard rejects bounties whose denial rate is above the configured cap
 (Shane Gillis is 99.8%).
 
@@ -19,7 +20,7 @@ import json
 import re
 import subprocess
 import sys
-from datetime import datetime, timezone
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent
@@ -120,6 +121,38 @@ PLATFORM_HASHTAGS = {
     "youtube_shorts": ["#Dishpilot", "#Shorts"],
     "instagram_reels": ["#Rascals", "#Dishpilot", "#Reels"],
 }
+# Buffer channel ids. Instagram is the @benreelr channel supplied for the daily run.
+DAILY_CHANNEL_IDS = {
+    "x": "6ac41eb06a5c39ccb625fdf1",
+    "youtube_shorts": "6ac4da806a5c39ccb62eab64",
+    "instagram_reels": "6ac93d936a5c39ccb66624d7",
+}
+# Two hours apart. 00:00 and 02:00 are the next IST night, which is still the
+# same UTC date as the 00:15 UTC cron (05:45 IST).
+DAILY_30_TIMES_IST = (
+    "08:00",
+    "10:00",
+    "12:00",
+    "14:00",
+    "16:00",
+    "18:00",
+    "20:00",
+    "22:00",
+    "00:00",
+    "02:00",
+)
+DAILY_30_PER_PLATFORM = 10
+DAILY_30_INDIAN_SLOTS = 8
+DAILY_WATERMARK_POSITION = {
+    "placement": "top-left",
+    "x": "w*0.025",
+    "y": "h*0.03",
+    "expr": "x=w*0.025:y=h*0.03",
+}
+# Rascals leads, then Dishpilot, then Mr. Pa. Repeats across the 10 Reels slots.
+INSTAGRAM_DAILY_ROTATION = (RASCALS_ID, DISHPILOT_ID, MR_PA_ID)
+SHORTS_MEDIA_BASE = "https://chatgpt820970.github.io/chad-media/shorts/v/"
+_IST_OFFSET_MINUTES = 5 * 60 + 30
 YOUTUBE_VARIANTS = (
     {
         "file": "yt-flp-1.mp4",
@@ -1333,6 +1366,378 @@ def render_platform_variants(media_dir: Path | None = None) -> list[Path]:
         written.append(dest)
     written.extend(clean_library_masters(target))
     return written
+
+
+def _pages_url(filename: str) -> str:
+    return f"{PAGES_MEDIA_BASE}{filename}"
+
+
+def _shorts_url(clip_id: str) -> str:
+    return f"{SHORTS_MEDIA_BASE}{clip_id}.mp4"
+
+
+# Stable catalog. Indian actor / cinema rows come first so YouTube can take
+# eight unseen ones and still leave some for the next day. Global rows fill X,
+# Instagram, and the two non-Indian YouTube slots. Raw twimg links are the
+# hd-live source; packaged files use the Pages URL.
+_DAILY_CLIP_ROWS = (
+    ("flp-diljit-worldtour", "indian_actor_reels", "Diljit shut the stadium down", _pages_url("flp-diljit-worldtour.mp4")),
+    ("flp-honeysingh-vibe", "indian_actor_reels", "Honey Singh takes the drop", _pages_url("flp-honeysingh-vibe.mp4")),
+    ("yt-flp-1", "indian_actor_reels", "Wait for Diljit to hit the note", _pages_url("yt-flp-1.mp4")),
+    ("yt-flp-2", "indian_movie_scenes", "When Honey Singh owns the beat", _pages_url("yt-flp-2.mp4")),
+    ("tt-7087185238102723842", "indian_actor_reels", "Honey Singh takes the chorus", _shorts_url("tt-7087185238102723842")),
+    ("tt-7683220492567809294", "indian_actor_reels", "Diljit brings Daura to the crowd", _shorts_url("tt-7683220492567809294")),
+    ("x-sachin", "indian_actor_reels", "Sachin still stops the room", "https://video.twimg.com/amplify_video/2110725157686063105/vid/avc1/720x720/9wEKen-NsjmE2zu7.mp4"),
+    ("x-rohit", "indian_actor_reels", "Rohit brings the crowd up", "https://video.twimg.com/amplify_video/2113090359249240064/vid/avc1/480x852/er9LJ0EKKDLnQDX5.mp4"),
+    ("x-srk-salman", "indian_movie_scenes", "Salman and Shah Rukh share the frame", "https://video.twimg.com/amplify_video/2110404095626612736/vid/avc1/640x360/2vmTjUOMtRB6yEtE.mp4"),
+    ("x-ranbir-alia", "indian_movie_scenes", "Ranbir and Alia own the scene", "https://video.twimg.com/amplify_video/2109350581123125248/vid/avc1/480x852/47lTmE-8904XTFnv.mp4"),
+    ("x-virat-mumbai", "indian_actor_reels", "Virat walks into Mumbai", "https://video.twimg.com/amplify_video/2112746643015778304/vid/avc1/480x852/G9NkYIKWNf3avnSU.mp4"),
+    ("x-allu", "indian_actor_reels", "Allu takes the stage", "https://video.twimg.com/amplify_video/2108890651677151232/vid/avc1/480x852/lKMyE_VzG7YtqVmU.mp4"),
+    ("x-hardik", "indian_actor_reels", "Hardik's celebration takes over", "https://video.twimg.com/amplify_video/2110911489867669504/vid/avc1/480x852/MeUuwscm1dCEjM4Y.mp4"),
+    ("flp-tea-science", "knowledge", "The cup changes color", _pages_url("flp-tea-science.mp4")),
+    ("flp-president-speech", "funny", "Wait for the third promise", _pages_url("flp-president-speech.mp4")),
+    ("flp-speedcube-lockin", "funny", "Watch his hands", _pages_url("flp-speedcube-lockin.mp4")),
+    ("flp-language-gauntlet", "knowledge", "Name every flag", _pages_url("flp-language-gauntlet.mp4")),
+    ("flp-nyc-doorman", "funny", "NYC doorman plot twist", _pages_url("flp-nyc-doorman.mp4")),
+    ("flp-khaby-lifehack", "funny", "He did it the simple way", _pages_url("flp-khaby-lifehack.mp4")),
+    ("flp-concert-vibes", "concert", "Wait for the note", _pages_url("flp-concert-vibes.mp4")),
+    ("flp-anime-sakuga", "anime", "This animation is insane", _pages_url("flp-anime-sakuga.mp4")),
+    ("yt-flp-3", "funny", "Watch the solve land", _pages_url("yt-flp-3.mp4")),
+    ("x-kinderjoy", "funny", "The toy was inside the whole time", _pages_url("x-kinderjoy-dishpilot.mp4")),
+    ("x-clip-1", "funny", "Watch his hands", _pages_url("x-clip-1.mp4")),
+    ("x-clip-2", "knowledge", "Name every flag", _pages_url("x-clip-2.mp4")),
+    ("x-clip-3", "concert", "Wait for the note", _pages_url("x-clip-3.mp4")),
+    ("x-user-1", "anime", "This animation is insane", _pages_url("x-user-1.mp4")),
+    ("x-user-2", "movie", "Wait for the drop", _pages_url("x-user-2.mp4")),
+    ("x-user-3", "celebrity", "His reaction at the end", _pages_url("x-user-3.mp4")),
+    ("x-user-4", "concert", "60,000 people in sync", _pages_url("x-user-4.mp4")),
+    ("x-user-5", "celebrity", "When the beat drops", _pages_url("x-user-5.mp4")),
+    ("x-user-6", "movie", "Wait for the reveal", _pages_url("x-user-6.mp4")),
+    ("x-user-7", "funny", "NYC doorman plot twist", _pages_url("x-user-7.mp4")),
+    ("x-user-8", "ai", "Nobody expected this", _pages_url("x-user-8.mp4")),
+    ("x-user-9", "funny", "The last second changes it", _pages_url("x-user-9.mp4")),
+)
+
+
+def _catalog_clip(row: tuple[str, str, str, str]) -> dict:
+    clip_id, category, hook, video_url = row
+    return {"id": clip_id, "category": category, "hook": hook, "video_url": video_url}
+
+
+DAILY_CLIP_CATALOG = tuple(_catalog_clip(row) for row in _DAILY_CLIP_ROWS)
+
+
+def daily_due_at_utc(run_date: date, time_ist: str) -> str:
+    """UTC timestamp on `run_date` for an IST clock time spaced across that day."""
+    hour_text, minute_text = time_ist.split(":")
+    ist_minutes = int(hour_text) * 60 + int(minute_text)
+    if ist_minutes < 8 * 60:
+        ist_minutes += 24 * 60
+    utc_minutes = ist_minutes - _IST_OFFSET_MINUTES
+    if utc_minutes < 0 or utc_minutes >= 24 * 60:
+        raise CampaignPlatformError(
+            f"{time_ist} IST does not fall on {run_date.isoformat()} UTC"
+        )
+    hour_utc, minute_utc = divmod(utc_minutes, 60)
+    return f"{run_date.isoformat()}T{hour_utc:02d}:{minute_utc:02d}:00Z"
+
+
+def daily_channel_id(campaigns_data: dict, platform: str) -> str:
+    channel_key = {"x": "x", "youtube_shorts": "youtube", "instagram_reels": "instagram"}[platform]
+    channel = (campaigns_data.get("channels") or {}).get(channel_key) or {}
+    found = str(channel.get("buffer_channel_id") or "")
+    if re.fullmatch(r"[a-f\d]{24}", found):
+        return found
+    return DAILY_CHANNEL_IDS[platform]
+
+
+def daily_feed_is_current(feed: dict, today: date) -> bool:
+    items = feed.get("items")
+    return (
+        feed.get("date") == today.isoformat()
+        and isinstance(items, list)
+        and len(items) == DAILY_30_PER_PLATFORM * len(SUPPORTED_PLATFORMS)
+    )
+
+
+def _seen_lists(seen: dict | None) -> tuple[list[str], dict[str, str]]:
+    prior = seen or {}
+    ids = [str(item) for item in prior.get("ids") or [] if str(item)]
+    uses = {
+        str(clip_id): str(used_on)
+        for clip_id, used_on in (prior.get("uses") or {}).items()
+        if str(clip_id)
+    }
+    return ids, uses
+
+
+def _rank_unseen(
+    catalog: tuple[dict, ...],
+    predicate,
+    seen_ids: set[str],
+    used_today: set[str],
+    uses: dict[str, str],
+) -> list[dict]:
+    order = {clip["id"]: index for index, clip in enumerate(catalog)}
+    fresh: list[dict] = []
+    recycled: list[dict] = []
+    for clip in catalog:
+        clip_id = str(clip["id"])
+        if clip_id in used_today or not predicate(clip):
+            continue
+        if clip_id in seen_ids:
+            recycled.append(clip)
+        else:
+            fresh.append(clip)
+    recycled.sort(key=lambda clip: (uses.get(str(clip["id"]), ""), order[str(clip["id"])]))
+    return fresh + recycled
+
+
+def _take_clips(
+    catalog: tuple[dict, ...],
+    predicate,
+    count: int,
+    seen_ids: set[str],
+    used_today: set[str],
+    uses: dict[str, str],
+) -> list[dict]:
+    ranked = _rank_unseen(catalog, predicate, seen_ids, used_today, uses)
+    if len(ranked) < count:
+        raise CampaignPlatformError(
+            f"Need {count} unseen-or-recycled clips, found {len(ranked)}"
+        )
+    chosen = ranked[:count]
+    used_today.update(str(clip["id"]) for clip in chosen)
+    return chosen
+
+
+def _take_preferring_global(
+    catalog: tuple[dict, ...],
+    count: int,
+    seen_ids: set[str],
+    used_today: set[str],
+    uses: dict[str, str],
+) -> list[dict]:
+    """Fill from non-Indian clips first so Denzen keeps the Indian inventory."""
+    ranked = _rank_unseen(
+        catalog,
+        lambda clip: clip["category"] not in INDIAN_CATEGORIES,
+        seen_ids,
+        used_today,
+        uses,
+    )
+    chosen = list(ranked[:count])
+    if len(chosen) < count:
+        held = set(used_today)
+        held.update(str(clip["id"]) for clip in chosen)
+        chosen.extend(
+            _rank_unseen(catalog, lambda _clip: True, seen_ids, held, uses)[: count - len(chosen)]
+        )
+    if len(chosen) < count:
+        raise CampaignPlatformError(
+            f"Need {count} clips for a non-Indian slot, found {len(chosen)}"
+        )
+    used_today.update(str(clip["id"]) for clip in chosen)
+    return chosen
+
+
+def _campaign_for_daily_slot(campaigns_data: dict, campaign_id: str, platform: str) -> dict:
+    eligible = campaigns_for_platform(campaigns_data, platform)
+    chosen = next((campaign for campaign in eligible if campaign.get("id") == campaign_id), None)
+    if chosen is None:
+        passed = [str(campaign.get("id")) for campaign in eligible]
+        raise CampaignPlatformError(
+            f"{campaign_id} is not an active Pool-Guard campaign for {platform} "
+            f"(eligible: {passed or 'none'})"
+        )
+    ok, reason = check_campaign_pool_guard(chosen, campaigns_data.get("pool_guard_rules") or {})
+    if not ok:
+        raise CampaignPlatformError(f"{campaign_id} failed Pool Guard: {reason}")
+    return bind_clip_to_campaign(chosen, platform)
+
+
+def _daily_item(
+    *,
+    slot: int,
+    platform: str,
+    clip: dict,
+    campaign: dict,
+    campaigns_data: dict,
+    run_date: date,
+    links_blocked: bool,
+) -> dict:
+    hook = str(clip["hook"])
+    time_ist = DAILY_30_TIMES_IST[slot - 1]
+    caption = build_platform_caption(hook, campaign, platform, links_blocked=links_blocked)
+    if contains_loan_spam(caption) or contains_loan_spam(hook):
+        raise CampaignPlatformError(f"{clip['id']} caption contains loan text")
+    return {
+        "slot": slot,
+        "platform": platform,
+        "channel_id": daily_channel_id(campaigns_data, platform),
+        "scheduled_time_ist": time_ist,
+        "due_at_utc": daily_due_at_utc(run_date, time_ist),
+        "campaign_id": campaign.get("id"),
+        "watermark_text": PLATFORM_WATERMARK[platform],
+        "watermark_position": dict(DAILY_WATERMARK_POSITION),
+        "video_url": clip["video_url"],
+        "title": hook,
+        "caption": caption,
+        "clip_id": clip["id"],
+        "category": clip["category"],
+        "buffer_status": "pending",
+    }
+
+
+def build_daily_30(
+    campaigns_data: dict,
+    seen: dict | None = None,
+    *,
+    today: date | None = None,
+    catalog: tuple[dict, ...] | None = None,
+) -> tuple[dict, dict]:
+    """Pick 30 unseen clips and the seen-id log that records them.
+
+    YouTube Shorts takes 8 Indian actor/cinema clips on Dishpilot and 2 global
+    clips on Mr. Pa. X takes 10 Dishpilot clips. Instagram rotates Rascals,
+    Dishpilot, and Mr. Pa. A clip already in `seen` is reused only after every
+    unseen clip of that kind is gone, and never twice on the same day.
+    """
+    run_day = today or datetime.now(timezone.utc).date()
+    source = catalog if catalog is not None else DAILY_CLIP_CATALOG
+    if len(DAILY_30_TIMES_IST) != DAILY_30_PER_PLATFORM:
+        raise CampaignPlatformError("Daily times must cover 10 slots")
+    seen_ids_list, uses = _seen_lists(seen)
+    seen_ids = set(seen_ids_list)
+    used_today: set[str] = set()
+    indian = _take_clips(
+        source,
+        lambda clip: clip["category"] in INDIAN_CATEGORIES,
+        DAILY_30_INDIAN_SLOTS,
+        seen_ids,
+        used_today,
+        uses,
+    )
+    youtube_global = _take_preferring_global(
+        source,
+        DAILY_30_PER_PLATFORM - DAILY_30_INDIAN_SLOTS,
+        seen_ids,
+        used_today,
+        uses,
+    )
+    x_clips = _take_preferring_global(
+        source,
+        DAILY_30_PER_PLATFORM,
+        seen_ids,
+        used_today,
+        uses,
+    )
+    instagram_clips = _take_preferring_global(
+        source,
+        DAILY_30_PER_PLATFORM,
+        seen_ids,
+        used_today,
+        uses,
+    )
+    links_blocked = x_links_blocked(campaigns_data)
+    items: list[dict] = []
+    for slot, clip in enumerate(x_clips, start=1):
+        campaign = _campaign_for_daily_slot(campaigns_data, DISHPILOT_ID, "x")
+        items.append(
+            _daily_item(
+                slot=slot,
+                platform="x",
+                clip=clip,
+                campaign=campaign,
+                campaigns_data=campaigns_data,
+                run_date=run_day,
+                links_blocked=links_blocked,
+            )
+        )
+    youtube_clips = indian + youtube_global
+    for slot, clip in enumerate(youtube_clips, start=1):
+        campaign_id = DISHPILOT_ID if clip["category"] in INDIAN_CATEGORIES else MR_PA_ID
+        campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "youtube_shorts")
+        items.append(
+            _daily_item(
+                slot=slot,
+                platform="youtube_shorts",
+                clip=clip,
+                campaign=campaign,
+                campaigns_data=campaigns_data,
+                run_date=run_day,
+                links_blocked=False,
+            )
+        )
+    for slot, clip in enumerate(instagram_clips, start=1):
+        campaign_id = INSTAGRAM_DAILY_ROTATION[(slot - 1) % len(INSTAGRAM_DAILY_ROTATION)]
+        campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "instagram_reels")
+        items.append(
+            _daily_item(
+                slot=slot,
+                platform="instagram_reels",
+                clip=clip,
+                campaign=campaign,
+                campaigns_data=campaigns_data,
+                run_date=run_day,
+                links_blocked=False,
+            )
+        )
+    if len(items) != DAILY_30_PER_PLATFORM * len(SUPPORTED_PLATFORMS):
+        raise CampaignPlatformError(f"Expected 30 daily items, built {len(items)}")
+    clip_ids = [str(item["clip_id"]) for item in items]
+    if len(set(clip_ids)) != len(clip_ids):
+        raise CampaignPlatformError("Daily feed reused a clip inside the same day")
+    blob = json.dumps(items)
+    if contains_loan_spam(blob) or "FastLoanPilot" in blob:
+        raise CampaignPlatformError("Daily feed contains FastLoanPilot or loan text")
+    updated_ids = list(seen_ids_list)
+    updated_uses = dict(uses)
+    day_text = run_day.isoformat()
+    for clip_id in clip_ids:
+        if clip_id not in updated_uses:
+            updated_ids.append(clip_id)
+        updated_uses[clip_id] = day_text
+    feed = {
+        "generated_at": f"{day_text}T00:15:00Z",
+        "date": day_text,
+        "count": len(items),
+        "items": items,
+    }
+    seen_state = {"ids": updated_ids, "uses": updated_uses}
+    return feed, seen_state
+
+
+def buffer_create_post_body(item: dict) -> dict:
+    """Buffer createPost input for one daily slot. The token is never included."""
+    due = str(item["due_at_utc"])
+    if due.endswith("Z"):
+        due = due[:-1] + "+00:00"
+    body: dict = {
+        "channelId": item["channel_id"],
+        "schedulingType": "automatic",
+        "mode": "customScheduled",
+        "dueAt": due,
+        "text": item["caption"],
+        "assets": [{"video": {"url": item["video_url"]}}],
+    }
+    platform = item["platform"]
+    if platform == "youtube_shorts":
+        body["metadata"] = {
+            "youtube": {
+                "title": str(item["title"])[:100],
+                "categoryId": "24",
+                "privacy": "public",
+            }
+        }
+    elif platform == "instagram_reels":
+        body["metadata"] = {
+            "instagram": {
+                "type": "reel",
+                "shouldShareToFeed": True,
+            }
+        }
+    return body
 
 
 def main(argv: list[str]) -> int:
