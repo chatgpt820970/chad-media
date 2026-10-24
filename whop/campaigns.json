@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-24T12:48:00Z",
+  "updated_at": "2026-10-24T13:12:00Z",
   "whop_user": "@bi60",
   "whop_user_id": "user_JUKQo7VMHc6IS",
   "supported_viral_categories": [
@@ -13,9 +13,9 @@
   ],
   "pool_guard_rules": {
     "min_remaining_budget_usd": 500.0,
-    "max_paid_out_fraction": 0.80,
+    "max_paid_out_fraction": 0.8,
     "min_spots_remaining": 5,
-    "max_denial_rate": 0.50,
+    "max_denial_rate": 0.5,
     "skip_paused_or_closed": true
   },
   "channels": {
@@ -23,14 +23,16 @@
       "handle": "@chadriyo",
       "whop_social_account_id": "sacc_le6QSJyP9Gfom",
       "buffer_channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "aspect": "9:16"
+      "aspect": "9:16",
+      "daily_target": 10
     },
     "youtube": {
       "handle": "Denzen",
       "username": "@denzen0",
       "whop_social_account_id": "sacc_qXC3MtNcVdiar",
       "buffer_channel_id": "6ac4da806a5c39ccb62eab64",
-      "aspect": "9:16"
+      "aspect": "9:16",
+      "daily_target": 10
     }
   },
   "active_campaigns": [
@@ -54,8 +56,20 @@
       "unlimited_budget": true,
       "payout": "$2.00 per 1,000 views (4.86★, 3,105 members — Joined & Active)",
       "cpm_usd": 2.0,
-      "accepted_platforms": ["youtube_shorts", "tiktok", "instagram_reels"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "youtube_shorts",
+        "tiktok",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "logo_path": "whop/logos/fastloanpilot.png",
       "banner_video_path": "whop/logos/fastloan_banner.mp4",
       "watermark_text": "FASTLOANPILOT.COM",
@@ -87,8 +101,17 @@
       "unlimited_budget": false,
       "payout": "$10 per 5-clip submission ($970 / $1,000 remaining — 97% pool left, 97 spots open, India allowed)",
       "cpm_usd": 10.0,
-      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
-      "allowed_lanes": ["funny", "celebrity", "podcast"],
+      "accepted_platforms": [
+        "x",
+        "youtube_shorts",
+        "tiktok",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "celebrity",
+        "podcast"
+      ],
       "watermark_text": "WHOP AI • ENTERTAINMENT",
       "cta_text": "Full clip on Whop AI",
       "requirements": "Cut 30-60s funny standalone Shane Gillis moments (stand-up, podcasts, interviews) in crisp HD MP4."
@@ -108,8 +131,21 @@
       "unlimited_budget": true,
       "payout": "$0.50 - $3.00+ per 1,000 views across rotating infinite-budget campaigns (4.91★, 464 reviews)",
       "cpm_usd": 2.5,
-      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "x",
+        "youtube_shorts",
+        "tiktok",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "watermark_text": "",
       "cta_text": "",
       "requirements": "Join free on Whop to access active music/concert, anime/edit, movie, AI, and logo campaigns on X and YouTube."
@@ -129,8 +165,21 @@
       "unlimited_budget": true,
       "payout": "$2.00 per 1,000 views (Explicitly marked UNLIMITED BUDGET, 5.0★)",
       "cpm_usd": 2.0,
-      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "x",
+        "youtube_shorts",
+        "tiktok",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "watermark_text": "",
       "cta_text": "",
       "requirements": "Clip & post high-retention viral videos across Shorts and X."
@@ -150,8 +199,18 @@
       "unlimited_budget": true,
       "payout": "$2.00 per 1,000 views (Min $10, Max $250/video — Always Ongoing)",
       "cpm_usd": 2.0,
-      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
-      "allowed_lanes": ["ai", "funny", "celebrity", "movie"],
+      "accepted_platforms": [
+        "x",
+        "youtube_shorts",
+        "tiktok",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "ai",
+        "funny",
+        "celebrity",
+        "movie"
+      ],
       "watermark_text": "FINSTA APP",
       "cta_text": "Download Finsta on App Store",
       "requirements": "AI-generated and real content both accepted; include CTA to download Finsta from App Store."
@@ -171,8 +230,20 @@
       "unlimited_budget": true,
       "payout": "$2.00 per 1,000 views (981 members)",
       "cpm_usd": 2.0,
-      "accepted_platforms": ["youtube_shorts", "tiktok", "instagram_reels"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "youtube_shorts",
+        "tiktok",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "logo_url": "https://assets-2-prod.whop.com/public/uploads/user_20188843/image/bots/2026-03-27/692a0ec9-de63-4b58-9497-8133af5d0fd2.png",
       "watermark_text": "GAMBANA",
       "cta_text": "Gambana",
@@ -195,5 +266,6 @@
       "title": "MAC ENERGY Clipping Campaign",
       "reason": "SKIPPED BY GEO/RATING GUARD: Strict 60%+ USA audience required (auto-rejects Indian audience) and low 2.5★ review rating."
     }
-  ]
+  ],
+  "daily_target_per_channel": 10
 }

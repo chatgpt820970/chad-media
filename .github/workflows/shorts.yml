@@ -8,7 +8,7 @@ on:
     # Backup for cron-job.org, which dispatches this workflow at 06:30 and
     # 14:30 IST. These run about 20 minutes later (06:50 and 14:50 IST) and
     # once more at 22:50 IST, and only add clips when that slot is still short.
-    - cron: "20 1,9,17 * * *"
+    - cron: "20 1,7,13,19 * * *"
   # Code changes on main also run it. State and feed commits are not in this
   # list, so the queue update at the end of a run does not start another one.
   push:

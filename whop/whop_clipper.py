@@ -411,6 +411,196 @@ def build_whop_ready_feed() -> dict:
                 "yt_denzen": "6ac4da806a5c39ccb62eab64",
             },
         },
+        {
+            "id": "flp-anime-sakuga",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "Show me a better anime fight scene than this 4K sakuga masterpiece 🔥⚔️ #shorts #anime",
+            "hook_text": "SHOW ME A BETTER ANIME FIGHT SCENE",
+            "caption_x": (
+                "Show me a fight scene better than this in the history of anime 🔥⚔️ The animation budget went completely off the charts!\n\n"
+                "Special deals: / Approval in 10 minutes Funding within 24 hours / Up to $5,000 / Just visit Fastloanpilot.com\n\n"
+                "#anime #sakuga #viral #shorts"
+            ),
+            "caption_youtube": (
+                "Show me a fight scene better than this in the history of anime 🔥⚔️ The animation budget went completely off the charts!\n\n"
+                "Special deals:\n"
+                "Approval in 10 minutes Funding within 24 hours\n"
+                "Up to $5,000\n"
+                "Just visit Fastloanpilot.com\n\n"
+                "#shorts #anime #sakuga #viral #animation"
+            ),
+            "lane": "anime",
+            "duration": 54.1,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-anime-sakuga.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
+        {
+            "id": "flp-diljit-worldtour",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "When Diljit Dosanjh walks out and the entire stadium loses its mind 🔥🎤 #shorts #concert",
+            "hook_text": "WAIT FOR THE STADIUM DROP AT 0.14",
+            "caption_x": (
+                "Wait for the crowd roar at 0:14 — Diljit Dosanjh World Tour energy is unmatched 🔥🎤🏟️\n\n"
+                "Interest Rate just 4.95% / Up to $5,000 / Any credit score is accepted / Monthly Payment $80.54 / Not affect your credit history / Visit Fastloanpilot.com\n\n"
+                "#diljitdosanjh #concert #music #viral #shorts"
+            ),
+            "caption_youtube": (
+                "Wait for the crowd roar at 0:14 — Diljit Dosanjh World Tour energy is unmatched 🔥🎤🏟️\n\n"
+                "Interest Rate just 4.95%\n"
+                "Up to $5,000\n"
+                "Any credit score is accepted\n"
+                "Monthly Payment $80.54\n"
+                "Not affect your credit history\n"
+                "Visit Fastloanpilot.com\n\n"
+                "#shorts #diljitdosanjh #concert #music #viral"
+            ),
+            "lane": "concert",
+            "duration": 53.1,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-diljit-worldtour.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
+        {
+            "id": "flp-khaby-lifehack",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "Khaby Lame tested the unbreakable glasses with a real hammer 😭👓🔨 #shorts #funny",
+            "hook_text": "HE TESTED THE UNBREAKABLE GLASSES",
+            "caption_x": (
+                "Bro really brought out a hammer to test the unbreakable glasses 😭👓🔨 His facial expression says it all!\n\n"
+                "Need money today? / Apply for a loan at Fastloanpilot.com\n\n"
+                "#khabylame #funny #comedy #viral #shorts"
+            ),
+            "caption_youtube": (
+                "Bro really brought out a hammer to test the unbreakable glasses 😭👓🔨 His facial expression says it all!\n\n"
+                "Need money today? / Apply for a loan at Fastloanpilot.com\n\n"
+                "#shorts #khabylame #funny #comedy #viral"
+            ),
+            "lane": "funny",
+            "duration": 37.0,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-khaby-lifehack.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
+        {
+            "id": "flp-honeysingh-vibe",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "When Yo Yo Honey Singh drops this classic beat live on stage 🔥🎶 #shorts #music",
+            "hook_text": "WHEN THIS BEAT DROPS EVERYONE LOCKS IN",
+            "caption_x": (
+                "Pure nostalgia when Yo Yo Honey Singh drops this track — nobody can stay still 🔥🎶🕺\n\n"
+                "If you need supercar / money / house / Try Fastloanpilot.com\n\n"
+                "#yoyohoneysingh #music #celebrity #viral #shorts"
+            ),
+            "caption_youtube": (
+                "Pure nostalgia when Yo Yo Honey Singh drops this track — nobody can stay still 🔥🎶🕺\n\n"
+                "If you need supercar / money / house / Try Fastloanpilot.com\n\n"
+                "#shorts #yoyohoneysingh #music #celebrity #viral"
+            ),
+            "lane": "celebrity",
+            "duration": 60.1,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-honeysingh-vibe.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
+        {
+            "id": "flp-tea-science",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "99% of people ruin their tea by making this 1 mistake 🍵🧠 #shorts #knowledge",
+            "hook_text": "99 PERCENT OF PEOPLE RUIN THEIR TEA",
+            "caption_x": (
+                "99% of people over-steep their tea without realizing what it does to the flavor chemistry 🍵🧠 Watch a 50-year master explain the exact second to stop!\n\n"
+                "Need cash to pay rent/bills/groceries / Check this out Fastloanpilot.com\n\n"
+                "#knowledge #lifehacks #foodscience #viral #shorts"
+            ),
+            "caption_youtube": (
+                "99% of people over-steep their tea without realizing what it does to the flavor chemistry 🍵🧠 Watch a 50-year master explain the exact second to stop!\n\n"
+                "Need cash to pay rent/bills/groceries / Check this out Fastloanpilot.com\n\n"
+                "#shorts #knowledge #lifehacks #foodscience #viral"
+            ),
+            "lane": "knowledge",
+            "duration": 50.0,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-tea-science.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
+        {
+            "id": "flp-nyc-doorman",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "This dog refuses to walk past a building he doesn't even live in 🥺🐶 #shorts #wholesome",
+            "hook_text": "THIS DOG REFUSES TO WALK PAST HIM",
+            "caption_x": (
+                "Only in New York does a dog have a best friend doorman at a building he doesn't even live in 🥺🐶❤️ Wait for the tail wag!\n\n"
+                "In a tight spot? / Get up to a $5,000 loan today / All credit scores / No banks involved / No paperwork / Check out Fastloanpilot.com\n\n"
+                "#wholesome #dogs #nyc #viral #shorts"
+            ),
+            "caption_youtube": (
+                "Only in New York does a dog have a best friend doorman at a building he doesn't even live in 🥺🐶❤️ Wait for the tail wag!\n\n"
+                "In a tight spot? / Get up to a $5,000 loan today / All credit scores / No banks involved / No paperwork / Check out Fastloanpilot.com\n\n"
+                "#shorts #wholesome #dogs #nyc #viral"
+            ),
+            "lane": "movie",
+            "duration": 34.8,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-nyc-doorman.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
+        {
+            "id": "flp-president-speech",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "If bro actually ran for President with this speech he'd win 100% of the vote 😂🎤 #shorts #funny",
+            "hook_text": "IF BRO RAN FOR PRESIDENT HED WIN",
+            "caption_x": (
+                "If bro ran for President with this platform he'd win in a landslide 😂🎤 Wait for his 3rd promise!\n\n"
+                "Up to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap\n\n"
+                "#comedy #funny #viral #shorts"
+            ),
+            "caption_youtube": (
+                "If bro ran for President with this platform he'd win in a landslide 😂🎤 Wait for his 3rd promise!\n\n"
+                "Up to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap\n\n"
+                "#shorts #comedy #funny #viral"
+            ),
+            "lane": "funny",
+            "duration": 66.3,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-president-speech.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
     ]
 
     feed_data = {

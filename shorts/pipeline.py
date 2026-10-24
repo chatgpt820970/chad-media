@@ -42,10 +42,10 @@ MAX_SECONDS = 179.0
 KEEP_DAYS = 4
 # Two prep runs add about 5 clips each. Keep two days of those, plus clips
 # still waiting for a later posting slot.
-MAX_QUEUE = 24
+MAX_QUEUE = 32
 PER_RUN_TARGET = 5
 PER_RUN_MIN = 4
-DAILY_TARGET = 7
+DAILY_TARGET = 10
 RELEASE_TAG = "shorts-media"
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
