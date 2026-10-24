@@ -1,6 +1,6 @@
 {
   "generated_at": "2026-10-24T16:00:00Z",
-  "description": "10 YouTube Shorts (Denzen / @denzen0) and 10 X (@chadriyo) slots. X slots 3-10 are Dishpilot clips. The baked fastloanpilot bottom strip is cropped away, and the only mark is a small semi-transparent Dishpilot watermark at the bottom.",
+  "description": "10 YouTube Shorts (Denzen / @denzen0) and 10 X (@chadriyo) slots. X slots 3-10 use the user-selected x-user clips with a small semi-transparent Dishpilot watermark. The x-dishpilot renders were removed so the repository stays under the jsDelivr package limit.",
   "x_slots": [
     {
       "slot": 1,
@@ -55,9 +55,8 @@
         "#Dishpilot",
         "#viral"
       ],
-      "mp4": "whop/v/x-dishpilot-3.mp4",
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-dishpilot-3.mp4",
-      "source_mp4": "whop/v/flp-anime-sakuga.mp4",
+      "mp4": "whop/v/x-user-1.mp4",
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-user-1.mp4",
       "duration_sec": 30,
       "width": 1080,
       "height": 1920,
@@ -90,9 +89,8 @@
         "#Dishpilot",
         "#viral"
       ],
-      "mp4": "whop/v/x-dishpilot-4.mp4",
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-dishpilot-4.mp4",
-      "source_mp4": "whop/v/flp-diljit-worldtour.mp4",
+      "mp4": "whop/v/x-user-2.mp4",
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-user-2.mp4",
       "duration_sec": 30,
       "width": 1080,
       "height": 1920,
@@ -125,9 +123,8 @@
         "#Dishpilot",
         "#viral"
       ],
-      "mp4": "whop/v/x-dishpilot-5.mp4",
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-dishpilot-5.mp4",
-      "source_mp4": "whop/v/flp-khaby-lifehack.mp4",
+      "mp4": "whop/v/x-user-3.mp4",
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-user-3.mp4",
       "duration_sec": 30,
       "width": 1080,
       "height": 1920,
@@ -160,9 +157,8 @@
         "#Dishpilot",
         "#viral"
       ],
-      "mp4": "whop/v/x-dishpilot-6.mp4",
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-dishpilot-6.mp4",
-      "source_mp4": "whop/v/flp-concert-vibes.mp4",
+      "mp4": "whop/v/x-user-4.mp4",
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-user-4.mp4",
       "duration_sec": 30,
       "width": 1080,
       "height": 1920,
@@ -195,9 +191,8 @@
         "#Dishpilot",
         "#viral"
       ],
-      "mp4": "whop/v/x-dishpilot-7.mp4",
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-dishpilot-7.mp4",
-      "source_mp4": "whop/v/flp-honeysingh-vibe.mp4",
+      "mp4": "whop/v/x-user-5.mp4",
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-user-5.mp4",
       "duration_sec": 30,
       "width": 1080,
       "height": 1920,
@@ -230,9 +225,8 @@
         "#Dishpilot",
         "#viral"
       ],
-      "mp4": "whop/v/x-dishpilot-8.mp4",
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-dishpilot-8.mp4",
-      "source_mp4": "whop/v/flp-tea-science.mp4",
+      "mp4": "whop/v/x-user-6.mp4",
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-user-6.mp4",
       "duration_sec": 30,
       "width": 1080,
       "height": 1920,
@@ -265,9 +259,8 @@
         "#Dishpilot",
         "#viral"
       ],
-      "mp4": "whop/v/x-dishpilot-9.mp4",
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-dishpilot-9.mp4",
-      "source_mp4": "whop/v/flp-nyc-doorman.mp4",
+      "mp4": "whop/v/x-user-7.mp4",
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-user-7.mp4",
       "duration_sec": 30,
       "width": 1080,
       "height": 1920,
@@ -300,9 +293,8 @@
         "#Dishpilot",
         "#viral"
       ],
-      "mp4": "whop/v/x-dishpilot-10.mp4",
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-dishpilot-10.mp4",
-      "source_mp4": "whop/v/flp-president-speech.mp4",
+      "mp4": "whop/v/x-user-8.mp4",
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-user-8.mp4",
       "duration_sec": 30,
       "width": 1080,
       "height": 1920,
