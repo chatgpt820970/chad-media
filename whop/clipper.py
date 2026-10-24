@@ -50,9 +50,18 @@ CLOSED_CAMPAIGN_IDS = ("fast-loan-pilot", "nova-x-clipping")
 # Full HD encode. No bitrate cap: CRF 17 with the fast preset.
 ENCODE_PRESET = "fast"
 ENCODE_CRF = "17"
+# Ingested X/TikTok sources are the sharpest the platforms serve, so they get a lower CRF.
+INGEST_CRF = "16"
+INGEST_SHARPEN = "unsharp=3:3:0.6:3:3:0.0"
+YTDLP_FORMAT = "bestvideo+bestaudio/best"
+YTDLP_SORT = "res,fps,br"
 DAILY_SLOT_COUNT = 10
 OPEN_STATUSES = ("open", "active", "live")
 INDIAN_CATEGORIES = ("indian_actor_reels", "indian_movie_scenes")
+# Daily catalog and ingest priority, highest first: 4K anime edits, glamorous girls
+# and couple scenes, then top 4K movie scenes. Everything else keeps catalog order.
+PRIORITY_CATEGORIES = ("anime_4k", "glamorous_girls", "celebrity", "movie_4k")
+INGEST_CATEGORIES = (*PRIORITY_CATEGORIES, "funny", "knowledge", "concert", "other")
 X_VIRAL_CATEGORIES = ("funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert")
 # Locked @chadriyo mix. Every category appears at least once across the 10 slots.
 X_SLOT_CATEGORIES = (
@@ -1474,18 +1483,18 @@ _DAILY_CLIP_ROWS = (
     ("x-virat-mumbai", "indian_actor_reels", "Virat walks into Mumbai", "https://video.twimg.com/amplify_video/2112746643015778304/vid/avc1/480x852/G9NkYIKWNf3avnSU.mp4"),
     ("x-allu", "indian_actor_reels", "Allu takes the stage", "https://video.twimg.com/amplify_video/2108890651677151232/vid/avc1/480x852/lKMyE_VzG7YtqVmU.mp4"),
     ("x-hardik", "indian_actor_reels", "Hardik's celebration takes over", "https://video.twimg.com/amplify_video/2110911489867669504/vid/avc1/480x852/MeUuwscm1dCEjM4Y.mp4"),
-    ("x-user-2", "celebrity", "The chemistry in this scene with Agustin Bernasconi and Wanda Nara is unreal", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-2.mp4"),
-    ("x-user-5", "celebrity", "Kim Ji-won owning the stage with pure elegance and confidence", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-5.mp4"),
-    ("x-user-7", "celebrity", "LISA Tarantino Official Music Video visuals are on another level", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-7.mp4"),
-    ("x-user-1", "anime", "This animation is insane", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-1.mp4"),
+    ("x-user-2", "glamorous_girls", "The chemistry in this scene with Agustin Bernasconi and Wanda Nara is unreal", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-2.mp4"),
+    ("x-user-5", "glamorous_girls", "Kim Ji-won owning the stage with pure elegance and confidence", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-5.mp4"),
+    ("x-user-7", "glamorous_girls", "LISA Tarantino Official Music Video visuals are on another level", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-7.mp4"),
+    ("x-user-1", "anime_4k", "This animation is insane", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-1.mp4"),
     ("x-user-3", "celebrity", "When the beat drops and the whole room loses it", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-3.mp4"),
-    ("x-user-4", "movie", "Still one of the funniest scenes in Hotel Transylvania", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-4.mp4"),
+    ("x-user-4", "movie_4k", "Still one of the funniest scenes in Hotel Transylvania", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-4.mp4"),
     ("x-user-6", "celebrity", "Shenzhen at night looks straight out of 2050", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-6.mp4"),
     ("x-user-8", "celebrity", "Every fandom when their favorite character gets the spotlight", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-8.mp4"),
     ("x-user-9", "celebrity", "Inside Japan luxury seaside inn with its own giant live pool", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-9.mp4"),
     ("flp-concert-vibes", "concert", "Wait for the note", _pages_url("flp-concert-vibes.mp4")),
     ("x-clip-3", "concert", "Wait for the note", _pages_url("x-clip-3.mp4")),
-    ("flp-anime-sakuga", "anime", "This animation is insane", _pages_url("flp-anime-sakuga.mp4")),
+    ("flp-anime-sakuga", "anime_4k", "This animation is insane", _pages_url("flp-anime-sakuga.mp4")),
     ("flp-nyc-doorman", "funny", "NYC doorman plot twist", _pages_url("flp-nyc-doorman.mp4")),
     ("flp-khaby-lifehack", "funny", "He did it the simple way", _pages_url("flp-khaby-lifehack.mp4")),
     ("flp-speedcube-lockin", "funny", "Watch his hands", _pages_url("flp-speedcube-lockin.mp4")),
@@ -1506,7 +1515,7 @@ _DAILY_CLIP_ROWS = (
     ("tt-7694335322922044703", "funny", "Was the ball out", _shorts_url("tt-7694335322922044703")),
     ("tt-7564513815384116498", "celebrity", "This one came from the heart", _shorts_url("tt-7564513815384116498")),
     ("tt-7548779492546825473", "celebrity", "For everyone who has loved", _shorts_url("tt-7548779492546825473")),
-    ("x-2105358655927517442", "anime", "Show me a better fight scene", _shorts_url("x-2105358655927517442")),
+    ("x-2105358655927517442", "anime_4k", "Show me a better fight scene", _shorts_url("x-2105358655927517442")),
     ("tt-7408963192170335534", "knowledge", "The kitchen reveal", _shorts_url("tt-7408963192170335534")),
 )
 
@@ -1576,6 +1585,13 @@ def _seen_lists(seen: dict | None) -> tuple[list[str], dict[str, str]]:
     return ids, uses
 
 
+def priority_rank(category: str) -> int:
+    """0 for the top priority category; len(PRIORITY_CATEGORIES) for everything else."""
+    if category in PRIORITY_CATEGORIES:
+        return PRIORITY_CATEGORIES.index(category)
+    return len(PRIORITY_CATEGORIES)
+
+
 def _rank_unseen(
     catalog: tuple[dict, ...],
     predicate,
@@ -1583,6 +1599,7 @@ def _rank_unseen(
     used_today: set[str],
     uses: dict[str, str],
 ) -> list[dict]:
+    """Fresh clips first, then recycled by oldest use; priority categories lead each group."""
     order = {clip["id"]: index for index, clip in enumerate(catalog)}
     fresh: list[dict] = []
     recycled: list[dict] = []
@@ -1594,7 +1611,14 @@ def _rank_unseen(
             recycled.append(clip)
         else:
             fresh.append(clip)
-    recycled.sort(key=lambda clip: (uses.get(str(clip["id"]), ""), order[str(clip["id"])]))
+    fresh.sort(key=lambda clip: (priority_rank(str(clip["category"])), order[str(clip["id"])]))
+    recycled.sort(
+        key=lambda clip: (
+            priority_rank(str(clip["category"])),
+            uses.get(str(clip["id"]), ""),
+            order[str(clip["id"])],
+        )
+    )
     return fresh + recycled
 
 
@@ -1646,6 +1670,19 @@ def _take_preferring_global(
     return chosen
 
 
+def _deal_preferring_global(
+    catalog: tuple[dict, ...],
+    lanes: int,
+    count: int,
+    seen_ids: set[str],
+    used_today: set[str],
+    uses: dict[str, str],
+) -> list[list[dict]]:
+    """Deal ranked clips round-robin so each lane gets a share of the priority categories."""
+    pool = _take_preferring_global(catalog, lanes * count, seen_ids, used_today, uses)
+    return [pool[lane::lanes] for lane in range(lanes)]
+
+
 def _campaign_for_daily_slot(campaigns_data: dict, campaign_id: str, platform: str) -> dict:
     eligible = campaigns_for_platform(campaigns_data, platform)
     chosen = next((campaign for campaign in eligible if campaign.get("id") == campaign_id), None)
@@ -1690,6 +1727,7 @@ def _daily_item(
         "caption": caption,
         "clip_id": clip["id"],
         "category": clip["category"],
+        "priority": priority_rank(str(clip["category"])) < len(PRIORITY_CATEGORIES),
         "buffer_status": "pending",
     }
 
@@ -1704,7 +1742,9 @@ def build_daily_30(
     """Pick 10 unseen clips for each of X, YouTube, Instagram, and TikTok.
 
     YouTube Shorts takes 8 Indian actor/cinema clips on Dishpilot and 2 global
-    clips on Mr. Pa. X takes 10 Dishpilot clips. Instagram rotates Rascals,
+    clips on Mr. Pa. X, Instagram, and TikTok pick first from the priority
+    categories (4K anime, glamorous girls and couples, 4K movie scenes), then
+    YouTube's two global slots take what is left. X takes 10 Dishpilot clips. Instagram rotates Rascals,
     Dishpilot, and Mr. Pa. TikTok alternates Dishpilot and Rascals. A clip
     already in `seen` is reused only after every unseen clip of that kind is
     gone, and never twice on the same day.
@@ -1724,30 +1764,17 @@ def build_daily_30(
         used_today,
         uses,
     )
+    x_clips, instagram_clips, tiktok_clips = _deal_preferring_global(
+        source,
+        3,
+        DAILY_30_PER_PLATFORM,
+        seen_ids,
+        used_today,
+        uses,
+    )
     youtube_global = _take_preferring_global(
         source,
         DAILY_30_PER_PLATFORM - DAILY_30_INDIAN_SLOTS,
-        seen_ids,
-        used_today,
-        uses,
-    )
-    x_clips = _take_preferring_global(
-        source,
-        DAILY_30_PER_PLATFORM,
-        seen_ids,
-        used_today,
-        uses,
-    )
-    instagram_clips = _take_preferring_global(
-        source,
-        DAILY_30_PER_PLATFORM,
-        seen_ids,
-        used_today,
-        uses,
-    )
-    tiktok_clips = _take_preferring_global(
-        source,
-        DAILY_30_PER_PLATFORM,
         seen_ids,
         used_today,
         uses,
@@ -1836,19 +1863,34 @@ def build_daily_30(
     return feed, seen_state
 
 
-def buffer_create_post_body(item: dict) -> dict:
-    """Buffer createPost input for one daily slot. The token is never included."""
+def _is_future(due_iso: str, now: datetime | None) -> bool:
+    try:
+        due = datetime.fromisoformat(due_iso)
+    except ValueError:
+        return False
+    return due > (now or datetime.now(timezone.utc))
+
+
+def buffer_create_post_body(item: dict, now: datetime | None = None) -> dict:
+    """Buffer createPost input for one daily slot. The token is never included.
+
+    A slot whose time already passed (for example an ingest run late in the day)
+    goes to the channel queue instead, since Buffer rejects past `dueAt` values.
+    """
     due = str(item["due_at_utc"])
     if due.endswith("Z"):
         due = due[:-1] + "+00:00"
     body: dict = {
         "channelId": item["channel_id"],
         "schedulingType": "automatic",
-        "mode": "customScheduled",
-        "dueAt": due,
         "text": item["caption"],
         "assets": [{"video": {"url": item["video_url"]}}],
     }
+    if _is_future(due, now):
+        body["mode"] = "customScheduled"
+        body["dueAt"] = due
+    else:
+        body["mode"] = "addToQueue"
     platform = item["platform"]
     if platform == "youtube_shorts":
         body["metadata"] = {
@@ -1978,7 +2020,26 @@ def download_attempt_plan(parsed: dict) -> list[dict]:
     raise CampaignPlatformError(f"No downloader for {kind}")
 
 
-def _highest_mp4(candidates: list[tuple[int, str]]) -> str:
+_URL_DIMENSIONS_RE = re.compile(r"/(\d{3,4})x(\d{3,4})/")
+
+
+def _stream_score(media: dict, url: str) -> tuple[int, int, int]:
+    """Rank a stream by pixels, then frame rate, then bitrate so 4K and 1080p60 win."""
+    width = int(media.get("width") or 0)
+    height = int(media.get("height") or 0)
+    size = media.get("size") if isinstance(media.get("size"), dict) else {}
+    width = width or int(size.get("width") or 0)
+    height = height or int(size.get("height") or 0)
+    if not (width and height):
+        match = _URL_DIMENSIONS_RE.search(url)
+        if match:
+            width, height = int(match.group(1)), int(match.group(2))
+    fps = int(float(media.get("fps") or media.get("frame_rate") or 0))
+    bitrate = int(media.get("bitrate") or 0)
+    return (width * height, fps, bitrate)
+
+
+def _highest_mp4(candidates: list[tuple[tuple[int, int, int], str]]) -> str:
     ranked = [(score, url) for score, url in candidates if url.startswith("http") and ".mp4" in url.lower()]
     if not ranked:
         return ""
@@ -1986,27 +2047,38 @@ def _highest_mp4(candidates: list[tuple[int, str]]) -> str:
     return ranked[0][1]
 
 
+def _media_entries(payload: dict) -> list[dict]:
+    entries = [media for media in payload.get("media_extended") or [] if isinstance(media, dict)]
+    tweet = payload.get("tweet") if isinstance(payload.get("tweet"), dict) else {}
+    media_block = tweet.get("media") if isinstance(tweet.get("media"), dict) else {}
+    for video in media_block.get("videos") or []:
+        if isinstance(video, dict):
+            entries.append(video)
+    for variant in payload.get("variants") or []:
+        if isinstance(variant, dict):
+            entries.append(variant)
+    return entries
+
+
 def extract_mp4(via: str, payload: dict) -> str:
-    """Pull the highest-bitrate MP4 URL out of a vxtwitter, fixupx, or tikwm payload."""
+    """Pull the highest-resolution MP4 URL out of a vxtwitter, fixupx, or tikwm payload."""
     if not isinstance(payload, dict):
         return ""
     if via == "tikwm":
         data = payload.get("data") if isinstance(payload.get("data"), dict) else payload
         hd = str(data.get("hdplay") or "")
         play = str(data.get("play") or "")
-        return _highest_mp4([(2, hd), (1, play)])
+        return _highest_mp4([((2, 0, 0), hd), ((1, 0, 0), play)])
     if via in ("vxtwitter", "fixupx"):
-        scored: list[tuple[int, str]] = []
-        for media in payload.get("media_extended") or []:
-            if not isinstance(media, dict):
-                continue
+        scored: list[tuple[tuple[int, int, int], str]] = []
+        for media in _media_entries(payload):
             url = str(media.get("url") or "")
             if "mp4" not in url.lower():
                 continue
-            bitrate = int(media.get("bitrate") or media.get("size") or 0)
-            scored.append((bitrate or 1, url))
+            scored.append((_stream_score(media, url), url))
         for url in payload.get("mediaURLs") or payload.get("media_urls") or []:
-            scored.append((1, str(url)))
+            text = str(url)
+            scored.append((_stream_score({}, text), text))
         return _highest_mp4(scored)
     return ""
 
@@ -2051,7 +2123,10 @@ def ingest_ffmpeg_command(
     watermark: str,
     font_path: str,
 ) -> list[str]:
-    """1080x1920 CRF 17 encode with a per-platform crop and speed so hashes differ."""
+    """1080x1920 CRF 16 encode with lanczos scaling and a light sharpen.
+
+    Each platform gets its own crop and speed so the four hashes differ.
+    """
     if platform not in PLATFORM_ENCODE_TWEAK:
         raise CampaignPlatformError(f"No encode tweak for {platform}")
     tweak = PLATFORM_ENCODE_TWEAK[platform]
@@ -2059,6 +2134,7 @@ def ingest_ffmpeg_command(
     video_filter = (
         "scale=1088:1928:flags=lanczos:force_original_aspect_ratio=increase,"
         f"crop=1080:1920:{tweak['crop_x']}:{tweak['crop_y']},"
+        f"{INGEST_SHARPEN},"
         f"setpts=PTS/{tweak['atempo']},"
         f"{draw}"
     )
@@ -2076,7 +2152,7 @@ def ingest_ffmpeg_command(
         "-preset",
         ENCODE_PRESET,
         "-crf",
-        ENCODE_CRF,
+        INGEST_CRF,
         "-pix_fmt",
         "yuv420p",
         "-c:a",
@@ -2102,8 +2178,13 @@ def build_ingest_items(
     hook: str,
     today: date | None = None,
     slot: int = 1,
+    category: str = "glamorous_girls",
 ) -> list[dict]:
     """Queue one rendered file onto each platform that campaign pays."""
+    if category not in INGEST_CATEGORIES:
+        raise CampaignPlatformError(
+            f"Unknown category {category!r}. Expected one of {', '.join(INGEST_CATEGORIES)}."
+        )
     run_day = today or datetime.now(timezone.utc).date()
     campaign_id = campaign_id_from_alias(campaign_alias)
     selected = platforms_for_campaign(campaigns_data, campaign_id, parse_platform_list(platforms))
@@ -2120,7 +2201,7 @@ def build_ingest_items(
             clip={
                 "id": f"ingest-{source_id}-{platform}",
                 "hook": hook.strip() or "Watch this",
-                "category": "celebrity",
+                "category": category,
                 "video_url": video_url,
             },
             campaign=bound,

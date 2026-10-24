@@ -129,7 +129,9 @@ def download_hd_source(source_url: str, dest: Path) -> None:
     cmd = [
         ytdlp,
         "-f",
-        "bestvideo[height>=1080][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height>=720]+bestaudio/best[ext=mp4]/best",
+        platform_map.YTDLP_FORMAT,
+        "-S",
+        platform_map.YTDLP_SORT,
         "--merge-output-format",
         "mp4",
         "--no-playlist",
@@ -843,6 +845,11 @@ def _split_urls(text: str) -> list[str]:
     return [part.strip() for part in re.split(r"[\s,]+", text or "") if part.strip().startswith("http")]
 
 
+def load_queue_category() -> str:
+    data = load_json(URLS_QUEUE_PATH, {})
+    return str(data.get("category") or "glamorous_girls")
+
+
 def load_queue_urls() -> tuple[list[str], str, str]:
     data = load_json(URLS_QUEUE_PATH, {"urls": [], "campaign": "dishpilot", "platforms": "all"})
     urls = [str(url).strip() for url in data.get("urls") or [] if str(url).strip()]
@@ -922,14 +929,22 @@ def ingest_urls_command(
     encode: bool = True,
     fetch_json=None,
     download_file=None,
+    category: str = "",
 ) -> list[dict]:
-    """Download each X/TikTok URL, stamp one campaign, and queue it on Buffer channels."""
+    """Download each X/TikTok URL, stamp one campaign, and queue it on Buffer channels.
+
+    Sources are fetched at the highest resolution available and encoded with
+    lanczos scaling, a light sharpen, and CRF 16. `category` tags each post
+    (default `glamorous_girls`) so priority categories sort to the top.
+    """
     queue_urls, queue_campaign, queue_platforms = load_queue_urls()
     chosen_urls = list(urls)
     if not chosen_urls:
         chosen_urls = list(queue_urls)
         campaign = campaign or queue_campaign
         platforms = platforms or queue_platforms
+        category = category or load_queue_category()
+    category = category or "glamorous_girls"
     if not chosen_urls:
         log("no X or TikTok URLs to ingest")
         return []
@@ -940,7 +955,7 @@ def ingest_urls_command(
     font = find_font()
     created: list[dict] = []
     rendered: list[Path] = []
-    for source_url in chosen_urls:
+    for index, source_url in enumerate(chosen_urls):
         parsed = platform_map.parse_source_url(source_url)
         clean_url = platform_map.resolve_clean_mp4_url(source_url, fetch)
         raw_path = ROOT / "work" / "ingest" / f"{parsed['id']}.mp4"
@@ -975,7 +990,8 @@ def ingest_urls_command(
                     platforms=platform,
                     hook="Watch this",
                     today=today,
-                    slot=1,
+                    slot=(index % platform_map.DAILY_30_PER_PLATFORM) + 1,
+                    category=category,
                 )
             )
     if not created:
@@ -994,6 +1010,7 @@ def ingest_urls_command(
         queued["urls"] = [url for url in queue_urls if url not in chosen_urls]
         queued.setdefault("campaign", "dishpilot")
         queued.setdefault("platforms", "all")
+        queued.setdefault("category", category)
         save_json(URLS_QUEUE_PATH, queued)
     publish_paths = [DAILY_FEED_PATH, DAILY_SEEN_PATH, URLS_QUEUE_PATH, *rendered]
     publish_daily_files([path for path in publish_paths if path.exists()])
@@ -1045,6 +1062,11 @@ def main(argv: list[str]) -> int:
     ingest_p.add_argument("--campaign", default="", help="dishpilot, rascals, or mrpa")
     ingest_p.add_argument("--platforms", default="", help="all or a comma-separated platform list")
     ingest_p.add_argument(
+        "--category",
+        default="",
+        help="Category tag: " + ", ".join(platform_map.INGEST_CATEGORIES),
+    )
+    ingest_p.add_argument(
         "--from-queue",
         action="store_true",
         help="Also read whop/urls_queue.json",
@@ -1075,6 +1097,7 @@ def main(argv: list[str]) -> int:
         urls.extend(_split_urls(os.environ.get("SOURCE_URLS", "")))
         campaign = args.campaign or os.environ.get("INGEST_CAMPAIGN", "") or "dishpilot"
         platforms = args.platforms or os.environ.get("INGEST_PLATFORMS", "") or "all"
+        category = args.category or os.environ.get("INGEST_CATEGORY", "")
         if args.from_queue or not urls:
             queued, queue_campaign, queue_platforms = load_queue_urls()
             for url in queued:
@@ -1084,7 +1107,9 @@ def main(argv: list[str]) -> int:
                 campaign = queue_campaign or campaign
             if not args.platforms and not os.environ.get("INGEST_PLATFORMS"):
                 platforms = queue_platforms or platforms
-        ingest_urls_command(urls, campaign, platforms)
+            if not category:
+                category = load_queue_category()
+        ingest_urls_command(urls, campaign, platforms, category=category)
         return 0
     if args.command == "clip":
         src_path = Path(args.url)

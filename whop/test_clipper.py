@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 import re
 import unittest
-from datetime import date, datetime
+from datetime import date, datetime, timezone
 from pathlib import Path
 
 from whop.clipper import (
@@ -18,6 +18,10 @@ from whop.clipper import (
     SUPPORTED_PLATFORMS,
     FEED_JSON_PATH,
     INDIAN_CATEGORIES as CLIPPER_INDIAN_CATEGORIES,
+    INGEST_CRF,
+    INGEST_SHARPEN,
+    PRIORITY_CATEGORIES,
+    YTDLP_FORMAT,
     MANIFEST_PATH,
     CampaignPlatformError,
     banner_overlay_spec,
@@ -39,6 +43,7 @@ from whop.clipper import (
     load_campaigns,
     overlay_plan,
     parse_source_url,
+    priority_rank,
     resolve_clean_mp4_url,
     select_campaign_for_platform,
     single_campaign_drawtext,
@@ -562,8 +567,10 @@ class DailyThirtyPipelineTest(unittest.TestCase):
 
     def test_buffer_body_and_publish_gate(self) -> None:
         sample = self._platform("instagram_reels")[0]
-        body = buffer_create_post_body(sample)
+        before_slot = datetime(2026, 10, 24, 0, 0, tzinfo=timezone.utc)
+        body = buffer_create_post_body(sample, now=before_slot)
         self.assertEqual(body["channelId"], DAILY_CHANNEL_IDS["instagram_reels"])
+        self.assertEqual(body["schedulingType"], "automatic")
         self.assertEqual(body["mode"], "customScheduled")
         self.assertTrue(body["dueAt"].endswith("+00:00"))
         self.assertEqual(body["assets"][0]["video"]["url"], sample["video_url"])
@@ -571,9 +578,18 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         self.assertNotIn("token", json.dumps(body).lower())
         self.assertNotIn("FastLoanPilot", json.dumps(body))
 
-        youtube = buffer_create_post_body(self._platform("youtube_shorts")[0])
+        late = buffer_create_post_body(sample, now=datetime(2026, 10, 25, 0, 0, tzinfo=timezone.utc))
+        self.assertEqual(late["mode"], "addToQueue")
+        self.assertNotIn("dueAt", late)
+        self.assertEqual(late["schedulingType"], "automatic")
+        for platform in SUPPORTED_PLATFORMS:
+            posted = buffer_create_post_body(self._platform(platform)[0], now=before_slot)
+            self.assertEqual(posted["channelId"], DAILY_CHANNEL_IDS[platform])
+            self.assertEqual(posted["schedulingType"], "automatic")
+
+        youtube = buffer_create_post_body(self._platform("youtube_shorts")[0], now=before_slot)
         self.assertEqual(youtube["metadata"]["youtube"]["categoryId"], "24")
-        self.assertNotIn("metadata", buffer_create_post_body(self._platform("x")[0]))
+        self.assertNotIn("metadata", buffer_create_post_body(self._platform("x")[0], now=before_slot))
 
         self.assertFalse(should_publish_daily({}))
         self.assertFalse(
@@ -643,6 +659,12 @@ class DailyThirtyPipelineTest(unittest.TestCase):
 class IngestUrlPipelineTest(unittest.TestCase):
     def setUp(self) -> None:
         self.data = load_campaigns()
+        self.day = date(2026, 10, 24)
+        self.feed, _seen = build_daily_30(self.data, {"ids": [], "uses": {}}, today=self.day)
+        self.items = self.feed["items"]
+
+    def _platform(self, platform: str) -> list[dict]:
+        return [item for item in self.items if item["platform"] == platform]
 
     def test_classifies_x_and_tiktok_links(self) -> None:
         status = parse_source_url("https://x.com/chadriyo/status/2110725157686063105")
@@ -699,7 +721,12 @@ class IngestUrlPipelineTest(unittest.TestCase):
         for command in commands:
             joined = " ".join(command)
             self.assertIn("-crf", command)
-            self.assertEqual(command[command.index("-crf") + 1], "17")
+            self.assertEqual(command[command.index("-crf") + 1], "16")
+            self.assertEqual(INGEST_CRF, "16")
+            self.assertIn("flags=lanczos", joined)
+            self.assertIn("unsharp=3:3:0.6:3:3:0.0", joined)
+            self.assertEqual(INGEST_SHARPEN, "unsharp=3:3:0.6:3:3:0.0")
+            self.assertIn("1080:1920", joined)
             self.assertIn("text='rascals'", joined)
             self.assertNotIn("·", joined)
             self.assertNotIn("dishpilot", joined)
@@ -747,6 +774,90 @@ class IngestUrlPipelineTest(unittest.TestCase):
         self.assertEqual({item["platform"] for item in mrpa}, {"youtube_shorts", "instagram_reels"})
         self.assertTrue(all(item["watermark_text"] == "mr. pa" for item in mrpa))
         self.assertTrue(all("#MrPa" in item["caption"] and "#Dishpilot" not in item["caption"] for item in mrpa))
+
+    def test_highest_resolution_stream_wins(self) -> None:
+        picked = extract_mp4(
+            "vxtwitter",
+            {
+                "media_extended": [
+                    {"url": "https://video.twimg.com/a/vid/avc1/1280x720/lo.mp4", "bitrate": 2_000_000},
+                    {"url": "https://video.twimg.com/a/vid/avc1/3840x2160/uhd.mp4", "bitrate": 800_000},
+                    {"url": "https://video.twimg.com/a/vid/avc1/1920x1080/hd.mp4", "bitrate": 9_000_000},
+                ]
+            },
+        )
+        self.assertEqual(picked, "https://video.twimg.com/a/vid/avc1/3840x2160/uhd.mp4")
+        sized = extract_mp4(
+            "vxtwitter",
+            {
+                "media_extended": [
+                    {"url": "https://cdn.example/a30.mp4", "size": {"width": 1920, "height": 1080}, "fps": 30},
+                    {"url": "https://cdn.example/a60.mp4", "size": {"width": 1920, "height": 1080}, "fps": 60},
+                ]
+            },
+        )
+        self.assertEqual(sized, "https://cdn.example/a60.mp4")
+        fx = extract_mp4(
+            "fixupx",
+            {
+                "tweet": {
+                    "media": {
+                        "videos": [
+                            {"url": "https://cdn.example/f720.mp4", "width": 720, "height": 1280},
+                            {"url": "https://cdn.example/f1080.mp4", "width": 1080, "height": 1920},
+                        ]
+                    }
+                }
+            },
+        )
+        self.assertEqual(fx, "https://cdn.example/f1080.mp4")
+        self.assertEqual(YTDLP_FORMAT, "bestvideo+bestaudio/best")
+        tiktok_plan = download_attempt_plan(parse_source_url("https://www.tiktok.com/@a/video/7"))
+        self.assertIn("hd=1", tiktok_plan[0]["url"])
+
+    def test_priority_categories_lead_the_daily_catalog(self) -> None:
+        self.assertEqual(PRIORITY_CATEGORIES[0], "anime_4k")
+        self.assertLess(priority_rank("anime_4k"), priority_rank("glamorous_girls"))
+        self.assertLess(priority_rank("glamorous_girls"), priority_rank("movie_4k"))
+        self.assertLess(priority_rank("movie_4k"), priority_rank("funny"))
+        categories = {clip["category"] for clip in DAILY_CLIP_CATALOG}
+        self.assertTrue({"anime_4k", "glamorous_girls", "movie_4k"} <= categories)
+        for platform in ("x", "instagram_reels", "tiktok"):
+            ranks = [priority_rank(item["category"]) for item in self._platform(platform)]
+            self.assertEqual(ranks, sorted(ranks), platform)
+            self.assertTrue(self._platform(platform)[0]["priority"])
+            self.assertEqual(self._platform(platform)[0]["category"], "anime_4k")
+        tagged = build_ingest_items(
+            self.data,
+            source_url="https://x.com/a/status/42",
+            source_id="42c",
+            video_url="https://example.com/c.mp4",
+            campaign_alias="dishpilot",
+            platforms="all",
+            hook="Wait for the drop",
+            today=self.day,
+            category="anime_4k",
+        )
+        self.assertTrue(all(item["category"] == "anime_4k" and item["priority"] for item in tagged))
+        with self.assertRaises(CampaignPlatformError):
+            build_ingest_items(
+                self.data,
+                source_url="https://x.com/a/status/42",
+                source_id="42d",
+                video_url="https://example.com/d.mp4",
+                campaign_alias="dishpilot",
+                platforms="x",
+                hook="Wait",
+                today=self.day,
+                category="nonsense",
+            )
+
+    def test_every_daily_item_carries_one_campaign_mark_and_channel(self) -> None:
+        for item in self.items:
+            self.assertIn(item["watermark_text"], {"dishpilot", "rascals", "mr. pa"})
+            self.assertEqual(item["watermark_position"]["x"], "w*0.025")
+            self.assertEqual(item["watermark_position"]["y"], "h*0.03")
+            self.assertEqual(item["channel_id"], DAILY_CHANNEL_IDS[item["platform"]])
 
 
 if __name__ == "__main__":

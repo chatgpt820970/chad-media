@@ -40,6 +40,20 @@ on:
         required: false
         default: all
         type: string
+      category:
+        description: "Priority category tag for the ingested links"
+        required: false
+        default: glamorous_girls
+        type: choice
+        options:
+          - anime_4k
+          - glamorous_girls
+          - celebrity
+          - movie_4k
+          - funny
+          - knowledge
+          - concert
+          - other
 
 permissions:
   contents: write
@@ -79,6 +93,7 @@ jobs:
           SOURCE_URLS: ${{ github.event.inputs.source_urls || '' }}
           INGEST_CAMPAIGN: ${{ github.event.inputs.campaign || '' }}
           INGEST_PLATFORMS: ${{ github.event.inputs.platforms || '' }}
+          INGEST_CATEGORY: ${{ github.event.inputs.category || '' }}
         run: python whop/whop_clipper.py ingest-urls --from-queue
 
       - name: Build the daily 30-clip feed
