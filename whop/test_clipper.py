@@ -401,14 +401,14 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertEqual(len(slots), 10)
         self.assertEqual(len(schedule["youtube_slots"]), 10)
         expected = {
-            3: ("whop/v/x-dishpilot-3.mp4", "THIS ANIMATION IS INSANE"),
-            4: ("whop/v/x-dishpilot-4.mp4", "WAIT FOR THE DROP"),
-            5: ("whop/v/x-dishpilot-5.mp4", "HIS REACTION AT THE END"),
-            6: ("whop/v/x-dishpilot-6.mp4", "60,000 PEOPLE IN SYNC"),
-            7: ("whop/v/x-dishpilot-7.mp4", "WHEN THE BEAT DROPS"),
-            8: ("whop/v/x-dishpilot-8.mp4", "WAIT FOR THE REVEAL"),
-            9: ("whop/v/x-dishpilot-9.mp4", "NYC DOORMAN PLOT TWIST"),
-            10: ("whop/v/x-dishpilot-10.mp4", "NOBODY EXPECTED THIS"),
+            3: ("whop/v/x-user-1.mp4", "THIS ANIMATION IS INSANE"),
+            4: ("whop/v/x-user-2.mp4", "WAIT FOR THE DROP"),
+            5: ("whop/v/x-user-3.mp4", "HIS REACTION AT THE END"),
+            6: ("whop/v/x-user-4.mp4", "60,000 PEOPLE IN SYNC"),
+            7: ("whop/v/x-user-5.mp4", "WHEN THE BEAT DROPS"),
+            8: ("whop/v/x-user-6.mp4", "WAIT FOR THE REVEAL"),
+            9: ("whop/v/x-user-7.mp4", "NYC DOORMAN PLOT TWIST"),
+            10: ("whop/v/x-user-8.mp4", "NOBODY EXPECTED THIS"),
         }
         for slot in slots:
             number = slot["slot"]
