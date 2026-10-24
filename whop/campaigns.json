@@ -1,6 +1,16 @@
 {
-  "updated_at": "2026-10-24T12:05:00Z",
+  "updated_at": "2026-10-24T12:48:00Z",
   "whop_user": "@bi60",
+  "whop_user_id": "user_JUKQo7VMHc6IS",
+  "supported_viral_categories": [
+    "funny",
+    "ai",
+    "knowledge",
+    "movie",
+    "anime",
+    "celebrity",
+    "concert"
+  ],
   "pool_guard_rules": {
     "min_remaining_budget_usd": 500.0,
     "max_paid_out_fraction": 0.80,
@@ -11,21 +21,57 @@
   "channels": {
     "x": {
       "handle": "@chadriyo",
+      "whop_social_account_id": "sacc_le6QSJyP9Gfom",
       "buffer_channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "aspect": "vertical_or_landscape"
-    },
-    "instagram": {
-      "handle": "@benreelr",
-      "buffer_channel_id": "6ac93d936a5c39ccb66624d7",
       "aspect": "9:16"
     },
     "youtube": {
       "handle": "Denzen",
+      "username": "@denzen0",
+      "whop_social_account_id": "sacc_qXC3MtNcVdiar",
       "buffer_channel_id": "6ac4da806a5c39ccb62eab64",
       "aspect": "9:16"
     }
   },
   "active_campaigns": [
+    {
+      "id": "fastloanpilot-logo",
+      "whop_id": "prod_DyuwRHNCz3vpv",
+      "company_id": "biz_5YI3waGC8KB79n",
+      "membership_id": "mem_ZJgSTCC8nXRFyb",
+      "content_rewards_experience_id": "exp_cqVzB3tgaTR5tB",
+      "submission_url": "https://whop.com/joined/fast-loan-pilot-logo-clipping/exp_cqVzB3tgaTR5tB/app/",
+      "type": "type2_logo_overlay",
+      "title": "FastLoanPilot Logo Clipping",
+      "url": "https://whop.com/fast-loan-pilot-logo-clipping",
+      "status": "open",
+      "joined": true,
+      "budget_total_usd": 10000.0,
+      "paid_out_usd": 0.0,
+      "remaining_budget_usd": 10000.0,
+      "paid_out_percent": 0.0,
+      "spots_remaining": 999,
+      "unlimited_budget": true,
+      "payout": "$2.00 per 1,000 views (4.86★, 3,105 members — Joined & Active)",
+      "cpm_usd": 2.0,
+      "accepted_platforms": ["youtube_shorts", "tiktok", "instagram_reels"],
+      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "logo_path": "whop/logos/fastloanpilot.png",
+      "banner_video_path": "whop/logos/fastloan_banner.mp4",
+      "watermark_text": "FASTLOANPILOT.COM",
+      "cta_text": "Only Available on FASTLOANPILOT.COM",
+      "required_captions": [
+        "Up to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap",
+        "No hard credit check / Even with bad credit / No hidden fees / Instant/quick/free/fast approval / Apply for a loan at Fastloanpilot.com",
+        "Need money today? / Apply for a loan at Fastloanpilot.com",
+        "Special deals: / Approval in 10 minutes Funding within 24 hours / Up to $5,000 / Just visit Fastloanpilot.com",
+        "Interest Rate just 4.95% / Up to $5,000 / Any credit score is accepted / Monthly Payment $80.54 / Not affect your credit history / Visit Fastloanpilot.com",
+        "In a tight spot? / Get up to a $5,000 loan today / All credit scores / No banks involved / No paperwork / Check out Fastloanpilot.com",
+        "If you need supercar / money / house / Try Fastloanpilot.com",
+        "Need cash to pay rent/bills/groceries / Check this out Fastloanpilot.com"
+      ],
+      "requirements": "Overlay official neon-blue FastLoanPilot logo + scroll-stopping top hook + 'Only Available on FASTLOANPILOT.COM' bottom CTA onto viral clips, include an engaging curiosity caption + official loan caption in the post text, and submit on Whop Content Rewards."
+    },
     {
       "id": "whop-ai-shane-gillis",
       "whop_id": "bnty_iJpOl5HbBoDQu",
@@ -41,7 +87,8 @@
       "unlimited_budget": false,
       "payout": "$10 per 5-clip submission ($970 / $1,000 remaining — 97% pool left, 97 spots open, India allowed)",
       "cpm_usd": 10.0,
-      "allowed_lanes": ["podcast"],
+      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
+      "allowed_lanes": ["funny", "celebrity", "podcast"],
       "watermark_text": "WHOP AI • ENTERTAINMENT",
       "cta_text": "Full clip on Whop AI",
       "requirements": "Cut 30-60s funny standalone Shane Gillis moments (stand-up, podcasts, interviews) in crisp HD MP4."
@@ -61,31 +108,11 @@
       "unlimited_budget": true,
       "payout": "$0.50 - $3.00+ per 1,000 views across rotating infinite-budget campaigns (4.91★, 464 reviews)",
       "cpm_usd": 2.5,
-      "allowed_lanes": ["anime", "movie", "podcast"],
+      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
+      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
       "watermark_text": "",
       "cta_text": "",
-      "requirements": "Join free on Whop to access active music, anime/edit, podcast, and logo campaigns."
-    },
-    {
-      "id": "fastloanpilot-logo",
-      "whop_id": "prod_DyuwRHNCz3vpv",
-      "type": "type2_logo_overlay",
-      "title": "FastLoanPilot Logo Clipping",
-      "url": "https://whop.com/fast-loan-pilot-logo-clipping",
-      "status": "open",
-      "budget_total_usd": 10000.0,
-      "paid_out_usd": 0.0,
-      "remaining_budget_usd": 10000.0,
-      "paid_out_percent": 0.0,
-      "spots_remaining": 999,
-      "unlimited_budget": true,
-      "payout": "$2.00 per 1,000 views (TikTok, YouTube Shorts, Instagram Reels — 4.86★, 3,105 members)",
-      "cpm_usd": 2.0,
-      "allowed_lanes": ["anime", "movie", "podcast"],
-      "logo_url": "https://assets-2-prod.whop.com/public/uploads/2025-12-12/user_20188843_9d0287aa-c688-4608-9ef2-ce961aaee48f.png",
-      "watermark_text": "FastLoanPilot",
-      "cta_text": "FastLoanPilot.com",
-      "requirements": "Add FastLoanPilot logo overlay onto viral anime/movie/podcast clips and post on YT Shorts, IG Reels, and TikTok."
+      "requirements": "Join free on Whop to access active music/concert, anime/edit, movie, AI, and logo campaigns on X and YouTube."
     },
     {
       "id": "dark-room-unlimited",
@@ -102,10 +129,11 @@
       "unlimited_budget": true,
       "payout": "$2.00 per 1,000 views (Explicitly marked UNLIMITED BUDGET, 5.0★)",
       "cpm_usd": 2.0,
-      "allowed_lanes": ["anime", "movie", "podcast"],
+      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
+      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
       "watermark_text": "",
       "cta_text": "",
-      "requirements": "Clip & post high-retention viral videos across Shorts/Reels/TikTok."
+      "requirements": "Clip & post high-retention viral videos across Shorts and X."
     },
     {
       "id": "finsta-ugc-ongoing",
@@ -120,9 +148,10 @@
       "paid_out_percent": 0.0,
       "spots_remaining": 999,
       "unlimited_budget": true,
-      "payout": "$2.00 per 1,000 views (Min $10, Max $250/video — Always Ongoing, updated Oct 24, 2026)",
+      "payout": "$2.00 per 1,000 views (Min $10, Max $250/video — Always Ongoing)",
       "cpm_usd": 2.0,
-      "allowed_lanes": ["podcast", "movie"],
+      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
+      "allowed_lanes": ["ai", "funny", "celebrity", "movie"],
       "watermark_text": "FINSTA APP",
       "cta_text": "Download Finsta on App Store",
       "requirements": "AI-generated and real content both accepted; include CTA to download Finsta from App Store."
@@ -142,31 +171,12 @@
       "unlimited_budget": true,
       "payout": "$2.00 per 1,000 views (981 members)",
       "cpm_usd": 2.0,
-      "allowed_lanes": ["anime", "movie", "podcast"],
+      "accepted_platforms": ["youtube_shorts", "tiktok", "instagram_reels"],
+      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
       "logo_url": "https://assets-2-prod.whop.com/public/uploads/user_20188843/image/bots/2026-03-27/692a0ec9-de63-4b58-9497-8133af5d0fd2.png",
       "watermark_text": "GAMBANA",
       "cta_text": "Gambana",
-      "requirements": "Place Gambana logo overlay onto viral clips and post on TikTok, YouTube Shorts, and Instagram Reels."
-    },
-    {
-      "id": "zostel-india",
-      "whop_id": "prod_MG954dJcxIksB",
-      "type": "type1_brand_footage",
-      "title": "Zostel Creator Programme (India Travel Clips)",
-      "url": "https://whop.com/zostel-creator-programme",
-      "status": "open",
-      "budget_total_usd": 5000.0,
-      "paid_out_usd": 0.0,
-      "remaining_budget_usd": 5000.0,
-      "paid_out_percent": 0.0,
-      "spots_remaining": 999,
-      "unlimited_budget": true,
-      "payout": "$1.00 per 1,000 views on Instagram Reels (India audience targeted!)",
-      "cpm_usd": 1.0,
-      "allowed_lanes": ["movie", "podcast"],
-      "watermark_text": "ZOSTEL",
-      "cta_text": "@zostel #LiveItNow",
-      "requirements": "Use Zostel raw travel footage, add strong 3s hook & captions, tag @zostel."
+      "requirements": "Place Gambana logo overlay onto viral clips and post on YouTube Shorts, TikTok, or Reels."
     }
   ],
   "skipped_low_pool_or_baited_campaigns": [

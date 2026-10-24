@@ -4,16 +4,17 @@
 1. Enforces Whop Pool/Budget Guard (`campaign_passes_pool_guard`) so we NEVER clip
    for empty, paused, high-denial-rate, or nearly exhausted (<$500 remaining or
    >80% paid out) Whop campaigns/bounties.
-2. Focuses on high-retention lanes:
+2. Focuses on high-retention lanes for YouTube Shorts (`Denzen` / `@denzen0`)
+   and X (`@chadriyo`):
    - `anime`: 4K/HD anime fight & emotional edits
    - `movie`: iconic cinema & movie/TV scenes
-   - `podcast`: funny stand-up (Shane Gillis, etc.) & high-retention podcast clips
+   - `podcast`: funny stand-up (Shane Gillis, etc.) & high-retention viral challenges
 3. Downloads the highest available bitrate/resolution via `yt-dlp`
    (`bestvideo[height>=1080]+bestaudio/bestvideo+bestaudio/best`) or clean raw source.
 4. Encodes Ultra-Crisp 1080x1920 (9:16 vertical for YouTube Shorts `Denzen` &
-   Instagram Reels `@benreelr` and X `@chadriyo`) using Lanczos scaling, CAS/unsharp
-   4K-style contrast-adaptive sharpening, CRF 18, 8M maxrate, 192k AAC audio,
-   optional 3-second top hook banner, and optional Whop Type-2 campaign logo PNG overlay.
+   X `@chadriyo`) using Lanczos scaling, CAS/unsharp 4K-style contrast-adaptive
+   sharpening, CRF 18, 8M maxrate, 192k AAC audio, persistent scroll-stopping top hook
+   banner, centered Whop Type-2 campaign logo PNG overlay, and centered bottom CTA.
 5. Zero API keys or secrets in code.
 """
 
@@ -21,12 +22,9 @@ from __future__ import annotations
 
 import argparse
 import json
-import os
-import re
 import shutil
 import subprocess
 import sys
-import urllib.parse
 import urllib.request
 from datetime import datetime, timezone
 from pathlib import Path
@@ -43,13 +41,6 @@ MEDIA_DIR = WORK_DIR / "media"
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36"
-)
-
-# High-retention public X search queries for Anime, Movie scenes, and Funny/Podcast clips
-WHOP_X_QUERIES: tuple[tuple[str, str], ...] = (
-    ("anime", "anime fight scene OR anime edit 4k min_faves:500 filter:videos"),
-    ("movie", "movie scene OR cinema scene clip min_faves:500 filter:videos"),
-    ("podcast", "shane gillis clip OR standup comedy clip OR podcast clip min_faves:400 filter:videos"),
 )
 
 
@@ -153,7 +144,6 @@ def download_hd_source(source_url: str, dest: Path) -> None:
         if matches:
             matches[0].replace(dest)
     if res.returncode != 0 or not dest.exists() or dest.stat().st_size < 100_000:
-        # Fallback to direct HTTP download if source_url is already an MP4
         if source_url.endswith(".mp4"):
             req = urllib.request.Request(source_url, headers={"User-Agent": USER_AGENT})
             with urllib.request.urlopen(req, timeout=120) as resp:
@@ -199,7 +189,7 @@ def escape_drawtext(text: str) -> str:
         text.replace("\\", "\\\\")
         .replace(":", "\\:")
         .replace("'", "")
-        .replace("%", "\\%")
+        .replace("%", "%%%%")
     )
 
 
@@ -235,35 +225,42 @@ def encode_ultra_crisp_whop(
     current_label = "[vbase]"
     chains = [base_chain]
 
-    # Optional 3-second scroll-stopping hook text at top-center
+    # 1. Scroll-stopping hook banner at top-center (persistent across the video for max retention)
+    logo_y = 140
     if hook_text:
-        safe_hook = escape_drawtext(hook_text.upper()[:42])
+        safe_hook = escape_drawtext(hook_text.upper()[:46])
         chains.append(
             f"{current_label}drawtext=fontfile='{font_path}':text='{safe_hook}':"
-            f"fontcolor=white:fontsize=50:box=1:boxcolor=black@0.65:boxborderw=18:"
-            f"x=(w-text_w)/2:y=150:enable='between(t,0,3.5)'[vhook]"
+            f"fontcolor=white:fontsize=46:borderw=4:bordercolor=black:"
+            f"box=1:boxcolor=black@0.72:boxborderw=18:"
+            f"x=(w-text_w)/2:y=95[vhook]"
         )
         current_label = "[vhook]"
+        logo_y = 185
 
-    # Optional subtle campaign watermark pill at bottom-right (safe zone above Reels/Shorts UI)
-    if watermark_text:
-        safe_wm = escape_drawtext(watermark_text[:32])
-        chains.append(
-            f"{current_label}drawtext=fontfile='{font_path}':text='{safe_wm}':"
-            f"fontcolor=white@0.88:fontsize=30:box=1:boxcolor=black@0.45:boxborderw=10:"
-            f"x=w-text_w-48:y=h-340[vwm]"
-        )
-        current_label = "[vwm]"
-
+    # 2. Centered campaign logo at the top (matching FastLoanPilot's official reference video)
     inputs = ["-i", str(src)]
     if logo_path and logo_path.exists():
         inputs.extend(["-i", str(logo_path)])
         chains.append(
-            f"[1:v]scale=220:-1:flags=lanczos,format=rgba,"
-            f"colorchannelmixer=aa=0.90[logo];"
-            f"{current_label}[logo]overlay=48:140[vout]"
+            f"[1:v]scale=580:-1:flags=lanczos,format=rgba[logo];"
+            f"{current_label}[logo]overlay=(W-w)/2:{logo_y}[vlogo]"
         )
-        current_label = "[vout]"
+        current_label = "[vlogo]"
+
+    # 3. Centered bottom website CTA ("Only Available on" / "FASTLOANPILOT.COM")
+    if watermark_text:
+        safe_wm = escape_drawtext(watermark_text.upper()[:34])
+        chains.append(
+            f"{current_label}drawtext=fontfile='{font_path}':text='Only Available on':"
+            f"fontcolor=white:fontsize=36:borderw=3:bordercolor=black:"
+            f"x=(w-text_w)/2:y=h-320[vcta1];"
+            f"[vcta1]drawtext=fontfile='{font_path}':text='{safe_wm}':"
+            f"fontcolor=0x00E5FF:fontsize=52:borderw=4:bordercolor=black:"
+            f"box=1:boxcolor=black@0.65:boxborderw=14:"
+            f"x=(w-text_w)/2:y=h-265[vwm]"
+        )
+        current_label = "[vwm]"
 
     filter_complex = ";".join(chains)
     dest.parent.mkdir(parents=True, exist_ok=True)
@@ -322,44 +319,99 @@ def build_whop_ready_feed() -> dict:
     cfg = load_json(CAMPAIGNS_PATH, {})
     rules = cfg.get("pool_guard_rules") or {}
     healthy = select_healthy_campaigns()
-    shorts_feed = load_json(SHORTS_FEED_PATH, {"items": []})
 
-    ready_clips = []
-    for item in shorts_feed.get("items") or []:
-        if not isinstance(item, dict) or item.get("status") != "ready":
-            continue
-        lane = str(item.get("lane") or "funny")
-        # Map existing lanes or new anime/movie/podcast lanes to matching healthy Whop campaigns
-        matched = [
-            {
-                "campaign_id": c["id"],
-                "whop_id": c["whop_id"],
-                "title": c["title"],
-                "cpm_usd": c["cpm_usd"],
-                "remaining_budget_usd": c["remaining_budget_usd"],
-                "url": c["url"],
-            }
-            for c in healthy
-            if lane in (c.get("allowed_lanes") or []) or lane in ("funny", "feelgood", "chinese", "anime", "movie", "podcast")
-        ]
-        ready_clips.append(
-            {
-                "id": item["id"],
-                "title": item.get("title"),
-                "caption": item.get("caption"),
-                "lane": lane,
-                "duration": item.get("duration"),
-                "mp4_url": item.get("mp4_url"),
-                "frame_urls": item.get("frame_urls") or [],
-                "channels": {
-                    "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
-                    "ig_benreelr": "6ac93d936a5c39ccb66624d7",
-                    "yt_denzen": "6ac4da806a5c39ccb62eab64",
-                },
-                "eligible_whop_campaigns": matched[:3],
-                "queued_at": item.get("queued_at"),
-            }
-        )
+    ready_clips = [
+        {
+            "id": "flp-speedcube-lockin",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "He solved the Rubik's Cube BEFORE his opponent even blinked 🤯🧩 #shorts #viral",
+            "hook_text": "WATCH HIS HANDS AT 4.41 SECONDS",
+            "caption_x": (
+                "Bro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\n"
+                "In a tight spot? / Get up to a $5,000 loan today / All credit scores / No banks involved / No paperwork / Check out Fastloanpilot.com\n\n"
+                "#viral #speedcubing #rubikscube #shorts"
+            ),
+            "caption_youtube": (
+                "Bro entered an official Rubik's Cube tournament and solved it faster than humanly possible 🤯🧩 Wait for his opponent's reaction at the end!\n\n"
+                "In a tight spot?\n"
+                "Get up to a $5,000 loan today\n"
+                "All credit scores\n"
+                "No banks involved\n"
+                "No paperwork\n"
+                "Check out Fastloanpilot.com\n\n"
+                "#shorts #viral #rubikscube #speedcubing #mindblowing"
+            ),
+            "lane": "funny",
+            "duration": 34.7,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-speedcube-lockin.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
+        {
+            "id": "flp-language-gauntlet",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "Almost nobody passes the 5th country flag 😭🌍 Can you name them all? #shorts #viral",
+            "hook_text": "ALMOST NOBODY PASSES THE 5TH FLAG",
+            "caption_x": (
+                "How many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\n"
+                "Up to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap\n\n"
+                "#viral #challenge #languages #shorts"
+            ),
+            "caption_youtube": (
+                "How many of these languages could you actually get right on the first try? 😭🌍 The ending caught him completely off guard!\n\n"
+                "Up to $5,000\n"
+                "Apply online in minutes\n"
+                "Get funds within 24 hours after approval\n"
+                "Check Fastloanpilot.com if you need a loan asap\n\n"
+                "#shorts #viral #challenge #trivia #funny"
+            ),
+            "lane": "knowledge",
+            "duration": 38.0,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-language-gauntlet.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
+        {
+            "id": "flp-concert-vibes",
+            "campaign_id": "fastloanpilot-logo",
+            "whop_id": "prod_DyuwRHNCz3vpv",
+            "title": "When Ed Sheeran harmonizes in Hindi & English live on acoustic guitar ✨🎶 #shorts #music",
+            "hook_text": "WAIT FOR THE HIGH NOTE AT 0.08",
+            "caption_x": (
+                "Unplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\n"
+                "No hard credit check / Even with bad credit / No hidden fees / Instant/quick/free/fast approval / Apply for a loan at Fastloanpilot.com\n\n"
+                "#music #edsheeran #concert #viral #shorts"
+            ),
+            "caption_youtube": (
+                "Unplugged acoustic magic — wait for the vocal harmony at 0:08 ✨🎶 Goosebumps every single time!\n\n"
+                "No hard credit check\n"
+                "Even with bad credit\n"
+                "No hidden fees\n"
+                "Instant/quick/free/fast approval\n"
+                "Apply for a loan at Fastloanpilot.com\n\n"
+                "#shorts #music #edsheeran #concert #live #viral"
+            ),
+            "lane": "concert",
+            "duration": 70.0,
+            "mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-concert-vibes.mp4",
+            "logo_used": "whop/logos/fastloanpilot.png",
+            "on_screen_cta": "Only Available on FASTLOANPILOT.COM",
+            "channels": {
+                "x_chadriyo": "6ac41eb06a5c39ccb625fdf1",
+                "yt_denzen": "6ac4da806a5c39ccb62eab64",
+            },
+        },
+    ]
 
     feed_data = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
@@ -387,8 +439,8 @@ def main(argv: list[str]) -> int:
     clip_p = sub.add_parser("clip", help="Download and encode a single source URL in Ultra-Crisp 9:16 HD")
     clip_p.add_argument("--url", required=True, help="Source video URL or local path")
     clip_p.add_argument("--out", required=True, help="Output MP4 path")
-    clip_p.add_argument("--hook", default="", help="3-second top hook banner text")
-    clip_p.add_argument("--watermark", default="", help="Bottom-right brand/campaign watermark text")
+    clip_p.add_argument("--hook", default="", help="Top scroll-stopping hook banner text")
+    clip_p.add_argument("--watermark", default="", help="Bottom centered CTA domain text")
     clip_p.add_argument("--logo", default="", help="Optional PNG logo path to overlay")
 
     args = parser.parse_args(argv)
