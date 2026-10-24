@@ -1,7 +1,25 @@
 {
-  "generated_at": "2026-10-24T20:03:17Z",
+  "generated_at": "2026-10-24T20:47:32Z",
   "slot_count": 10,
-  "guarantee": "Every X (@chadriyo) slot is Dishpilot with #Dishpilot and no loan text. Every Instagram Reel (@benreelr) and TikTok (@bi67325) post carries one campaign name and its matching tag. Every YouTube Shorts (Denzen / @denzen0) slot is Dishpilot (#Dishpilot #Shorts) or Mr. Pa (#MrPa #Shorts). At least 80% of YouTube slots are Indian actor reels or Indian cinema scenes. Each platform draws one top-left corner mark.",
+  "platform_eligible_campaigns": {
+    "dishpilot-clipping": [
+      "x",
+      "youtube",
+      "instagram",
+      "tiktok"
+    ],
+    "rascals-theme-pages": [
+      "instagram",
+      "tiktok",
+      "youtube"
+    ],
+    "mr-pa-clipping": [
+      "youtube",
+      "instagram",
+      "tiktok"
+    ]
+  },
+  "guarantee": "Every X, YouTube, Instagram, and TikTok slot uses a campaign permitted by PLATFORM_ELIGIBLE_CAMPAIGNS. Its caption has only that campaign's hashtag and its overlay logo_text is the matching dishpilot, rascals, or mr. pa badge. Rascals and Mr. Pa are never assigned to X. At least 80% of YouTube slots are Indian actor reels or Indian cinema scenes. Each platform draws one top-left corner mark.",
   "slots": [
     {
       "slot": 1,
@@ -45,8 +63,21 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "dishpilot-clipping",
+      "tiktok_campaign_title": "Dishpilot Clipping Program",
+      "tiktok_category": "funny",
+      "tiktok_rate_per_1k_views_usd": 2.0,
+      "tiktok_remaining_pool_usd": 5000.0,
+      "tiktok_caption": "Wait for the stadium drop\n\n#Dishpilot",
+      "tiktok_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -68,6 +99,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "rascals",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "dishpilot",
           "logo_subtext": "",
           "logo_path": ""
         }
@@ -115,8 +154,21 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "rascals-theme-pages",
+      "tiktok_campaign_title": "Rascals Clipping (THEME PAGES)",
+      "tiktok_category": "ai",
+      "tiktok_rate_per_1k_views_usd": 3.0,
+      "tiktok_remaining_pool_usd": 50000.0,
+      "tiktok_caption": "Nobody stayed in their seat\n\n#Rascals",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-2.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -138,6 +190,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "dishpilot",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "rascals",
           "logo_subtext": "",
           "logo_path": ""
         }
@@ -185,8 +245,21 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "dishpilot-clipping",
+      "tiktok_campaign_title": "Dishpilot Clipping Program",
+      "tiktok_category": "knowledge",
+      "tiktok_rate_per_1k_views_usd": 2.0,
+      "tiktok_remaining_pool_usd": 5000.0,
+      "tiktok_caption": "The whole crowd knew this line\n\n#Dishpilot",
+      "tiktok_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -208,6 +281,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "rascals",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "dishpilot",
           "logo_subtext": "",
           "logo_path": ""
         }
@@ -255,8 +336,21 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "rascals-theme-pages",
+      "tiktok_campaign_title": "Rascals Clipping (THEME PAGES)",
+      "tiktok_category": "movie",
+      "tiktok_rate_per_1k_views_usd": 3.0,
+      "tiktok_remaining_pool_usd": 50000.0,
+      "tiktok_caption": "He walked out and the roof came off\n\n#Rascals",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-2.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -278,6 +372,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "dishpilot",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "rascals",
           "logo_subtext": "",
           "logo_path": ""
         }
@@ -325,8 +427,21 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "dishpilot-clipping",
+      "tiktok_campaign_title": "Dishpilot Clipping Program",
+      "tiktok_category": "anime",
+      "tiktok_rate_per_1k_views_usd": 2.0,
+      "tiktok_remaining_pool_usd": 5000.0,
+      "tiktok_caption": "Watch the front row lose it\n\n#Dishpilot",
+      "tiktok_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -348,6 +463,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "rascals",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "dishpilot",
           "logo_subtext": "",
           "logo_path": ""
         }
@@ -395,8 +518,21 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "rascals-theme-pages",
+      "tiktok_campaign_title": "Rascals Clipping (THEME PAGES)",
+      "tiktok_category": "celebrity",
+      "tiktok_rate_per_1k_views_usd": 3.0,
+      "tiktok_remaining_pool_usd": 50000.0,
+      "tiktok_caption": "This beat still shuts the venue down\n\n#Rascals",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-2.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -418,6 +554,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "dishpilot",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "rascals",
           "logo_subtext": "",
           "logo_path": ""
         }
@@ -465,8 +609,21 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "dishpilot-clipping",
+      "tiktok_campaign_title": "Dishpilot Clipping Program",
+      "tiktok_category": "concert",
+      "tiktok_rate_per_1k_views_usd": 2.0,
+      "tiktok_remaining_pool_usd": 5000.0,
+      "tiktok_caption": "One note and the stadium erupts\n\n#Dishpilot",
+      "tiktok_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -488,6 +645,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "rascals",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "dishpilot",
           "logo_subtext": "",
           "logo_path": ""
         }
@@ -535,8 +700,21 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "rascals-theme-pages",
+      "tiktok_campaign_title": "Rascals Clipping (THEME PAGES)",
+      "tiktok_category": "funny",
+      "tiktok_rate_per_1k_views_usd": 3.0,
+      "tiktok_remaining_pool_usd": 50000.0,
+      "tiktok_caption": "Count the phones in the air\n\n#Rascals",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-2.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -558,6 +736,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "dishpilot",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "rascals",
           "logo_subtext": "",
           "logo_path": ""
         }
@@ -605,6 +791,19 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "dishpilot-clipping",
+      "tiktok_campaign_title": "Dishpilot Clipping Program",
+      "tiktok_category": "knowledge",
+      "tiktok_rate_per_1k_views_usd": 2.0,
+      "tiktok_remaining_pool_usd": 5000.0,
+      "tiktok_caption": "Wait for the ending\n\n#Dishpilot",
+      "tiktok_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-3.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
         "mode": "platform_specific_variants",
         "youtube_shorts": {
@@ -628,6 +827,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "rascals",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "dishpilot",
           "logo_subtext": "",
           "logo_path": ""
         }
@@ -675,6 +882,19 @@
       "instagram_duration_sec": 15.0,
       "instagram_duration_ok": true,
       "instagram_duration_reason": "duration ok",
+      "tiktok_campaign": "rascals-theme-pages",
+      "tiktok_campaign_title": "Rascals Clipping (THEME PAGES)",
+      "tiktok_category": "movie",
+      "tiktok_rate_per_1k_views_usd": 3.0,
+      "tiktok_remaining_pool_usd": 50000.0,
+      "tiktok_caption": "Pause on the last second\n\n#Rascals",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_username": "@bi67325",
+      "tiktok_mp4_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-3.mp4",
+      "tiktok_duration_sec": 15.0,
+      "tiktok_duration_ok": true,
+      "tiktok_duration_reason": "duration ok",
       "overlay": {
         "mode": "platform_specific_variants",
         "youtube_shorts": {
@@ -698,6 +918,14 @@
           "logo_placement": "corner",
           "logo_count": 1,
           "logo_text": "dishpilot",
+          "logo_subtext": "",
+          "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "rascals",
           "logo_subtext": "",
           "logo_path": ""
         }

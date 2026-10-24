@@ -155,6 +155,10 @@ INSTAGRAM_SLOT_PLAN = tuple(
     {"campaign_id": RASCALS_ID if index % 2 == 0 else DISHPILOT_ID}
     for index in range(DAILY_SLOT_COUNT)
 )
+TIKTOK_SLOT_PLAN = tuple(
+    {"campaign_id": DISHPILOT_ID if index % 2 == 0 else RASCALS_ID}
+    for index in range(DAILY_SLOT_COUNT)
+)
 
 # Ten posting slots. X campaigns rotate in routing order so each paying
 # campaign receives @chadriyo views. YouTube Shorts follows YOUTUBE_SLOT_PLAN.
@@ -183,6 +187,7 @@ _YT_MP4_RE = re.compile(
 # Dishpilot window. X files are 30s.
 YOUTUBE_DURATION_SEC = 12.5
 INSTAGRAM_DURATION_SEC = 15.0
+TIKTOK_DURATION_SEC = 15.0
 X_DURATION_SEC = 30.0
 PLATFORM_WATERMARK = {
     "x": "dishpilot",
@@ -195,6 +200,19 @@ CAMPAIGN_MARK = {
     "dishpilot-clipping": ("dishpilot", "#Dishpilot"),
     "rascals-theme-pages": ("rascals", "#Rascals"),
     "mr-pa-clipping": ("mr. pa", "#MrPa"),
+}
+# Source of truth for the three paid campaign brands. Values deliberately use
+# public platform names rather than internal feed keys.
+PLATFORM_ELIGIBLE_CAMPAIGNS = {
+    "dishpilot-clipping": ("x", "youtube", "instagram", "tiktok"),
+    "rascals-theme-pages": ("instagram", "tiktok", "youtube"),
+    "mr-pa-clipping": ("youtube", "instagram", "tiktok"),
+}
+ELIGIBILITY_PLATFORM_NAMES = {
+    "x": "x",
+    "youtube_shorts": "youtube",
+    "instagram_reels": "instagram",
+    "tiktok": "tiktok",
 }
 PLATFORM_SUFFIX_TAGS = {
     "x": [],
@@ -633,8 +651,24 @@ def _routing(campaigns_data: dict, platform: str) -> dict:
     return routing if isinstance(routing, dict) else {}
 
 
+def campaign_is_platform_eligible(campaign_id: str, platform: str) -> bool:
+    """Whether the explicit paid-campaign matrix permits this pairing."""
+    public_platform = ELIGIBILITY_PLATFORM_NAMES.get(platform)
+    if public_platform is None:
+        return False
+    eligible = PLATFORM_ELIGIBLE_CAMPAIGNS.get(campaign_id)
+    return eligible is None or public_platform in eligible
+
+
 def bind_clip_to_campaign(campaign: dict, platform: str) -> dict:
     """Raise if this clip's platform is not explicitly paid by the campaign."""
+    campaign_id = str(campaign.get("id") or "")
+    if not campaign_is_platform_eligible(campaign_id, platform):
+        public_platform = ELIGIBILITY_PLATFORM_NAMES.get(platform, platform)
+        raise CampaignPlatformError(
+            f"Refusing to pair {campaign_id!r} with {public_platform!r}: "
+            f"PLATFORM_ELIGIBLE_CAMPAIGNS={PLATFORM_ELIGIBLE_CAMPAIGNS.get(campaign_id)}"
+        )
     accepted = list(campaign.get("accepted_platforms") or [])
     if platform not in accepted:
         account = PLATFORM_ACCOUNTS.get(platform, platform)
@@ -665,7 +699,9 @@ def campaigns_for_platform(campaigns_data: dict, platform: str) -> list[dict]:
         if not ok:
             continue
         accepted = list(campaign.get("accepted_platforms") or [])
-        if platform not in accepted:
+        if platform not in accepted or not campaign_is_platform_eligible(
+            str(campaign.get("id") or ""), platform
+        ):
             continue
         campaign_id = str(campaign.get("id") or "")
         if allowed is not None and campaign_id not in allowed:
@@ -675,6 +711,48 @@ def campaigns_for_platform(campaigns_data: dict, platform: str) -> list[dict]:
     if isinstance(allow_ids, list):
         return [by_id[campaign_id] for campaign_id in allow_ids if campaign_id in by_id]
     return ordered
+
+
+def assert_feed_item_campaign_identity(item: dict, campaigns_data: dict | None = None) -> None:
+    """Fail closed on campaign/platform, watermark, or caption-tag mix-ups."""
+    platform = str(item.get("platform") or "")
+    campaign_id = str(item.get("campaign_id") or "")
+    if campaign_id not in CAMPAIGN_MARK:
+        raise CampaignPlatformError(f"Feed item has unknown campaign {campaign_id!r}")
+    if not campaign_is_platform_eligible(campaign_id, platform):
+        raise CampaignPlatformError(
+            f"{campaign_id!r} is not eligible for {ELIGIBILITY_PLATFORM_NAMES.get(platform, platform)!r}"
+        )
+    expected_badge, expected_campaign_tag = CAMPAIGN_MARK[campaign_id]
+    actual_badge = str(item.get("watermark_text") or "")
+    if actual_badge != expected_badge:
+        raise CampaignPlatformError(
+            f"{campaign_id!r} requires watermark {expected_badge!r}, found {actual_badge!r}"
+        )
+    tags = _HASHTAG_RE.findall(str(item.get("caption") or ""))
+    campaign_tags = [tag for tag in tags if tag in SINGLE_CAMPAIGN_TAGS]
+    if campaign_tags != [expected_campaign_tag]:
+        raise CampaignPlatformError(
+            f"{campaign_id!r} requires exactly {expected_campaign_tag}, found {campaign_tags!r}"
+        )
+    expected_tags = platform_hashtags(platform, campaign_id)
+    if tags != expected_tags:
+        raise CampaignPlatformError(
+            f"{campaign_id!r} on {platform} requires caption tags {expected_tags!r}, found {tags!r}"
+        )
+    if campaigns_data is not None:
+        campaign = _campaign_by_id(campaigns_data, campaign_id)
+        if campaign is None:
+            raise CampaignPlatformError(f"Feed campaign {campaign_id!r} is missing")
+        bind_clip_to_campaign(campaign, platform)
+        eligible_ids = {
+            str(row.get("id"))
+            for row in campaigns_for_platform(campaigns_data, platform)
+        }
+        if campaign_id not in eligible_ids:
+            raise CampaignPlatformError(
+                f"{campaign_id!r} is not active, paying, and routed for {platform}"
+            )
 
 
 def select_campaign_for_platform(campaigns_data: dict, platform: str) -> dict:
@@ -997,6 +1075,8 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
         )
     youtube_account = platform_account(campaigns_data, "youtube_shorts")
     x_account = platform_account(campaigns_data, "x")
+    instagram_account = platform_account(campaigns_data, "instagram_reels")
+    tiktok_account = platform_account(campaigns_data, "tiktok")
     links_blocked = x_links_blocked(campaigns_data)
     slots: list[dict] = []
     for index, spec in enumerate(DAILY_SLOTS):
@@ -1016,6 +1096,13 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 f"Slot {spec['slot']} Instagram campaign {ig_plan['campaign_id']!r} is missing"
             )
         bind_clip_to_campaign(instagram_campaign, "instagram_reels")
+        tiktok_plan = TIKTOK_SLOT_PLAN[index]
+        tiktok_campaign = _campaign_by_id(campaigns_data, str(tiktok_plan["campaign_id"]))
+        if tiktok_campaign is None:
+            raise CampaignPlatformError(
+                f"Slot {spec['slot']} TikTok campaign {tiktok_plan['campaign_id']!r} is missing"
+            )
+        bind_clip_to_campaign(tiktok_campaign, "tiktok")
         hook = str(spec["hook"])
         x_caption = build_platform_caption(hook, x_campaign, "x", links_blocked=links_blocked)
         youtube_caption = build_platform_caption(
@@ -1030,11 +1117,20 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
             "instagram_reels",
             links_blocked=False,
         )
+        tiktok_caption = build_platform_caption(
+            hook,
+            tiktok_campaign,
+            "tiktok",
+            links_blocked=False,
+        )
         if links_blocked and _LINK_RE.search(x_caption):
             raise CampaignPlatformError(
                 f"Slot {spec['slot']} X caption still contains a link for {x_campaign.get('id')}"
             )
-        if contains_loan_spam(x_caption) or contains_loan_spam(youtube_caption) or contains_loan_spam(instagram_caption):
+        if any(
+            contains_loan_spam(caption)
+            for caption in (x_caption, youtube_caption, instagram_caption, tiktok_caption)
+        ):
             raise CampaignPlatformError(
                 f"Slot {spec['slot']} caption still contains loan text"
             )
@@ -1052,6 +1148,7 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
         youtube_ok, youtube_reason = duration_fits(youtube_campaign, YOUTUBE_DURATION_SEC)
         x_ok, x_reason = duration_fits(x_campaign, X_DURATION_SEC)
         instagram_ok, instagram_reason = duration_fits(instagram_campaign, INSTAGRAM_DURATION_SEC)
+        tiktok_ok, tiktok_reason = duration_fits(tiktok_campaign, TIKTOK_DURATION_SEC)
         if not youtube_ok:
             raise CampaignPlatformError(
                 f"Slot {spec['slot']} YouTube render is outside the campaign window: {youtube_reason}"
@@ -1064,15 +1161,25 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
             raise CampaignPlatformError(
                 f"Slot {spec['slot']} Instagram render is outside the campaign window: {instagram_reason}"
             )
+        if not tiktok_ok:
+            raise CampaignPlatformError(
+                f"Slot {spec['slot']} TikTok render is outside the campaign window: {tiktok_reason}"
+            )
         overlay = {
             "mode": "dual_compatible",
             "youtube_shorts": platform_overlay_spec("youtube_shorts", youtube_campaign.get("id")),
             "x": platform_overlay_spec("x", x_campaign.get("id")),
             "instagram_reels": platform_overlay_spec("instagram_reels", instagram_campaign.get("id")),
+            "tiktok": platform_overlay_spec("tiktok", tiktok_campaign.get("id")),
         }
-        if overlay["x"]["logo_text"] != overlay["youtube_shorts"]["logo_text"]:
+        if len(
+            {
+                overlay[side]["logo_text"]
+                for side in ("youtube_shorts", "x", "instagram_reels", "tiktok")
+            }
+        ) > 1:
             overlay["mode"] = "platform_specific_variants"
-        for side in ("youtube_shorts", "x", "instagram_reels"):
+        for side in ("youtube_shorts", "x", "instagram_reels", "tiktok"):
             side_spec = overlay[side]
             if int(side_spec.get("logo_count") or 0) != 1 or side_spec.get("logo_placement") != "corner":
                 raise CampaignPlatformError(
@@ -1116,11 +1223,24 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 "instagram_remaining_pool_usd": _remaining_pool(instagram_campaign),
                 "instagram_caption": instagram_caption,
                 "instagram_submission_url": instagram_campaign.get("submission_url"),
-                "instagram_handle": platform_account(campaigns_data, "instagram_reels")["handle"],
+                "instagram_handle": instagram_account["handle"],
                 "instagram_mp4_url": PAGES_MEDIA_BASE + str(plan["file"]),
                 "instagram_duration_sec": INSTAGRAM_DURATION_SEC,
                 "instagram_duration_ok": instagram_ok,
                 "instagram_duration_reason": instagram_reason,
+                "tiktok_campaign": tiktok_campaign.get("id"),
+                "tiktok_campaign_title": tiktok_campaign.get("title"),
+                "tiktok_category": x_category,
+                "tiktok_rate_per_1k_views_usd": _rate(tiktok_campaign),
+                "tiktok_remaining_pool_usd": _remaining_pool(tiktok_campaign),
+                "tiktok_caption": tiktok_caption,
+                "tiktok_submission_url": tiktok_campaign.get("submission_url"),
+                "tiktok_handle": tiktok_account["handle"],
+                "tiktok_username": tiktok_account["username"],
+                "tiktok_mp4_url": PAGES_MEDIA_BASE + str(plan["file"]),
+                "tiktok_duration_sec": TIKTOK_DURATION_SEC,
+                "tiktok_duration_ok": tiktok_ok,
+                "tiktok_duration_reason": tiktok_reason,
                 "overlay": overlay,
             }
         )
@@ -1134,13 +1254,17 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
         "generated_at": generated_at
         or datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "slot_count": len(slots),
+        "platform_eligible_campaigns": {
+            campaign_id: list(platforms)
+            for campaign_id, platforms in PLATFORM_ELIGIBLE_CAMPAIGNS.items()
+        },
         "guarantee": (
-            "Every X (@chadriyo) slot is Dishpilot with #Dishpilot and no loan text. "
-            "Every Instagram Reel (@benreelr) and TikTok (@bi67325) post carries one "
-            "campaign name and its matching tag. Every YouTube Shorts (Denzen / @denzen0) slot "
-            "is Dishpilot (#Dishpilot #Shorts) or Mr. Pa (#MrPa #Shorts). At least 80% of YouTube "
-            "slots are Indian actor reels or Indian cinema scenes. Each platform draws "
-            "one top-left corner mark."
+            "Every X, YouTube, Instagram, and TikTok slot uses a campaign permitted by "
+            "PLATFORM_ELIGIBLE_CAMPAIGNS. Its caption has only that campaign's hashtag "
+            "and its overlay logo_text is the matching dishpilot, rascals, or mr. pa badge. "
+            "Rascals and Mr. Pa are never assigned to X. At least 80% of YouTube slots "
+            "are Indian actor reels or Indian cinema scenes. Each platform draws one "
+            "top-left corner mark."
         ),
         "slots": slots,
     }
@@ -1153,9 +1277,78 @@ def _campaign_by_id(campaigns_data: dict, campaign_id: str) -> dict | None:
     return None
 
 
+MANIFEST_PLATFORM_FIELDS = (
+    ("x", "x", "x"),
+    ("youtube", "youtube_shorts", "youtube_shorts"),
+    ("instagram", "instagram_reels", "instagram_reels"),
+    ("tiktok", "tiktok", "tiktok"),
+)
+
+
+def verify_slot_campaign_identity(slot: dict, campaigns_data: dict) -> list[str]:
+    """Verify eligibility, badge, and caption identity on every platform in one slot."""
+    errors: list[str] = []
+    slot_no = slot.get("slot")
+    overlay = slot.get("overlay") if isinstance(slot.get("overlay"), dict) else {}
+    for prefix, platform, overlay_key in MANIFEST_PLATFORM_FIELDS:
+        campaign_id = str(slot.get(f"{prefix}_campaign") or "")
+        campaign = _campaign_by_id(campaigns_data, campaign_id)
+        if campaign is None:
+            errors.append(f"slot {slot_no} {prefix}_campaign {campaign_id!r} is missing")
+            continue
+        if campaign_id not in PLATFORM_ELIGIBLE_CAMPAIGNS:
+            errors.append(
+                f"slot {slot_no} {prefix}_campaign {campaign_id!r} is absent from "
+                "PLATFORM_ELIGIBLE_CAMPAIGNS"
+            )
+            continue
+        try:
+            bind_clip_to_campaign(campaign, platform)
+        except CampaignPlatformError as exc:
+            errors.append(f"slot {slot_no}: {exc}")
+        routed_ids = {
+            str(row.get("id"))
+            for row in campaigns_for_platform(campaigns_data, platform)
+        }
+        if campaign_id not in routed_ids:
+            errors.append(
+                f"slot {slot_no} {campaign_id!r} is not active, paying, and routed for {platform}"
+            )
+        expected_badge, expected_campaign_tag = CAMPAIGN_MARK[campaign_id]
+        actual_overlay = overlay.get(overlay_key) if isinstance(overlay, dict) else {}
+        actual_badge = (
+            actual_overlay.get("logo_text") if isinstance(actual_overlay, dict) else None
+        )
+        if actual_badge != expected_badge:
+            errors.append(
+                f"slot {slot_no} overlay.{overlay_key}.logo_text {actual_badge!r} "
+                f"does not match {campaign_id!r} ({expected_badge!r})"
+            )
+        caption = str(slot.get(f"{prefix}_caption") or "")
+        tags = _HASHTAG_RE.findall(caption)
+        campaign_tags = [tag for tag in tags if tag in SINGLE_CAMPAIGN_TAGS]
+        if campaign_tags != [expected_campaign_tag]:
+            errors.append(
+                f"slot {slot_no} {prefix}_caption campaign tags {campaign_tags!r} "
+                f"do not exactly match {campaign_id!r} ({expected_campaign_tag})"
+            )
+        expected_tags = platform_hashtags(platform, campaign_id)
+        if tags != expected_tags:
+            errors.append(
+                f"slot {slot_no} {prefix}_caption tags {tags!r} must be {expected_tags!r}"
+            )
+    return errors
+
+
 def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
     """Return human-readable mapping violations. An empty list means the manifest is safe to post."""
     errors: list[str] = []
+    expected_eligibility = {
+        campaign_id: list(platforms)
+        for campaign_id, platforms in PLATFORM_ELIGIBLE_CAMPAIGNS.items()
+    }
+    if manifest.get("platform_eligible_campaigns") != expected_eligibility:
+        errors.append("manifest platform_eligible_campaigns does not match the source-of-truth matrix")
     slots = manifest.get("slots")
     if not isinstance(slots, list) or len(slots) != DAILY_SLOT_COUNT:
         errors.append(f"manifest must contain {DAILY_SLOT_COUNT} slots")
@@ -1177,6 +1370,7 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
             errors.append("slot is not an object")
             continue
         slot_no = slot.get("slot")
+        errors.extend(verify_slot_campaign_identity(slot, campaigns_data))
         youtube_id = slot.get("youtube_campaign")
         x_id = slot.get("x_campaign")
         if youtube_id not in youtube_ids:
@@ -1258,10 +1452,12 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
         expected_x = platform_overlay_spec("x", str(x_id or ""))
         expected_yt = platform_overlay_spec("youtube_shorts", str(youtube_id or ""))
         expected_ig = platform_overlay_spec("instagram_reels", str(slot.get("instagram_campaign") or ""))
+        expected_tiktok = platform_overlay_spec("tiktok", str(slot.get("tiktok_campaign") or ""))
         for side, expected in (
             ("x", expected_x),
             ("youtube_shorts", expected_yt),
             ("instagram_reels", expected_ig),
+            ("tiktok", expected_tiktok),
         ):
             actual = overlay.get(side) or {}
             placement = str(actual.get("logo_placement") or "")
@@ -1352,6 +1548,7 @@ def feed_from_manifest(manifest: dict) -> dict:
     return {
         "generated_at": manifest.get("generated_at"),
         "slot_count": manifest.get("slot_count"),
+        "platform_eligible_campaigns": manifest.get("platform_eligible_campaigns"),
         "guarantee": manifest.get("guarantee"),
         "items": manifest.get("slots") or [],
     }
@@ -1789,6 +1986,7 @@ def daily_feed_is_current(feed: dict, today: date) -> bool:
         if not isinstance(item, dict):
             return False
         try:
+            assert_feed_item_campaign_identity(item)
             assert_feed_item_community_guidelines_safe(item)
         except CampaignPlatformError:
             return False
@@ -1812,12 +2010,13 @@ def build_daily_40_schedule(feed: dict, campaigns_data: dict | None = None) -> d
         if platform not in DAILY_SLOT_KEYS:
             raise CampaignPlatformError(f"Unknown daily platform {platform!r}")
         mark = str(item.get("watermark_text"))
-        if mark not in ("dishpilot", "rascals"):
+        if mark not in SINGLE_CAMPAIGN_NAMES:
             raise CampaignPlatformError(
-                f"Daily {platform} slot {item.get('slot')} has watermark {mark!r}; expected dishpilot or rascals"
+                f"Daily {platform} slot {item.get('slot')} has unknown watermark {mark!r}"
             )
         if item.get("channel_id") != DAILY_CHANNEL_IDS[platform]:
             raise CampaignPlatformError(f"Daily {platform} slot {item.get('slot')} has the wrong channel id")
+        assert_feed_item_campaign_identity(item, campaigns_data)
         assert_feed_item_community_guidelines_safe(item)
         slots[DAILY_SLOT_KEYS[platform]].append(item)
     for key, rows in slots.items():
@@ -2038,6 +2237,7 @@ def _daily_item(
         "pre_stamped": bool(clip.get("campaign_lock")),
         "buffer_status": "pending",
     }
+    assert_feed_item_campaign_identity(item, campaigns_data)
     assert_feed_item_community_guidelines_safe(item)
     return item
 
@@ -2197,6 +2397,7 @@ def buffer_create_post_body(item: dict, now: datetime | None = None) -> dict:
     A slot whose time already passed (for example an ingest run late in the day)
     goes to the channel queue instead, since Buffer rejects past `dueAt` values.
     """
+    assert_feed_item_campaign_identity(item)
     assert_feed_item_community_guidelines_safe(item)
     due = str(item["due_at_utc"])
     if due.endswith("Z"):
@@ -2584,6 +2785,7 @@ def build_ingest_items(
         item["source"] = "ingest"
         item["source_url"] = source_url
         item["source_metadata"] = source_metadata or {}
+        assert_feed_item_campaign_identity(item, campaigns_data)
         assert_feed_item_community_guidelines_safe(item)
         items.append(item)
     if campaign.get("id") != campaign_id:

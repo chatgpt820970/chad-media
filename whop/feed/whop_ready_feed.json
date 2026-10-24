@@ -1,8 +1,26 @@
 {
-  "generated_at": "2026-10-24T20:03:59Z",
+  "generated_at": "2026-10-24T20:47:33Z",
   "whop_user": "@bi60",
-  "quality_profile": "1080x1920_lanczos_cas_crf17_fast",
-  "platform_mapping": "youtube_shorts=Denzen uses a campaign that lists youtube_shorts; x=@chadriyo uses a campaign that lists x",
+  "quality_profile": "1080x1920_lanczos_unsharp_crf16_fast",
+  "platform_mapping": "Every X, YouTube, Instagram, and TikTok item uses an active campaign permitted by PLATFORM_ELIGIBLE_CAMPAIGNS, with its exact badge and hashtag",
+  "platform_eligible_campaigns": {
+    "dishpilot-clipping": [
+      "x",
+      "youtube",
+      "instagram",
+      "tiktok"
+    ],
+    "rascals-theme-pages": [
+      "instagram",
+      "tiktok",
+      "youtube"
+    ],
+    "mr-pa-clipping": [
+      "youtube",
+      "instagram",
+      "tiktok"
+    ]
+  },
   "pool_guard_rules": {
     "min_remaining_budget_usd": 500.0,
     "max_paid_out_fraction": 0.8,
@@ -42,8 +60,7 @@
         "x",
         "youtube_shorts",
         "instagram_reels",
-        "tiktok",
-        "facebook"
+        "tiktok"
       ],
       "allowed_lanes": [
         "funny",
@@ -102,8 +119,9 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": true,
-      "payout": "$3.00 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — Instagram Reels @benreelr and TikTok @bi67325)",
+      "payout": "$3.00 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — YouTube Shorts Denzen, Instagram Reels @benreelr, and TikTok @bi67325; never X)",
       "accepted_platforms": [
+        "youtube_shorts",
         "instagram_reels",
         "tiktok"
       ],
@@ -139,7 +157,7 @@
           "#Reels"
         ]
       },
-      "requirements": "Instagram Reels (@benreelr). One subtle top-left corner mark reads rascals (x=w*0.025:y=h*0.03, white 0.58 alpha, thin shadow, no box). Caption is a hook plus #Rascals #Reels.",
+      "requirements": "YouTube Shorts, Instagram Reels (@benreelr), and TikTok (@bi67325), never X. One subtle top-left corner mark reads rascals. Caption uses #Rascals plus the platform suffix.",
       "pool_guard_status": "OK unlimited (remaining=$50000)"
     },
     {
@@ -166,10 +184,11 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$1.25 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — Instagram Reels and YouTube Shorts)",
+      "payout": "$1.25 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — YouTube Shorts, Instagram Reels, and TikTok; never X)",
       "accepted_platforms": [
         "youtube_shorts",
-        "instagram_reels"
+        "instagram_reels",
+        "tiktok"
       ],
       "allowed_lanes": [
         "funny",
@@ -200,7 +219,7 @@
         "logo_text": "mr. pa",
         "logo_style": "subtle"
       },
-      "requirements": "YouTube Shorts (Denzen) and Instagram Reels (@benreelr). One top-left mark reads mr. pa. Captions use #MrPa plus the platform tag. No loan text.",
+      "requirements": "YouTube Shorts (Denzen), Instagram Reels (@benreelr), and TikTok (@bi67325), never X. One top-left mark reads mr. pa. Captions use #MrPa plus the platform suffix. No loan text.",
       "pool_guard_status": "OK (remaining=$8507, paid=14.9%, spots=999)"
     },
     {
@@ -471,7 +490,7 @@
       "x_duration_ok": true,
       "x_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -495,14 +514,27 @@
           "logo_text": "rascals",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "dishpilot",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
-      "x_render": "dual_compatible",
+      "x_render": "platform_specific_variants",
       "instagram_campaign": "rascals-theme-pages",
       "instagram_caption": "WAIT FOR THE DROP\n\nDiljit Dosanjh hits the stage and the stadium comes apart.\n\n#Rascals #Reels",
       "instagram_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 3.0
+      "instagram_rate_per_1k_views_usd": 3.0,
+      "tiktok_campaign": "dishpilot-clipping",
+      "tiktok_caption": "WAIT FOR THE DROP\n\nDiljit Dosanjh hits the stage and the stadium comes apart.\n\n#Dishpilot",
+      "tiktok_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 2.0
     },
     {
       "id": "flp-language-gauntlet",
@@ -536,7 +568,7 @@
       "x_duration_ok": true,
       "x_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -560,14 +592,27 @@
           "logo_text": "dishpilot",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "rascals",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
-      "x_render": "dual_compatible",
+      "x_render": "platform_specific_variants",
       "instagram_campaign": "dishpilot-clipping",
       "instagram_caption": "WHEN THE BEAT DROPS\n\nYo Yo Honey Singh locks the room in the second the beat hits.\n\n#Dishpilot #Reels",
       "instagram_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 2.0
+      "instagram_rate_per_1k_views_usd": 2.0,
+      "tiktok_campaign": "rascals-theme-pages",
+      "tiktok_caption": "WHEN THE BEAT DROPS\n\nYo Yo Honey Singh locks the room in the second the beat hits.\n\n#Rascals",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 3.0
     },
     {
       "id": "flp-concert-vibes",
@@ -625,6 +670,14 @@
           "logo_text": "mr. pa",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "mr. pa",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
       "x_render": "platform_specific_variants",
@@ -632,7 +685,12 @@
       "instagram_caption": "WATCH HIS HANDS\n\nOne look at his hands and the round is already over.\n\n#MrPa #Reels",
       "instagram_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 1.25
+      "instagram_rate_per_1k_views_usd": 1.25,
+      "tiktok_campaign": "mr-pa-clipping",
+      "tiktok_caption": "WATCH HIS HANDS\n\nOne look at his hands and the round is already over.\n\n#MrPa",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 1.25
     },
     {
       "id": "flp-anime-sakuga",
@@ -662,7 +720,7 @@
       "x_duration_ok": false,
       "x_duration_reason": "duration 54.1s > max 35s",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -686,16 +744,29 @@
           "logo_text": "rascals",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "dishpilot",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
       "x_duration_sec": 54.1,
       "x_mp4_url": null,
-      "x_render": "dual_compatible",
+      "x_render": "platform_specific_variants",
       "instagram_campaign": "rascals-theme-pages",
       "instagram_caption": "SHOW ME A BETTER ANIME FIGHT SCENE\n\n#Rascals #Reels",
       "instagram_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 3.0
+      "instagram_rate_per_1k_views_usd": 3.0,
+      "tiktok_campaign": "dishpilot-clipping",
+      "tiktok_caption": "SHOW ME A BETTER ANIME FIGHT SCENE\n\n#Dishpilot",
+      "tiktok_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 2.0
     },
     {
       "id": "flp-diljit-worldtour",
@@ -725,7 +796,7 @@
       "x_duration_ok": false,
       "x_duration_reason": "duration 53.1s > max 35s",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -749,16 +820,29 @@
           "logo_text": "dishpilot",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "rascals",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
       "x_duration_sec": 53.1,
       "x_mp4_url": null,
-      "x_render": "dual_compatible",
+      "x_render": "platform_specific_variants",
       "instagram_campaign": "dishpilot-clipping",
       "instagram_caption": "WAIT FOR THE STADIUM DROP AT 0.14\n\n#Dishpilot #Reels",
       "instagram_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 2.0
+      "instagram_rate_per_1k_views_usd": 2.0,
+      "tiktok_campaign": "rascals-theme-pages",
+      "tiktok_caption": "WAIT FOR THE STADIUM DROP AT 0.14\n\n#Rascals",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 3.0
     },
     {
       "id": "flp-khaby-lifehack",
@@ -788,7 +872,7 @@
       "x_duration_ok": false,
       "x_duration_reason": "duration 37s > max 35s",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -812,16 +896,29 @@
           "logo_text": "mr. pa",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "mr. pa",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
       "x_duration_sec": 37.0,
       "x_mp4_url": null,
-      "x_render": "dual_compatible",
+      "x_render": "platform_specific_variants",
       "instagram_campaign": "mr-pa-clipping",
       "instagram_caption": "HE TESTED THE UNBREAKABLE GLASSES\n\n#MrPa #Reels",
       "instagram_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 1.25
+      "instagram_rate_per_1k_views_usd": 1.25,
+      "tiktok_campaign": "mr-pa-clipping",
+      "tiktok_caption": "HE TESTED THE UNBREAKABLE GLASSES\n\n#MrPa",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 1.25
     },
     {
       "id": "flp-honeysingh-vibe",
@@ -851,7 +948,7 @@
       "x_duration_ok": false,
       "x_duration_reason": "duration 60.1s > max 35s",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -875,16 +972,29 @@
           "logo_text": "rascals",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "dishpilot",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
       "x_duration_sec": 60.1,
       "x_mp4_url": null,
-      "x_render": "dual_compatible",
+      "x_render": "platform_specific_variants",
       "instagram_campaign": "rascals-theme-pages",
       "instagram_caption": "WHEN THIS BEAT DROPS EVERYONE LOCKS IN\n\n#Rascals #Reels",
       "instagram_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 3.0
+      "instagram_rate_per_1k_views_usd": 3.0,
+      "tiktok_campaign": "dishpilot-clipping",
+      "tiktok_caption": "WHEN THIS BEAT DROPS EVERYONE LOCKS IN\n\n#Dishpilot",
+      "tiktok_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 2.0
     },
     {
       "id": "flp-tea-science",
@@ -914,7 +1024,7 @@
       "x_duration_ok": false,
       "x_duration_reason": "duration 50s > max 35s",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -938,16 +1048,29 @@
           "logo_text": "dishpilot",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "rascals",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
       "x_duration_sec": 50.0,
       "x_mp4_url": null,
-      "x_render": "dual_compatible",
+      "x_render": "platform_specific_variants",
       "instagram_campaign": "dishpilot-clipping",
       "instagram_caption": "99 PERCENT OF PEOPLE RUIN THEIR TEA\n\n#Dishpilot #Reels",
       "instagram_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 2.0
+      "instagram_rate_per_1k_views_usd": 2.0,
+      "tiktok_campaign": "rascals-theme-pages",
+      "tiktok_caption": "99 PERCENT OF PEOPLE RUIN THEIR TEA\n\n#Rascals",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 3.0
     },
     {
       "id": "flp-nyc-doorman",
@@ -977,7 +1100,7 @@
       "x_duration_ok": true,
       "x_duration_reason": "duration ok",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -1001,16 +1124,29 @@
           "logo_text": "mr. pa",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "mr. pa",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
       "x_duration_sec": 34.8,
       "x_mp4_url": null,
-      "x_render": "dual_compatible",
+      "x_render": "platform_specific_variants",
       "instagram_campaign": "mr-pa-clipping",
       "instagram_caption": "THIS DOG REFUSES TO WALK PAST HIM\n\n#MrPa #Reels",
       "instagram_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 1.25
+      "instagram_rate_per_1k_views_usd": 1.25,
+      "tiktok_campaign": "mr-pa-clipping",
+      "tiktok_caption": "THIS DOG REFUSES TO WALK PAST HIM\n\n#MrPa",
+      "tiktok_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 1.25
     },
     {
       "id": "flp-president-speech",
@@ -1040,7 +1176,7 @@
       "x_duration_ok": false,
       "x_duration_reason": "duration 66.3s > max 35s",
       "overlay": {
-        "mode": "dual_compatible",
+        "mode": "platform_specific_variants",
         "youtube_shorts": {
           "logo_overlay_required": true,
           "logo_placement": "corner",
@@ -1064,16 +1200,29 @@
           "logo_text": "rascals",
           "logo_subtext": "",
           "logo_path": ""
+        },
+        "tiktok": {
+          "logo_overlay_required": true,
+          "logo_placement": "corner",
+          "logo_count": 1,
+          "logo_text": "dishpilot",
+          "logo_subtext": "",
+          "logo_path": ""
         }
       },
       "x_duration_sec": 66.3,
       "x_mp4_url": null,
-      "x_render": "dual_compatible",
+      "x_render": "platform_specific_variants",
       "instagram_campaign": "rascals-theme-pages",
       "instagram_caption": "IF BRO RAN FOR PRESIDENT HED WIN\n\n#Rascals #Reels",
       "instagram_submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "instagram_handle": "@benreelr",
-      "instagram_rate_per_1k_views_usd": 3.0
+      "instagram_rate_per_1k_views_usd": 3.0,
+      "tiktok_campaign": "dishpilot-clipping",
+      "tiktok_caption": "IF BRO RAN FOR PRESIDENT HED WIN\n\n#Dishpilot",
+      "tiktok_submission_url": "https://whop.com/joined/dishpilot/exp_U5YGkStRz0N9SR/app/",
+      "tiktok_handle": "@bi67325",
+      "tiktok_rate_per_1k_views_usd": 2.0
     }
   ]
 }

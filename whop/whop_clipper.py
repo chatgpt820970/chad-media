@@ -44,6 +44,8 @@ try:
 except ImportError:
     from whop import clipper as platform_map
 
+PLATFORM_ELIGIBLE_CAMPAIGNS = platform_map.PLATFORM_ELIGIBLE_CAMPAIGNS
+
 ROOT = Path(__file__).resolve().parent
 REPO_ROOT = ROOT.parent
 CAMPAIGNS_PATH = ROOT / "campaigns.json"
@@ -374,6 +376,11 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
             for campaign in platform_map.campaigns_for_platform(cfg, "instagram_reels")
         ]
         instagram_campaign = instagram_campaigns[index % len(instagram_campaigns)] if instagram_campaigns else None
+        tiktok_campaigns = [
+            platform_map.bind_clip_to_campaign(campaign, "tiktok")
+            for campaign in platform_map.campaigns_for_platform(cfg, "tiktok")
+        ]
+        tiktok_campaign = tiktok_campaigns[index % len(tiktok_campaigns)] if tiktok_campaigns else None
         hook = platform_map.compose_post_hook(
             str(clip.get("hook_text") or ""),
             str(clip.get("description") or ""),
@@ -417,8 +424,17 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
                 "instagram_reels",
                 instagram_campaign.get("id") if instagram_campaign is not None else None,
             ),
+            "tiktok": platform_map.platform_overlay_spec(
+                "tiktok",
+                tiktok_campaign.get("id") if tiktok_campaign is not None else None,
+            ),
         }
-        if clip["overlay"]["x"]["logo_text"] != clip["overlay"]["youtube_shorts"]["logo_text"]:
+        if len(
+            {
+                clip["overlay"][side]["logo_text"]
+                for side in ("youtube_shorts", "x", "instagram_reels", "tiktok")
+            }
+        ) > 1:
             clip["overlay"]["mode"] = "platform_specific_variants"
         clip["x_duration_sec"] = x_seconds
         if not clip.get("x_mp4_url"):
@@ -440,6 +456,21 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
             clip["instagram_submission_url"] = instagram_campaign.get("submission_url")
             clip["instagram_handle"] = "@benreelr"
             clip["instagram_rate_per_1k_views_usd"] = platform_map._rate(instagram_campaign)
+        if tiktok_campaign is not None:
+            tiktok_caption = platform_map.build_platform_caption(
+                hook,
+                tiktok_campaign,
+                "tiktok",
+                links_blocked=False,
+            )
+            clip["tiktok_campaign"] = tiktok_campaign.get("id")
+            clip["tiktok_caption"] = tiktok_caption
+            clip["tiktok_submission_url"] = tiktok_campaign.get("submission_url")
+            clip["tiktok_handle"] = "@bi67325"
+            clip["tiktok_rate_per_1k_views_usd"] = platform_map._rate(tiktok_campaign)
+        identity_errors = platform_map.verify_slot_campaign_identity(clip, cfg)
+        if identity_errors:
+            raise platform_map.CampaignPlatformError("; ".join(identity_errors))
 
 
 def build_whop_ready_feed() -> dict:
@@ -703,11 +734,15 @@ def build_whop_ready_feed() -> dict:
     feed_data = {
         "generated_at": datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"),
         "whop_user": cfg.get("whop_user", "@bi60"),
-        "quality_profile": "1080x1920_lanczos_cas_crf17_fast",
+        "quality_profile": "1080x1920_lanczos_unsharp_crf16_fast",
         "platform_mapping": (
-            "youtube_shorts=Denzen uses a campaign that lists youtube_shorts; "
-            "x=@chadriyo uses a campaign that lists x"
+            "Every X, YouTube, Instagram, and TikTok item uses an active campaign "
+            "permitted by PLATFORM_ELIGIBLE_CAMPAIGNS, with its exact badge and hashtag"
         ),
+        "platform_eligible_campaigns": {
+            campaign_id: list(platforms)
+            for campaign_id, platforms in PLATFORM_ELIGIBLE_CAMPAIGNS.items()
+        },
         "pool_guard_rules": rules,
         "healthy_campaigns_count": len(healthy),
         "healthy_campaigns": healthy,
@@ -716,8 +751,13 @@ def build_whop_ready_feed() -> dict:
         "ready_clips_count": len(ready_clips),
         "items": ready_clips,
     }
+    root_feed_path = ROOT / "whop_ready_feed.json"
     save_json(FEED_PATH, feed_data)
-    log(f"wrote {FEED_PATH} with {len(healthy)} healthy campaigns and {len(ready_clips)} ready clips")
+    save_json(root_feed_path, feed_data)
+    log(
+        f"wrote {FEED_PATH} and {root_feed_path} with "
+        f"{len(healthy)} healthy campaigns and {len(ready_clips)} ready clips"
+    )
     return feed_data
 
 
@@ -787,6 +827,7 @@ def schedule_unscheduled_items(feed: dict, token: str, poster=None) -> int:
     """Best-effort Buffer scheduling. Failures stay pending and do not raise."""
     if not token.strip():
         return 0
+    cfg = load_json(CAMPAIGNS_PATH, {})
     scheduled = 0
     for item in feed.get("items") or []:
         if not isinstance(item, dict) or item.get("buffer_status") == "scheduled":
@@ -794,6 +835,7 @@ def schedule_unscheduled_items(feed: dict, token: str, poster=None) -> int:
         if item.get("render_status") in ("failed", "rendered_local"):
             log(f"skipping {item.get('clip_id')}: the stamped file is not hosted yet, so it is not sent to Buffer")
             continue
+        platform_map.assert_feed_item_campaign_identity(item, cfg)
         platform_map.assert_feed_item_community_guidelines_safe(item)
         body = platform_map.buffer_create_post_body(item)
         try:
@@ -869,9 +911,11 @@ def load_queue_urls() -> tuple[list[str], str, str]:
 
 
 def merge_ingested_items(existing: dict, feed: dict) -> dict:
+    cfg = load_json(CAMPAIGNS_PATH, {})
     for item in feed.get("items") or []:
         if not isinstance(item, dict):
             raise platform_map.CampaignPlatformError("daily feed contains a non-object item")
+        platform_map.assert_feed_item_campaign_identity(item, cfg)
         platform_map.assert_feed_item_community_guidelines_safe(item)
     if existing.get("date") != feed.get("date"):
         return feed
@@ -882,6 +926,7 @@ def merge_ingested_items(existing: dict, feed: dict) -> dict:
         if isinstance(item, dict) and item.get("source") == "ingest" and item.get("clip_id") not in have
     ]
     for item in extras:
+        platform_map.assert_feed_item_campaign_identity(item, cfg)
         platform_map.assert_feed_item_community_guidelines_safe(item)
     if not extras:
         return feed
@@ -892,6 +937,7 @@ def merge_ingested_items(existing: dict, feed: dict) -> dict:
 
 
 def append_items_to_daily_feed(items: list[dict], today) -> dict:
+    cfg = load_json(CAMPAIGNS_PATH, {})
     feed = load_json(DAILY_FEED_PATH, {})
     if feed.get("date") != today.isoformat():
         feed = {
@@ -903,8 +949,10 @@ def append_items_to_daily_feed(items: list[dict], today) -> dict:
     for item in feed.get("items") or []:
         if not isinstance(item, dict):
             raise platform_map.CampaignPlatformError("daily feed contains a non-object item")
+        platform_map.assert_feed_item_campaign_identity(item, cfg)
         platform_map.assert_feed_item_community_guidelines_safe(item)
     for item in items:
+        platform_map.assert_feed_item_campaign_identity(item, cfg)
         platform_map.assert_feed_item_community_guidelines_safe(item)
     have = {item.get("clip_id") for item in feed.get("items") or []}
     for item in items:

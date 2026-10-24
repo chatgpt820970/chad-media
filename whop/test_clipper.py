@@ -12,6 +12,7 @@ from pathlib import Path
 
 from whop.clipper import (
     BUFFER_ORGANIZATION_ID,
+    CAMPAIGN_MARK,
     DAILY_30_INDIAN_SLOTS,
     DAILY_30_PER_PLATFORM,
     DAILY_30_TIMES_IST,
@@ -25,8 +26,10 @@ from whop.clipper import (
     PRIORITY_CATEGORIES,
     YTDLP_FORMAT,
     MANIFEST_PATH,
+    PLATFORM_ELIGIBLE_CAMPAIGNS,
     CampaignPlatformError,
     banner_overlay_spec,
+    assert_feed_item_campaign_identity,
     bind_clip_to_campaign,
     buffer_create_post_body,
     build_daily_30,
@@ -54,6 +57,7 @@ from whop.clipper import (
     select_campaign_for_platform,
     single_campaign_drawtext,
     verify_manifest_data,
+    verify_slot_campaign_identity,
     _catalog_clip,
 )
 from whop import whop_clipper as runner
@@ -94,7 +98,10 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertIn("youtube_shorts", youtube["accepted_platforms"])
         self.assertEqual(youtube["rules"]["logo_text"], "dishpilot")
         routed = [campaign["id"] for campaign in campaigns_for_platform(self.data, "youtube_shorts")]
-        self.assertEqual(routed, ["dishpilot-clipping", "mr-pa-clipping"])
+        self.assertEqual(
+            routed,
+            ["dishpilot-clipping", "rascals-theme-pages", "mr-pa-clipping"],
+        )
         self.assertNotIn("fast-loan-pilot", routed)
 
     def test_select_x_campaign_accepts_x_and_passes_pool_guard(self) -> None:
@@ -116,6 +123,60 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertIn("x", campaign["accepted_platforms"])
             passed, detail = check_campaign_pool_guard(campaign, self.guard)
             self.assertTrue(passed, detail)
+
+    def test_explicit_platform_eligibility_matrix_and_zero_mix_up(self) -> None:
+        self.assertEqual(
+            PLATFORM_ELIGIBLE_CAMPAIGNS,
+            {
+                "dishpilot-clipping": ("x", "youtube", "instagram", "tiktok"),
+                "rascals-theme-pages": ("instagram", "tiktok", "youtube"),
+                "mr-pa-clipping": ("youtube", "instagram", "tiktok"),
+            },
+        )
+        by_id = {row["id"]: row for row in self.data["active_campaigns"]}
+        with self.assertRaises(CampaignPlatformError):
+            bind_clip_to_campaign(by_id["rascals-theme-pages"], "x")
+        with self.assertRaises(CampaignPlatformError):
+            bind_clip_to_campaign(by_id["mr-pa-clipping"], "x")
+        self.assertEqual(
+            [row["id"] for row in campaigns_for_platform(self.data, "x")],
+            ["dishpilot-clipping"],
+        )
+        self.assertEqual(
+            {row["id"] for row in campaigns_for_platform(self.data, "youtube_shorts")},
+            set(PLATFORM_ELIGIBLE_CAMPAIGNS),
+        )
+        self.assertEqual(
+            {row["id"] for row in campaigns_for_platform(self.data, "instagram_reels")},
+            set(PLATFORM_ELIGIBLE_CAMPAIGNS),
+        )
+        self.assertEqual(
+            {row["id"] for row in campaigns_for_platform(self.data, "tiktok")},
+            set(PLATFORM_ELIGIBLE_CAMPAIGNS),
+        )
+
+        manifest = build_daily_manifest(self.data, generated_at="2026-10-24T00:00:00Z")
+        slot9 = dict(manifest["slots"][8])
+        slot9["overlay"] = dict(slot9["overlay"])
+        slot9["overlay"]["youtube_shorts"] = dict(
+            slot9["overlay"]["youtube_shorts"],
+            logo_text="dishpilot",
+        )
+        slot9["youtube_caption"] = f"{slot9['hook']}\n\n#Dishpilot #Shorts"
+        broken = dict(manifest, slots=[*manifest["slots"][:8], slot9, manifest["slots"][9]])
+        errors = verify_manifest_data(broken, self.data)
+        self.assertTrue(any("youtube_caption" in error for error in errors), errors)
+        self.assertTrue(any("overlay.youtube_shorts.logo_text" in error for error in errors), errors)
+
+        rascals_on_x = dict(manifest["slots"][0], x_campaign="rascals-theme-pages")
+        rascals_on_x["x_caption"] = f"{rascals_on_x['hook']}\n\n#Rascals"
+        rascals_on_x["overlay"] = dict(rascals_on_x["overlay"])
+        rascals_on_x["overlay"]["x"] = dict(
+            rascals_on_x["overlay"]["x"],
+            logo_text="rascals",
+        )
+        errors = verify_slot_campaign_identity(rascals_on_x, self.data)
+        self.assertTrue(any("PLATFORM_ELIGIBLE_CAMPAIGNS" in error for error in errors), errors)
 
     def test_pool_guard_blocks_high_denial_shane_gillis(self) -> None:
         shane = next(
@@ -158,6 +219,13 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         manifest = build_daily_manifest(self.data, generated_at="2026-10-24T00:00:00Z")
         self.assertEqual(verify_manifest_data(manifest, self.data), [])
         self.assertEqual(len(manifest["slots"]), 10)
+        self.assertEqual(
+            manifest["platform_eligible_campaigns"],
+            {
+                campaign_id: list(platforms)
+                for campaign_id, platforms in PLATFORM_ELIGIBLE_CAMPAIGNS.items()
+            },
+        )
 
         x_ids = {slot["x_campaign"] for slot in manifest["slots"]}
         self.assertEqual(x_ids, X_PAYING_IDS)
@@ -202,13 +270,14 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertEqual(slot["overlay"]["x"]["logo_text"], "dishpilot")
             yt_mark = "mr. pa" if slot["youtube_campaign"] == "mr-pa-clipping" else "dishpilot"
             self.assertEqual(slot["overlay"]["youtube_shorts"]["logo_text"], yt_mark)
-            if yt_mark == "dishpilot":
-                self.assertEqual(slot["overlay"]["mode"], "dual_compatible")
-            else:
-                self.assertEqual(slot["overlay"]["mode"], "platform_specific_variants")
+            self.assertEqual(slot["overlay"]["mode"], "platform_specific_variants")
             self.assertEqual(slot["overlay"]["instagram_reels"]["logo_text"], {"dishpilot-clipping": "dishpilot", "rascals-theme-pages": "rascals", "mr-pa-clipping": "mr. pa"}[slot["instagram_campaign"]])
+            self.assertEqual(
+                slot["overlay"]["tiktok"]["logo_text"],
+                CAMPAIGN_MARK[slot["tiktok_campaign"]][0],
+            )
             self.assertNotIn("·", slot["overlay"]["instagram_reels"]["logo_text"])
-            for side in ("x", "youtube_shorts", "instagram_reels"):
+            for side in ("x", "youtube_shorts", "instagram_reels", "tiktok"):
                 badge = slot["overlay"][side]
                 self.assertEqual(badge["logo_count"], 1)
                 self.assertEqual(badge["logo_placement"], "corner")
@@ -231,6 +300,14 @@ class PlatformCampaignMappingTest(unittest.TestCase):
             self.assertIn(slot["instagram_campaign"], ("rascals-theme-pages", "dishpilot-clipping"))
             self.assertTrue(slot["instagram_duration_ok"])
             self.assertEqual(slot["instagram_duration_sec"], 15.0)
+            self.assertEqual(slot["tiktok_handle"], "@bi67325")
+            self.assertTrue(slot["tiktok_duration_ok"])
+            self.assertEqual(slot["tiktok_duration_sec"], 15.0)
+            self.assertEqual(
+                re.findall(r"#[A-Za-z][A-Za-z0-9_]*", slot["tiktok_caption"]),
+                [CAMPAIGN_MARK[slot["tiktok_campaign"]][1]],
+            )
+            self.assertEqual(verify_slot_campaign_identity(slot, self.data), [])
 
         on_disk = json.loads(MANIFEST_PATH.read_text(encoding="utf-8"))
         self.assertEqual(on_disk["slots"], manifest["slots"])
@@ -1023,7 +1100,10 @@ class IngestUrlPipelineTest(unittest.TestCase):
             hook="Wait for the drop",
             today=date(2026, 10, 24),
         )
-        self.assertEqual({item["platform"] for item in rascals}, {"instagram_reels", "tiktok"})
+        self.assertEqual(
+            {item["platform"] for item in rascals},
+            {"youtube_shorts", "instagram_reels", "tiktok"},
+        )
         self.assertTrue(all(item["watermark_text"] == "rascals" for item in rascals))
         self.assertTrue(all("#Rascals" in item["caption"] and "#Dishpilot" not in item["caption"] for item in rascals))
 
@@ -1037,9 +1117,15 @@ class IngestUrlPipelineTest(unittest.TestCase):
             hook="Wait for the drop",
             today=date(2026, 10, 24),
         )
-        self.assertEqual({item["platform"] for item in mrpa}, {"youtube_shorts", "instagram_reels"})
+        self.assertEqual(
+            {item["platform"] for item in mrpa},
+            {"youtube_shorts", "instagram_reels", "tiktok"},
+        )
         self.assertTrue(all(item["watermark_text"] == "mr. pa" for item in mrpa))
         self.assertTrue(all("#MrPa" in item["caption"] and "#Dishpilot" not in item["caption"] for item in mrpa))
+        crossed = dict(items[0], watermark_text="rascals")
+        with self.assertRaises(CampaignPlatformError):
+            assert_feed_item_campaign_identity(crossed, self.data)
 
     def test_highest_resolution_stream_wins(self) -> None:
         picked = extract_mp4(

@@ -43,6 +43,11 @@
         "anime",
         "celebrity",
         "concert"
+      ],
+      "campaigns": [
+        "dishpilot-clipping",
+        "rascals-theme-pages",
+        "mr-pa-clipping"
       ]
     },
     "instagram_reels": {
@@ -68,7 +73,8 @@
       "daily_slots": 10,
       "campaigns": [
         "dishpilot-clipping",
-        "rascals-theme-pages"
+        "rascals-theme-pages",
+        "mr-pa-clipping"
       ],
       "categories": [
         "funny",
@@ -135,6 +141,7 @@
       "primary_campaign_id": "dishpilot-clipping",
       "campaign_ids": [
         "dishpilot-clipping",
+        "rascals-theme-pages",
         "mr-pa-clipping"
       ]
     },
@@ -156,7 +163,8 @@
       "primary_campaign_id": "dishpilot-clipping",
       "campaign_ids": [
         "dishpilot-clipping",
-        "rascals-theme-pages"
+        "rascals-theme-pages",
+        "mr-pa-clipping"
       ]
     }
   },
@@ -186,7 +194,7 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$2.00 per 1,000 views ($10,000 pool left — YouTube Shorts, Reels, TikTok; does not pay X)",
+      "payout": "$2.00 per 1,000 views ($10,000 pool left \u2014 YouTube Shorts, Reels, TikTok; does not pay X)",
       "accepted_platforms": [
         "youtube_shorts",
         "instagram_reels",
@@ -256,13 +264,12 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$2.00 per 1,000 organic views (biz_yHrLny75uFGcUZ, exp_U5YGkStRz0N9SR — pays X @chadriyo, YouTube Shorts Denzen, Instagram Reels @benreelr, and TikTok @bi67325)",
+      "payout": "$2.00 per 1,000 organic views (biz_yHrLny75uFGcUZ, exp_U5YGkStRz0N9SR \u2014 pays X @chadriyo, YouTube Shorts Denzen, Instagram Reels @benreelr, and TikTok @bi67325)",
       "accepted_platforms": [
         "x",
         "youtube_shorts",
         "instagram_reels",
-        "tiktok",
-        "facebook"
+        "tiktok"
       ],
       "allowed_lanes": [
         "funny",
@@ -274,7 +281,7 @@
         "concert"
       ],
       "watermark_text": "dishpilot",
-      "cta_text": "Dishpilot.com • Viral Food & AI Clips",
+      "cta_text": "Dishpilot.com \u2022 Viral Food & AI Clips",
       "rules": {
         "min_duration_sec": 8,
         "max_duration_sec": 35,
@@ -320,8 +327,9 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": true,
-      "payout": "$3.00 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — Instagram Reels @benreelr and TikTok @bi67325)",
+      "payout": "$3.00 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS \u2014 YouTube Shorts Denzen, Instagram Reels @benreelr, and TikTok @bi67325; never X)",
       "accepted_platforms": [
+        "youtube_shorts",
         "instagram_reels",
         "tiktok"
       ],
@@ -357,7 +365,7 @@
           "#Reels"
         ]
       },
-      "requirements": "Instagram Reels (@benreelr). One subtle top-left corner mark reads rascals (x=w*0.025:y=h*0.03, white 0.58 alpha, thin shadow, no box). Caption is a hook plus #Rascals #Reels."
+      "requirements": "YouTube Shorts, Instagram Reels (@benreelr), and TikTok (@bi67325), never X. One subtle top-left corner mark reads rascals. Caption uses #Rascals plus the platform suffix."
     },
     {
       "id": "mr-pa-clipping",
@@ -383,10 +391,11 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$1.25 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — Instagram Reels and YouTube Shorts)",
+      "payout": "$1.25 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS \u2014 YouTube Shorts, Instagram Reels, and TikTok; never X)",
       "accepted_platforms": [
         "youtube_shorts",
-        "instagram_reels"
+        "instagram_reels",
+        "tiktok"
       ],
       "allowed_lanes": [
         "funny",
@@ -417,7 +426,7 @@
         "logo_text": "mr. pa",
         "logo_style": "subtle"
       },
-      "requirements": "YouTube Shorts (Denzen) and Instagram Reels (@benreelr). One top-left mark reads mr. pa. Captions use #MrPa plus the platform tag. No loan text."
+      "requirements": "YouTube Shorts (Denzen), Instagram Reels (@benreelr), and TikTok (@bi67325), never X. One top-left mark reads mr. pa. Captions use #MrPa plus the platform suffix. No loan text."
     },
     {
       "id": "finsta-ugc-clipping",
@@ -444,7 +453,7 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$2.00 per 1,000 views ($4,800 of $5,000 left — pays X @chadriyo and YouTube Shorts Denzen)",
+      "payout": "$2.00 per 1,000 views ($4,800 of $5,000 left \u2014 pays X @chadriyo and YouTube Shorts Denzen)",
       "accepted_platforms": [
         "x",
         "youtube_shorts",
@@ -465,7 +474,7 @@
         "logo_overlay_required": true,
         "logo_text": "FINSTA APP",
         "logo_subtext": "Download Finsta on the App Store",
-        "mandatory_caption": "Download Finsta on the App Store — monetize your fanbase with paid calls, texts & digital products! #FinstaApp",
+        "mandatory_caption": "Download Finsta on the App Store \u2014 monetize your fanbase with paid calls, texts & digital products! #FinstaApp",
         "hashtags": [
           "#FinstaApp",
           "#viral"
@@ -483,7 +492,7 @@
       "content_rewards_experience_id": "exp_AbwcENr6X2Gj7B",
       "submission_url": "https://whop.com/joined/darktrading/exp_AbwcENr6X2Gj7B/app/",
       "type": "type2_viral_clipping",
-      "title": "DARK Room — $2 per 1,000+ views video",
+      "title": "DARK Room \u2014 $2 per 1,000+ views video",
       "url": "https://whop.com/2-per-1-000-views-video",
       "status": "open",
       "joined": true,
@@ -498,7 +507,7 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$2.00 per 1,000 views ($10,000 pool — pays X @chadriyo and YouTube Shorts Denzen)",
+      "payout": "$2.00 per 1,000 views ($10,000 pool \u2014 pays X @chadriyo and YouTube Shorts Denzen)",
       "accepted_platforms": [
         "x",
         "youtube_shorts",
@@ -515,14 +524,14 @@
         "concert"
       ],
       "watermark_text": "DARK ROOM",
-      "cta_text": "Clip & Print • @chadriyo",
+      "cta_text": "Clip & Print \u2022 @chadriyo",
       "rules": {
         "min_duration_sec": 8,
         "max_duration_sec": 35,
         "logo_overlay_required": true,
         "logo_text": "DARK ROOM",
-        "logo_subtext": "Clip & Print • @chadriyo",
-        "mandatory_caption": "Lock in with DARK Room — elite mindset & daily execution. #DarkRoom",
+        "logo_subtext": "Clip & Print \u2022 @chadriyo",
+        "mandatory_caption": "Lock in with DARK Room \u2014 elite mindset & daily execution. #DarkRoom",
         "hashtags": [
           "#DarkRoom",
           "#viral"
@@ -556,7 +565,7 @@
       "denial_rate": 0.0,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$5.00 per 1,000 views on X (@chadriyo) — $1,000 pool left",
+      "payout": "$5.00 per 1,000 views on X (@chadriyo) \u2014 $1,000 pool left",
       "accepted_platforms": [
         "x",
         "tiktok",
@@ -574,7 +583,7 @@
       ],
       "min_duration_sec": 10,
       "max_duration_sec": 60,
-      "required_caption": "Check out Nova ✨ #Nova #Viral #Clips",
+      "required_caption": "Check out Nova \u2728 #Nova #Viral #Clips",
       "watermark_text": "NOVA",
       "cta_text": "Check out Nova",
       "rules": {
@@ -583,7 +592,7 @@
         "logo_overlay_required": true,
         "logo_text": "NOVA",
         "logo_subtext": "Check out Nova",
-        "mandatory_caption": "Check out Nova ✨ #Nova #Viral #Clips",
+        "mandatory_caption": "Check out Nova \u2728 #Nova #Viral #Clips",
         "hashtags": [
           "#Nova",
           "#Viral",
@@ -619,7 +628,7 @@
       "denial_rate": 0.0,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$2.00 per 1,000 views on X (@chadriyo) — $1,000 pool left",
+      "payout": "$2.00 per 1,000 views on X (@chadriyo) \u2014 $1,000 pool left",
       "accepted_platforms": [
         "x",
         "tiktok",
@@ -637,7 +646,7 @@
       ],
       "min_duration_sec": 10,
       "max_duration_sec": 60,
-      "required_caption": "Cravin hits different 🔥 #Cravin #FoodTok #Viral",
+      "required_caption": "Cravin hits different \ud83d\udd25 #Cravin #FoodTok #Viral",
       "watermark_text": "CRAVIN",
       "cta_text": "Cravin hits different",
       "rules": {
@@ -646,7 +655,7 @@
         "logo_overlay_required": true,
         "logo_text": "CRAVIN",
         "logo_subtext": "Cravin hits different",
-        "mandatory_caption": "Cravin hits different 🔥 #Cravin #FoodTok #Viral",
+        "mandatory_caption": "Cravin hits different \ud83d\udd25 #Cravin #FoodTok #Viral",
         "hashtags": [
           "#Cravin",
           "#FoodTok",
@@ -659,7 +668,7 @@
       "id": "whop-ai-shane-gillis",
       "whop_id": "bnty_iJpOl5HbBoDQu",
       "type": "type1_creator_clipping",
-      "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+      "title": "Whop AI Entertainment \u2014 Shane Gillis Standup/Podcast Clips",
       "url": "https://whop.com/whop-ai",
       "status": "open",
       "budget_total_usd": 1000.0,
@@ -671,7 +680,7 @@
       "denial_rate": 0.998,
       "spots_remaining": 97,
       "unlimited_budget": false,
-      "payout": "$10 per 5-clip submission — blocked, 99.8% denial rate",
+      "payout": "$10 per 5-clip submission \u2014 blocked, 99.8% denial rate",
       "cpm_usd": 10.0,
       "rate_per_1k_views_usd": 10.0,
       "accepted_platforms": [
@@ -685,7 +694,7 @@
         "celebrity",
         "podcast"
       ],
-      "watermark_text": "WHOP AI • ENTERTAINMENT",
+      "watermark_text": "WHOP AI \u2022 ENTERTAINMENT",
       "cta_text": "Full clip on Whop AI",
       "requirements": "Blocked by Pool Guard. 99.8% of submissions are denied."
     }
@@ -695,7 +704,7 @@
       "id": "clip-influence-hub",
       "whop_id": "prod_E72V5pvr59GNU",
       "type": "hub_type1_and_type2",
-      "title": "Clip Influence (27,070+ Clippers Hub — Infinite Budget Campaigns)",
+      "title": "Clip Influence (27,070+ Clippers Hub \u2014 Infinite Budget Campaigns)",
       "url": "https://whop.com/clip-influence",
       "status": "open",
       "direct_submission": false,
@@ -705,7 +714,7 @@
       "paid_out_percent": 0.0,
       "spots_remaining": 9999,
       "unlimited_budget": true,
-      "payout": "$0.50 - $3.00+ per 1,000 views across rotating infinite-budget campaigns (4.91★, 464 reviews)",
+      "payout": "$0.50 - $3.00+ per 1,000 views across rotating infinite-budget campaigns (4.91\u2605, 464 reviews)",
       "cpm_usd": 2.5,
       "accepted_platforms": [
         "x",
@@ -766,7 +775,7 @@
     {
       "id": "whop-ai-shane-gillis",
       "whop_id": "bnty_iJpOl5HbBoDQu",
-      "title": "Whop AI Entertainment — Shane Gillis Standup/Podcast Clips",
+      "title": "Whop AI Entertainment \u2014 Shane Gillis Standup/Podcast Clips",
       "denial_rate": 0.998,
       "reason": "REJECTED BY POOL GUARD: 99.8% denial rate (denial_rate 0.998 exceeds max_denial_rate 0.50)."
     },
@@ -783,7 +792,7 @@
     {
       "whop_id": "prod_EmrRGxMh0OnFZ",
       "title": "MAC ENERGY Clipping Campaign",
-      "reason": "SKIPPED BY GEO/RATING GUARD: Strict 60%+ USA audience required (auto-rejects Indian audience) and low 2.5★ review rating."
+      "reason": "SKIPPED BY GEO/RATING GUARD: Strict 60%+ USA audience required (auto-rejects Indian audience) and low 2.5\u2605 review rating."
     },
     {
       "id": "fast-loan-pilot",
