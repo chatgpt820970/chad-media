@@ -1,5 +1,5 @@
 {
-  "updated_at": "2026-10-24T15:10:00Z",
+  "updated_at": "2026-10-24T17:50:00Z",
   "whop_user": "@bi60",
   "whop_user_id": "user_JUKQo7VMHc6IS",
   "supported_viral_categories": [
@@ -15,22 +15,58 @@
     "x": {
       "handle": "@chadriyo",
       "daily_slots": 10,
-      "categories": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"]
+      "categories": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ]
     },
     "youtube_shorts": {
       "handle": "Denzen",
       "username": "@denzen0",
       "daily_slots": 10,
       "min_indian_fraction": 0.8,
-      "indian_categories": ["indian_actor_reels", "indian_movie_scenes"],
-      "other_categories": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"]
+      "indian_categories": [
+        "indian_actor_reels",
+        "indian_movie_scenes"
+      ],
+      "other_categories": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ]
+    },
+    "instagram_reels": {
+      "handle": "@benreelr",
+      "daily_slots": 10,
+      "campaigns": [
+        "rascals-theme-pages",
+        "dishpilot-clipping"
+      ],
+      "categories": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ]
     }
   },
   "pool_guard_rules": {
     "min_remaining_budget_usd": 500.0,
-    "max_paid_out_fraction": 0.80,
+    "max_paid_out_fraction": 0.8,
     "min_spots_remaining": 5,
-    "max_denial_rate": 0.50,
+    "max_denial_rate": 0.5,
     "skip_paused_or_closed": true
   },
   "channels": {
@@ -48,33 +84,41 @@
       "buffer_channel_id": "6ac4da806a5c39ccb62eab64",
       "aspect": "9:16",
       "links_blocked": false
+    },
+    "instagram": {
+      "handle": "@benreelr",
+      "username": "@benreelr",
+      "aspect": "9:16",
+      "links_blocked": false
     }
   },
   "platform_routing": {
     "x": {
       "handle": "@chadriyo",
       "links_blocked": true,
+      "primary_campaign_id": "dishpilot-clipping",
       "campaign_ids": [
-        "dishpilot-clipping",
-        "finsta-ugc-clipping",
-        "darkroom-clipping",
-        "nova-x-clipping",
-        "cravin-x-clipping"
+        "dishpilot-clipping"
       ]
     },
     "youtube_shorts": {
       "handle": "Denzen",
       "username": "@denzen0",
       "links_blocked": false,
-      "primary_campaign_id": "fast-loan-pilot",
+      "primary_campaign_id": "dishpilot-clipping",
       "campaign_ids": [
-        "fast-loan-pilot",
-        "mr-pa-clipping",
         "dishpilot-clipping",
-        "finsta-ugc-clipping",
-        "darkroom-clipping",
-        "nova-x-clipping",
-        "cravin-x-clipping"
+        "mr-pa-clipping"
+      ]
+    },
+    "instagram_reels": {
+      "handle": "@benreelr",
+      "username": "@benreelr",
+      "links_blocked": false,
+      "primary_campaign_id": "rascals-theme-pages",
+      "campaign_ids": [
+        "rascals-theme-pages",
+        "dishpilot-clipping"
       ]
     }
   },
@@ -91,7 +135,7 @@
       "type": "type2_logo_overlay",
       "title": "FastLoanPilot Logo Clipping",
       "url": "https://whop.com/fast-loan-pilot-logo-clipping",
-      "status": "open",
+      "status": "closed",
       "joined": true,
       "total_pool_usd": 10000.0,
       "budget_total_usd": 10000.0,
@@ -105,8 +149,20 @@
       "spots_remaining": 999,
       "unlimited_budget": false,
       "payout": "$2.00 per 1,000 views ($10,000 pool left — YouTube Shorts, Reels, TikTok; does not pay X)",
-      "accepted_platforms": ["youtube_shorts", "instagram_reels", "tiktok"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "youtube_shorts",
+        "instagram_reels",
+        "tiktok"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "logo_path": "whop/logos/fastloanpilot.png",
       "banner_video_path": "whop/logos/fastloan_banner.mp4",
       "watermark_text": "FASTLOANPILOT.COM",
@@ -120,7 +176,10 @@
         "logo_style": "subtle",
         "caption_style": "hook_cta_hashtags",
         "mandatory_caption": "Visit FastLoanPilot.com Looking for a quick loan from $200 to $5000.",
-        "hashtags": ["#shorts", "#FastLoanPilot"]
+        "hashtags": [
+          "#shorts",
+          "#FastLoanPilot"
+        ]
       },
       "required_captions": [
         "Up to $5,000 / Apply online in minutes / Get funds within 24 hours after approval / Check Fastloanpilot.com if you need a loan asap",
@@ -132,7 +191,7 @@
         "If you need supercar / money / house / Try Fastloanpilot.com",
         "Need cash to pay rent/bills/groceries / Check this out Fastloanpilot.com"
       ],
-      "requirements": "One small subtle corner logo on YouTube Shorts slots assigned to fast-loan-pilot. Never two logos and never a center stack. The loan caption is only used on those FastLoanPilot slots. This campaign does not accept X (@chadriyo)."
+      "requirements": "Closed. Replaced by Dishpilot on X and YouTube Shorts and by Rascals plus Dishpilot on Instagram Reels. Do not submit new clips to FastLoanPilot."
     },
     {
       "id": "dishpilot-clipping",
@@ -159,10 +218,24 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$2.00 per 1,000 views ($5,000 pool — pays X @chadriyo and YouTube Shorts Denzen)",
-      "accepted_platforms": ["x", "youtube_shorts", "instagram_reels", "tiktok", "facebook"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
-      "watermark_text": "DISHPILOT",
+      "payout": "$2.00 per 1,000 organic views (biz_yHrLny75uFGcUZ, exp_U5YGkStRz0N9SR — pays X @chadriyo, YouTube Shorts Denzen, and Instagram Reels @benreelr)",
+      "accepted_platforms": [
+        "x",
+        "youtube_shorts",
+        "instagram_reels",
+        "tiktok",
+        "facebook"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
+      "watermark_text": "dishpilot",
       "cta_text": "Dishpilot.com • Viral Food & AI Clips",
       "rules": {
         "min_duration_sec": 8,
@@ -171,21 +244,90 @@
         "logo_placement": "corner",
         "logo_count": 1,
         "logo_style": "subtle",
-        "logo_text": "DISHPILOT",
+        "logo_text": "dishpilot",
         "caption_style": "hook_and_hashtags",
-        "max_hashtags": 2,
+        "max_hashtags": 3,
         "mandatory_caption": "",
-        "hashtags": ["#Dishpilot", "#viral"]
+        "hashtags": [
+          "#Dishpilot"
+        ],
+        "logo_x": "w*0.025",
+        "logo_y": "h*0.03",
+        "fontcolor": "white@0.58",
+        "shadow": "thin",
+        "box": false
       },
-      "requirements": "One subtle corner badge reads DISHPILOT. X (@chadriyo) captions are a scroll-stopping hook plus 1-2 hashtags. Dishpilot terms do not require FastLoanPilot loan text. Pays X and YouTube Shorts at $2 per 1,000."
+      "requirements": "One subtle top-left corner mark reads dishpilot (x=w*0.025:y=h*0.03, white 0.58 alpha, thin shadow, no box). X captions use #Dishpilot. YouTube Shorts captions use #Dishpilot #Shorts. Instagram Reels share the rascals · dishpilot mark and #Rascals #Dishpilot #Reels."
+    },
+    {
+      "id": "rascals-theme-pages",
+      "title": "Rascals Clipping (THEME PAGES)",
+      "experience_id": "exp_U4O0YU3OIhz5lS",
+      "content_rewards_experience_id": "exp_U4O0YU3OIhz5lS",
+      "submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
+      "type": "type2_viral_clipping",
+      "parent_hub": "clip-influence-hub",
+      "agency": "Clip Influence",
+      "url": "https://whop.com/clip-influence",
+      "status": "open",
+      "joined": true,
+      "total_pool_usd": 50000.0,
+      "budget_total_usd": 50000.0,
+      "paid_out_usd": 0.0,
+      "remaining_pool_usd": 50000.0,
+      "remaining_budget_usd": 50000.0,
+      "paid_out_percent": 0.0,
+      "rate_per_1k_views_usd": 3.0,
+      "cpm_usd": 3.0,
+      "denial_rate": 0.05,
+      "spots_remaining": 999,
+      "unlimited_budget": true,
+      "payout": "$3.00 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — Instagram Reels @benreelr)",
+      "accepted_platforms": [
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
+      "watermark_text": "rascals · dishpilot",
+      "cta_text": "",
+      "rules": {
+        "min_duration_sec": 8,
+        "max_duration_sec": 35,
+        "logo_overlay_required": true,
+        "logo_placement": "corner",
+        "logo_count": 1,
+        "logo_style": "subtle",
+        "logo_text": "rascals · dishpilot",
+        "logo_x": "w*0.025",
+        "logo_y": "h*0.03",
+        "fontcolor": "white@0.58",
+        "shadow": "thin",
+        "box": false,
+        "caption_style": "hook_and_hashtags",
+        "max_hashtags": 3,
+        "mandatory_caption": "",
+        "hashtags": [
+          "#Rascals",
+          "#Dishpilot",
+          "#Reels"
+        ]
+      },
+      "requirements": "Instagram Reels (@benreelr). One subtle top-left corner mark reads rascals · dishpilot (x=w*0.025:y=h*0.03, white 0.58 alpha, thin shadow, no box). Caption is a hook plus #Rascals #Dishpilot #Reels."
     },
     {
       "id": "mr-pa-clipping",
       "title": "Mr. Pa Clipping",
       "content_rewards_campaign_id": "5944ed5a-9ee0-47d1-8545-2bbf614ac18b",
-      "experience_id": "5944ed5a-9ee0-47d1-8545-2bbf614ac18b",
-      "content_rewards_experience_id": "5944ed5a-9ee0-47d1-8545-2bbf614ac18b",
-      "submission_url": "https://contentrewards.com/c/campaigns/5944ed5a-9ee0-47d1-8545-2bbf614ac18b",
+      "experience_id": "exp_U4O0YU3OIhz5lS",
+      "content_rewards_experience_id": "exp_U4O0YU3OIhz5lS",
+      "submission_url": "https://whop.com/joined/clip-influence/exp_U4O0YU3OIhz5lS/app/",
       "type": "type2_viral_clipping",
       "parent_hub": "clip-influence-hub",
       "agency": "Clip Influence",
@@ -203,23 +345,40 @@
       "denial_rate": 0.05,
       "spots_remaining": 999,
       "unlimited_budget": false,
-      "payout": "$1.25 per 1,000 views ($8,507 of $10,000 left — YouTube Shorts, Clip Influence)",
-      "accepted_platforms": ["youtube_shorts"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert", "indian_actor_reels", "indian_movie_scenes"],
-      "watermark_text": "",
+      "payout": "$1.25 per 1,000 views (Clip Influence Content Rewards exp_U4O0YU3OIhz5lS — YouTube Shorts Denzen)",
+      "accepted_platforms": [
+        "youtube_shorts"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert",
+        "indian_actor_reels",
+        "indian_movie_scenes"
+      ],
+      "watermark_text": "dishpilot",
       "cta_text": "",
       "rules": {
         "min_duration_sec": 6,
         "max_duration_sec": 60,
-        "logo_overlay_required": false,
-        "logo_placement": "none",
-        "logo_count": 0,
+        "logo_overlay_required": true,
+        "logo_placement": "corner",
+        "logo_count": 1,
         "caption_style": "hook_and_hashtags",
         "max_hashtags": 2,
         "mandatory_caption": "",
-        "hashtags": ["#mrpa"]
+        "hashtags": [
+          "#Dishpilot",
+          "#Shorts"
+        ],
+        "logo_text": "dishpilot",
+        "logo_style": "subtle"
       },
-      "requirements": "Clean viral caption plus #mrpa. No FastLoanPilot loan text. Mr. Pa does not require a logo; if a mark is used it is one subtle corner badge, never two center logos."
+      "requirements": "YouTube Shorts on Denzen. One subtle top-left dishpilot mark. Caption is a hook plus #Dishpilot #Shorts. No loan text."
     },
     {
       "id": "finsta-ugc-clipping",
@@ -247,8 +406,18 @@
       "spots_remaining": 999,
       "unlimited_budget": false,
       "payout": "$2.00 per 1,000 views ($4,800 of $5,000 left — pays X @chadriyo and YouTube Shorts Denzen)",
-      "accepted_platforms": ["x", "youtube_shorts", "instagram_reels", "tiktok"],
-      "allowed_lanes": ["ai", "funny", "celebrity", "movie"],
+      "accepted_platforms": [
+        "x",
+        "youtube_shorts",
+        "instagram_reels",
+        "tiktok"
+      ],
+      "allowed_lanes": [
+        "ai",
+        "funny",
+        "celebrity",
+        "movie"
+      ],
       "watermark_text": "FINSTA APP",
       "cta_text": "Download Finsta on the App Store",
       "rules": {
@@ -258,7 +427,10 @@
         "logo_text": "FINSTA APP",
         "logo_subtext": "Download Finsta on the App Store",
         "mandatory_caption": "Download Finsta on the App Store — monetize your fanbase with paid calls, texts & digital products! #FinstaApp",
-        "hashtags": ["#FinstaApp", "#viral"]
+        "hashtags": [
+          "#FinstaApp",
+          "#viral"
+        ]
       },
       "requirements": "Banner reads FINSTA APP. Pays X (@chadriyo) and YouTube Shorts (Denzen) views at $2 per 1,000."
     },
@@ -288,8 +460,21 @@
       "spots_remaining": 999,
       "unlimited_budget": false,
       "payout": "$2.00 per 1,000 views ($10,000 pool — pays X @chadriyo and YouTube Shorts Denzen)",
-      "accepted_platforms": ["x", "youtube_shorts", "instagram_reels", "tiktok"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "x",
+        "youtube_shorts",
+        "instagram_reels",
+        "tiktok"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "watermark_text": "DARK ROOM",
       "cta_text": "Clip & Print • @chadriyo",
       "rules": {
@@ -299,7 +484,10 @@
         "logo_text": "DARK ROOM",
         "logo_subtext": "Clip & Print • @chadriyo",
         "mandatory_caption": "Lock in with DARK Room — elite mindset & daily execution. #DarkRoom",
-        "hashtags": ["#DarkRoom", "#viral"]
+        "hashtags": [
+          "#DarkRoom",
+          "#viral"
+        ]
       },
       "requirements": "Banner reads DARK ROOM. Pays X (@chadriyo) and YouTube Shorts (Denzen) views at $2 per 1,000."
     },
@@ -315,7 +503,7 @@
       "submission_url": "https://whop.com/joined/nova-content/exp_zB6vOQWkg5RKa6/app/",
       "type": "type2_logo_overlay",
       "url": "https://whop.com/joined/nova-content/exp_zB6vOQWkg5RKa6/app/",
-      "status": "open",
+      "status": "closed",
       "joined": true,
       "cpm_usd": 5.0,
       "rate_per_1k_views_usd": 5.0,
@@ -330,8 +518,21 @@
       "spots_remaining": 999,
       "unlimited_budget": false,
       "payout": "$5.00 per 1,000 views on X (@chadriyo) — $1,000 pool left",
-      "accepted_platforms": ["x", "tiktok", "youtube_shorts", "instagram_reels"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "x",
+        "tiktok",
+        "youtube_shorts",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "min_duration_sec": 10,
       "max_duration_sec": 60,
       "required_caption": "Check out Nova ✨ #Nova #Viral #Clips",
@@ -344,9 +545,14 @@
         "logo_text": "NOVA",
         "logo_subtext": "Check out Nova",
         "mandatory_caption": "Check out Nova ✨ #Nova #Viral #Clips",
-        "hashtags": ["#Nova", "#Viral", "#Clips"]
+        "hashtags": [
+          "#Nova",
+          "#Viral",
+          "#Clips"
+        ]
       },
-      "requirements": "Dark header badge reads NOVA. Pays X (@chadriyo) views at $5 per 1,000."
+      "requirements": "Closed. Legacy Whop app app_JsryI0fVLVpeYi is broken and returns only \"ok\". Do not submit new clips to Nova.",
+      "whop_app_id": "app_JsryI0fVLVpeYi"
     },
     {
       "id": "cravin-x-clipping",
@@ -375,8 +581,21 @@
       "spots_remaining": 999,
       "unlimited_budget": false,
       "payout": "$2.00 per 1,000 views on X (@chadriyo) — $1,000 pool left",
-      "accepted_platforms": ["x", "tiktok", "youtube_shorts", "instagram_reels"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "x",
+        "tiktok",
+        "youtube_shorts",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "min_duration_sec": 10,
       "max_duration_sec": 60,
       "required_caption": "Cravin hits different 🔥 #Cravin #FoodTok #Viral",
@@ -389,7 +608,11 @@
         "logo_text": "CRAVIN",
         "logo_subtext": "Cravin hits different",
         "mandatory_caption": "Cravin hits different 🔥 #Cravin #FoodTok #Viral",
-        "hashtags": ["#Cravin", "#FoodTok", "#Viral"]
+        "hashtags": [
+          "#Cravin",
+          "#FoodTok",
+          "#Viral"
+        ]
       },
       "requirements": "Dark header badge reads CRAVIN. Pays X (@chadriyo) views at $2 per 1,000."
     },
@@ -412,8 +635,17 @@
       "payout": "$10 per 5-clip submission — blocked, 99.8% denial rate",
       "cpm_usd": 10.0,
       "rate_per_1k_views_usd": 10.0,
-      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
-      "allowed_lanes": ["funny", "celebrity", "podcast"],
+      "accepted_platforms": [
+        "x",
+        "youtube_shorts",
+        "tiktok",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "celebrity",
+        "podcast"
+      ],
       "watermark_text": "WHOP AI • ENTERTAINMENT",
       "cta_text": "Full clip on Whop AI",
       "requirements": "Blocked by Pool Guard. 99.8% of submissions are denied."
@@ -436,8 +668,21 @@
       "unlimited_budget": true,
       "payout": "$0.50 - $3.00+ per 1,000 views across rotating infinite-budget campaigns (4.91★, 464 reviews)",
       "cpm_usd": 2.5,
-      "accepted_platforms": ["x", "youtube_shorts", "tiktok", "instagram_reels"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "x",
+        "youtube_shorts",
+        "tiktok",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "watermark_text": "",
       "cta_text": "",
       "requirements": "Hub only. Not a direct submission target for @chadriyo or Denzen."
@@ -458,8 +703,20 @@
       "unlimited_budget": true,
       "payout": "$2.00 per 1,000 views (981 members)",
       "cpm_usd": 2.0,
-      "accepted_platforms": ["youtube_shorts", "tiktok", "instagram_reels"],
-      "allowed_lanes": ["funny", "ai", "knowledge", "movie", "anime", "celebrity", "concert"],
+      "accepted_platforms": [
+        "youtube_shorts",
+        "tiktok",
+        "instagram_reels"
+      ],
+      "allowed_lanes": [
+        "funny",
+        "ai",
+        "knowledge",
+        "movie",
+        "anime",
+        "celebrity",
+        "concert"
+      ],
       "logo_url": "https://assets-2-prod.whop.com/public/uploads/user_20188843/image/bots/2026-03-27/692a0ec9-de63-4b58-9497-8133af5d0fd2.png",
       "watermark_text": "GAMBANA",
       "cta_text": "Gambana",
@@ -488,6 +745,19 @@
       "whop_id": "prod_EmrRGxMh0OnFZ",
       "title": "MAC ENERGY Clipping Campaign",
       "reason": "SKIPPED BY GEO/RATING GUARD: Strict 60%+ USA audience required (auto-rejects Indian audience) and low 2.5★ review rating."
+    },
+    {
+      "id": "fast-loan-pilot",
+      "whop_id": "prod_DyuwRHNCz3vpv",
+      "title": "FastLoanPilot Logo Clipping",
+      "reason": "CLOSED: replaced by Dishpilot, Rascals, and Mr. Pa. Do not submit new clips."
+    },
+    {
+      "id": "nova-x-clipping",
+      "whop_id": "prod_3juzE1FqAXBsj",
+      "whop_app_id": "app_JsryI0fVLVpeYi",
+      "title": "Nova Clipping ($5 / 1K Views on X)",
+      "reason": "CLOSED: legacy Whop app app_JsryI0fVLVpeYi is broken and returns only \"ok\"."
     }
   ]
 }
