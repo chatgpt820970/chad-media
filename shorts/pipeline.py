@@ -42,10 +42,10 @@ MAX_SECONDS = 179.0
 KEEP_DAYS = 4
 # Two prep runs add about 5 clips each. Keep two days of those, plus clips
 # still waiting for a later posting slot.
-MAX_QUEUE = 24
+MAX_QUEUE = 32
 PER_RUN_TARGET = 5
 PER_RUN_MIN = 4
-DAILY_TARGET = 7
+DAILY_TARGET = 10
 RELEASE_TAG = "shorts-media"
 USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -1141,6 +1141,8 @@ def run_plan(
     """
     if cap < 1:
         return 0, 0
+    if event == "push" and ready_today >= DAILY_TARGET:
+        return 0, 0
     if event != "schedule":
         minimum = PER_RUN_MIN if require <= 0 else min(max(require, 1), cap)
         return cap, minimum
@@ -1397,9 +1399,31 @@ def assemble_site() -> None:
                 log(f"could not mirror {name}: {exc}")
         log(f"mirrored {len(names)} existing media files")
     shutil.copyfile(FEED_PATH, feed_dir / "shorts_queue.json")
-    whop_feed = ROOT.parent / "whop" / "feed" / "whop_ready_feed.json"
+    whop_root = ROOT.parent / "whop"
+    whop_feed = whop_root / "feed" / "whop_ready_feed.json"
     if whop_feed.exists():
         shutil.copyfile(whop_feed, feed_dir / "whop_ready_feed.json")
+        site_whop_feed = SITE / "whop" / "feed"
+        site_whop_feed.mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(whop_feed, site_whop_feed / "whop_ready_feed.json")
+    whop_manifest = whop_root / "manifest.json"
+    if whop_manifest.exists():
+        (SITE / "whop").mkdir(parents=True, exist_ok=True)
+        shutil.copyfile(whop_manifest, SITE / "whop" / "manifest.json")
+    whop_v = whop_root / "v"
+    if whop_v.exists():
+        site_whop_v = SITE / "whop" / "v"
+        site_whop_v.mkdir(parents=True, exist_ok=True)
+        for mp4 in sorted(whop_v.glob("*.mp4")):
+            if mp4.is_file():
+                shutil.copyfile(mp4, site_whop_v / mp4.name)
+    whop_logos = whop_root / "logos"
+    if whop_logos.exists():
+        site_whop_logos = SITE / "whop" / "logos"
+        site_whop_logos.mkdir(parents=True, exist_ok=True)
+        for logo in sorted(whop_logos.iterdir()):
+            if logo.is_file():
+                shutil.copyfile(logo, site_whop_logos / logo.name)
     video_dir = SITE / "shorts" / "v"
     frame_dir = SITE / "shorts" / "f"
     video_dir.mkdir(parents=True)

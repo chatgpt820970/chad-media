@@ -8,7 +8,7 @@ on:
     # Backup for cron-job.org, which dispatches this workflow at 06:30 and
     # 14:30 IST. These run about 20 minutes later (06:50 and 14:50 IST) and
     # once more at 22:50 IST, and only add clips when that slot is still short.
-    - cron: "20 1,9,17 * * *"
+    - cron: "20 1,7,13,19 * * *"
   # Code changes on main also run it. State and feed commits are not in this
   # list, so the queue update at the end of a run does not start another one.
   push:
@@ -23,9 +23,7 @@ on:
         description: "Kept for older dispatch calls. The collect step always requires 4 new ready clips."
         type: string
         default: "4"
-  workflow_run:
-    workflows: ["Publish Pages"]
-    types: [completed]
+
 
 permissions:
   contents: write
@@ -84,7 +82,7 @@ jobs:
           set -euo pipefail
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add shorts/state/seen.json shorts/state/posted.json shorts/feed/shorts_queue.json whop/feed/whop_ready_feed.json
+          git add shorts/state/seen.json shorts/state/posted.json shorts/feed/shorts_queue.json whop/feed/whop_ready_feed.json whop/manifest.json
           if git diff --cached --quiet; then
             echo "No queue change."
             exit 0
@@ -116,7 +114,9 @@ jobs:
       - name: Put the shorts files back on Pages
         env:
           GH_TOKEN: ${{ github.token }}
-        run: python shorts/pipeline.py republish
+        run: |
+          python whop/whop_clipper.py build-feed
+          python shorts/pipeline.py republish
 
       - uses: actions/upload-pages-artifact@v4
         with:
