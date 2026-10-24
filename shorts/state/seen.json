@@ -485,6 +485,51 @@
       "reason": "",
       "duration": 66.3,
       "seen_at": "2026-10-24T09:06:36Z"
+    },
+    "x-2105358655927517442": {
+      "source_url": "https://x.com/BLAQ_Spac/status/2105358655927517442",
+      "platform": "x",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 54.1,
+      "seen_at": "2026-10-24T12:12:03Z"
+    },
+    "tt-7414250925704875306": {
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7414250925704875306",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 47.7,
+      "seen_at": "2026-10-24T12:13:20Z"
+    },
+    "tt-7688400123809893662": {
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7688400123809893662",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 37.0,
+      "seen_at": "2026-10-24T12:14:31Z"
+    },
+    "tt-7087185238102723842": {
+      "source_url": "https://www.tiktok.com/@yoyohoneysingh/video/7087185238102723842",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 60.1,
+      "seen_at": "2026-10-24T12:15:55Z"
+    },
+    "tt-6838105025865207041": {
+      "source_url": "https://www.tiktok.com/@thefoodranger/video/6838105025865207041",
+      "platform": "tiktok",
+      "lane": "chinese",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 52.7,
+      "seen_at": "2026-10-24T12:17:27Z"
     }
   }
 }
