@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-24T09:06:36Z",
-  "ready_today": 10,
+  "generated_at": "2026-10-24T12:17:27Z",
+  "ready_today": 15,
   "daily_target": 7,
   "collects_today": [
     {
@@ -10,6 +10,10 @@
     {
       "at": "2026-10-24T09:06:36Z",
       "added": 5
+    },
+    {
+      "at": "2026-10-24T12:17:27Z",
+      "added": 5
     }
   ],
   "sources": {
@@ -18,6 +22,96 @@
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-6838105025865207041",
+      "source_url": "https://www.tiktok.com/@thefoodranger/video/6838105025865207041",
+      "platform": "tiktok",
+      "duration": 52.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-6838105025865207041.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838105025865207041-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838105025865207041-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838105025865207041-3.jpg"
+      ],
+      "title": "amazing liuxiang noodle in china5 !",
+      "caption": "A sharp little bit of comedy. amazing liuxiang noodle in china5 !",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T12:17:27Z"
+    },
+    {
+      "id": "tt-7087185238102723842",
+      "source_url": "https://www.tiktok.com/@yoyohoneysingh/video/7087185238102723842",
+      "platform": "tiktok",
+      "duration": 60.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7087185238102723842.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7087185238102723842-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7087185238102723842-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7087185238102723842-3.jpg"
+      ],
+      "title": "Lagdi menu jiven Ambran Di Quees",
+      "caption": "Something warm for the middle of the day. Lagdi menu jiven Ambran Di Quees",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-24T12:15:55Z"
+    },
+    {
+      "id": "tt-7688400123809893662",
+      "source_url": "https://www.tiktok.com/@khaby.lame/video/7688400123809893662",
+      "platform": "tiktok",
+      "duration": 37.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7688400123809893662.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7688400123809893662-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7688400123809893662-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7688400123809893662-3.jpg"
+      ],
+      "title": "Yeah… I’m never taking these glasses off again.👓🔨",
+      "caption": "This one earns the replay. Yeah… I’m never taking these glasses off again.👓🔨",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T12:14:31Z"
+    },
+    {
+      "id": "tt-7414250925704875306",
+      "source_url": "https://www.tiktok.com/@madewithlau/video/7414250925704875306",
+      "platform": "tiktok",
+      "duration": 47.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7414250925704875306.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7414250925704875306-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7414250925704875306-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7414250925704875306-3.jpg"
+      ],
+      "title": "Let’s make Sweet & Sour Fried Fish (糖醋魚柳)!",
+      "caption": "A sharp little bit of comedy. Let’s make Sweet & Sour Fried Fish (糖醋魚柳)! 🐟 A popular variation on the classic Sweet & Sour Pork that we all know and love, this dish features delicately fried fish drenched in appetizing sweet & sour flavors that can easily be adjusted to match",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T12:13:20Z"
+    },
+    {
+      "id": "x-2105358655927517442",
+      "source_url": "https://x.com/BLAQ_Spac/status/2105358655927517442",
+      "platform": "x",
+      "duration": 54.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-2105358655927517442.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-2105358655927517442-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-2105358655927517442-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/x-2105358655927517442-3.jpg"
+      ],
+      "title": "Show me a fight scene better than this in the history of anime",
+      "caption": "A sharp little bit of comedy. Show me a fight scene better than this in the history of anime",
+      "status": "ready",
+      "lane": "chinese",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-24T12:12:03Z"
+    },
     {
       "id": "tt-7501669584592817451",
       "source_url": "https://www.tiktok.com/@benoftheweek/video/7501669584592817451",
@@ -359,96 +453,6 @@
       "lane": "chinese",
       "youtube_category_id": "23",
       "queued_at": "2026-10-23T01:05:54Z"
-    },
-    {
-      "id": "x-2113280429898027519",
-      "source_url": "https://x.com/Zazi1761868/status/2113280429898027519",
-      "platform": "x",
-      "duration": 145.3,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-2113280429898027519.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/x-2113280429898027519-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/x-2113280429898027519-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/x-2113280429898027519-3.jpg"
-      ],
-      "title": "Chinese funny videos 😂🤣",
-      "caption": "A sharp little bit of comedy. Chinese funny videos 😂🤣",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-23T01:05:22Z"
-    },
-    {
-      "id": "tt-7675410938970901791",
-      "source_url": "https://www.tiktok.com/@khaby.lame/video/7675410938970901791",
-      "platform": "tiktok",
-      "duration": 33.7,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7675410938970901791.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7675410938970901791-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7675410938970901791-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7675410938970901791-3.jpg"
-      ],
-      "title": "Come back whenever you want bro 💪🏿",
-      "caption": "This one earns the replay. Come back whenever you want bro 💪🏿",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-22T09:06:47Z"
-    },
-    {
-      "id": "tt-7696342795962912032",
-      "source_url": "https://www.tiktok.com/@mrnigelng/video/7696342795962912032",
-      "platform": "tiktok",
-      "duration": 119.7,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7696342795962912032.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696342795962912032-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696342795962912032-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7696342795962912032-3.jpg"
-      ],
-      "title": "We’ve been cooking up something new Introducing our upgraded menu featuring 17 new dishes",
-      "caption": "A sharp little bit of comedy. We’ve been cooking up something new Introducing our upgraded menu featuring 17 new dishes 🍽️ Come give them a try!",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-22T09:06:20Z"
-    },
-    {
-      "id": "tt-7683889999426669838",
-      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7683889999426669838",
-      "platform": "tiktok",
-      "duration": 33.6,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7683889999426669838.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683889999426669838-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683889999426669838-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683889999426669838-3.jpg"
-      ],
-      "title": "WEMBLEY 2 DAYS TO GO",
-      "caption": "Something warm for the middle of the day. WEMBLEY 2 DAYS TO GO",
-      "status": "ready",
-      "lane": "feelgood",
-      "youtube_category_id": "10",
-      "queued_at": "2026-10-22T09:05:12Z"
-    },
-    {
-      "id": "tt-7430570086697651487",
-      "source_url": "https://www.tiktok.com/@benoftheweek/video/7430570086697651487",
-      "platform": "tiktok",
-      "duration": 60.2,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7430570086697651487.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7430570086697651487-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7430570086697651487-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7430570086697651487-3.jpg"
-      ],
-      "title": "today was a timothee chalamet movie.",
-      "caption": "This one earns the replay. today was a timothee chalamet movie. thank you Po for letting me judge the timothee chalamet competition your mind scares me",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-22T09:04:42Z"
     }
   ]
 }
