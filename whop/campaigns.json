@@ -302,7 +302,7 @@
         "shadow": "thin",
         "box": false
       },
-      "requirements": "One subtle top-left corner mark reads dishpilot (x=w*0.025:y=h*0.03, white 0.58 alpha, thin shadow, no box). X captions use #Dishpilot. YouTube Shorts captions use #Dishpilot #Shorts. Instagram Reels carry one campaign mark each (dishpilot, rascals, or mr. pa) with its single tag."
+      "requirements": "One subtle top-left corner mark reads dishpilot (x=(w-text_w)/2:y=h-text_h-48, white 0.58 alpha, thin shadow, no box). X captions use #Dishpilot. YouTube Shorts captions use #Dishpilot #Shorts. Instagram Reels carry one campaign mark each (dishpilot, rascals, or mr. pa) with its single tag."
     },
     {
       "id": "rascals-theme-pages",

@@ -310,7 +310,7 @@ DAILY_WATERMARK_POSITION = {
     "placement": "top-left",
     "x": "w*0.025",
     "y": "h*0.03",
-    "expr": "x=w*0.025:y=h*0.03",
+    "expr": "x=(w-text_w)/2:y=h-text_h-48",
 }
 # The daily run stamps Dishpilot or Rascals only. Rascals leads the Reels rotation.
 INSTAGRAM_DAILY_ROTATION = (RASCALS_ID, DISHPILOT_ID)
@@ -945,7 +945,7 @@ def subtle_corner_drawtext(font_path: str, text: str) -> str:
         f"drawtext=fontfile='{font_path}':text='{safe}':"
         "fontsize=22:fontcolor=white@0.58:"
         "shadowcolor=black@0.40:shadowx=1:shadowy=1:"
-        "x=w*0.025:y=h*0.03"
+        "x=(w-text_w)/2:y=h-text_h-48"
     )
 
 
@@ -2666,7 +2666,7 @@ def single_campaign_drawtext(font_path: str, text: str) -> str:
         f"drawtext=fontfile='{font_path}':text='{safe}':"
         "fontsize=22:fontcolor=white@0.78:"
         "box=1:boxcolor=black@0.28:boxborderw=8:"
-        "x=w*0.025:y=h*0.03"
+        "x=(w-text_w)/2:y=h-text_h-48"
     )
 
 
