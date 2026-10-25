@@ -1,0 +1,9 @@
+{
+  "campaign": "arrafund",
+  "watermark": "ArraFund",
+  "hashtag": "#ArraFund",
+  "niche": "AI news / tech leaders on AI",
+  "platforms": ["x", "youtube", "instagram", "tiktok"],
+  "note": "Append {\"url\", \"hook\"} objects only. This file is locked to ArraFund / #ArraFund. Do not put Flip.gg or Mr. Pa links here.",
+  "items": []
+}

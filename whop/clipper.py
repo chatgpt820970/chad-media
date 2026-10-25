@@ -6,8 +6,10 @@ Flip.gg (`flipgg`) is the primary default on X (@chadriyo), YouTube Shorts
 Mr. Pa are verified secondary campaigns. Dishpilot (`biz_yHrLny75uFGcUZ`) and
 Rascals are retired. FastLoanPilot and Nova are closed. The daily run
 (build_daily_30, also exposed as build-daily-40) fills 10 slots on each of the
-four Buffer channels, 40 posts a day, stamped with one Flip.gg mark.
-ingest-urls downloads an X or TikTok link, stamps one campaign name, and queues it.
+four Buffer channels, 40 posts a day. Links dropped in
+`whop/inbox/flipgg_links.json`, `arrafund_links.json`, and `mrpa_links.json`
+stay locked to that campaign's watermark and hashtag. ingest-urls reads each
+campaign file on its own and never restamps another group's clips.
 Pool Guard rejects bounties whose denial rate is above the configured cap
 (Shane Gillis is 99.8%).
 
@@ -34,6 +36,7 @@ CAMPAIGNS_PATH = ROOT / "campaigns.json"
 MANIFEST_PATH = ROOT / "manifest.json"
 FEED_JSON_PATH = ROOT / "feed.json"
 MEDIA_DIR = ROOT / "v"
+INBOX_DIR = ROOT / "inbox"
 PAGES_MEDIA_BASE = "https://chatgpt820970.github.io/chad-media/whop/v/"
 BOLD_FONT = "/usr/share/fonts/truetype/macos/Inter-Bold.ttf"
 
@@ -267,6 +270,31 @@ WATERMARK_BOX = "box=1:boxcolor=black@0.28:boxborderw=10"
 WATERMARK_BOTTOM_XY = "x=(w-text_w)/2:y=h-text_h-110"
 WATERMARK_TOP_CORNER_XY = "x=w-text_w-36:y=48"
 WATERMARK_ANCHORS = ("bottom", "top-corner")
+# One drop-file per Whop group. The filename is the lock: a clip loaded from
+# flipgg_links.json can only wear flip.gg / #FlipGG, and Mr. Pa never posts to X.
+CAMPAIGN_INBOX = {
+    FLIPGG_ID: {
+        "file": "flipgg_links.json",
+        "watermark": FLIPGG_WATERMARK_TEXT,
+        "hashtag": "#FlipGG",
+        "niche": "crypto / money / success edits",
+        "platforms": ("x", "youtube_shorts", "instagram_reels", "tiktok"),
+    },
+    ARRAFUND_ID: {
+        "file": "arrafund_links.json",
+        "watermark": ARRAFUND_WATERMARK_TEXT,
+        "hashtag": "#ArraFund",
+        "niche": "AI news / tech leaders on AI",
+        "platforms": ("x", "youtube_shorts", "instagram_reels", "tiktok"),
+    },
+    MR_PA_ID: {
+        "file": "mrpa_links.json",
+        "watermark": MR_PA_WATERMARK_TEXT,
+        "hashtag": "#MrPa",
+        "niche": "Mr. Pa clips",
+        "platforms": ("youtube_shorts", "instagram_reels", "tiktok"),
+    },
+}
 
 
 def platform_watermark(platform: str, campaign_id: str | None = None) -> str:
@@ -2167,6 +2195,251 @@ def _rank_unseen(
     return fresh + recycled
 
 
+def _inbox_spec(campaign_id: str) -> dict:
+    spec = CAMPAIGN_INBOX.get(campaign_id)
+    if spec is None:
+        raise CampaignPlatformError(
+            f"No campaign inbox for {campaign_id!r}. Expected {', '.join(CAMPAIGN_INBOX)}."
+        )
+    watermark, hashtag = CAMPAIGN_MARK[campaign_id]
+    if spec["watermark"] != watermark or spec["hashtag"] != hashtag:
+        raise CampaignPlatformError(f"{campaign_id} inbox spec does not match its campaign mark")
+    return spec
+
+
+def campaign_inbox_path(campaign_id: str, inbox_dir: Path | None = None) -> Path:
+    """The one file simple Grok edits for this Whop group."""
+    return (inbox_dir or INBOX_DIR) / _inbox_spec(campaign_id)["file"]
+
+
+def _inbox_platforms(raw, campaign_id: str) -> tuple[str, ...]:
+    """Platforms this campaign file is allowed to fill. Anything else is a mix-up."""
+    allowed = _inbox_spec(campaign_id)["platforms"]
+    if raw in (None, "", []):
+        return allowed
+    if isinstance(raw, (list, tuple)):
+        text = ",".join(str(part) for part in raw)
+    else:
+        text = str(raw)
+    chosen = parse_platform_list(text)
+    blocked = [platform for platform in chosen if platform not in allowed]
+    if blocked:
+        names = ", ".join(DAILY_SLOT_KEYS[platform] for platform in blocked)
+        raise CampaignPlatformError(
+            f"{_inbox_spec(campaign_id)['file']} cannot post to {names}"
+        )
+    return chosen
+
+
+def _inbox_hook(hook: str, campaign_id: str) -> str:
+    """Drop every other campaign tag so the caption can carry only this group's hashtag."""
+    text = (hook or "").strip()
+    for tag in (*SINGLE_CAMPAIGN_TAGS, *RETIRED_HASHTAGS):
+        text = re.sub(re.escape(tag), "", text, flags=re.IGNORECASE)
+    text = re.sub(r"[ \t]{2,}", " ", text).strip(" \t-")
+    return text or "Watch this"
+
+
+def _reject_foreign_stamp(raw: dict, campaign_id: str, filename: str) -> None:
+    spec = _inbox_spec(campaign_id)
+    if raw.get("campaign"):
+        declared = campaign_id_from_alias(str(raw["campaign"]))
+        if declared != campaign_id:
+            raise CampaignPlatformError(
+                f"{filename} is locked to {campaign_id}, not {declared}"
+            )
+    if raw.get("watermark") and str(raw["watermark"]) != spec["watermark"]:
+        raise CampaignPlatformError(
+            f"{filename} watermark must stay {spec['watermark']!r}"
+        )
+    if raw.get("hashtag") and str(raw["hashtag"]) != spec["hashtag"]:
+        raise CampaignPlatformError(
+            f"{filename} hashtag must stay {spec['hashtag']!r}"
+        )
+    if raw.get("platforms"):
+        _inbox_platforms(raw.get("platforms"), campaign_id)
+
+
+def inbox_source_id(url: str) -> str:
+    try:
+        return str(parse_source_url(url)["id"])
+    except CampaignPlatformError:
+        token = re.sub(r"[^A-Za-z0-9]+", "", url)
+        return token[-24:] or "link"
+
+
+def load_campaign_inbox(campaign_id: str, inbox_dir: Path | None = None) -> list[dict]:
+    """Read only `whop/inbox/<campaign>_links.json` and lock every row to that campaign.
+
+    A bare list of `{url, hook}` objects is accepted. An item that names a different
+    campaign, watermark, or hashtag is refused. Mr. Pa rows cannot target X.
+    """
+    spec = _inbox_spec(campaign_id)
+    path = campaign_inbox_path(campaign_id, inbox_dir)
+    if not path.exists():
+        return []
+    try:
+        data = json.loads(path.read_text(encoding="utf-8"))
+    except json.JSONDecodeError as exc:
+        raise CampaignPlatformError(f"{spec['file']} is not valid JSON: {exc}") from exc
+    if isinstance(data, list):
+        document = {"campaign": campaign_id, "items": data}
+    elif isinstance(data, dict):
+        document = data
+    else:
+        raise CampaignPlatformError(f"{spec['file']} must be an object or a list of links")
+    _reject_foreign_stamp(document, campaign_id, spec["file"])
+    platforms = _inbox_platforms(document.get("platforms"), campaign_id)
+    raw_items = document.get("items") if isinstance(document, dict) else data
+    if raw_items is None:
+        raw_items = []
+    if not isinstance(raw_items, list):
+        raise CampaignPlatformError(f"{spec['file']} items must be a list")
+    rows: list[dict] = []
+    for raw in raw_items:
+        if isinstance(raw, str):
+            raw = {"url": raw}
+        if not isinstance(raw, dict):
+            raise CampaignPlatformError(f"{spec['file']} has an item that is not an object")
+        _reject_foreign_stamp(raw, campaign_id, spec["file"])
+        url = str(raw.get("url") or "").strip()
+        if not url:
+            continue
+        if not url.lower().startswith("http"):
+            raise CampaignPlatformError(f"{spec['file']} has a non-URL entry {url!r}")
+        category = str(raw.get("category") or "other")
+        if category not in INGEST_CATEGORIES:
+            category = "other"
+        item_platforms = _inbox_platforms(raw.get("platforms"), campaign_id) if raw.get("platforms") else platforms
+        rows.append(
+            {
+                "url": url,
+                "hook": _inbox_hook(str(raw.get("hook") or raw.get("title") or ""), campaign_id),
+                "campaign": campaign_id,
+                "watermark": spec["watermark"],
+                "hashtag": spec["hashtag"],
+                "niche": spec["niche"],
+                "platforms": item_platforms,
+                "category": category,
+                "inbox_file": spec["file"],
+            }
+        )
+    return rows
+
+
+def assert_inboxes_do_not_share_urls(inbox_dir: Path | None = None) -> None:
+    """The same link cannot live in two campaign files, or it would wear two logos."""
+    owner: dict[str, str] = {}
+    for campaign_id in CAMPAIGN_INBOX:
+        for row in load_campaign_inbox(campaign_id, inbox_dir):
+            previous = owner.get(row["url"])
+            if previous is not None and previous != campaign_id:
+                raise CampaignPlatformError(
+                    f"{row['url']} is in both {CAMPAIGN_INBOX[previous]['file']} and {row['inbox_file']}"
+                )
+            owner[row["url"]] = campaign_id
+
+
+def campaign_inbox_jobs(inbox_dir: Path | None = None) -> list[dict]:
+    """Flatten campaign inboxes in file order. Each job is already stamp-locked."""
+    assert_inboxes_do_not_share_urls(inbox_dir)
+    jobs: list[dict] = []
+    for campaign_id in CAMPAIGN_INBOX:
+        jobs.extend(load_campaign_inbox(campaign_id, inbox_dir))
+    return jobs
+
+
+def _assert_inbox_stamp(item: dict, campaign_id: str) -> None:
+    spec = _inbox_spec(campaign_id)
+    tags = _HASHTAG_RE.findall(str(item.get("caption") or ""))
+    if (
+        item.get("campaign_id") != campaign_id
+        or item.get("watermark_text") != spec["watermark"]
+        or tags != [spec["hashtag"]]
+    ):
+        raise CampaignPlatformError(
+            f"{spec['file']} escaped its lock "
+            f"({item.get('campaign_id')}, {item.get('watermark_text')}, {tags})"
+        )
+    if item.get("platform") not in spec["platforms"]:
+        raise CampaignPlatformError(f"{spec['file']} cannot post to {item.get('platform')}")
+    caption = str(item.get("caption") or "")
+    for other_id, other in CAMPAIGN_INBOX.items():
+        if other_id == campaign_id:
+            continue
+        if other["hashtag"] in caption or item.get("watermark_text") == other["watermark"]:
+            raise CampaignPlatformError(f"{spec['file']} was stamped as {other_id}")
+
+
+def _inbox_clips_for_platform(
+    platform: str,
+    inbox_dir: Path | None,
+    seen_ids: set[str],
+    used_today: set[str],
+) -> list[dict]:
+    """Up to 10 clips for one Buffer channel, round-robin across the campaign files that pay it.
+
+    A platform never opens another channel's file. Mr. Pa is skipped on X because
+    that platform is absent from `mrpa_links.json`'s allow-list.
+    """
+    lanes: list[list[dict]] = []
+    for campaign_id in CAMPAIGN_INBOX:
+        spec = _inbox_spec(campaign_id)
+        if platform not in spec["platforms"]:
+            lanes.append([])
+            continue
+        lane: list[dict] = []
+        for row in load_campaign_inbox(campaign_id, inbox_dir):
+            if platform not in row["platforms"]:
+                continue
+            if row["campaign"] != campaign_id or row["watermark"] != spec["watermark"]:
+                raise CampaignPlatformError(f"{spec['file']} returned a foreign stamp")
+            source_id = inbox_source_id(row["url"])
+            clip_id = f"inbox-{campaign_id}-{platform}-{source_id}"
+            if clip_id in seen_ids or clip_id in used_today:
+                continue
+            lane.append(
+                {
+                    "id": clip_id,
+                    "hook": row["hook"],
+                    "category": row["category"],
+                    "video_url": row["url"],
+                    "inbox_campaign": campaign_id,
+                    "inbox_file": spec["file"],
+                    "source_url": row["url"],
+                }
+            )
+        lanes.append(lane)
+    chosen: list[dict] = []
+    cursors = [0] * len(lanes)
+    while len(chosen) < DAILY_30_PER_PLATFORM:
+        progressed = False
+        for index, lane in enumerate(lanes):
+            cursor = cursors[index]
+            if cursor >= len(lane):
+                continue
+            cursors[index] = cursor + 1
+            chosen.append(lane[cursor])
+            progressed = True
+            if len(chosen) >= DAILY_30_PER_PLATFORM:
+                break
+        if not progressed:
+            break
+    return chosen
+
+
+def _apply_inbox_stamp(item: dict, clip: dict) -> dict:
+    campaign_id = clip.get("inbox_campaign")
+    if not campaign_id:
+        return item
+    _assert_inbox_stamp(item, str(campaign_id))
+    item["source"] = "inbox"
+    item["inbox_file"] = clip["inbox_file"]
+    item["inbox_campaign"] = campaign_id
+    item["source_url"] = clip["source_url"]
+    return item
+
+
 def _take_clips(
     catalog: tuple[dict, ...],
     predicate,
@@ -2175,6 +2448,8 @@ def _take_clips(
     used_today: set[str],
     uses: dict[str, str],
 ) -> list[dict]:
+    if count <= 0:
+        return []
     ranked = _rank_unseen(catalog, predicate, seen_ids, used_today, uses)
     if len(ranked) < count:
         raise CampaignPlatformError(
@@ -2194,6 +2469,8 @@ def _take_preferring_global(
     eligible=None,
 ) -> list[dict]:
     """Fill from non-Indian clips first so Denzen keeps the Indian inventory."""
+    if count <= 0:
+        return []
     allowed = eligible or (lambda _clip: True)
     ranked = _rank_unseen(
         catalog,
@@ -2228,26 +2505,36 @@ def _deal_preferring_global(
     seen_ids: set[str],
     used_today: set[str],
     uses: dict[str, str],
+    counts: tuple[int, int, int] | None = None,
 ) -> tuple[list[dict], list[dict], list[dict]]:
     """Deal ranked clips round-robin to X, Instagram, and TikTok.
 
     Each lane gets a share of the priority categories. The X lane skips a clip
-    only when it is locked to a campaign other than Flip.gg.
+    only when it is locked to a campaign other than Flip.gg. `counts` is the
+    number of catalog clips still needed after campaign-inbox links take slots.
     """
-    pool = _take_preferring_global(catalog, 3 * count, seen_ids, used_today, uses)
+    lane_counts = counts if counts is not None else (count, count, count)
+    if len(lane_counts) != 3 or any(needed < 0 for needed in lane_counts):
+        raise CampaignPlatformError(f"Daily lane counts must be three non-negative sizes, not {lane_counts!r}")
+    total = sum(lane_counts)
+    if total == 0:
+        return ([], [], [])
+    pool = _take_preferring_global(catalog, total, seen_ids, used_today, uses)
     lanes: tuple[list[dict], list[dict], list[dict]] = ([], [], [])
     cursor = 0
     for clip in pool:
+        placed = False
         for offset in range(3):
             lane = (cursor + offset) % 3
-            if len(lanes[lane]) >= count or (lane == 0 and not _primary_compatible(clip)):
+            if len(lanes[lane]) >= lane_counts[lane] or (lane == 0 and not _primary_compatible(clip)):
                 continue
             lanes[lane].append(clip)
             cursor = (lane + 1) % 3
+            placed = True
             break
-        else:
+        if not placed:
             raise CampaignPlatformError(f"No lane can take clip {clip['id']}")
-    if any(len(lane) != count for lane in lanes):
+    if any(len(lanes[index]) != lane_counts[index] for index in range(3)):
         raise CampaignPlatformError("Daily lanes could not be filled with compatible clips")
     return lanes
 
@@ -2316,117 +2603,107 @@ def _daily_item(
     return item
 
 
+def _campaign_id_for_clip(clip: dict, default: str) -> str:
+    if clip.get("inbox_campaign"):
+        return str(clip["inbox_campaign"])
+    return str(clip.get("campaign_lock") or default)
+
+
 def build_daily_30(
     campaigns_data: dict,
     seen: dict | None = None,
     *,
     today: date | None = None,
     catalog: tuple[dict, ...] | None = None,
+    inbox_dir: Path | None = None,
 ) -> tuple[dict, dict]:
     """Pick 10 unseen clips for each of X, YouTube, Instagram, and TikTok (40 a day).
 
-    Every default post is stamped Flip.gg. A clip with a burned-in mark
-    (`campaign_lock`) always gets that campaign when the platform pays it.
-    YouTube keeps 8 Indian actor/cinema clips. X, Instagram,
-    and TikTok pick first from the priority categories (romantic couples,
-    glamorous girls, 4K anime, 4K movie edits), then YouTube's two global slots
-    take what is left. A clip already in `seen` is reused only after every
-    unseen clip of that kind is gone, and never twice on the same day.
+    Campaign inbox links fill slots first. A URL from `flipgg_links.json` is
+    stamped flip.gg / #FlipGG, `arrafund_links.json` is stamped ArraFund /
+    #ArraFund, and `mrpa_links.json` is stamped Mr. Pa / #MrPa on YouTube,
+    Instagram, and TikTok only. Catalog clips fill whatever slots those files
+    leave empty, and empty files keep the Flip.gg catalog day. YouTube's
+    catalog remainder stays on Indian actor/cinema clips first. A clip already
+    in `seen` is reused only after every unseen clip of that kind is gone, and
+    never twice on the same day.
     """
     run_day = today or datetime.now(timezone.utc).date()
     source = catalog if catalog is not None else DAILY_CLIP_CATALOG
     if len(DAILY_30_TIMES_IST) != DAILY_30_PER_PLATFORM:
         raise CampaignPlatformError("Daily times must cover 10 slots")
+    assert_inboxes_do_not_share_urls(inbox_dir)
     seen_ids_list, uses = _seen_lists(seen)
     seen_ids = set(seen_ids_list)
     used_today: set[str] = set()
+    x_inbox = _inbox_clips_for_platform("x", inbox_dir, seen_ids, used_today)
+    youtube_inbox = _inbox_clips_for_platform("youtube_shorts", inbox_dir, seen_ids, used_today)
+    instagram_inbox = _inbox_clips_for_platform("instagram_reels", inbox_dir, seen_ids, used_today)
+    tiktok_inbox = _inbox_clips_for_platform("tiktok", inbox_dir, seen_ids, used_today)
+    for inbox_clip in (*x_inbox, *youtube_inbox, *instagram_inbox, *tiktok_inbox):
+        used_today.add(str(inbox_clip["id"]))
+    youtube_remaining = DAILY_30_PER_PLATFORM - len(youtube_inbox)
+    indian_need = min(DAILY_30_INDIAN_SLOTS, youtube_remaining)
     indian = _take_clips(
         source,
         lambda clip: clip["category"] in INDIAN_CATEGORIES,
-        DAILY_30_INDIAN_SLOTS,
+        indian_need,
         seen_ids,
         used_today,
         uses,
     )
-    x_clips, instagram_clips, tiktok_clips = _deal_preferring_global(
+    x_rest, instagram_rest, tiktok_rest = _deal_preferring_global(
         source,
         DAILY_30_PER_PLATFORM,
         seen_ids,
         used_today,
         uses,
+        counts=(
+            DAILY_30_PER_PLATFORM - len(x_inbox),
+            DAILY_30_PER_PLATFORM - len(instagram_inbox),
+            DAILY_30_PER_PLATFORM - len(tiktok_inbox),
+        ),
     )
     youtube_global = _take_preferring_global(
         source,
-        DAILY_30_PER_PLATFORM - DAILY_30_INDIAN_SLOTS,
+        youtube_remaining - indian_need,
         seen_ids,
         used_today,
         uses,
         eligible=_primary_compatible,
     )
+    x_clips = x_inbox + x_rest
+    instagram_clips = instagram_inbox + instagram_rest
+    tiktok_clips = tiktok_inbox + tiktok_rest
     links_blocked = x_links_blocked(campaigns_data)
     items: list[dict] = []
-    for slot, clip in enumerate(x_clips, start=1):
+
+    def _append_daily(slot: int, platform: str, clip: dict, default_campaign: str, blocked: bool) -> None:
         campaign = _campaign_for_daily_slot(
-            campaigns_data, clip.get("campaign_lock") or FLIPGG_ID, "x"
+            campaigns_data, _campaign_id_for_clip(clip, default_campaign), platform
         )
-        items.append(
-            _daily_item(
-                slot=slot,
-                platform="x",
-                clip=clip,
-                campaign=campaign,
-                campaigns_data=campaigns_data,
-                run_date=run_day,
-                links_blocked=links_blocked,
-            )
+        item = _daily_item(
+            slot=slot,
+            platform=platform,
+            clip=clip,
+            campaign=campaign,
+            campaigns_data=campaigns_data,
+            run_date=run_day,
+            links_blocked=blocked,
         )
-    youtube_clips = indian + youtube_global
+        items.append(_apply_inbox_stamp(item, clip))
+
+    for slot, clip in enumerate(x_clips, start=1):
+        _append_daily(slot, "x", clip, FLIPGG_ID, links_blocked)
+    youtube_clips = youtube_inbox + indian + youtube_global
     for slot, clip in enumerate(youtube_clips, start=1):
-        campaign_id = clip.get("campaign_lock") or FLIPGG_ID
-        campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "youtube_shorts")
-        items.append(
-            _daily_item(
-                slot=slot,
-                platform="youtube_shorts",
-                clip=clip,
-                campaign=campaign,
-                campaigns_data=campaigns_data,
-                run_date=run_day,
-                links_blocked=False,
-            )
-        )
+        _append_daily(slot, "youtube_shorts", clip, FLIPGG_ID, False)
     for slot, clip in enumerate(instagram_clips, start=1):
-        campaign_id = clip.get("campaign_lock") or INSTAGRAM_DAILY_ROTATION[
-            (slot - 1) % len(INSTAGRAM_DAILY_ROTATION)
-        ]
-        campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "instagram_reels")
-        items.append(
-            _daily_item(
-                slot=slot,
-                platform="instagram_reels",
-                clip=clip,
-                campaign=campaign,
-                campaigns_data=campaigns_data,
-                run_date=run_day,
-                links_blocked=False,
-            )
-        )
+        default_campaign = INSTAGRAM_DAILY_ROTATION[(slot - 1) % len(INSTAGRAM_DAILY_ROTATION)]
+        _append_daily(slot, "instagram_reels", clip, default_campaign, False)
     for slot, clip in enumerate(tiktok_clips, start=1):
-        campaign_id = clip.get("campaign_lock") or TIKTOK_DAILY_ROTATION[
-            (slot - 1) % len(TIKTOK_DAILY_ROTATION)
-        ]
-        campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "tiktok")
-        items.append(
-            _daily_item(
-                slot=slot,
-                platform="tiktok",
-                clip=clip,
-                campaign=campaign,
-                campaigns_data=campaigns_data,
-                run_date=run_day,
-                links_blocked=False,
-            )
-        )
+        default_campaign = TIKTOK_DAILY_ROTATION[(slot - 1) % len(TIKTOK_DAILY_ROTATION)]
+        _append_daily(slot, "tiktok", clip, default_campaign, False)
     expected_count = DAILY_30_PER_PLATFORM * len(SUPPORTED_PLATFORMS)
     if len(items) != expected_count:
         raise CampaignPlatformError(f"Expected {expected_count} daily items, built {len(items)}")
@@ -2805,8 +3082,15 @@ def build_ingest_items(
     slot: int = 1,
     category: str = "glamorous_girls",
     source_metadata: dict | None = None,
+    item_source: str = "ingest",
+    clip_id_prefix: str = "",
 ) -> list[dict]:
-    """Queue one rendered file onto each platform that campaign pays."""
+    """Queue one rendered file onto each platform that campaign pays.
+
+    `item_source="inbox"` locks the clip id and the stamp to the campaign file
+    the link was read from. A prefix of `inbox-flipgg` becomes
+    `inbox-flipgg-<platform>-<source_id>`, matching the daily slot id.
+    """
     if category not in INGEST_CATEGORIES:
         raise CampaignPlatformError(
             f"Unknown category {category!r}. Expected one of {', '.join(INGEST_CATEGORIES)}."
@@ -2824,20 +3108,31 @@ def build_ingest_items(
     )
     run_day = today or datetime.now(timezone.utc).date()
     campaign_id = campaign_id_from_alias(campaign_alias)
+    if item_source == "inbox" and campaign_id not in CAMPAIGN_INBOX:
+        raise CampaignPlatformError(f"{campaign_id} has no campaign inbox")
     selected = platforms_for_campaign(campaigns_data, campaign_id, parse_platform_list(platforms))
+    if item_source == "inbox":
+        blocked = [platform for platform in selected if platform not in CAMPAIGN_INBOX[campaign_id]["platforms"]]
+        if blocked:
+            raise CampaignPlatformError(f"{CAMPAIGN_INBOX[campaign_id]['file']} cannot post to {blocked}")
     campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, selected[0])
     links_blocked = x_links_blocked(campaigns_data)
     if slot < 1 or slot > DAILY_30_PER_PLATFORM:
         raise CampaignPlatformError(f"Ingest slot must be 1..{DAILY_30_PER_PLATFORM}")
+    hook_text = _inbox_hook(hook, campaign_id) if item_source == "inbox" else (hook.strip() or "Watch this")
     items: list[dict] = []
     for platform in selected:
         bound = _campaign_for_daily_slot(campaigns_data, campaign_id, platform)
+        if clip_id_prefix:
+            clip_identity = f"{clip_id_prefix}-{platform}-{source_id}"
+        else:
+            clip_identity = f"ingest-{source_id}-{platform}"
         item = _daily_item(
             slot=slot,
             platform=platform,
             clip={
-                "id": f"ingest-{source_id}-{platform}",
-                "hook": hook.strip() or "Watch this",
+                "id": clip_identity,
+                "hook": hook_text,
                 "category": category,
                 "video_url": video_url,
             },
@@ -2853,9 +3148,13 @@ def build_ingest_items(
             raise CampaignPlatformError(f"Ingest item for {platform} does not have one campaign mark")
         if CAMPAIGN_MARK[campaign_id][1] not in campaign_tags:
             raise CampaignPlatformError(f"Ingest caption for {platform} does not match {campaign_id}")
-        item["source"] = "ingest"
+        item["source"] = item_source
         item["source_url"] = source_url
         item["source_metadata"] = source_metadata or {}
+        if item_source == "inbox":
+            item["inbox_campaign"] = campaign_id
+            item["inbox_file"] = CAMPAIGN_INBOX[campaign_id]["file"]
+            _assert_inbox_stamp(item, campaign_id)
         assert_feed_item_campaign_identity(item, campaigns_data)
         assert_feed_item_community_guidelines_safe(item)
         items.append(item)

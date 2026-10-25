@@ -1,0 +1,9 @@
+{
+  "campaign": "mrpa",
+  "watermark": "Mr. Pa",
+  "hashtag": "#MrPa",
+  "niche": "Mr. Pa clips",
+  "platforms": ["youtube", "instagram", "tiktok"],
+  "note": "Append {\"url\", \"hook\"} objects only. This file is locked to Mr. Pa / #MrPa and never posts to X.",
+  "items": []
+}

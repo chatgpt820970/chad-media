@@ -1,0 +1,9 @@
+{
+  "campaign": "flipgg",
+  "watermark": "flip.gg",
+  "hashtag": "#FlipGG",
+  "niche": "crypto / money / success edits",
+  "platforms": ["x", "youtube", "instagram", "tiktok"],
+  "note": "Append {\"url\", \"hook\"} objects only. This file is locked to flip.gg / #FlipGG. Do not put ArraFund or Mr. Pa links here.",
+  "items": []
+}
