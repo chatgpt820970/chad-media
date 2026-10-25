@@ -88,6 +88,8 @@ jobs:
             exit 0
           fi
           git commit -m "chore(shorts): update queue and seen log"
+          # Clean any unstaged changes so rebase can succeed
+          git stash --include-untracked || true
           for i in 1 2 3 4; do
             git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
             echo "Push failed, retrying ($i)..."
