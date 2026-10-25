@@ -7,8 +7,11 @@
 2. Maps each post to a campaign that explicitly pays that platform. Flip.gg
    (`app_QRxsQodZgK1r4D`) is the primary default on X (`@chadriyo`), YouTube
    Shorts (`Denzen` / `@denzen0`), Instagram Reels (`@benreelr`), and TikTok
-   (`@bi67325`). ArraFund and Mr. Pa are verified secondaries. Dishpilot and
-   Rascals are retired. FastLoanPilot and Nova are closed. `build-daily-40`
+   (`@bi67325`). ArraFund and Mr. Pa are verified secondaries. Each Whop group
+   has its own inbox (`whop/inbox/flipgg_links.json`, `arrafund_links.json`,
+   `mrpa_links.json`) and a clip is stamped only with that file's watermark
+   and hashtag. Dishpilot and Rascals are retired. FastLoanPilot and Nova are
+   closed. `build-daily-40`
    (alias `build-daily-30`) selects 40 unseen clips, 10 per platform, stamped
    with one subtle semi-transparent `flip.gg` mark, and, on the daily GitHub
    Actions run, commits the feed.
@@ -1144,6 +1147,45 @@ def write_daily_schedules(feed: dict, cfg: dict | None = None) -> list[Path]:
     return paths
 
 
+def ingest_campaign_inboxes(
+    *,
+    encode: bool = True,
+    fetch_json=None,
+    download_file=None,
+    inbox_dir: Path | None = None,
+) -> list[dict]:
+    """Download each campaign inbox separately and stamp only that campaign.
+
+    `flipgg_links.json` never receives the ArraFund or Mr. Pa mark, and
+    `mrpa_links.json` is not posted to X. The shared `urls_queue.json` is not
+    read here, so one group's links cannot fan out under another logo.
+    """
+    jobs = platform_map.campaign_inbox_jobs(inbox_dir)
+    if not jobs:
+        log("campaign inboxes are empty")
+        return []
+    created: list[dict] = []
+    for index, row in enumerate(jobs):
+        if row["campaign"] not in platform_map.CAMPAIGN_INBOX:
+            raise platform_map.CampaignPlatformError(f"Refusing unlocked inbox row {row!r}")
+        created.extend(
+            ingest_urls_command(
+                [row["url"]],
+                row["campaign"],
+                ",".join(row["platforms"]),
+                encode=encode,
+                fetch_json=fetch_json,
+                download_file=download_file,
+                category=str(row.get("category") or "other"),
+                hook=str(row["hook"]),
+                item_source="inbox",
+                clip_id_prefix=f"inbox-{row['campaign']}",
+                slot=(index % platform_map.DAILY_30_PER_PLATFORM) + 1,
+            )
+        )
+    return created
+
+
 def ingest_urls_command(
     urls: list[str],
     campaign: str,
@@ -1153,6 +1195,10 @@ def ingest_urls_command(
     fetch_json=None,
     download_file=None,
     category: str = "",
+    hook: str = "",
+    item_source: str = "ingest",
+    clip_id_prefix: str = "",
+    slot: int | None = None,
 ) -> list[dict]:
     """Download each X/TikTok URL, stamp one campaign, and queue it on Buffer channels.
 
@@ -1188,9 +1234,10 @@ def ingest_urls_command(
         else:
             download_hd_source(source_url, raw_path)
         source_metadata["container"] = probe_source_metadata(raw_path)
+        hook_text = hook.strip() or "Watch this"
         platform_map.assert_community_guidelines_safe(
-            title="Watch this",
-            hook="Watch this",
+            title=hook_text,
+            hook=hook_text,
             tags=(category,),
             source_metadata=source_metadata,
             context=f"downloaded source {parsed['id']}",
@@ -1220,11 +1267,13 @@ def ingest_urls_command(
                     video_url=video_url,
                     campaign_alias=campaign,
                     platforms=platform,
-                    hook="Watch this",
+                    hook=hook_text,
                     today=today,
-                    slot=(index % platform_map.DAILY_30_PER_PLATFORM) + 1,
+                    slot=(index % platform_map.DAILY_30_PER_PLATFORM) + 1 if slot is None else slot,
                     category=category,
                     source_metadata=source_metadata,
+                    item_source=item_source,
+                    clip_id_prefix=clip_id_prefix,
                 )
             )
     if not created:
@@ -1343,6 +1392,11 @@ def main(argv: list[str]) -> int:
         action="store_true",
         help="Also read whop/urls_queue.json",
     )
+    ingest_p.add_argument(
+        "--from-inbox",
+        action="store_true",
+        help="Read whop/inbox/flipgg_links.json, arrafund_links.json, and mrpa_links.json separately",
+    )
 
     clip_p = sub.add_parser("clip", help="Download and encode a single source URL in Ultra-Crisp 9:16 HD")
     clip_p.add_argument("--url", required=True, help="Source video URL or local path")
@@ -1365,12 +1419,14 @@ def main(argv: list[str]) -> int:
         build_daily_30_command()
         return 0
     if args.command == "ingest-urls":
+        if args.from_inbox:
+            ingest_campaign_inboxes()
         urls = _split_urls(args.urls)
         urls.extend(_split_urls(os.environ.get("SOURCE_URLS", "")))
         campaign = args.campaign or os.environ.get("INGEST_CAMPAIGN", "") or "flipgg"
         platforms = args.platforms or os.environ.get("INGEST_PLATFORMS", "") or "all"
         category = args.category or os.environ.get("INGEST_CATEGORY", "")
-        if args.from_queue or not urls:
+        if args.from_queue or (not urls and not args.from_inbox):
             queued, queue_campaign, queue_platforms = load_queue_urls()
             for url in queued:
                 if url not in urls:
@@ -1381,7 +1437,8 @@ def main(argv: list[str]) -> int:
                 platforms = queue_platforms or platforms
             if not category:
                 category = load_queue_category()
-        ingest_urls_command(urls, campaign, platforms, category=category)
+        if urls or not args.from_inbox:
+            ingest_urls_command(urls, campaign, platforms, category=category)
         return 0
     if args.command == "clip":
         src_path = Path(args.url)

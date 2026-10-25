@@ -3,10 +3,12 @@ name: Whop Clipper
 # Platform mapping for Whop Content Rewards, plus the daily 40-clip feed.
 # 00:15 UTC is 05:45 IST. 01:15 UTC is the 06:45 IST backup.
 # 10 posts each: X (@chadriyo), YouTube Shorts (Denzen), Instagram Reels
-# (@benreelr), and TikTok (@bi67325). Every video carries one subtle
-# semi-transparent flip.gg mark (white@0.65, black@0.28 box, bottom
-# x=(w-text_w)/2:y=h-text_h-110, or top corner x=w-text_w-36:y=48).
-# Dishpilot (biz_yHrLny75uFGcUZ) and Rascals are retired. Output:
+# (@benreelr), and TikTok (@bi67325). Campaign links live in their own files:
+# whop/inbox/flipgg_links.json (flip.gg / #FlipGG), arrafund_links.json
+# (ArraFund / #ArraFund), and mrpa_links.json (Mr. Pa / #MrPa, no X).
+# Every video carries one subtle semi-transparent mark (white@0.65,
+# black@0.28 box, bottom x=(w-text_w)/2:y=h-text_h-110, or top corner
+# x=w-text_w-36:y=48). Dishpilot (biz_yHrLny75uFGcUZ) and Rascals are retired. Output:
 # whop/daily_40_ready.json, whop/daily_30_ready.json, and
 # whop/feed/daily_30_ready.json. Stamped clips are hosted on a daily-YYYY-MM-DD release.
 # Pool Guard rejects high-denial bounties (whop-ai-shane-gillis at 99.8%).
@@ -89,7 +91,7 @@ jobs:
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         run: sudo apt-get update && sudo apt-get install -y ffmpeg
 
-      - name: Ingest X and TikTok links
+      - name: Ingest per-campaign inbox links
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
         env:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
@@ -98,7 +100,7 @@ jobs:
           INGEST_CAMPAIGN: ${{ github.event.inputs.campaign || '' }}
           INGEST_PLATFORMS: ${{ github.event.inputs.platforms || '' }}
           INGEST_CATEGORY: ${{ github.event.inputs.category || '' }}
-        run: python whop/whop_clipper.py ingest-urls --from-queue
+        run: python whop/whop_clipper.py ingest-urls --from-inbox
 
       - name: Build the daily 40-clip feed (10 per platform)
         if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'

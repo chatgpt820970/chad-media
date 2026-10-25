@@ -12,6 +12,7 @@ from pathlib import Path
 
 from whop.clipper import (
     BUFFER_ORGANIZATION_ID,
+    CAMPAIGN_INBOX,
     CAMPAIGN_MARK,
     DAILY_30_INDIAN_SLOTS,
     DAILY_30_PER_PLATFORM,
@@ -21,6 +22,7 @@ from whop.clipper import (
     SUPPORTED_PLATFORMS,
     FEED_JSON_PATH,
     INDIAN_CATEGORIES as CLIPPER_INDIAN_CATEGORIES,
+    INBOX_DIR,
     INGEST_CRF,
     INGEST_SHARPEN,
     PRIORITY_CATEGORIES,
@@ -28,7 +30,9 @@ from whop.clipper import (
     MANIFEST_PATH,
     PLATFORM_ELIGIBLE_CAMPAIGNS,
     CampaignPlatformError,
+    assert_inboxes_do_not_share_urls,
     banner_overlay_spec,
+    campaign_inbox_jobs,
     assert_feed_item_campaign_identity,
     bind_clip_to_campaign,
     buffer_create_post_body,
@@ -49,6 +53,7 @@ from whop.clipper import (
     ingest_ffmpeg_command,
     dishpilot_clip_filter,
     ffmpeg_banner_filter,
+    load_campaign_inbox,
     load_campaigns,
     overlay_plan,
     parse_source_url,
@@ -909,6 +914,10 @@ class DailyThirtyPipelineTest(unittest.TestCase):
         self.assertIn("github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'", text)
         self.assertIn("source_urls:", text)
         self.assertIn("ingest-urls", text)
+        self.assertIn("--from-inbox", text)
+        self.assertIn("whop/inbox/flipgg_links.json", text)
+        self.assertIn("arrafund_links.json", text)
+        self.assertIn("mrpa_links.json", text)
         self.assertIn("6add07e4778b240e2fb35110", json.dumps(self.data))
         self.assertEqual(BUFFER_ORGANIZATION_ID, "6ac41da09a0b5aca7c671500")
 
@@ -1236,6 +1245,228 @@ class IngestUrlPipelineTest(unittest.TestCase):
             self.assertEqual(item["watermark_position"]["y"], "h-text_h-110")
             self.assertEqual(item["watermark_position"]["top_corner_expr"], "x=w-text_w-36:y=48")
             self.assertEqual(item["channel_id"], DAILY_CHANNEL_IDS[item["platform"]])
+
+
+class CampaignInboxTest(unittest.TestCase):
+    """Each Whop group file keeps its own niche, watermark, and hashtag."""
+
+    def setUp(self) -> None:
+        self.data = load_campaigns()
+        self.day = date(2026, 10, 26)
+        self.flip_url = "https://x.com/crypto/status/111"
+        self.arra_url = "https://x.com/ai-news/status/222"
+        self.mr_url = "https://www.tiktok.com/@mrpa/video/333"
+
+    def _populate(self, root: Path) -> None:
+        documents = {
+            "flipgg_links.json": {
+                "campaign": "flipgg",
+                "watermark": "flip.gg",
+                "hashtag": "#FlipGG",
+                "niche": "crypto / money / success edits",
+                "platforms": ["x", "youtube", "instagram", "tiktok"],
+                "items": [{"url": self.flip_url, "hook": "Bitcoin just broke the chart #ArraFund"}],
+            },
+            "arrafund_links.json": {
+                "campaign": "arrafund",
+                "watermark": "ArraFund",
+                "hashtag": "#ArraFund",
+                "niche": "AI news / tech leaders on AI",
+                "platforms": ["x", "youtube", "instagram", "tiktok"],
+                "items": [{"url": self.arra_url, "hook": "This AI model shocked the room #FlipGG"}],
+            },
+            "mrpa_links.json": {
+                "campaign": "mrpa",
+                "watermark": "Mr. Pa",
+                "hashtag": "#MrPa",
+                "niche": "Mr. Pa clips",
+                "platforms": ["youtube", "instagram", "tiktok"],
+                "items": [{"url": self.mr_url, "hook": "Wait for the punchline #FlipGG"}],
+            },
+        }
+        for name, payload in documents.items():
+            (root / name).write_text(json.dumps(payload), encoding="utf-8")
+
+    def test_repo_inboxes_exist_and_are_locked_empty(self) -> None:
+        self.assertEqual(
+            {campaign_id: spec["file"] for campaign_id, spec in CAMPAIGN_INBOX.items()},
+            {
+                "flipgg": "flipgg_links.json",
+                "arrafund": "arrafund_links.json",
+                "mrpa": "mrpa_links.json",
+            },
+        )
+        for campaign_id, spec in CAMPAIGN_INBOX.items():
+            path = INBOX_DIR / spec["file"]
+            self.assertTrue(path.is_file(), path)
+            document = json.loads(path.read_text(encoding="utf-8"))
+            self.assertEqual(document["campaign"], campaign_id)
+            self.assertEqual(document["watermark"], spec["watermark"])
+            self.assertEqual(document["hashtag"], spec["hashtag"])
+            self.assertEqual(document["items"], [])
+            self.assertEqual(load_campaign_inbox(campaign_id), [])
+        self.assertEqual(campaign_inbox_jobs(), [])
+        with tempfile.TemporaryDirectory() as tmp:
+            empty, _seen = build_daily_30(
+                self.data, {"ids": [], "uses": {}}, today=date(2026, 10, 24), inbox_dir=Path(tmp)
+            )
+        disk, _seen = build_daily_30(self.data, {"ids": [], "uses": {}}, today=date(2026, 10, 24))
+        self.assertEqual(empty, disk)
+
+    def test_each_campaign_file_stamps_only_its_own_mark(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._populate(root)
+            self.assertEqual(
+                [row["url"] for row in load_campaign_inbox("flipgg", root)],
+                [self.flip_url],
+            )
+            self.assertEqual(
+                [row["url"] for row in load_campaign_inbox("arrafund", root)],
+                [self.arra_url],
+            )
+            self.assertEqual(
+                [row["url"] for row in load_campaign_inbox("mrpa", root)],
+                [self.mr_url],
+            )
+            self.assertEqual(
+                {row["campaign"] for row in campaign_inbox_jobs(root)},
+                {"flipgg", "arrafund", "mrpa"},
+            )
+            feed, _seen = build_daily_30(
+                self.data, {"ids": [], "uses": {}}, today=self.day, inbox_dir=root
+            )
+
+        by_url: dict[str, list[dict]] = {}
+        for item in feed["items"]:
+            source = item.get("source_url")
+            if source:
+                by_url.setdefault(source, []).append(item)
+
+        flip_items = by_url[self.flip_url]
+        arra_items = by_url[self.arra_url]
+        mr_items = by_url[self.mr_url]
+        self.assertEqual({item["platform"] for item in flip_items}, set(SUPPORTED_PLATFORMS))
+        self.assertEqual({item["platform"] for item in arra_items}, set(SUPPORTED_PLATFORMS))
+        self.assertEqual(
+            {item["platform"] for item in mr_items},
+            {"youtube_shorts", "instagram_reels", "tiktok"},
+        )
+        self.assertNotIn("x", {item["platform"] for item in mr_items})
+
+        expectations = (
+            (flip_items, "flipgg", "flip.gg", "#FlipGG", "flipgg_links.json", "Bitcoin just broke the chart"),
+            (arra_items, "arrafund", "ArraFund", "#ArraFund", "arrafund_links.json", "This AI model shocked the room"),
+            (mr_items, "mrpa", "Mr. Pa", "#MrPa", "mrpa_links.json", "Wait for the punchline"),
+        )
+        for items, campaign_id, watermark, hashtag, filename, hook in expectations:
+            self.assertTrue(items)
+            for item in items:
+                self.assertEqual(item["campaign_id"], campaign_id)
+                self.assertEqual(item["watermark_text"], watermark)
+                self.assertEqual(item["inbox_file"], filename)
+                self.assertEqual(item["inbox_campaign"], campaign_id)
+                self.assertEqual(item["source"], "inbox")
+                self.assertEqual(item["caption"], f"{hook}\n\n{hashtag}")
+                self.assertEqual(re.findall(r"#[A-Za-z][A-Za-z0-9_]*", item["caption"]), [hashtag])
+                for other in ("#FlipGG", "#ArraFund", "#MrPa"):
+                    if other != hashtag:
+                        self.assertNotIn(other, item["caption"])
+                for other_mark in ("flip.gg", "ArraFund", "Mr. Pa"):
+                    if other_mark != watermark:
+                        self.assertNotEqual(item["watermark_text"], other_mark)
+
+        youtube = [item for item in feed["items"] if item["platform"] == "youtube_shorts"]
+        self.assertEqual(
+            [item["campaign_id"] for item in youtube[:3]],
+            ["flipgg", "arrafund", "mrpa"],
+        )
+        x_items = [item for item in feed["items"] if item["platform"] == "x"]
+        self.assertEqual([item["campaign_id"] for item in x_items[:2]], ["flipgg", "arrafund"])
+        self.assertNotIn("mrpa", {item["campaign_id"] for item in x_items})
+        self.assertNotIn(self.mr_url, {item.get("source_url") for item in x_items})
+        self.assertTrue(all(item["watermark_text"] == "flip.gg" for item in feed["items"] if item.get("source") != "inbox"))
+
+    def test_inbox_rejects_cross_campaign_overrides(self) -> None:
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._populate(root)
+            flipped = json.loads((root / "flipgg_links.json").read_text(encoding="utf-8"))
+            flipped["campaign"] = "arrafund"
+            (root / "flipgg_links.json").write_text(json.dumps(flipped), encoding="utf-8")
+            with self.assertRaises(CampaignPlatformError):
+                load_campaign_inbox("flipgg", root)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._populate(root)
+            stolen = json.loads((root / "arrafund_links.json").read_text(encoding="utf-8"))
+            stolen["items"][0]["watermark"] = "flip.gg"
+            stolen["items"][0]["hashtag"] = "#FlipGG"
+            (root / "arrafund_links.json").write_text(json.dumps(stolen), encoding="utf-8")
+            with self.assertRaises(CampaignPlatformError):
+                load_campaign_inbox("arrafund", root)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._populate(root)
+            crossed = json.loads((root / "mrpa_links.json").read_text(encoding="utf-8"))
+            crossed["platforms"] = ["x", "youtube", "instagram", "tiktok"]
+            (root / "mrpa_links.json").write_text(json.dumps(crossed), encoding="utf-8")
+            with self.assertRaises(CampaignPlatformError):
+                load_campaign_inbox("mrpa", root)
+
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            self._populate(root)
+            (root / "mrpa_links.json").write_text(
+                (root / "flipgg_links.json").read_text(encoding="utf-8"),
+                encoding="utf-8",
+            )
+            with self.assertRaises(CampaignPlatformError):
+                assert_inboxes_do_not_share_urls(root)
+            with self.assertRaises(CampaignPlatformError):
+                build_daily_30(self.data, {"ids": [], "uses": {}}, today=self.day, inbox_dir=root)
+
+        stamped = build_ingest_items(
+            self.data,
+            source_url=self.flip_url,
+            source_id="111",
+            video_url="https://example.com/flip.mp4",
+            campaign_alias="flipgg",
+            platforms="x",
+            hook="Charts moved #MrPa",
+            today=self.day,
+            category="other",
+            item_source="inbox",
+            clip_id_prefix="inbox-flipgg",
+        )
+        self.assertEqual(stamped[0]["caption"], "Charts moved\n\n#FlipGG")
+        self.assertEqual(stamped[0]["watermark_text"], "flip.gg")
+        self.assertEqual(stamped[0]["clip_id"], "inbox-flipgg-x-111")
+        self.assertEqual(stamped[0]["inbox_file"], "flipgg_links.json")
+        self.assertNotIn("#MrPa", stamped[0]["caption"])
+
+        mrpa = build_ingest_items(
+            self.data,
+            source_url=self.mr_url,
+            source_id="333",
+            video_url="https://example.com/mr.mp4",
+            campaign_alias="mrpa",
+            platforms="all",
+            hook="Wait for the punchline #FlipGG",
+            today=self.day,
+            category="other",
+            item_source="inbox",
+            clip_id_prefix="inbox-mrpa",
+        )
+        self.assertEqual(
+            {item["platform"] for item in mrpa},
+            {"youtube_shorts", "instagram_reels", "tiktok"},
+        )
+        self.assertTrue(all(item["watermark_text"] == "Mr. Pa" for item in mrpa))
+        self.assertTrue(all(item["caption"] == "Wait for the punchline\n\n#MrPa" for item in mrpa))
+        self.assertTrue(all(item["inbox_file"] == "mrpa_links.json" for item in mrpa))
 
 
 if __name__ == "__main__":
