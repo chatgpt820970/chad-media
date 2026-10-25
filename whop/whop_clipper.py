@@ -4,12 +4,14 @@
 1. Enforces Whop Pool/Budget Guard (`check_campaign_pool_guard`) so we NEVER clip
    for empty, paused, high-denial-rate (for example Shane Gillis at 99.8%), or
    nearly exhausted (<$500 remaining or >80% paid out) Whop campaigns/bounties.
-2. Maps each post to a campaign that explicitly pays that platform. YouTube
-   Shorts (`Denzen` / `@denzen0`) uses Dishpilot and Mr. Pa. Instagram Reels
-   (`@benreelr`) uses Rascals, Dishpilot, and Mr. Pa. X (`@chadriyo`) uses
-   Dishpilot. FastLoanPilot and Nova are closed. `build-daily-40` (alias
-   `build-daily-30`) selects 40 unseen clips, 10 per platform, stamped Dishpilot or
-   Rascals, and, on the daily GitHub Actions run, commits the feed.
+2. Maps each post to a campaign that explicitly pays that platform. Flip.gg
+   (`app_QRxsQodZgK1r4D`) is the primary default on X (`@chadriyo`), YouTube
+   Shorts (`Denzen` / `@denzen0`), Instagram Reels (`@benreelr`), and TikTok
+   (`@bi67325`). ArraFund and Mr. Pa are verified secondaries. Dishpilot and
+   Rascals are retired. FastLoanPilot and Nova are closed. `build-daily-40`
+   (alias `build-daily-30`) selects 40 unseen clips, 10 per platform, stamped
+   with one subtle semi-transparent `flip.gg` mark, and, on the daily GitHub
+   Actions run, commits the feed.
 3. Focuses on high-retention lanes for YouTube Shorts (`Denzen` / `@denzen0`)
    and X (`@chadriyo`):
    - `anime`: 4K/HD anime fight & emotional edits
@@ -20,7 +22,8 @@
 5. Encodes Ultra-Crisp 1080x1920 (9:16 vertical for YouTube Shorts `Denzen` &
    X `@chadriyo`) using Lanczos scaling, CAS/unsharp 4K-style contrast-adaptive
    sharpening, CRF 17, the fast preset, 192k AAC audio, persistent scroll-stopping top hook
-   banner, one subtle corner campaign badge, and no second center logo.
+   banner, one subtle semi-transparent bottom campaign badge (`white@0.65`,
+   `box=1:boxcolor=black@0.28:boxborderw=10`, `y=h-text_h-110`), and no second center logo.
 6. Zero API keys or secrets in code.
 """
 
@@ -337,22 +340,25 @@ def _rejected_by_pool_guard(cfg: dict) -> list[dict]:
 
 
 def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
-    """Attach a YouTube payer and a separate X payer. Never pair @chadriyo with FastLoanPilot."""
+    """Stamp the primary payer, Flip.gg, on every default platform."""
     youtube = platform_map.bind_clip_to_campaign(
         platform_map.select_campaign_for_platform(cfg, "youtube_shorts"),
         "youtube_shorts",
     )
-    x_campaigns = [
-        platform_map.bind_clip_to_campaign(campaign, "x")
-        for campaign in platform_map.campaigns_for_platform(cfg, "x")
-    ]
-    if not x_campaigns:
-        raise platform_map.CampaignPlatformError(
-            "No Pool-Guard-passing campaign accepts x (@chadriyo)."
-        )
+    x_campaign = platform_map.bind_clip_to_campaign(
+        platform_map.select_campaign_for_platform(cfg, "x"),
+        "x",
+    )
+    instagram_campaign = platform_map.bind_clip_to_campaign(
+        platform_map.select_campaign_for_platform(cfg, "instagram_reels"),
+        "instagram_reels",
+    )
+    tiktok_campaign = platform_map.bind_clip_to_campaign(
+        platform_map.select_campaign_for_platform(cfg, "tiktok"),
+        "tiktok",
+    )
     links_blocked = platform_map.x_links_blocked(cfg)
-    for index, clip in enumerate(clips):
-        x_campaign = x_campaigns[index % len(x_campaigns)]
+    for clip in clips:
         preferred_id = str(clip.get("youtube_campaign") or "")
         preferred = platform_map._campaign_by_id(cfg, preferred_id) if preferred_id else None
         preferred_ok = False
@@ -364,6 +370,7 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
             preferred is not None
             and preferred_ok
             and "youtube_shorts" in (preferred.get("accepted_platforms") or [])
+            and preferred.get("id") in platform_map.CAMPAIGN_MARK
         ):
             try:
                 youtube_for_clip = platform_map.bind_clip_to_campaign(preferred, "youtube_shorts")
@@ -371,20 +378,7 @@ def _apply_platform_mapping(clips: list[dict], cfg: dict) -> None:
                 youtube_for_clip = youtube
         else:
             youtube_for_clip = youtube
-        instagram_campaigns = [
-            platform_map.bind_clip_to_campaign(campaign, "instagram_reels")
-            for campaign in platform_map.campaigns_for_platform(cfg, "instagram_reels")
-        ]
-        instagram_campaign = instagram_campaigns[index % len(instagram_campaigns)] if instagram_campaigns else None
-        tiktok_campaigns = [
-            platform_map.bind_clip_to_campaign(campaign, "tiktok")
-            for campaign in platform_map.campaigns_for_platform(cfg, "tiktok")
-        ]
-        tiktok_campaign = tiktok_campaigns[index % len(tiktok_campaigns)] if tiktok_campaigns else None
-        hook = platform_map.compose_post_hook(
-            str(clip.get("hook_text") or ""),
-            str(clip.get("description") or ""),
-        )
+        hook = str(clip.get("hook_text") or clip.get("description") or "").strip()
         youtube_caption = platform_map.build_platform_caption(
             hook,
             youtube_for_clip,
@@ -482,9 +476,9 @@ def build_whop_ready_feed() -> dict:
     ready_clips = [
         {
             "id": "flp-speedcube-lockin",
-            "youtube_campaign": "dishpilot-clipping",
+            "youtube_campaign": "flipgg",
             "youtube_category": "indian_actor_reels",
-            "title": "Diljit walks out and the whole stadium loses it 🔥🎤 #Dishpilot #Shorts",
+            "title": "Diljit walks out and the whole stadium loses it 🔥🎤",
             "hook_text": "WAIT FOR THE DROP",
             "description": "Diljit Dosanjh hits the stage and the stadium comes apart.",
             "lane": "indian_actor_reels",
@@ -501,9 +495,9 @@ def build_whop_ready_feed() -> dict:
         },
         {
             "id": "flp-language-gauntlet",
-            "youtube_campaign": "dishpilot-clipping",
+            "youtube_campaign": "flipgg",
             "youtube_category": "indian_actor_reels",
-            "title": "When this beat drops nobody stays in their seat 🔥🎶 #Dishpilot #Shorts",
+            "title": "When this beat drops nobody stays in their seat 🔥🎶",
             "hook_text": "WHEN THE BEAT DROPS",
             "description": "Yo Yo Honey Singh locks the room in the second the beat hits.",
             "lane": "indian_actor_reels",
@@ -520,7 +514,7 @@ def build_whop_ready_feed() -> dict:
         },
         {
             "id": "flp-concert-vibes",
-            "youtube_campaign": "mr-pa-clipping",
+            "youtube_campaign": "flipgg",
             "youtube_category": "funny",
             "title": "He solved the cube before his opponent even blinked 🤯🧩 #shorts",
             "hook_text": "WATCH HIS HANDS",
@@ -905,9 +899,9 @@ def load_queue_category() -> str:
 
 
 def load_queue_urls() -> tuple[list[str], str, str]:
-    data = load_json(URLS_QUEUE_PATH, {"urls": [], "campaign": "dishpilot", "platforms": "all"})
+    data = load_json(URLS_QUEUE_PATH, {"urls": [], "campaign": "flipgg", "platforms": "all"})
     urls = [str(url).strip() for url in data.get("urls") or [] if str(url).strip()]
-    return urls, str(data.get("campaign") or "dishpilot"), str(data.get("platforms") or "all")
+    return urls, str(data.get("campaign") or "flipgg"), str(data.get("platforms") or "all")
 
 
 def merge_ingested_items(existing: dict, feed: dict) -> dict:
@@ -1240,7 +1234,7 @@ def ingest_urls_command(
     if processed_queue:
         queued = load_json(URLS_QUEUE_PATH, {})
         queued["urls"] = [url for url in queue_urls if url not in chosen_urls]
-        queued.setdefault("campaign", "dishpilot")
+        queued.setdefault("campaign", "flipgg")
         queued.setdefault("platforms", "all")
         queued.setdefault("category", category)
         save_json(URLS_QUEUE_PATH, queued)
@@ -1337,7 +1331,7 @@ def main(argv: list[str]) -> int:
         help="Download X or TikTok links, stamp one campaign watermark, and queue the posts",
     )
     ingest_p.add_argument("--urls", default="", help="Comma or space separated X or TikTok URLs")
-    ingest_p.add_argument("--campaign", default="", help="dishpilot, rascals, or mrpa")
+    ingest_p.add_argument("--campaign", default="", help="flipgg, arrafund, or mrpa")
     ingest_p.add_argument("--platforms", default="", help="all or a comma-separated platform list")
     ingest_p.add_argument(
         "--category",
@@ -1373,7 +1367,7 @@ def main(argv: list[str]) -> int:
     if args.command == "ingest-urls":
         urls = _split_urls(args.urls)
         urls.extend(_split_urls(os.environ.get("SOURCE_URLS", "")))
-        campaign = args.campaign or os.environ.get("INGEST_CAMPAIGN", "") or "dishpilot"
+        campaign = args.campaign or os.environ.get("INGEST_CAMPAIGN", "") or "flipgg"
         platforms = args.platforms or os.environ.get("INGEST_PLATFORMS", "") or "all"
         category = args.category or os.environ.get("INGEST_CATEGORY", "")
         if args.from_queue or not urls:
