@@ -1,6 +1,6 @@
 {
-  "generated_at": "2026-10-24T00:15:00Z",
-  "date": "2026-10-24",
+  "generated_at": "2026-10-25T00:15:00Z",
+  "date": "2026-10-25",
   "total_posts": 40,
   "posts_per_platform": 10,
   "channels": {
@@ -16,7 +16,32 @@
         "platform": "x",
         "channel_id": "6ac41eb06a5c39ccb625fdf1",
         "scheduled_time_ist": "08:00",
-        "due_at_utc": "2026-10-24T02:30:00Z",
+        "due_at_utc": "2026-10-25T02:30:00Z",
+        "campaign_id": "dishpilot-clipping",
+        "watermark_text": "dishpilot",
+        "watermark_position": {
+          "placement": "top-left",
+          "x": "w*0.025",
+          "y": "h*0.03",
+          "expr": "x=w*0.025:y=h*0.03"
+        },
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-01-tt-7625798204092632333.mp4",
+        "title": "Beatbox challenge",
+        "caption": "Beatbox challenge\n\n#Dishpilot",
+        "clip_id": "tt-7625798204092632333",
+        "category": "funny",
+        "priority": false,
+        "pre_stamped": false,
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7625798204092632333.mp4",
+        "render_status": "rendered"
+      },
+      {
+        "slot": 2,
+        "platform": "x",
+        "channel_id": "6ac41eb06a5c39ccb625fdf1",
+        "scheduled_time_ist": "10:00",
+        "due_at_utc": "2026-10-25T04:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -35,11 +60,11 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 2,
+        "slot": 3,
         "platform": "x",
         "channel_id": "6ac41eb06a5c39ccb625fdf1",
-        "scheduled_time_ist": "10:00",
-        "due_at_utc": "2026-10-24T04:30:00Z",
+        "scheduled_time_ist": "12:00",
+        "due_at_utc": "2026-10-25T06:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -58,11 +83,11 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 3,
+        "slot": 4,
         "platform": "x",
         "channel_id": "6ac41eb06a5c39ccb625fdf1",
-        "scheduled_time_ist": "12:00",
-        "due_at_utc": "2026-10-24T06:30:00Z",
+        "scheduled_time_ist": "14:00",
+        "due_at_utc": "2026-10-25T08:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -81,11 +106,11 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 4,
+        "slot": 5,
         "platform": "x",
         "channel_id": "6ac41eb06a5c39ccb625fdf1",
-        "scheduled_time_ist": "14:00",
-        "due_at_utc": "2026-10-24T08:30:00Z",
+        "scheduled_time_ist": "16:00",
+        "due_at_utc": "2026-10-25T10:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -94,44 +119,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7564513815384116498.mp4",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-05-tt-7564513815384116498.mp4",
         "title": "This one came from the heart",
         "caption": "This one came from the heart\n\n#Dishpilot",
         "clip_id": "tt-7564513815384116498",
         "category": "celebrity",
         "priority": true,
         "pre_stamped": false,
-        "buffer_status": "pending"
-      },
-      {
-        "slot": 5,
-        "platform": "x",
-        "channel_id": "6ac41eb06a5c39ccb625fdf1",
-        "scheduled_time_ist": "16:00",
-        "due_at_utc": "2026-10-24T10:30:00Z",
-        "campaign_id": "dishpilot-clipping",
-        "watermark_text": "dishpilot",
-        "watermark_position": {
-          "placement": "top-left",
-          "x": "w*0.025",
-          "y": "h*0.03",
-          "expr": "x=w*0.025:y=h*0.03"
-        },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-3.mp4",
-        "title": "Wait for the note",
-        "caption": "Wait for the note\n\n#Dishpilot",
-        "clip_id": "x-clip-3",
-        "category": "concert",
-        "priority": false,
-        "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7564513815384116498.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 6,
         "platform": "x",
         "channel_id": "6ac41eb06a5c39ccb625fdf1",
         "scheduled_time_ist": "18:00",
-        "due_at_utc": "2026-10-24T12:30:00Z",
+        "due_at_utc": "2026-10-25T12:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -140,21 +144,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-speedcube-lockin.mp4",
-        "title": "Watch his hands",
-        "caption": "Watch his hands\n\n#Dishpilot",
-        "clip_id": "flp-speedcube-lockin",
-        "category": "funny",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-06-x-clip-3.mp4",
+        "title": "Wait for the note",
+        "caption": "Wait for the note\n\n#Dishpilot",
+        "clip_id": "x-clip-3",
+        "category": "concert",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-3.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 7,
         "platform": "x",
         "channel_id": "6ac41eb06a5c39ccb625fdf1",
         "scheduled_time_ist": "20:00",
-        "due_at_utc": "2026-10-24T14:30:00Z",
+        "due_at_utc": "2026-10-25T14:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -163,21 +169,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-kinderjoy-dishpilot.mp4",
-        "title": "The toy was inside the whole time",
-        "caption": "The toy was inside the whole time\n\n#Dishpilot",
-        "clip_id": "x-kinderjoy",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-07-flp-speedcube-lockin.mp4",
+        "title": "Watch his hands",
+        "caption": "Watch his hands\n\n#Dishpilot",
+        "clip_id": "flp-speedcube-lockin",
         "category": "funny",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-speedcube-lockin.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 8,
         "platform": "x",
         "channel_id": "6ac41eb06a5c39ccb625fdf1",
         "scheduled_time_ist": "22:00",
-        "due_at_utc": "2026-10-24T16:30:00Z",
+        "due_at_utc": "2026-10-25T16:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -186,21 +194,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-language-gauntlet.mp4",
-        "title": "Name every flag",
-        "caption": "Name every flag\n\n#Dishpilot",
-        "clip_id": "flp-language-gauntlet",
-        "category": "knowledge",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-08-x-kinderjoy.mp4",
+        "title": "The toy was inside the whole time",
+        "caption": "The toy was inside the whole time\n\n#Dishpilot",
+        "clip_id": "x-kinderjoy",
+        "category": "funny",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-kinderjoy-dishpilot.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 9,
         "platform": "x",
         "channel_id": "6ac41eb06a5c39ccb625fdf1",
         "scheduled_time_ist": "00:00",
-        "due_at_utc": "2026-10-24T18:30:00Z",
+        "due_at_utc": "2026-10-25T18:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -209,21 +219,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7501669584592817451.mp4",
-        "title": "Do I have your vote",
-        "caption": "Do I have your vote\n\n#Dishpilot",
-        "clip_id": "tt-7501669584592817451",
-        "category": "funny",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-09-flp-language-gauntlet.mp4",
+        "title": "Name every flag",
+        "caption": "Name every flag\n\n#Dishpilot",
+        "clip_id": "flp-language-gauntlet",
+        "category": "knowledge",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-language-gauntlet.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 10,
         "platform": "x",
         "channel_id": "6ac41eb06a5c39ccb625fdf1",
         "scheduled_time_ist": "02:00",
-        "due_at_utc": "2026-10-24T20:30:00Z",
+        "due_at_utc": "2026-10-25T20:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -232,14 +244,16 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7482079182034341162.mp4",
-        "title": "Flying got interesting",
-        "caption": "Flying got interesting\n\n#Dishpilot",
-        "clip_id": "tt-7482079182034341162",
-        "category": "funny",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-10-x-clip-2.mp4",
+        "title": "Name every flag",
+        "caption": "Name every flag\n\n#Dishpilot",
+        "clip_id": "x-clip-2",
+        "category": "knowledge",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-2.mp4",
+        "render_status": "rendered"
       }
     ],
     "youtube": [
@@ -248,7 +262,7 @@
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "08:00",
-        "due_at_utc": "2026-10-24T02:30:00Z",
+        "due_at_utc": "2026-10-25T02:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -257,21 +271,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-diljit-worldtour.mp4",
-        "title": "Diljit shut the stadium down",
-        "caption": "Diljit shut the stadium down\n\n#Dishpilot #Shorts",
-        "clip_id": "flp-diljit-worldtour",
-        "category": "indian_actor_reels",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-01-x-srk-salman.mp4",
+        "title": "Salman and Shah Rukh share the frame",
+        "caption": "Salman and Shah Rukh share the frame\n\n#Dishpilot #Shorts",
+        "clip_id": "x-srk-salman",
+        "category": "indian_movie_scenes",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://video.twimg.com/amplify_video/2110404095626612736/vid/avc1/640x360/2vmTjUOMtRB6yEtE.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 2,
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "10:00",
-        "due_at_utc": "2026-10-24T04:30:00Z",
+        "due_at_utc": "2026-10-25T04:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -280,21 +296,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-honeysingh-vibe.mp4",
-        "title": "Honey Singh takes the drop",
-        "caption": "Honey Singh takes the drop\n\n#Dishpilot #Shorts",
-        "clip_id": "flp-honeysingh-vibe",
-        "category": "indian_actor_reels",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-02-x-ranbir-alia.mp4",
+        "title": "Ranbir and Alia own the scene",
+        "caption": "Ranbir and Alia own the scene\n\n#Dishpilot #Shorts",
+        "clip_id": "x-ranbir-alia",
+        "category": "indian_movie_scenes",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://video.twimg.com/amplify_video/2109350581123125248/vid/avc1/480x852/47lTmE-8904XTFnv.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 3,
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "12:00",
-        "due_at_utc": "2026-10-24T06:30:00Z",
+        "due_at_utc": "2026-10-25T06:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -303,21 +321,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
-        "title": "Wait for Diljit to hit the note",
-        "caption": "Wait for Diljit to hit the note\n\n#Dishpilot #Shorts",
-        "clip_id": "yt-flp-1",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-03-x-virat-mumbai.mp4",
+        "title": "Virat walks into Mumbai",
+        "caption": "Virat walks into Mumbai\n\n#Dishpilot #Shorts",
+        "clip_id": "x-virat-mumbai",
         "category": "indian_actor_reels",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://video.twimg.com/amplify_video/2112746643015778304/vid/avc1/480x852/G9NkYIKWNf3avnSU.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 4,
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "14:00",
-        "due_at_utc": "2026-10-24T08:30:00Z",
+        "due_at_utc": "2026-10-25T08:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -326,21 +346,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-2.mp4",
-        "title": "When Honey Singh owns the beat",
-        "caption": "When Honey Singh owns the beat\n\n#Dishpilot #Shorts",
-        "clip_id": "yt-flp-2",
-        "category": "indian_movie_scenes",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-04-x-allu.mp4",
+        "title": "Allu takes the stage",
+        "caption": "Allu takes the stage\n\n#Dishpilot #Shorts",
+        "clip_id": "x-allu",
+        "category": "indian_actor_reels",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://video.twimg.com/amplify_video/2108890651677151232/vid/avc1/480x852/lKMyE_VzG7YtqVmU.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 5,
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "16:00",
-        "due_at_utc": "2026-10-24T10:30:00Z",
+        "due_at_utc": "2026-10-25T10:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -349,21 +371,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7087185238102723842.mp4",
-        "title": "Honey Singh takes the chorus",
-        "caption": "Honey Singh takes the chorus\n\n#Dishpilot #Shorts",
-        "clip_id": "tt-7087185238102723842",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-05-x-hardik.mp4",
+        "title": "Hardik's celebration takes over",
+        "caption": "Hardik's celebration takes over\n\n#Dishpilot #Shorts",
+        "clip_id": "x-hardik",
         "category": "indian_actor_reels",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://video.twimg.com/amplify_video/2110911489867669504/vid/avc1/480x852/MeUuwscm1dCEjM4Y.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 6,
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "18:00",
-        "due_at_utc": "2026-10-24T12:30:00Z",
+        "due_at_utc": "2026-10-25T12:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -372,21 +396,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7683220492567809294.mp4",
-        "title": "Diljit brings Daura to the crowd",
-        "caption": "Diljit brings Daura to the crowd\n\n#Dishpilot #Shorts",
-        "clip_id": "tt-7683220492567809294",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-06-flp-diljit-worldtour.mp4",
+        "title": "Diljit shut the stadium down",
+        "caption": "Diljit shut the stadium down\n\n#Dishpilot #Shorts",
+        "clip_id": "flp-diljit-worldtour",
         "category": "indian_actor_reels",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-diljit-worldtour.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 7,
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "20:00",
-        "due_at_utc": "2026-10-24T14:30:00Z",
+        "due_at_utc": "2026-10-25T14:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -395,21 +421,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://video.twimg.com/amplify_video/2110725157686063105/vid/avc1/720x720/9wEKen-NsjmE2zu7.mp4",
-        "title": "Sachin still stops the room",
-        "caption": "Sachin still stops the room\n\n#Dishpilot #Shorts",
-        "clip_id": "x-sachin",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-07-flp-honeysingh-vibe.mp4",
+        "title": "Honey Singh takes the drop",
+        "caption": "Honey Singh takes the drop\n\n#Dishpilot #Shorts",
+        "clip_id": "flp-honeysingh-vibe",
         "category": "indian_actor_reels",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-honeysingh-vibe.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 8,
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "22:00",
-        "due_at_utc": "2026-10-24T16:30:00Z",
+        "due_at_utc": "2026-10-25T16:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -418,21 +446,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://video.twimg.com/amplify_video/2113090359249240064/vid/avc1/480x852/er9LJ0EKKDLnQDX5.mp4",
-        "title": "Rohit brings the crowd up",
-        "caption": "Rohit brings the crowd up\n\n#Dishpilot #Shorts",
-        "clip_id": "x-rohit",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-08-yt-flp-1.mp4",
+        "title": "Wait for Diljit to hit the note",
+        "caption": "Wait for Diljit to hit the note\n\n#Dishpilot #Shorts",
+        "clip_id": "yt-flp-1",
         "category": "indian_actor_reels",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 9,
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "00:00",
-        "due_at_utc": "2026-10-24T18:30:00Z",
+        "due_at_utc": "2026-10-25T18:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -441,21 +471,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7438260086109261086.mp4",
-        "title": "Bring back the tomatoes",
-        "caption": "Bring back the tomatoes\n\n#Dishpilot #Shorts",
-        "clip_id": "tt-7438260086109261086",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-09-tt-7688400123809893662.mp4",
+        "title": "The glasses stay on",
+        "caption": "The glasses stay on\n\n#Dishpilot #Shorts",
+        "clip_id": "tt-7688400123809893662",
         "category": "funny",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7688400123809893662.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 10,
         "platform": "youtube_shorts",
         "channel_id": "6ac4da806a5c39ccb62eab64",
         "scheduled_time_ist": "02:00",
-        "due_at_utc": "2026-10-24T20:30:00Z",
+        "due_at_utc": "2026-10-25T20:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -464,14 +496,16 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7691740195418377502.mp4",
-        "title": "Just five more minutes",
-        "caption": "Just five more minutes\n\n#Dishpilot #Shorts",
-        "clip_id": "tt-7691740195418377502",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-10-tt-7501669584592817451.mp4",
+        "title": "Do I have your vote",
+        "caption": "Do I have your vote\n\n#Dishpilot #Shorts",
+        "clip_id": "tt-7501669584592817451",
         "category": "funny",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7501669584592817451.mp4",
+        "render_status": "rendered"
       }
     ],
     "instagram": [
@@ -480,7 +514,32 @@
         "platform": "instagram_reels",
         "channel_id": "6ac93d936a5c39ccb66624d7",
         "scheduled_time_ist": "08:00",
-        "due_at_utc": "2026-10-24T02:30:00Z",
+        "due_at_utc": "2026-10-25T02:30:00Z",
+        "campaign_id": "rascals-theme-pages",
+        "watermark_text": "rascals",
+        "watermark_position": {
+          "placement": "top-left",
+          "x": "w*0.025",
+          "y": "h*0.03",
+          "expr": "x=w*0.025:y=h*0.03"
+        },
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-01-tt-7694335322922044703.mp4",
+        "title": "Was the ball out",
+        "caption": "Was the ball out\n\n#Rascals #Reels",
+        "clip_id": "tt-7694335322922044703",
+        "category": "funny",
+        "priority": false,
+        "pre_stamped": false,
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7694335322922044703.mp4",
+        "render_status": "rendered"
+      },
+      {
+        "slot": 2,
+        "platform": "instagram_reels",
+        "channel_id": "6ac93d936a5c39ccb66624d7",
+        "scheduled_time_ist": "10:00",
+        "due_at_utc": "2026-10-25T04:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -499,34 +558,36 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 2,
+        "slot": 3,
         "platform": "instagram_reels",
         "channel_id": "6ac93d936a5c39ccb66624d7",
-        "scheduled_time_ist": "10:00",
-        "due_at_utc": "2026-10-24T04:30:00Z",
-        "campaign_id": "dishpilot-clipping",
-        "watermark_text": "dishpilot",
+        "scheduled_time_ist": "12:00",
+        "due_at_utc": "2026-10-25T06:30:00Z",
+        "campaign_id": "rascals-theme-pages",
+        "watermark_text": "rascals",
         "watermark_position": {
           "placement": "top-left",
           "x": "w*0.025",
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-anime-sakuga.mp4",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-03-flp-anime-sakuga.mp4",
         "title": "This animation is insane",
-        "caption": "This animation is insane\n\n#Dishpilot #Reels",
+        "caption": "This animation is insane\n\n#Rascals #Reels",
         "clip_id": "flp-anime-sakuga",
         "category": "anime_4k",
         "priority": true,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-anime-sakuga.mp4",
+        "render_status": "rendered"
       },
       {
-        "slot": 3,
+        "slot": 4,
         "platform": "instagram_reels",
         "channel_id": "6ac93d936a5c39ccb66624d7",
-        "scheduled_time_ist": "12:00",
-        "due_at_utc": "2026-10-24T06:30:00Z",
+        "scheduled_time_ist": "14:00",
+        "due_at_utc": "2026-10-25T08:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -545,11 +606,11 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 4,
+        "slot": 5,
         "platform": "instagram_reels",
         "channel_id": "6ac93d936a5c39ccb66624d7",
-        "scheduled_time_ist": "14:00",
-        "due_at_utc": "2026-10-24T08:30:00Z",
+        "scheduled_time_ist": "16:00",
+        "due_at_utc": "2026-10-25T10:30:00Z",
         "campaign_id": "rascals-theme-pages",
         "watermark_text": "rascals",
         "watermark_position": {
@@ -568,11 +629,11 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 5,
+        "slot": 6,
         "platform": "instagram_reels",
         "channel_id": "6ac93d936a5c39ccb66624d7",
-        "scheduled_time_ist": "16:00",
-        "due_at_utc": "2026-10-24T10:30:00Z",
+        "scheduled_time_ist": "18:00",
+        "due_at_utc": "2026-10-25T12:30:00Z",
         "campaign_id": "rascals-theme-pages",
         "watermark_text": "rascals",
         "watermark_position": {
@@ -591,34 +652,11 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 6,
-        "platform": "instagram_reels",
-        "channel_id": "6ac93d936a5c39ccb66624d7",
-        "scheduled_time_ist": "18:00",
-        "due_at_utc": "2026-10-24T12:30:00Z",
-        "campaign_id": "dishpilot-clipping",
-        "watermark_text": "dishpilot",
-        "watermark_position": {
-          "placement": "top-left",
-          "x": "w*0.025",
-          "y": "h*0.03",
-          "expr": "x=w*0.025:y=h*0.03"
-        },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7548779492546825473.mp4",
-        "title": "For everyone who has loved",
-        "caption": "For everyone who has loved\n\n#Dishpilot #Reels",
-        "clip_id": "tt-7548779492546825473",
-        "category": "celebrity",
-        "priority": true,
-        "pre_stamped": false,
-        "buffer_status": "pending"
-      },
-      {
         "slot": 7,
         "platform": "instagram_reels",
         "channel_id": "6ac93d936a5c39ccb66624d7",
         "scheduled_time_ist": "20:00",
-        "due_at_utc": "2026-10-24T14:30:00Z",
+        "due_at_utc": "2026-10-25T14:30:00Z",
         "campaign_id": "rascals-theme-pages",
         "watermark_text": "rascals",
         "watermark_position": {
@@ -627,21 +665,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-nyc-doorman.mp4",
-        "title": "NYC doorman plot twist",
-        "caption": "NYC doorman plot twist\n\n#Rascals #Reels",
-        "clip_id": "flp-nyc-doorman",
-        "category": "funny",
-        "priority": false,
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-07-tt-7548779492546825473.mp4",
+        "title": "For everyone who has loved",
+        "caption": "For everyone who has loved\n\n#Rascals #Reels",
+        "clip_id": "tt-7548779492546825473",
+        "category": "celebrity",
+        "priority": true,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7548779492546825473.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 8,
         "platform": "instagram_reels",
         "channel_id": "6ac93d936a5c39ccb66624d7",
         "scheduled_time_ist": "22:00",
-        "due_at_utc": "2026-10-24T16:30:00Z",
+        "due_at_utc": "2026-10-25T16:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -650,21 +690,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-1.mp4",
-        "title": "Watch his hands",
-        "caption": "Watch his hands\n\n#Dishpilot #Reels",
-        "clip_id": "x-clip-1",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-08-flp-nyc-doorman.mp4",
+        "title": "NYC doorman plot twist",
+        "caption": "NYC doorman plot twist\n\n#Dishpilot #Reels",
+        "clip_id": "flp-nyc-doorman",
         "category": "funny",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-nyc-doorman.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 9,
         "platform": "instagram_reels",
         "channel_id": "6ac93d936a5c39ccb66624d7",
         "scheduled_time_ist": "00:00",
-        "due_at_utc": "2026-10-24T18:30:00Z",
+        "due_at_utc": "2026-10-25T18:30:00Z",
         "campaign_id": "rascals-theme-pages",
         "watermark_text": "rascals",
         "watermark_position": {
@@ -673,21 +715,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-tea-science.mp4",
-        "title": "The cup changes color",
-        "caption": "The cup changes color\n\n#Rascals #Reels",
-        "clip_id": "flp-tea-science",
-        "category": "knowledge",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-09-x-clip-1.mp4",
+        "title": "Watch his hands",
+        "caption": "Watch his hands\n\n#Rascals #Reels",
+        "clip_id": "x-clip-1",
+        "category": "funny",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-1.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 10,
         "platform": "instagram_reels",
         "channel_id": "6ac93d936a5c39ccb66624d7",
         "scheduled_time_ist": "02:00",
-        "due_at_utc": "2026-10-24T20:30:00Z",
+        "due_at_utc": "2026-10-25T20:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -696,14 +740,16 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-2.mp4",
-        "title": "Name every flag",
-        "caption": "Name every flag\n\n#Dishpilot #Reels",
-        "clip_id": "x-clip-2",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-10-flp-tea-science.mp4",
+        "title": "The cup changes color",
+        "caption": "The cup changes color\n\n#Dishpilot #Reels",
+        "clip_id": "flp-tea-science",
         "category": "knowledge",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-tea-science.mp4",
+        "render_status": "rendered"
       }
     ],
     "tiktok": [
@@ -712,7 +758,32 @@
         "platform": "tiktok",
         "channel_id": "6add07e4778b240e2fb35110",
         "scheduled_time_ist": "08:00",
-        "due_at_utc": "2026-10-24T02:30:00Z",
+        "due_at_utc": "2026-10-25T02:30:00Z",
+        "campaign_id": "dishpilot-clipping",
+        "watermark_text": "dishpilot",
+        "watermark_position": {
+          "placement": "top-left",
+          "x": "w*0.025",
+          "y": "h*0.03",
+          "expr": "x=w*0.025:y=h*0.03"
+        },
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-01-tt-7408963192170335534.mp4",
+        "title": "The kitchen reveal",
+        "caption": "The kitchen reveal\n\n#Dishpilot",
+        "clip_id": "tt-7408963192170335534",
+        "category": "knowledge",
+        "priority": false,
+        "pre_stamped": false,
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7408963192170335534.mp4",
+        "render_status": "rendered"
+      },
+      {
+        "slot": 2,
+        "platform": "tiktok",
+        "channel_id": "6add07e4778b240e2fb35110",
+        "scheduled_time_ist": "10:00",
+        "due_at_utc": "2026-10-25T04:30:00Z",
         "campaign_id": "rascals-theme-pages",
         "watermark_text": "rascals",
         "watermark_position": {
@@ -731,34 +802,36 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 2,
+        "slot": 3,
         "platform": "tiktok",
         "channel_id": "6add07e4778b240e2fb35110",
-        "scheduled_time_ist": "10:00",
-        "due_at_utc": "2026-10-24T04:30:00Z",
-        "campaign_id": "rascals-theme-pages",
-        "watermark_text": "rascals",
+        "scheduled_time_ist": "12:00",
+        "due_at_utc": "2026-10-25T06:30:00Z",
+        "campaign_id": "dishpilot-clipping",
+        "watermark_text": "dishpilot",
         "watermark_position": {
           "placement": "top-left",
           "x": "w*0.025",
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-2105358655927517442.mp4",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-03-x-2105358655927517442.mp4",
         "title": "Show me a better fight scene",
-        "caption": "Show me a better fight scene\n\n#Rascals",
+        "caption": "Show me a better fight scene\n\n#Dishpilot",
         "clip_id": "x-2105358655927517442",
         "category": "anime_4k",
         "priority": true,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-2105358655927517442.mp4",
+        "render_status": "rendered"
       },
       {
-        "slot": 3,
+        "slot": 4,
         "platform": "tiktok",
         "channel_id": "6add07e4778b240e2fb35110",
-        "scheduled_time_ist": "12:00",
-        "due_at_utc": "2026-10-24T06:30:00Z",
+        "scheduled_time_ist": "14:00",
+        "due_at_utc": "2026-10-25T08:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -777,11 +850,11 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 4,
+        "slot": 5,
         "platform": "tiktok",
         "channel_id": "6add07e4778b240e2fb35110",
-        "scheduled_time_ist": "14:00",
-        "due_at_utc": "2026-10-24T08:30:00Z",
+        "scheduled_time_ist": "16:00",
+        "due_at_utc": "2026-10-25T10:30:00Z",
         "campaign_id": "rascals-theme-pages",
         "watermark_text": "rascals",
         "watermark_position": {
@@ -800,34 +873,11 @@
         "buffer_status": "pending"
       },
       {
-        "slot": 5,
-        "platform": "tiktok",
-        "channel_id": "6add07e4778b240e2fb35110",
-        "scheduled_time_ist": "16:00",
-        "due_at_utc": "2026-10-24T10:30:00Z",
-        "campaign_id": "dishpilot-clipping",
-        "watermark_text": "dishpilot",
-        "watermark_position": {
-          "placement": "top-left",
-          "x": "w*0.025",
-          "y": "h*0.03",
-          "expr": "x=w*0.025:y=h*0.03"
-        },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699120594402479373.mp4",
-        "title": "The dog knows the doorman",
-        "caption": "The dog knows the doorman\n\n#Dishpilot",
-        "clip_id": "tt-7699120594402479373",
-        "category": "celebrity",
-        "priority": true,
-        "pre_stamped": false,
-        "buffer_status": "pending"
-      },
-      {
         "slot": 6,
         "platform": "tiktok",
         "channel_id": "6add07e4778b240e2fb35110",
         "scheduled_time_ist": "18:00",
-        "due_at_utc": "2026-10-24T12:30:00Z",
+        "due_at_utc": "2026-10-25T12:30:00Z",
         "campaign_id": "rascals-theme-pages",
         "watermark_text": "rascals",
         "watermark_position": {
@@ -836,21 +886,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-concert-vibes.mp4",
-        "title": "Wait for the note",
-        "caption": "Wait for the note\n\n#Rascals",
-        "clip_id": "flp-concert-vibes",
-        "category": "concert",
-        "priority": false,
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-06-tt-7699120594402479373.mp4",
+        "title": "The dog knows the doorman",
+        "caption": "The dog knows the doorman\n\n#Rascals",
+        "clip_id": "tt-7699120594402479373",
+        "category": "celebrity",
+        "priority": true,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699120594402479373.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 7,
         "platform": "tiktok",
         "channel_id": "6add07e4778b240e2fb35110",
         "scheduled_time_ist": "20:00",
-        "due_at_utc": "2026-10-24T14:30:00Z",
+        "due_at_utc": "2026-10-25T14:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -859,21 +911,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-khaby-lifehack.mp4",
-        "title": "He did it the simple way",
-        "caption": "He did it the simple way\n\n#Dishpilot",
-        "clip_id": "flp-khaby-lifehack",
-        "category": "funny",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-07-flp-concert-vibes.mp4",
+        "title": "Wait for the note",
+        "caption": "Wait for the note\n\n#Dishpilot",
+        "clip_id": "flp-concert-vibes",
+        "category": "concert",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-concert-vibes.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 8,
         "platform": "tiktok",
         "channel_id": "6add07e4778b240e2fb35110",
         "scheduled_time_ist": "22:00",
-        "due_at_utc": "2026-10-24T16:30:00Z",
+        "due_at_utc": "2026-10-25T16:30:00Z",
         "campaign_id": "rascals-theme-pages",
         "watermark_text": "rascals",
         "watermark_position": {
@@ -882,21 +936,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-3.mp4",
-        "title": "Watch the solve land",
-        "caption": "Watch the solve land\n\n#Rascals",
-        "clip_id": "yt-flp-3",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-08-flp-khaby-lifehack.mp4",
+        "title": "He did it the simple way",
+        "caption": "He did it the simple way\n\n#Rascals",
+        "clip_id": "flp-khaby-lifehack",
         "category": "funny",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-khaby-lifehack.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 9,
         "platform": "tiktok",
         "channel_id": "6add07e4778b240e2fb35110",
         "scheduled_time_ist": "00:00",
-        "due_at_utc": "2026-10-24T18:30:00Z",
+        "due_at_utc": "2026-10-25T18:30:00Z",
         "campaign_id": "dishpilot-clipping",
         "watermark_text": "dishpilot",
         "watermark_position": {
@@ -905,21 +961,23 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-president-speech.mp4",
-        "title": "Wait for the third promise",
-        "caption": "Wait for the third promise\n\n#Dishpilot",
-        "clip_id": "flp-president-speech",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-09-yt-flp-3.mp4",
+        "title": "Watch the solve land",
+        "caption": "Watch the solve land\n\n#Dishpilot",
+        "clip_id": "yt-flp-3",
         "category": "funny",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-3.mp4",
+        "render_status": "rendered"
       },
       {
         "slot": 10,
         "platform": "tiktok",
         "channel_id": "6add07e4778b240e2fb35110",
         "scheduled_time_ist": "02:00",
-        "due_at_utc": "2026-10-24T20:30:00Z",
+        "due_at_utc": "2026-10-25T20:30:00Z",
         "campaign_id": "rascals-theme-pages",
         "watermark_text": "rascals",
         "watermark_position": {
@@ -928,14 +986,16 @@
           "y": "h*0.03",
           "expr": "x=w*0.025:y=h*0.03"
         },
-        "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7688400123809893662.mp4",
-        "title": "The glasses stay on",
-        "caption": "The glasses stay on\n\n#Rascals",
-        "clip_id": "tt-7688400123809893662",
+        "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-10-flp-president-speech.mp4",
+        "title": "Wait for the third promise",
+        "caption": "Wait for the third promise\n\n#Rascals",
+        "clip_id": "flp-president-speech",
         "category": "funny",
         "priority": false,
         "pre_stamped": false,
-        "buffer_status": "pending"
+        "buffer_status": "pending",
+        "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-president-speech.mp4",
+        "render_status": "rendered"
       }
     ]
   },
@@ -947,7 +1007,32 @@
       "platform": "x",
       "channel_id": "6ac41eb06a5c39ccb625fdf1",
       "scheduled_time_ist": "08:00",
-      "due_at_utc": "2026-10-24T02:30:00Z",
+      "due_at_utc": "2026-10-25T02:30:00Z",
+      "campaign_id": "dishpilot-clipping",
+      "watermark_text": "dishpilot",
+      "watermark_position": {
+        "placement": "top-left",
+        "x": "w*0.025",
+        "y": "h*0.03",
+        "expr": "x=w*0.025:y=h*0.03"
+      },
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-01-tt-7625798204092632333.mp4",
+      "title": "Beatbox challenge",
+      "caption": "Beatbox challenge\n\n#Dishpilot",
+      "clip_id": "tt-7625798204092632333",
+      "category": "funny",
+      "priority": false,
+      "pre_stamped": false,
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7625798204092632333.mp4",
+      "render_status": "rendered"
+    },
+    {
+      "slot": 2,
+      "platform": "x",
+      "channel_id": "6ac41eb06a5c39ccb625fdf1",
+      "scheduled_time_ist": "10:00",
+      "due_at_utc": "2026-10-25T04:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -966,11 +1051,11 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 2,
+      "slot": 3,
       "platform": "x",
       "channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "scheduled_time_ist": "10:00",
-      "due_at_utc": "2026-10-24T04:30:00Z",
+      "scheduled_time_ist": "12:00",
+      "due_at_utc": "2026-10-25T06:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -989,11 +1074,11 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 3,
+      "slot": 4,
       "platform": "x",
       "channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "scheduled_time_ist": "12:00",
-      "due_at_utc": "2026-10-24T06:30:00Z",
+      "scheduled_time_ist": "14:00",
+      "due_at_utc": "2026-10-25T08:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1012,11 +1097,11 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 4,
+      "slot": 5,
       "platform": "x",
       "channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "scheduled_time_ist": "14:00",
-      "due_at_utc": "2026-10-24T08:30:00Z",
+      "scheduled_time_ist": "16:00",
+      "due_at_utc": "2026-10-25T10:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1025,21 +1110,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7564513815384116498.mp4",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-05-tt-7564513815384116498.mp4",
       "title": "This one came from the heart",
       "caption": "This one came from the heart\n\n#Dishpilot",
       "clip_id": "tt-7564513815384116498",
       "category": "celebrity",
       "priority": true,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7564513815384116498.mp4",
+      "render_status": "rendered"
     },
     {
-      "slot": 5,
+      "slot": 6,
       "platform": "x",
       "channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "scheduled_time_ist": "16:00",
-      "due_at_utc": "2026-10-24T10:30:00Z",
+      "scheduled_time_ist": "18:00",
+      "due_at_utc": "2026-10-25T12:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1048,21 +1135,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-3.mp4",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-06-x-clip-3.mp4",
       "title": "Wait for the note",
       "caption": "Wait for the note\n\n#Dishpilot",
       "clip_id": "x-clip-3",
       "category": "concert",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-3.mp4",
+      "render_status": "rendered"
     },
     {
-      "slot": 6,
+      "slot": 7,
       "platform": "x",
       "channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "scheduled_time_ist": "18:00",
-      "due_at_utc": "2026-10-24T12:30:00Z",
+      "scheduled_time_ist": "20:00",
+      "due_at_utc": "2026-10-25T14:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1071,21 +1160,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-speedcube-lockin.mp4",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-07-flp-speedcube-lockin.mp4",
       "title": "Watch his hands",
       "caption": "Watch his hands\n\n#Dishpilot",
       "clip_id": "flp-speedcube-lockin",
       "category": "funny",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-speedcube-lockin.mp4",
+      "render_status": "rendered"
     },
     {
-      "slot": 7,
+      "slot": 8,
       "platform": "x",
       "channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "scheduled_time_ist": "20:00",
-      "due_at_utc": "2026-10-24T14:30:00Z",
+      "scheduled_time_ist": "22:00",
+      "due_at_utc": "2026-10-25T16:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1094,21 +1185,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-kinderjoy-dishpilot.mp4",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-08-x-kinderjoy.mp4",
       "title": "The toy was inside the whole time",
       "caption": "The toy was inside the whole time\n\n#Dishpilot",
       "clip_id": "x-kinderjoy",
       "category": "funny",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-kinderjoy-dishpilot.mp4",
+      "render_status": "rendered"
     },
     {
-      "slot": 8,
+      "slot": 9,
       "platform": "x",
       "channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "scheduled_time_ist": "22:00",
-      "due_at_utc": "2026-10-24T16:30:00Z",
+      "scheduled_time_ist": "00:00",
+      "due_at_utc": "2026-10-25T18:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1117,44 +1210,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-language-gauntlet.mp4",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-09-flp-language-gauntlet.mp4",
       "title": "Name every flag",
       "caption": "Name every flag\n\n#Dishpilot",
       "clip_id": "flp-language-gauntlet",
       "category": "knowledge",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
-    },
-    {
-      "slot": 9,
-      "platform": "x",
-      "channel_id": "6ac41eb06a5c39ccb625fdf1",
-      "scheduled_time_ist": "00:00",
-      "due_at_utc": "2026-10-24T18:30:00Z",
-      "campaign_id": "dishpilot-clipping",
-      "watermark_text": "dishpilot",
-      "watermark_position": {
-        "placement": "top-left",
-        "x": "w*0.025",
-        "y": "h*0.03",
-        "expr": "x=w*0.025:y=h*0.03"
-      },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7501669584592817451.mp4",
-      "title": "Do I have your vote",
-      "caption": "Do I have your vote\n\n#Dishpilot",
-      "clip_id": "tt-7501669584592817451",
-      "category": "funny",
-      "priority": false,
-      "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-language-gauntlet.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 10,
       "platform": "x",
       "channel_id": "6ac41eb06a5c39ccb625fdf1",
       "scheduled_time_ist": "02:00",
-      "due_at_utc": "2026-10-24T20:30:00Z",
+      "due_at_utc": "2026-10-25T20:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1163,21 +1235,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7482079182034341162.mp4",
-      "title": "Flying got interesting",
-      "caption": "Flying got interesting\n\n#Dishpilot",
-      "clip_id": "tt-7482079182034341162",
-      "category": "funny",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/x-10-x-clip-2.mp4",
+      "title": "Name every flag",
+      "caption": "Name every flag\n\n#Dishpilot",
+      "clip_id": "x-clip-2",
+      "category": "knowledge",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-2.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 1,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "08:00",
-      "due_at_utc": "2026-10-24T02:30:00Z",
+      "due_at_utc": "2026-10-25T02:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1186,21 +1260,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-diljit-worldtour.mp4",
-      "title": "Diljit shut the stadium down",
-      "caption": "Diljit shut the stadium down\n\n#Dishpilot #Shorts",
-      "clip_id": "flp-diljit-worldtour",
-      "category": "indian_actor_reels",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-01-x-srk-salman.mp4",
+      "title": "Salman and Shah Rukh share the frame",
+      "caption": "Salman and Shah Rukh share the frame\n\n#Dishpilot #Shorts",
+      "clip_id": "x-srk-salman",
+      "category": "indian_movie_scenes",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://video.twimg.com/amplify_video/2110404095626612736/vid/avc1/640x360/2vmTjUOMtRB6yEtE.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 2,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "10:00",
-      "due_at_utc": "2026-10-24T04:30:00Z",
+      "due_at_utc": "2026-10-25T04:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1209,21 +1285,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-honeysingh-vibe.mp4",
-      "title": "Honey Singh takes the drop",
-      "caption": "Honey Singh takes the drop\n\n#Dishpilot #Shorts",
-      "clip_id": "flp-honeysingh-vibe",
-      "category": "indian_actor_reels",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-02-x-ranbir-alia.mp4",
+      "title": "Ranbir and Alia own the scene",
+      "caption": "Ranbir and Alia own the scene\n\n#Dishpilot #Shorts",
+      "clip_id": "x-ranbir-alia",
+      "category": "indian_movie_scenes",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://video.twimg.com/amplify_video/2109350581123125248/vid/avc1/480x852/47lTmE-8904XTFnv.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 3,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "12:00",
-      "due_at_utc": "2026-10-24T06:30:00Z",
+      "due_at_utc": "2026-10-25T06:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1232,21 +1310,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
-      "title": "Wait for Diljit to hit the note",
-      "caption": "Wait for Diljit to hit the note\n\n#Dishpilot #Shorts",
-      "clip_id": "yt-flp-1",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-03-x-virat-mumbai.mp4",
+      "title": "Virat walks into Mumbai",
+      "caption": "Virat walks into Mumbai\n\n#Dishpilot #Shorts",
+      "clip_id": "x-virat-mumbai",
       "category": "indian_actor_reels",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://video.twimg.com/amplify_video/2112746643015778304/vid/avc1/480x852/G9NkYIKWNf3avnSU.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 4,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "14:00",
-      "due_at_utc": "2026-10-24T08:30:00Z",
+      "due_at_utc": "2026-10-25T08:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1255,21 +1335,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-2.mp4",
-      "title": "When Honey Singh owns the beat",
-      "caption": "When Honey Singh owns the beat\n\n#Dishpilot #Shorts",
-      "clip_id": "yt-flp-2",
-      "category": "indian_movie_scenes",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-04-x-allu.mp4",
+      "title": "Allu takes the stage",
+      "caption": "Allu takes the stage\n\n#Dishpilot #Shorts",
+      "clip_id": "x-allu",
+      "category": "indian_actor_reels",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://video.twimg.com/amplify_video/2108890651677151232/vid/avc1/480x852/lKMyE_VzG7YtqVmU.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 5,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "16:00",
-      "due_at_utc": "2026-10-24T10:30:00Z",
+      "due_at_utc": "2026-10-25T10:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1278,21 +1360,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7087185238102723842.mp4",
-      "title": "Honey Singh takes the chorus",
-      "caption": "Honey Singh takes the chorus\n\n#Dishpilot #Shorts",
-      "clip_id": "tt-7087185238102723842",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-05-x-hardik.mp4",
+      "title": "Hardik's celebration takes over",
+      "caption": "Hardik's celebration takes over\n\n#Dishpilot #Shorts",
+      "clip_id": "x-hardik",
       "category": "indian_actor_reels",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://video.twimg.com/amplify_video/2110911489867669504/vid/avc1/480x852/MeUuwscm1dCEjM4Y.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 6,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "18:00",
-      "due_at_utc": "2026-10-24T12:30:00Z",
+      "due_at_utc": "2026-10-25T12:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1301,21 +1385,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7683220492567809294.mp4",
-      "title": "Diljit brings Daura to the crowd",
-      "caption": "Diljit brings Daura to the crowd\n\n#Dishpilot #Shorts",
-      "clip_id": "tt-7683220492567809294",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-06-flp-diljit-worldtour.mp4",
+      "title": "Diljit shut the stadium down",
+      "caption": "Diljit shut the stadium down\n\n#Dishpilot #Shorts",
+      "clip_id": "flp-diljit-worldtour",
       "category": "indian_actor_reels",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-diljit-worldtour.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 7,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "20:00",
-      "due_at_utc": "2026-10-24T14:30:00Z",
+      "due_at_utc": "2026-10-25T14:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1324,21 +1410,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://video.twimg.com/amplify_video/2110725157686063105/vid/avc1/720x720/9wEKen-NsjmE2zu7.mp4",
-      "title": "Sachin still stops the room",
-      "caption": "Sachin still stops the room\n\n#Dishpilot #Shorts",
-      "clip_id": "x-sachin",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-07-flp-honeysingh-vibe.mp4",
+      "title": "Honey Singh takes the drop",
+      "caption": "Honey Singh takes the drop\n\n#Dishpilot #Shorts",
+      "clip_id": "flp-honeysingh-vibe",
       "category": "indian_actor_reels",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-honeysingh-vibe.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 8,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "22:00",
-      "due_at_utc": "2026-10-24T16:30:00Z",
+      "due_at_utc": "2026-10-25T16:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1347,21 +1435,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://video.twimg.com/amplify_video/2113090359249240064/vid/avc1/480x852/er9LJ0EKKDLnQDX5.mp4",
-      "title": "Rohit brings the crowd up",
-      "caption": "Rohit brings the crowd up\n\n#Dishpilot #Shorts",
-      "clip_id": "x-rohit",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-08-yt-flp-1.mp4",
+      "title": "Wait for Diljit to hit the note",
+      "caption": "Wait for Diljit to hit the note\n\n#Dishpilot #Shorts",
+      "clip_id": "yt-flp-1",
       "category": "indian_actor_reels",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-1.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 9,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "00:00",
-      "due_at_utc": "2026-10-24T18:30:00Z",
+      "due_at_utc": "2026-10-25T18:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1370,21 +1460,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7438260086109261086.mp4",
-      "title": "Bring back the tomatoes",
-      "caption": "Bring back the tomatoes\n\n#Dishpilot #Shorts",
-      "clip_id": "tt-7438260086109261086",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-09-tt-7688400123809893662.mp4",
+      "title": "The glasses stay on",
+      "caption": "The glasses stay on\n\n#Dishpilot #Shorts",
+      "clip_id": "tt-7688400123809893662",
       "category": "funny",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7688400123809893662.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 10,
       "platform": "youtube_shorts",
       "channel_id": "6ac4da806a5c39ccb62eab64",
       "scheduled_time_ist": "02:00",
-      "due_at_utc": "2026-10-24T20:30:00Z",
+      "due_at_utc": "2026-10-25T20:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1393,21 +1485,48 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7691740195418377502.mp4",
-      "title": "Just five more minutes",
-      "caption": "Just five more minutes\n\n#Dishpilot #Shorts",
-      "clip_id": "tt-7691740195418377502",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/youtube_shorts-10-tt-7501669584592817451.mp4",
+      "title": "Do I have your vote",
+      "caption": "Do I have your vote\n\n#Dishpilot #Shorts",
+      "clip_id": "tt-7501669584592817451",
       "category": "funny",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7501669584592817451.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 1,
       "platform": "instagram_reels",
       "channel_id": "6ac93d936a5c39ccb66624d7",
       "scheduled_time_ist": "08:00",
-      "due_at_utc": "2026-10-24T02:30:00Z",
+      "due_at_utc": "2026-10-25T02:30:00Z",
+      "campaign_id": "rascals-theme-pages",
+      "watermark_text": "rascals",
+      "watermark_position": {
+        "placement": "top-left",
+        "x": "w*0.025",
+        "y": "h*0.03",
+        "expr": "x=w*0.025:y=h*0.03"
+      },
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-01-tt-7694335322922044703.mp4",
+      "title": "Was the ball out",
+      "caption": "Was the ball out\n\n#Rascals #Reels",
+      "clip_id": "tt-7694335322922044703",
+      "category": "funny",
+      "priority": false,
+      "pre_stamped": false,
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7694335322922044703.mp4",
+      "render_status": "rendered"
+    },
+    {
+      "slot": 2,
+      "platform": "instagram_reels",
+      "channel_id": "6ac93d936a5c39ccb66624d7",
+      "scheduled_time_ist": "10:00",
+      "due_at_utc": "2026-10-25T04:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1426,34 +1545,36 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 2,
+      "slot": 3,
       "platform": "instagram_reels",
       "channel_id": "6ac93d936a5c39ccb66624d7",
-      "scheduled_time_ist": "10:00",
-      "due_at_utc": "2026-10-24T04:30:00Z",
-      "campaign_id": "dishpilot-clipping",
-      "watermark_text": "dishpilot",
+      "scheduled_time_ist": "12:00",
+      "due_at_utc": "2026-10-25T06:30:00Z",
+      "campaign_id": "rascals-theme-pages",
+      "watermark_text": "rascals",
       "watermark_position": {
         "placement": "top-left",
         "x": "w*0.025",
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-anime-sakuga.mp4",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-03-flp-anime-sakuga.mp4",
       "title": "This animation is insane",
-      "caption": "This animation is insane\n\n#Dishpilot #Reels",
+      "caption": "This animation is insane\n\n#Rascals #Reels",
       "clip_id": "flp-anime-sakuga",
       "category": "anime_4k",
       "priority": true,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-anime-sakuga.mp4",
+      "render_status": "rendered"
     },
     {
-      "slot": 3,
+      "slot": 4,
       "platform": "instagram_reels",
       "channel_id": "6ac93d936a5c39ccb66624d7",
-      "scheduled_time_ist": "12:00",
-      "due_at_utc": "2026-10-24T06:30:00Z",
+      "scheduled_time_ist": "14:00",
+      "due_at_utc": "2026-10-25T08:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1472,11 +1593,11 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 4,
+      "slot": 5,
       "platform": "instagram_reels",
       "channel_id": "6ac93d936a5c39ccb66624d7",
-      "scheduled_time_ist": "14:00",
-      "due_at_utc": "2026-10-24T08:30:00Z",
+      "scheduled_time_ist": "16:00",
+      "due_at_utc": "2026-10-25T10:30:00Z",
       "campaign_id": "rascals-theme-pages",
       "watermark_text": "rascals",
       "watermark_position": {
@@ -1495,11 +1616,11 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 5,
+      "slot": 6,
       "platform": "instagram_reels",
       "channel_id": "6ac93d936a5c39ccb66624d7",
-      "scheduled_time_ist": "16:00",
-      "due_at_utc": "2026-10-24T10:30:00Z",
+      "scheduled_time_ist": "18:00",
+      "due_at_utc": "2026-10-25T12:30:00Z",
       "campaign_id": "rascals-theme-pages",
       "watermark_text": "rascals",
       "watermark_position": {
@@ -1518,34 +1639,11 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 6,
-      "platform": "instagram_reels",
-      "channel_id": "6ac93d936a5c39ccb66624d7",
-      "scheduled_time_ist": "18:00",
-      "due_at_utc": "2026-10-24T12:30:00Z",
-      "campaign_id": "dishpilot-clipping",
-      "watermark_text": "dishpilot",
-      "watermark_position": {
-        "placement": "top-left",
-        "x": "w*0.025",
-        "y": "h*0.03",
-        "expr": "x=w*0.025:y=h*0.03"
-      },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7548779492546825473.mp4",
-      "title": "For everyone who has loved",
-      "caption": "For everyone who has loved\n\n#Dishpilot #Reels",
-      "clip_id": "tt-7548779492546825473",
-      "category": "celebrity",
-      "priority": true,
-      "pre_stamped": false,
-      "buffer_status": "pending"
-    },
-    {
       "slot": 7,
       "platform": "instagram_reels",
       "channel_id": "6ac93d936a5c39ccb66624d7",
       "scheduled_time_ist": "20:00",
-      "due_at_utc": "2026-10-24T14:30:00Z",
+      "due_at_utc": "2026-10-25T14:30:00Z",
       "campaign_id": "rascals-theme-pages",
       "watermark_text": "rascals",
       "watermark_position": {
@@ -1554,21 +1652,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-nyc-doorman.mp4",
-      "title": "NYC doorman plot twist",
-      "caption": "NYC doorman plot twist\n\n#Rascals #Reels",
-      "clip_id": "flp-nyc-doorman",
-      "category": "funny",
-      "priority": false,
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-07-tt-7548779492546825473.mp4",
+      "title": "For everyone who has loved",
+      "caption": "For everyone who has loved\n\n#Rascals #Reels",
+      "clip_id": "tt-7548779492546825473",
+      "category": "celebrity",
+      "priority": true,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7548779492546825473.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 8,
       "platform": "instagram_reels",
       "channel_id": "6ac93d936a5c39ccb66624d7",
       "scheduled_time_ist": "22:00",
-      "due_at_utc": "2026-10-24T16:30:00Z",
+      "due_at_utc": "2026-10-25T16:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1577,21 +1677,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-1.mp4",
-      "title": "Watch his hands",
-      "caption": "Watch his hands\n\n#Dishpilot #Reels",
-      "clip_id": "x-clip-1",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-08-flp-nyc-doorman.mp4",
+      "title": "NYC doorman plot twist",
+      "caption": "NYC doorman plot twist\n\n#Dishpilot #Reels",
+      "clip_id": "flp-nyc-doorman",
       "category": "funny",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-nyc-doorman.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 9,
       "platform": "instagram_reels",
       "channel_id": "6ac93d936a5c39ccb66624d7",
       "scheduled_time_ist": "00:00",
-      "due_at_utc": "2026-10-24T18:30:00Z",
+      "due_at_utc": "2026-10-25T18:30:00Z",
       "campaign_id": "rascals-theme-pages",
       "watermark_text": "rascals",
       "watermark_position": {
@@ -1600,21 +1702,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-tea-science.mp4",
-      "title": "The cup changes color",
-      "caption": "The cup changes color\n\n#Rascals #Reels",
-      "clip_id": "flp-tea-science",
-      "category": "knowledge",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-09-x-clip-1.mp4",
+      "title": "Watch his hands",
+      "caption": "Watch his hands\n\n#Rascals #Reels",
+      "clip_id": "x-clip-1",
+      "category": "funny",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-1.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 10,
       "platform": "instagram_reels",
       "channel_id": "6ac93d936a5c39ccb66624d7",
       "scheduled_time_ist": "02:00",
-      "due_at_utc": "2026-10-24T20:30:00Z",
+      "due_at_utc": "2026-10-25T20:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1623,21 +1727,48 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-2.mp4",
-      "title": "Name every flag",
-      "caption": "Name every flag\n\n#Dishpilot #Reels",
-      "clip_id": "x-clip-2",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/instagram_reels-10-flp-tea-science.mp4",
+      "title": "The cup changes color",
+      "caption": "The cup changes color\n\n#Dishpilot #Reels",
+      "clip_id": "flp-tea-science",
       "category": "knowledge",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-tea-science.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 1,
       "platform": "tiktok",
       "channel_id": "6add07e4778b240e2fb35110",
       "scheduled_time_ist": "08:00",
-      "due_at_utc": "2026-10-24T02:30:00Z",
+      "due_at_utc": "2026-10-25T02:30:00Z",
+      "campaign_id": "dishpilot-clipping",
+      "watermark_text": "dishpilot",
+      "watermark_position": {
+        "placement": "top-left",
+        "x": "w*0.025",
+        "y": "h*0.03",
+        "expr": "x=w*0.025:y=h*0.03"
+      },
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-01-tt-7408963192170335534.mp4",
+      "title": "The kitchen reveal",
+      "caption": "The kitchen reveal\n\n#Dishpilot",
+      "clip_id": "tt-7408963192170335534",
+      "category": "knowledge",
+      "priority": false,
+      "pre_stamped": false,
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7408963192170335534.mp4",
+      "render_status": "rendered"
+    },
+    {
+      "slot": 2,
+      "platform": "tiktok",
+      "channel_id": "6add07e4778b240e2fb35110",
+      "scheduled_time_ist": "10:00",
+      "due_at_utc": "2026-10-25T04:30:00Z",
       "campaign_id": "rascals-theme-pages",
       "watermark_text": "rascals",
       "watermark_position": {
@@ -1656,34 +1787,36 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 2,
+      "slot": 3,
       "platform": "tiktok",
       "channel_id": "6add07e4778b240e2fb35110",
-      "scheduled_time_ist": "10:00",
-      "due_at_utc": "2026-10-24T04:30:00Z",
-      "campaign_id": "rascals-theme-pages",
-      "watermark_text": "rascals",
+      "scheduled_time_ist": "12:00",
+      "due_at_utc": "2026-10-25T06:30:00Z",
+      "campaign_id": "dishpilot-clipping",
+      "watermark_text": "dishpilot",
       "watermark_position": {
         "placement": "top-left",
         "x": "w*0.025",
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-2105358655927517442.mp4",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-03-x-2105358655927517442.mp4",
       "title": "Show me a better fight scene",
-      "caption": "Show me a better fight scene\n\n#Rascals",
+      "caption": "Show me a better fight scene\n\n#Dishpilot",
       "clip_id": "x-2105358655927517442",
       "category": "anime_4k",
       "priority": true,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/x-2105358655927517442.mp4",
+      "render_status": "rendered"
     },
     {
-      "slot": 3,
+      "slot": 4,
       "platform": "tiktok",
       "channel_id": "6add07e4778b240e2fb35110",
-      "scheduled_time_ist": "12:00",
-      "due_at_utc": "2026-10-24T06:30:00Z",
+      "scheduled_time_ist": "14:00",
+      "due_at_utc": "2026-10-25T08:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1702,11 +1835,11 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 4,
+      "slot": 5,
       "platform": "tiktok",
       "channel_id": "6add07e4778b240e2fb35110",
-      "scheduled_time_ist": "14:00",
-      "due_at_utc": "2026-10-24T08:30:00Z",
+      "scheduled_time_ist": "16:00",
+      "due_at_utc": "2026-10-25T10:30:00Z",
       "campaign_id": "rascals-theme-pages",
       "watermark_text": "rascals",
       "watermark_position": {
@@ -1725,34 +1858,11 @@
       "buffer_status": "pending"
     },
     {
-      "slot": 5,
-      "platform": "tiktok",
-      "channel_id": "6add07e4778b240e2fb35110",
-      "scheduled_time_ist": "16:00",
-      "due_at_utc": "2026-10-24T10:30:00Z",
-      "campaign_id": "dishpilot-clipping",
-      "watermark_text": "dishpilot",
-      "watermark_position": {
-        "placement": "top-left",
-        "x": "w*0.025",
-        "y": "h*0.03",
-        "expr": "x=w*0.025:y=h*0.03"
-      },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699120594402479373.mp4",
-      "title": "The dog knows the doorman",
-      "caption": "The dog knows the doorman\n\n#Dishpilot",
-      "clip_id": "tt-7699120594402479373",
-      "category": "celebrity",
-      "priority": true,
-      "pre_stamped": false,
-      "buffer_status": "pending"
-    },
-    {
       "slot": 6,
       "platform": "tiktok",
       "channel_id": "6add07e4778b240e2fb35110",
       "scheduled_time_ist": "18:00",
-      "due_at_utc": "2026-10-24T12:30:00Z",
+      "due_at_utc": "2026-10-25T12:30:00Z",
       "campaign_id": "rascals-theme-pages",
       "watermark_text": "rascals",
       "watermark_position": {
@@ -1761,21 +1871,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-concert-vibes.mp4",
-      "title": "Wait for the note",
-      "caption": "Wait for the note\n\n#Rascals",
-      "clip_id": "flp-concert-vibes",
-      "category": "concert",
-      "priority": false,
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-06-tt-7699120594402479373.mp4",
+      "title": "The dog knows the doorman",
+      "caption": "The dog knows the doorman\n\n#Rascals",
+      "clip_id": "tt-7699120594402479373",
+      "category": "celebrity",
+      "priority": true,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699120594402479373.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 7,
       "platform": "tiktok",
       "channel_id": "6add07e4778b240e2fb35110",
       "scheduled_time_ist": "20:00",
-      "due_at_utc": "2026-10-24T14:30:00Z",
+      "due_at_utc": "2026-10-25T14:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1784,21 +1896,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-khaby-lifehack.mp4",
-      "title": "He did it the simple way",
-      "caption": "He did it the simple way\n\n#Dishpilot",
-      "clip_id": "flp-khaby-lifehack",
-      "category": "funny",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-07-flp-concert-vibes.mp4",
+      "title": "Wait for the note",
+      "caption": "Wait for the note\n\n#Dishpilot",
+      "clip_id": "flp-concert-vibes",
+      "category": "concert",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-concert-vibes.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 8,
       "platform": "tiktok",
       "channel_id": "6add07e4778b240e2fb35110",
       "scheduled_time_ist": "22:00",
-      "due_at_utc": "2026-10-24T16:30:00Z",
+      "due_at_utc": "2026-10-25T16:30:00Z",
       "campaign_id": "rascals-theme-pages",
       "watermark_text": "rascals",
       "watermark_position": {
@@ -1807,21 +1921,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-3.mp4",
-      "title": "Watch the solve land",
-      "caption": "Watch the solve land\n\n#Rascals",
-      "clip_id": "yt-flp-3",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-08-flp-khaby-lifehack.mp4",
+      "title": "He did it the simple way",
+      "caption": "He did it the simple way\n\n#Rascals",
+      "clip_id": "flp-khaby-lifehack",
       "category": "funny",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-khaby-lifehack.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 9,
       "platform": "tiktok",
       "channel_id": "6add07e4778b240e2fb35110",
       "scheduled_time_ist": "00:00",
-      "due_at_utc": "2026-10-24T18:30:00Z",
+      "due_at_utc": "2026-10-25T18:30:00Z",
       "campaign_id": "dishpilot-clipping",
       "watermark_text": "dishpilot",
       "watermark_position": {
@@ -1830,21 +1946,23 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-president-speech.mp4",
-      "title": "Wait for the third promise",
-      "caption": "Wait for the third promise\n\n#Dishpilot",
-      "clip_id": "flp-president-speech",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-09-yt-flp-3.mp4",
+      "title": "Watch the solve land",
+      "caption": "Watch the solve land\n\n#Dishpilot",
+      "clip_id": "yt-flp-3",
       "category": "funny",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/yt-flp-3.mp4",
+      "render_status": "rendered"
     },
     {
       "slot": 10,
       "platform": "tiktok",
       "channel_id": "6add07e4778b240e2fb35110",
       "scheduled_time_ist": "02:00",
-      "due_at_utc": "2026-10-24T20:30:00Z",
+      "due_at_utc": "2026-10-25T20:30:00Z",
       "campaign_id": "rascals-theme-pages",
       "watermark_text": "rascals",
       "watermark_position": {
@@ -1853,14 +1971,16 @@
         "y": "h*0.03",
         "expr": "x=w*0.025:y=h*0.03"
       },
-      "video_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7688400123809893662.mp4",
-      "title": "The glasses stay on",
-      "caption": "The glasses stay on\n\n#Rascals",
-      "clip_id": "tt-7688400123809893662",
+      "video_url": "https://github.com/chatgpt820970/chad-media/releases/download/daily-2026-10-25/tiktok-10-flp-president-speech.mp4",
+      "title": "Wait for the third promise",
+      "caption": "Wait for the third promise\n\n#Rascals",
+      "clip_id": "flp-president-speech",
       "category": "funny",
       "priority": false,
       "pre_stamped": false,
-      "buffer_status": "pending"
+      "buffer_status": "pending",
+      "source_video_url": "https://chatgpt820970.github.io/chad-media/whop/v/flp-president-speech.mp4",
+      "render_status": "rendered"
     }
   ]
 }
