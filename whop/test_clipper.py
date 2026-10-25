@@ -399,7 +399,7 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertIn("text='dishpilot'", graph)
         self.assertIn("fontcolor=white@0.58", graph)
         self.assertIn("shadowx=1:shadowy=1", graph)
-        self.assertIn("x=(w-text_w)/2:y=h-text_h-48", graph)
+        self.assertIn("x=(w-text_w)/2:y=h-text_h-180", graph)
         self.assertNotIn("Dishpilot.com", graph)
         self.assertNotIn("box=", graph)
         self.assertNotIn("drawbox", graph)
@@ -407,7 +407,7 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         self.assertEqual(label, "[vbadge]")
         reels_graph, _reels_label = ffmpeg_banner_filter(banner_overlay_spec(rascals), "[vbase]", "Sans")
         self.assertIn("text='rascals'", reels_graph)
-        self.assertIn("x=(w-text_w)/2:y=h-text_h-48", reels_graph)
+        self.assertIn("x=(w-text_w)/2:y=h-text_h-180", reels_graph)
         self.assertNotIn("box=", reels_graph)
         self.assertEqual(reels_graph.count("drawtext"), 1)
 
@@ -444,7 +444,7 @@ class PlatformCampaignMappingTest(unittest.TestCase):
         )
         self.assertIn("crop=1080:1720:0:0", cleaned)
         self.assertIn("text='dishpilot'", cleaned)
-        self.assertIn("x=(w-text_w)/2:y=h-text_h-48", cleaned)
+        self.assertIn("x=(w-text_w)/2:y=h-text_h-180", cleaned)
         self.assertNotIn("drawbox", cleaned)
         self.assertIn("60\\,000", cleaned)
 
@@ -554,8 +554,8 @@ class DailyThirtyPipelineTest(unittest.TestCase):
             self.assertIn(item["slot"], range(1, 11))
             self.assertEqual(item["channel_id"], DAILY_CHANNEL_IDS[item["platform"]])
             self.assertEqual(item["watermark_position"]["placement"], "top-left")
-            self.assertEqual(item["watermark_position"]["expr"], "x=(w-text_w)/2:y=h-text_h-48")
-            self.assertIn("x=(w-text_w)/2:y=h-text_h-48", json.dumps(item["watermark_position"]))
+            self.assertEqual(item["watermark_position"]["expr"], "x=(w-text_w)/2:y=h-text_h-180")
+            self.assertIn("x=(w-text_w)/2:y=h-text_h-180", json.dumps(item["watermark_position"]))
             self.assertTrue(item["video_url"].startswith("https://"))
             self.assertTrue(item["video_url"].endswith(".mp4"))
             self.assertEqual(item["buffer_status"], "pending")
@@ -759,7 +759,7 @@ class DailyThirtyPipelineTest(unittest.TestCase):
             self.assertEqual(command[command.index("-crf") + 1], "16")
             self.assertIn("unsharp=3:3:0.6:3:3:0.0", joined)
             self.assertEqual(joined.count("drawtext"), 1)
-            self.assertIn("x=(w-text_w)/2:y=h-text_h-48", joined)
+            self.assertIn("x=(w-text_w)/2:y=h-text_h-180", joined)
             self.assertNotIn("mr. pa", joined)
         for item in items:
             if item["pre_stamped"]:
@@ -1052,7 +1052,7 @@ class IngestUrlPipelineTest(unittest.TestCase):
         self.assertIn("text='dishpilot'", draw)
         self.assertIn("fontcolor=white@0.78", draw)
         self.assertIn("box=1:boxcolor=black@0.28:boxborderw=8", draw)
-        self.assertIn("x=(w-text_w)/2:y=h-text_h-48", draw)
+        self.assertIn("x=(w-text_w)/2:y=h-text_h-180", draw)
         self.assertEqual(draw.count("drawtext"), 1)
 
         commands = [
