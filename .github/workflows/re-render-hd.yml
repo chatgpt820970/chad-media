@@ -1,0 +1,70 @@
+name: Re-render HD Videos
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Install ffmpeg and fonts
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg fonts-dejavu-core
+
+      - name: Create watermark PNG
+        run: |
+          python3 - << 'PY'
+          from PIL import Image, ImageDraw, ImageFont
+          img = Image.new('RGBA', (500, 100), (0,0,0,0))
+          draw = ImageDraw.Draw(img)
+          font = ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSerif-Bold.ttf', 56)
+          draw.text((20, 20), 'dishpilot', fill=(255,255,255,255), font=font)
+          img.save('/tmp/dishpilot.png')
+          PY
+
+      - name: Download and re-render old videos
+        run: |
+          set -euo pipefail
+          mkdir -p /tmp/src /tmp/out
+
+          # Old commits
+          YT_COMMIT=f28da7cee58e6c514806d33ae5a46afaccc010af
+          X_COMMIT=211868e2b3298f3b677baf9637b9b7accadf8f68
+
+          FILES="yt-hd-1.mp4 yt-hd-2.mp4 yt-hd-7.mp4 yt-hd-8.mp4 yt-hd-9.mp4 x-hd-1.mp4 x-hd-2.mp4 x-hd-7.mp4 x-hd-8.mp4 x-hd-9.mp4"
+
+          for f in $FILES; do
+            if [[ $f == yt-* ]]; then
+              url="https://raw.githubusercontent.com/chatgpt820970/chad-media/${YT_COMMIT}/${f}"
+            else
+              url="https://raw.githubusercontent.com/chatgpt820970/chad-media/${X_COMMIT}/${f}"
+            fi
+            echo "Downloading $f"
+            curl -fsSL -o "/tmp/src/$f" "$url"
+
+            echo "Rendering $f"
+            ffmpeg -y -i "/tmp/src/$f" -i /tmp/dishpilot.png \
+              -filter_complex "[0:v]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920[bg];[bg][1:v]overlay=x=(W-w)/2:y=H-h-180" \
+              -c:v libx264 -preset fast -crf 23 -c:a aac -b:a 128k -movflags +faststart \
+              "/tmp/out/$f"
+          done
+
+      - name: Commit and push updated videos
+        run: |
+          set -euo pipefail
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          mkdir -p hd-clean
+          cp /tmp/out/*.mp4 hd-clean/
+          git add hd-clean/
+          git commit -m "chore: re-render yt-hd and x-hd clips with clean dishpilot watermark only" || echo "No changes"
+          git pull --rebase origin main || true
+          git push origin main
