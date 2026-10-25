@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 """Platform-specific Whop campaign mapping.
 
-X (@chadriyo) posts to Dishpilot. YouTube Shorts (Denzen) posts to Dishpilot
-and Mr. Pa. Instagram Reels (@benreelr) posts to Rascals, Dishpilot, and Mr. Pa.
-TikTok (@bi67325) posts to Dishpilot and Rascals. FastLoanPilot and Nova are
-closed. The daily run (build_daily_30, also exposed as build-daily-40) fills 10
-slots on each of the four Buffer channels, 40 posts a day, stamped Dishpilot or
-Rascals only.
+Flip.gg (`flipgg`) is the primary default on X (@chadriyo), YouTube Shorts
+(Denzen), Instagram Reels (@benreelr), and TikTok (@bi67325). ArraFund and
+Mr. Pa are verified secondary campaigns. Dishpilot (`biz_yHrLny75uFGcUZ`) and
+Rascals are retired. FastLoanPilot and Nova are closed. The daily run
+(build_daily_30, also exposed as build-daily-40) fills 10 slots on each of the
+four Buffer channels, 40 posts a day, stamped with one Flip.gg mark.
 ingest-urls downloads an X or TikTok link, stamps one campaign name, and queues it.
 Pool Guard rejects bounties whose denial rate is above the configured cap
 (Shane Gillis is 99.8%).
 
-Visual rule: one top-left campaign name only — "dishpilot", "rascals", or
-"mr. pa". Never two names, and never "rascals · dishpilot". The caption carries
-that campaign's single hashtag.
+Visual rule: one subtle semi-transparent campaign name, low near the bottom
+(`x=(w-text_w)/2:y=h-text_h-110`) or in the top corner
+(`x=w-text_w-36:y=48`). White at 0.65 alpha on a light black box. Never two
+names. The caption is the natural viral hook plus that campaign's single
+hashtag (`#FlipGG`, `#ArraFund`, or `#MrPa`).
 """
 
 from __future__ import annotations
@@ -43,12 +45,15 @@ PLATFORM_ACCOUNTS = {
     "tiktok": "@bi67325",
 }
 BUFFER_ORGANIZATION_ID = "6ac41da09a0b5aca7c671500"
-X_CAMPAIGN_IDS = ("dishpilot-clipping",)
-YOUTUBE_PRIMARY_ID = "dishpilot-clipping"
-MR_PA_ID = "mr-pa-clipping"
-RASCALS_ID = "rascals-theme-pages"
-DISHPILOT_ID = "dishpilot-clipping"
-CLOSED_CAMPAIGN_IDS = ("fast-loan-pilot", "nova-x-clipping")
+WHOP_CONTENT_REWARDS_APP_ID = "app_QRxsQodZgK1r4D"
+FLIPGG_ID = "flipgg"
+ARRAFUND_ID = "arrafund"
+MR_PA_ID = "mrpa"
+X_CAMPAIGN_IDS = (FLIPGG_ID,)
+YOUTUBE_PRIMARY_ID = FLIPGG_ID
+PRIMARY_CAMPAIGN_ID = FLIPGG_ID
+CLOSED_CAMPAIGN_IDS = ("fast-loan-pilot", "nova-x-clipping", "dishpilot-clipping", "rascals-theme-pages")
+RETIRED_CAMPAIGN_IDS = ("dishpilot-clipping", "rascals-theme-pages")
 # Full HD encode. No bitrate cap: CRF 17 with the fast preset.
 ENCODE_PRESET = "fast"
 ENCODE_CRF = "17"
@@ -136,32 +141,32 @@ X_SLOT_CATEGORIES = (
     "knowledge",
     "movie",
 )
-# 8 of 10 Denzen slots are Indian actor / cinema lanes on Dishpilot ($2/1K).
-# The other 2 stay global on Mr. Pa ($1.25/1K).
+# 8 of 10 Denzen slots stay on Indian actor / cinema lanes. Every default slot
+# pays Flip.gg ($1.50/1K). ArraFund and Mr. Pa stay available as explicit secondaries.
 YOUTUBE_SLOT_PLAN = (
-    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
-    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
-    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
-    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
-    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
-    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
-    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
-    {"campaign_id": DISHPILOT_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
-    {"campaign_id": MR_PA_ID, "category": "funny", "file": "yt-flp-3.mp4"},
-    {"campaign_id": MR_PA_ID, "category": "movie", "file": "yt-flp-3.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "indian_actor_reels", "file": "yt-flp-1.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "indian_actor_reels", "file": "yt-flp-2.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "funny", "file": "yt-flp-3.mp4"},
+    {"campaign_id": FLIPGG_ID, "category": "movie", "file": "yt-flp-3.mp4"},
 )
-# Rascals ($3/1K) leads. Dishpilot ($2/1K) fills the alternating Reels slots.
+# Flip.gg is the primary default on Reels and TikTok. Secondaries are opt-in.
 INSTAGRAM_SLOT_PLAN = tuple(
-    {"campaign_id": RASCALS_ID if index % 2 == 0 else DISHPILOT_ID}
-    for index in range(DAILY_SLOT_COUNT)
+    {"campaign_id": FLIPGG_ID}
+    for _index in range(DAILY_SLOT_COUNT)
 )
 TIKTOK_SLOT_PLAN = tuple(
-    {"campaign_id": DISHPILOT_ID if index % 2 == 0 else RASCALS_ID}
-    for index in range(DAILY_SLOT_COUNT)
+    {"campaign_id": FLIPGG_ID}
+    for _index in range(DAILY_SLOT_COUNT)
 )
 
-# Ten posting slots. X campaigns rotate in routing order so each paying
-# campaign receives @chadriyo views. YouTube Shorts follows YOUTUBE_SLOT_PLAN.
+# Ten posting slots. X uses the routed primary (Flip.gg). YouTube Shorts
+# follows YOUTUBE_SLOT_PLAN, which is also Flip.gg.
 DAILY_SLOTS = (
     {"slot": 1, "time_ist": "08:00", "hook": "Wait for the stadium drop"},
     {"slot": 2, "time_ist": "09:30", "hook": "Nobody stayed in their seat"},
@@ -183,30 +188,33 @@ _YT_MP4_RE = re.compile(
     r"^https://chatgpt820970\.github\.io/chad-media/whop/v/yt-flp-[123]\.mp4$"
 )
 
-# YouTube Shorts are 12.5s and Instagram Reels are 15s, both inside the 8–35s
-# Dishpilot window. X files are 30s.
+# YouTube Shorts are 12.5s, Instagram Reels and TikTok are 15s, and X files are 30s.
+# All of those sit inside the Flip.gg 6–60s window.
 YOUTUBE_DURATION_SEC = 12.5
 INSTAGRAM_DURATION_SEC = 15.0
 TIKTOK_DURATION_SEC = 15.0
 X_DURATION_SEC = 30.0
+FLIPGG_WATERMARK_TEXT = "flip.gg"
+ARRAFUND_WATERMARK_TEXT = "ArraFund"
+MR_PA_WATERMARK_TEXT = "Mr. Pa"
 PLATFORM_WATERMARK = {
-    "x": "dishpilot",
-    "youtube_shorts": "dishpilot",
-    "instagram_reels": "rascals",
-    "tiktok": "dishpilot",
+    "x": FLIPGG_WATERMARK_TEXT,
+    "youtube_shorts": FLIPGG_WATERMARK_TEXT,
+    "instagram_reels": FLIPGG_WATERMARK_TEXT,
+    "tiktok": FLIPGG_WATERMARK_TEXT,
 }
-# One name and one campaign hashtag. Platform suffixes (#Shorts, #Reels) are not a second brand.
+# One name and one campaign hashtag. No platform suffix and no second brand.
 CAMPAIGN_MARK = {
-    "dishpilot-clipping": ("dishpilot", "#Dishpilot"),
-    "rascals-theme-pages": ("rascals", "#Rascals"),
-    "mr-pa-clipping": ("mr. pa", "#MrPa"),
+    FLIPGG_ID: (FLIPGG_WATERMARK_TEXT, "#FlipGG"),
+    ARRAFUND_ID: (ARRAFUND_WATERMARK_TEXT, "#ArraFund"),
+    MR_PA_ID: (MR_PA_WATERMARK_TEXT, "#MrPa"),
 }
-# Source of truth for the three paid campaign brands. Values deliberately use
+# Source of truth for the live paid campaign brands. Values deliberately use
 # public platform names rather than internal feed keys.
 PLATFORM_ELIGIBLE_CAMPAIGNS = {
-    "dishpilot-clipping": ("x", "youtube", "instagram", "tiktok"),
-    "rascals-theme-pages": ("instagram", "tiktok", "youtube"),
-    "mr-pa-clipping": ("youtube", "instagram", "tiktok"),
+    FLIPGG_ID: ("x", "youtube", "instagram", "tiktok"),
+    ARRAFUND_ID: ("x", "youtube", "instagram", "tiktok"),
+    MR_PA_ID: ("youtube", "instagram", "tiktok"),
 }
 ELIGIBILITY_PLATFORM_NAMES = {
     "x": "x",
@@ -216,8 +224,8 @@ ELIGIBILITY_PLATFORM_NAMES = {
 }
 PLATFORM_SUFFIX_TAGS = {
     "x": [],
-    "youtube_shorts": ["#Shorts"],
-    "instagram_reels": ["#Reels"],
+    "youtube_shorts": [],
+    "instagram_reels": [],
     "tiktok": [],
 }
 INSTAGRAM_CAMPAIGN_WATERMARK = {
@@ -228,23 +236,37 @@ INSTAGRAM_CAMPAIGN_HASHTAGS = {
     for campaign_id, mark in CAMPAIGN_MARK.items()
 }
 PLATFORM_HASHTAGS = {
-    "x": ["#Dishpilot"],
-    "youtube_shorts": ["#Dishpilot", "#Shorts"],
-    "instagram_reels": ["#Rascals", "#Reels"],
-    "tiktok": ["#Dishpilot"],
+    "x": ["#FlipGG"],
+    "youtube_shorts": ["#FlipGG"],
+    "instagram_reels": ["#FlipGG"],
+    "tiktok": ["#FlipGG"],
 }
 CAMPAIGN_ALIASES = {
-    "dishpilot": "dishpilot-clipping",
-    "dishpilot-clipping": "dishpilot-clipping",
-    "rascals": "rascals-theme-pages",
-    "rascals-theme-pages": "rascals-theme-pages",
-    "mrpa": "mr-pa-clipping",
-    "mr. pa": "mr-pa-clipping",
-    "mr-pa": "mr-pa-clipping",
-    "mr-pa-clipping": "mr-pa-clipping",
+    "flipgg": FLIPGG_ID,
+    "flip.gg": FLIPGG_ID,
+    "flip-gg": FLIPGG_ID,
+    "arrafund": ARRAFUND_ID,
+    "arra-fund": ARRAFUND_ID,
+    "mrpa": MR_PA_ID,
+    "mr. pa": MR_PA_ID,
+    "mr.pa": MR_PA_ID,
+    "mr-pa": MR_PA_ID,
+    "mr-pa-clipping": MR_PA_ID,
 }
-SINGLE_CAMPAIGN_NAMES = frozenset({"dishpilot", "rascals", "mr. pa"})
-SINGLE_CAMPAIGN_TAGS = ("#Dishpilot", "#Rascals", "#MrPa")
+SINGLE_CAMPAIGN_NAMES = frozenset({
+    FLIPGG_WATERMARK_TEXT,
+    ARRAFUND_WATERMARK_TEXT,
+    MR_PA_WATERMARK_TEXT,
+})
+SINGLE_CAMPAIGN_TAGS = ("#FlipGG", "#ArraFund", "#MrPa")
+RETIRED_HASHTAGS = ("#Dishpilot", "#Rascals")
+_RETIRED_HASHTAG_RE = re.compile(r"#(?:Dishpilot|Rascals)\b", re.IGNORECASE)
+# Subtle semi-transparent mark. Bottom-center is the default; top-corner is opt-in.
+WATERMARK_FONTCOLOR = "white@0.65"
+WATERMARK_BOX = "box=1:boxcolor=black@0.28:boxborderw=10"
+WATERMARK_BOTTOM_XY = "x=(w-text_w)/2:y=h-text_h-110"
+WATERMARK_TOP_CORNER_XY = "x=w-text_w-36:y=48"
+WATERMARK_ANCHORS = ("bottom", "top-corner")
 
 
 def platform_watermark(platform: str, campaign_id: str | None = None) -> str:
@@ -269,7 +291,7 @@ def campaign_id_from_alias(alias: str) -> str:
     campaign_id = CAMPAIGN_ALIASES.get(key)
     if campaign_id is None:
         raise CampaignPlatformError(
-            f"Unknown campaign {alias!r}. Expected dishpilot, rascals, or mrpa."
+            f"Unknown campaign {alias!r}. Expected flipgg, arrafund, or mrpa."
         )
     return campaign_id
 
@@ -307,15 +329,20 @@ DAILY_SLOT_KEYS = {
     "tiktok": "tiktok",
 }
 DAILY_WATERMARK_POSITION = {
-    "placement": "top-left",
-    "x": "w*0.025",
-    "y": "h*0.03",
-    "expr": "x=(w-text_w)/2:y=h-text_h-180",
+    "placement": "bottom",
+    "anchor": "bottom",
+    "x": "(w-text_w)/2",
+    "y": "h-text_h-110",
+    "expr": WATERMARK_BOTTOM_XY,
+    "fontcolor": WATERMARK_FONTCOLOR,
+    "box": True,
+    "boxcolor": "black@0.28",
+    "boxborderw": 10,
+    "top_corner_expr": WATERMARK_TOP_CORNER_XY,
 }
-# The daily run stamps Dishpilot or Rascals only. Rascals leads the Reels rotation.
-INSTAGRAM_DAILY_ROTATION = (RASCALS_ID, DISHPILOT_ID)
-# TikTok pays Dishpilot ($2/1K) and Rascals ($3/1K). Dishpilot leads.
-TIKTOK_DAILY_ROTATION = (DISHPILOT_ID, RASCALS_ID)
+# The daily run stamps Flip.gg on every platform. ArraFund and Mr. Pa are explicit.
+INSTAGRAM_DAILY_ROTATION = (FLIPGG_ID,)
+TIKTOK_DAILY_ROTATION = (FLIPGG_ID,)
 SHORTS_MEDIA_BASE = "https://chatgpt820970.github.io/chad-media/shorts/v/"
 _IST_OFFSET_MINUTES = 5 * 60 + 30
 YOUTUBE_VARIANTS = (
@@ -345,23 +372,23 @@ X_VARIANTS = (
     {
         "file": "x-clip-1.mp4",
         "source": "flp-speedcube-lockin.mp4",
-        "badge": "dishpilot",
+        "badge": FLIPGG_WATERMARK_TEXT,
         "hook": "WATCH HIS HANDS",
-        "campaign_id": DISHPILOT_ID,
+        "campaign_id": FLIPGG_ID,
     },
     {
         "file": "x-clip-2.mp4",
         "source": "flp-language-gauntlet.mp4",
-        "badge": "dishpilot",
+        "badge": FLIPGG_WATERMARK_TEXT,
         "hook": "NAME EVERY FLAG",
-        "campaign_id": DISHPILOT_ID,
+        "campaign_id": FLIPGG_ID,
     },
     {
         "file": "x-clip-3.mp4",
         "source": "flp-concert-vibes.mp4",
-        "badge": "dishpilot",
+        "badge": FLIPGG_WATERMARK_TEXT,
         "hook": "WAIT FOR THE NOTE",
-        "campaign_id": DISHPILOT_ID,
+        "campaign_id": FLIPGG_ID,
     },
 )
 LIBRARY_SOURCES = (
@@ -561,7 +588,15 @@ def _remaining_pool(campaign: dict) -> float:
     return _total_pool(campaign) - float(campaign.get("paid_out_usd") or 0.0)
 
 
-def _rate(campaign: dict) -> float:
+def _rate(campaign: dict, platform: str | None = None) -> float:
+    """Per-1K rate. Mr. Pa pays $0.90 on YouTube and $1.25 on Instagram and TikTok."""
+    if platform:
+        rates = campaign.get("platform_rates_usd") or {}
+        if platform in rates:
+            return float(rates[platform])
+        public = ELIGIBILITY_PLATFORM_NAMES.get(platform)
+        if public and public in rates:
+            return float(rates[public])
     if campaign.get("rate_per_1k_views_usd") is not None:
         return float(campaign["rate_per_1k_views_usd"])
     return float(campaign.get("cpm_usd") or 0.0)
@@ -758,8 +793,8 @@ def assert_feed_item_campaign_identity(item: dict, campaigns_data: dict | None =
 def select_campaign_for_platform(campaigns_data: dict, platform: str) -> dict:
     """Pick one campaign that passes Pool Guard and explicitly accepts `platform`.
 
-    Each platform prefers its routed primary: Dishpilot on X and YouTube Shorts,
-    Rascals on Instagram Reels. Closed campaigns (FastLoanPilot, Nova) never win.
+    Each platform prefers its routed primary, Flip.gg. Closed campaigns
+    (FastLoanPilot, Nova, Dishpilot, Rascals) never win.
     Pairing a clip with a campaign that omits the platform raises CampaignPlatformError.
     """
     if platform not in SUPPORTED_PLATFORMS:
@@ -853,19 +888,19 @@ def build_platform_caption(
 ) -> str:
     """Build the post caption from that campaign's terms.
 
-    Routed Dishpilot, Rascals, and Mr. Pa posts use one campaign hashtag that
-    matches the watermark: #Dishpilot, #Rascals, or #MrPa. YouTube also adds
-    #Shorts and Instagram also adds #Reels. Other campaigns keep their own caption style.
-    X drops raw links when the channel blocks them, and loan phrasing is removed
-    from every X caption.
+    Flip.gg, ArraFund, and Mr. Pa posts use the natural hook plus one campaign
+    hashtag: #FlipGG, #ArraFund, or #MrPa. No promotional slogan, no #Shorts or
+    #Reels suffix, and no retired #Dishpilot or #Rascals tag. Other campaigns
+    keep their own caption style. X drops raw links when the channel blocks
+    them, and loan phrasing is removed from every X caption.
     """
     rules = _rules(campaign)
     style = caption_style(campaign)
     hook_text = hook.strip()
     platform_tags = platform_hashtags(platform, campaign.get("id")) if campaign.get("id") in {
-        DISHPILOT_ID,
+        FLIPGG_ID,
+        ARRAFUND_ID,
         MR_PA_ID,
-        RASCALS_ID,
     } else None
     if platform_tags:
         caption = f"{hook_text}\n\n{' '.join(platform_tags)}" if hook_text else " ".join(platform_tags)
@@ -877,6 +912,10 @@ def build_platform_caption(
             caption = _LOAN_SPAM_RE.sub("", caption)
             caption = re.sub(r"[ \t]{2,}", " ", caption)
             caption = re.sub(r"\n{3,}", "\n\n", caption).strip()
+        if _RETIRED_HASHTAG_RE.search(caption):
+            raise CampaignPlatformError(
+                "Caption contains a retired hashtag (#Dishpilot or #Rascals)"
+            )
         return _safe_caption(caption, hook_text, platform)
     if style == "hook_and_hashtags":
         limit = int(rules.get("max_hashtags") or 2)
@@ -910,9 +949,6 @@ def x_links_blocked(campaigns_data: dict) -> bool:
     return bool(channel.get("links_blocked", True))
 
 
-DISHPILOT_WATERMARK_TEXT = "dishpilot"
-RASCALS_WATERMARK_TEXT = "rascals"
-MR_PA_WATERMARK_TEXT = "mr. pa"
 # Pixels cut from the bottom of a 1080x1920 master before it is scaled back.
 # The baked fastloanpilot wordmark sits in this strip (around y=1818–1872).
 BOTTOM_STRIP_CROP_PX = 200
@@ -928,30 +964,50 @@ def escape_drawtext(text: str) -> str:
     )
 
 
+def _badge_key(text: str) -> str:
+    return "".join(ch for ch in text.casefold() if ch.isalnum())
+
+
 def is_dishpilot_badge(text: str) -> bool:
-    letters = "".join(ch for ch in text.casefold() if ch.isalpha())
-    return letters in {"dishpilot", "dishpilotcom"}
+    """Retired Dishpilot wordmarks. New renders never draw these."""
+    return _badge_key(text) in {"dishpilot", "dishpilotcom"}
 
 
 def is_subtle_corner_badge(text: str) -> bool:
-    letters = "".join(ch for ch in text.casefold() if ch.isalpha())
-    return letters in {"dishpilot", "dishpilotcom", "rascals", "mrpa"}
+    return _badge_key(text) in {"flipgg", "arrafund", "mrpa"}
 
 
-def subtle_corner_drawtext(font_path: str, text: str) -> str:
-    """Top-left mark: white at 0.58 alpha, a 1px shadow, and no box."""
+def watermark_xy(placement: str = "bottom") -> str:
+    """Bottom-center by default, or the configurable top corner."""
+    if placement == "bottom":
+        return WATERMARK_BOTTOM_XY
+    if placement == "top-corner":
+        return WATERMARK_TOP_CORNER_XY
+    raise CampaignPlatformError(
+        f"Unknown watermark placement {placement!r}. Expected bottom or top-corner."
+    )
+
+
+def subtle_corner_drawtext(font_path: str, text: str, placement: str = "bottom") -> str:
+    """One subtle semi-transparent mark. White 0.65 on a light black box.
+
+    Default anchor is low and centered: ``x=(w-text_w)/2:y=h-text_h-110``.
+    ``placement="top-corner"`` uses ``x=w-text_w-36:y=48``.
+    """
+    if is_dishpilot_badge(text) or _badge_key(text) == "rascals":
+        raise CampaignPlatformError(f"Refusing retired watermark {text!r}")
     safe = escape_drawtext(text)
     return (
         f"drawtext=fontfile='{font_path}':text='{safe}':"
-        "fontsize=22:fontcolor=white@0.58:"
-        "shadowcolor=black@0.40:shadowx=1:shadowy=1:"
-        "x=(w-text_w)/2:y=h-text_h-180"
+        f"fontsize=22:fontcolor={WATERMARK_FONTCOLOR}:"
+        f"{WATERMARK_BOX}:"
+        f"{watermark_xy(placement)}"
     )
 
 
 def dishpilot_watermark_drawtext(font_path: str) -> str:
-    """Small semi-transparent dishpilot mark in the top-left corner. No pill."""
-    return subtle_corner_drawtext(font_path, DISHPILOT_WATERMARK_TEXT)
+    """Draw the default Flip.gg mark. The Dishpilot wordmark is retired."""
+    return subtle_corner_drawtext(font_path, FLIPGG_WATERMARK_TEXT)
 
 
 def platform_overlay_spec(platform: str, campaign_id: str | None = None) -> dict:
@@ -1010,7 +1066,10 @@ def ffmpeg_banner_filter(spec: dict, input_label: str, font_path: str) -> tuple[
         return "", input_label
     raw_logo = str(spec.get("logo_text") or "")
     if is_subtle_corner_badge(raw_logo):
-        graph = f"{input_label}{subtle_corner_drawtext(font_path, raw_logo)}[vbadge]"
+        anchor = str(spec.get("watermark_anchor") or "bottom")
+        graph = (
+            f"{input_label}{subtle_corner_drawtext(font_path, raw_logo, anchor)}[vbadge]"
+        )
         return graph, "[vbadge]"
     logo_text = escape_drawtext(raw_logo)
     if not logo_text:
@@ -1087,7 +1146,8 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 f"Slot {spec['slot']} YouTube campaign {plan['campaign_id']!r} is missing"
             )
         bind_clip_to_campaign(youtube_campaign, "youtube_shorts")
-        x_campaign = x_campaigns[index % len(x_campaigns)]
+        # Flip.gg is the primary default. ArraFund stays available for explicit ingest.
+        x_campaign = select_campaign_for_platform(campaigns_data, "x")
         bind_clip_to_campaign(x_campaign, "x")
         ig_plan = INSTAGRAM_SLOT_PLAN[index]
         instagram_campaign = _campaign_by_id(campaigns_data, str(ig_plan["campaign_id"]))
@@ -1134,11 +1194,16 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
             raise CampaignPlatformError(
                 f"Slot {spec['slot']} caption still contains loan text"
             )
-        if x_campaign.get("id") == DISHPILOT_ID:
+        if x_campaign.get("id") in CAMPAIGN_MARK:
             tags = _HASHTAG_RE.findall(x_caption)
-            if tags != ["#Dishpilot"]:
+            expected = platform_hashtags("x", x_campaign.get("id"))
+            if tags != expected:
                 raise CampaignPlatformError(
-                    f"Slot {spec['slot']} Dishpilot X caption must be a hook plus #Dishpilot"
+                    f"Slot {spec['slot']} X caption must be a hook plus {' '.join(expected)}"
+                )
+            if _RETIRED_HASHTAG_RE.search(x_caption):
+                raise CampaignPlatformError(
+                    f"Slot {spec['slot']} X caption contains a retired hashtag"
                 )
         x_category = X_SLOT_CATEGORIES[index]
         if x_category not in X_VIRAL_CATEGORIES:
@@ -1193,7 +1258,7 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 "youtube_campaign": youtube_campaign.get("id"),
                 "youtube_campaign_title": youtube_campaign.get("title"),
                 "youtube_category": youtube_category,
-                "youtube_rate_per_1k_views_usd": _rate(youtube_campaign),
+                "youtube_rate_per_1k_views_usd": _rate(youtube_campaign, "youtube_shorts"),
                 "youtube_remaining_pool_usd": _remaining_pool(youtube_campaign),
                 "youtube_caption": youtube_caption,
                 "youtube_submission_url": youtube_campaign.get("submission_url"),
@@ -1206,7 +1271,7 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 "x_campaign": x_campaign.get("id"),
                 "x_campaign_title": x_campaign.get("title"),
                 "x_category": x_category,
-                "x_rate_per_1k_views_usd": _rate(x_campaign),
+                "x_rate_per_1k_views_usd": _rate(x_campaign, "x"),
                 "x_remaining_pool_usd": _remaining_pool(x_campaign),
                 "x_caption": x_caption,
                 "x_submission_url": x_campaign.get("submission_url"),
@@ -1219,7 +1284,7 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 "instagram_campaign": instagram_campaign.get("id"),
                 "instagram_campaign_title": instagram_campaign.get("title"),
                 "instagram_category": x_category,
-                "instagram_rate_per_1k_views_usd": _rate(instagram_campaign),
+                "instagram_rate_per_1k_views_usd": _rate(instagram_campaign, "instagram_reels"),
                 "instagram_remaining_pool_usd": _remaining_pool(instagram_campaign),
                 "instagram_caption": instagram_caption,
                 "instagram_submission_url": instagram_campaign.get("submission_url"),
@@ -1231,7 +1296,7 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
                 "tiktok_campaign": tiktok_campaign.get("id"),
                 "tiktok_campaign_title": tiktok_campaign.get("title"),
                 "tiktok_category": x_category,
-                "tiktok_rate_per_1k_views_usd": _rate(tiktok_campaign),
+                "tiktok_rate_per_1k_views_usd": _rate(tiktok_campaign, "tiktok"),
                 "tiktok_remaining_pool_usd": _remaining_pool(tiktok_campaign),
                 "tiktok_caption": tiktok_caption,
                 "tiktok_submission_url": tiktok_campaign.get("submission_url"),
@@ -1260,11 +1325,11 @@ def build_daily_manifest(campaigns_data: dict, *, generated_at: str | None = Non
         },
         "guarantee": (
             "Every X, YouTube, Instagram, and TikTok slot uses a campaign permitted by "
-            "PLATFORM_ELIGIBLE_CAMPAIGNS. Its caption has only that campaign's hashtag "
-            "and its overlay logo_text is the matching dishpilot, rascals, or mr. pa badge. "
-            "Rascals and Mr. Pa are never assigned to X. At least 80% of YouTube slots "
-            "are Indian actor reels or Indian cinema scenes. Each platform draws one "
-            "top-left corner mark."
+            "PLATFORM_ELIGIBLE_CAMPAIGNS. The default is Flip.gg. Its caption is the "
+            "natural hook plus #FlipGG only, and its overlay logo_text is flip.gg. "
+            "Mr. Pa is never assigned to X. At least 80% of YouTube slots are Indian "
+            "actor reels or Indian cinema scenes. Each platform draws one subtle "
+            "semi-transparent bottom mark."
         ),
         "slots": slots,
     }
@@ -1401,9 +1466,9 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
             errors.append(f"slot {slot_no} youtube_submission_url does not match the YouTube campaign")
         if slot.get("x_submission_url") != x_campaign.get("submission_url"):
             errors.append(f"slot {slot_no} x_submission_url does not match {x_id}")
-        if float(slot.get("youtube_rate_per_1k_views_usd") or 0) != _rate(youtube_campaign):
+        if float(slot.get("youtube_rate_per_1k_views_usd") or 0) != _rate(youtube_campaign, "youtube_shorts"):
             errors.append(f"slot {slot_no} youtube rate does not match the campaign")
-        if float(slot.get("x_rate_per_1k_views_usd") or 0) != _rate(x_campaign):
+        if float(slot.get("x_rate_per_1k_views_usd") or 0) != _rate(x_campaign, "x"):
             errors.append(f"slot {slot_no} x rate does not match the campaign")
         youtube_caption = str(slot.get("youtube_caption") or "")
         x_caption = str(slot.get("x_caption") or "")
@@ -1415,12 +1480,16 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
             errors.append(f"slot {slot_no} youtube_caption contains loan text")
         if x_style == "hook_cta_hashtags" and x_cta and x_cta not in x_caption:
             errors.append(f"slot {slot_no} x_caption is missing the {x_id} CTA")
-        if x_id == DISHPILOT_ID:
+        if x_id in CAMPAIGN_MARK:
             tags = _HASHTAG_RE.findall(x_caption)
-            if tags != ["#Dishpilot"]:
-                errors.append(f"slot {slot_no} Dishpilot X caption must be a hook plus #Dishpilot")
+            if tags != platform_hashtags("x", str(x_id)):
+                errors.append(
+                    f"slot {slot_no} X caption must be a hook plus {CAMPAIGN_MARK[str(x_id)][1]}"
+                )
+            if _RETIRED_HASHTAG_RE.search(x_caption):
+                errors.append(f"slot {slot_no} x_caption contains a retired hashtag")
             if x_cta and x_cta in x_caption:
-                errors.append(f"slot {slot_no} Dishpilot X caption includes a CTA past the hook and hashtags")
+                errors.append(f"slot {slot_no} X caption includes a CTA past the hook and hashtag")
         yt_tags = _HASHTAG_RE.findall(youtube_caption)
         expected_yt_tags = platform_hashtags("youtube_shorts", str(youtube_id))
         if yt_tags != expected_yt_tags:
@@ -1497,7 +1566,9 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
                     errors.append(f"slot {slot_no}: {exc}")
                 if slot.get("instagram_submission_url") != instagram_campaign.get("submission_url"):
                     errors.append(f"slot {slot_no} instagram_submission_url does not match the campaign")
-                if float(slot.get("instagram_rate_per_1k_views_usd") or 0) != _rate(instagram_campaign):
+                if float(slot.get("instagram_rate_per_1k_views_usd") or 0) != _rate(
+                    instagram_campaign, "instagram_reels"
+                ):
                     errors.append(f"slot {slot_no} instagram rate does not match the campaign")
                 instagram_caption = str(slot.get("instagram_caption") or "")
                 if contains_loan_spam(instagram_caption):
@@ -1530,9 +1601,13 @@ def verify_manifest_data(manifest: dict, campaigns_data: dict) -> list[str]:
             errors.append(f"slot {slot_no} X duration is outside {x_id}'s window")
         if not _X_MP4_RE.match(str(slot.get("x_mp4_url") or "")):
             errors.append(f"slot {slot_no} x_mp4_url must be an x-clip-*.mp4 pages URL")
-    missing = [campaign_id for campaign_id in x_ids if campaign_id not in seen_x]
-    if missing:
-        errors.append("daily manifest never assigns X views to: " + ", ".join(str(item) for item in missing))
+    primary_x = str(_routing(campaigns_data, "x").get("primary_campaign_id") or "")
+    if primary_x and primary_x not in seen_x:
+        errors.append(f"daily manifest never assigns X views to primary {primary_x}")
+    elif not primary_x:
+        missing = [campaign_id for campaign_id in x_ids if campaign_id not in seen_x]
+        if missing:
+            errors.append("daily manifest never assigns X views to: " + ", ".join(str(item) for item in missing))
     missing_categories = [category for category in X_VIRAL_CATEGORIES if category not in seen_x_categories]
     if missing_categories:
         errors.append("X mix is missing: " + ", ".join(missing_categories))
@@ -1602,7 +1677,7 @@ def dishpilot_clip_filter(
     height: int,
     clean_bottom_strip: bool,
 ) -> str:
-    """Vertical (or native) frame plus one bottom Dishpilot watermark.
+    """Vertical (or native) frame plus one subtle bottom Flip.gg watermark.
 
     When ``clean_bottom_strip`` is set, the bottom band that holds the baked
     fastloanpilot wordmark is cropped off and the picture is scaled back, so
@@ -1638,7 +1713,7 @@ def render_dishpilot_clip(
     height: int | None = 1920,
     clean_bottom_strip: bool = True,
 ) -> None:
-    """Burn the small Dishpilot watermark. Optionally crop the baked bottom logo."""
+    """Burn the subtle Flip.gg watermark. Optionally crop the baked bottom logo."""
     dest.parent.mkdir(parents=True, exist_ok=True)
     if width is None or height is None:
         probe = subprocess.run(
@@ -1871,8 +1946,7 @@ def _shorts_url(clip_id: str) -> str:
 # Instagram, and the two non-Indian YouTube slots. Raw twimg links are the
 # hd-live source; packaged files use the Pages URL.
 RAW_MEDIA_BASE = "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/"
-# A fifth element locks a clip to one campaign because that campaign's name is already
-# burned into the pixels (ig-hd-1..5 and Spider-Man are dishpilot, ig-hd-6..9 are rascals).
+# Daily renders stamp Flip.gg. Do not lock clips to retired Dishpilot or Rascals marks.
 _DAILY_CLIP_ROWS = (
     ("flp-diljit-worldtour", "indian_actor_reels", "Diljit shut the stadium down", _pages_url("flp-diljit-worldtour.mp4")),
     ("flp-honeysingh-vibe", "indian_actor_reels", "Honey Singh takes the drop", _pages_url("flp-honeysingh-vibe.mp4")),
@@ -1887,16 +1961,16 @@ _DAILY_CLIP_ROWS = (
     ("x-virat-mumbai", "indian_actor_reels", "Virat walks into Mumbai", "https://video.twimg.com/amplify_video/2112746643015778304/vid/avc1/480x852/G9NkYIKWNf3avnSU.mp4"),
     ("x-allu", "indian_actor_reels", "Allu takes the stage", "https://video.twimg.com/amplify_video/2108890651677151232/vid/avc1/480x852/lKMyE_VzG7YtqVmU.mp4"),
     ("x-hardik", "indian_actor_reels", "Hardik's celebration takes over", "https://video.twimg.com/amplify_video/2110911489867669504/vid/avc1/480x852/MeUuwscm1dCEjM4Y.mp4"),
-    ("x-user-2", "romantic_couples", "The chemistry in this scene with Agustin Bernasconi and Wanda Nara is unreal", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-2.mp4", DISHPILOT_ID),
-    ("x-user-5", "glamorous_girls", "Kim Ji-won owning the stage with pure elegance and confidence", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-5.mp4", DISHPILOT_ID),
-    ("x-user-7", "glamorous_girls", "LISA Tarantino Official Music Video visuals are on another level", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-7.mp4", RASCALS_ID),
-    ("x-user-1", "anime_4k", "This animation is insane", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-1.mp4", DISHPILOT_ID),
-    ("spiderman-4k-dishpilot", "movie_4k", "Tom Holland's Spider-Man edit hits different", f"{RAW_MEDIA_BASE}spiderman-4k-dishpilot.mp4", DISHPILOT_ID),
-    ("x-user-3", "celebrity", "When the beat drops and the whole room loses it", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-3.mp4", DISHPILOT_ID),
-    ("x-user-4", "movie_4k", "Still one of the funniest scenes in Hotel Transylvania", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-4.mp4", DISHPILOT_ID),
-    ("x-user-6", "celebrity", "Shenzhen at night looks straight out of 2050", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-6.mp4", RASCALS_ID),
-    ("x-user-8", "celebrity", "Every fandom when their favorite character gets the spotlight", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-8.mp4", RASCALS_ID),
-    ("x-user-9", "celebrity", "Inside Japan luxury seaside inn with its own giant live pool", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-9.mp4", RASCALS_ID),
+    ("x-user-2", "romantic_couples", "The chemistry in this scene with Agustin Bernasconi and Wanda Nara is unreal", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-2.mp4"),
+    ("x-user-5", "glamorous_girls", "Kim Ji-won owning the stage with pure elegance and confidence", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-5.mp4"),
+    ("x-user-7", "glamorous_girls", "LISA Tarantino Official Music Video visuals are on another level", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-7.mp4"),
+    ("x-user-1", "anime_4k", "This animation is insane", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-1.mp4"),
+    ("spiderman-4k-dishpilot", "movie_4k", "Tom Holland's Spider-Man edit hits different", f"{RAW_MEDIA_BASE}spiderman-4k-dishpilot.mp4"),
+    ("x-user-3", "celebrity", "When the beat drops and the whole room loses it", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-3.mp4"),
+    ("x-user-4", "movie_4k", "Still one of the funniest scenes in Hotel Transylvania", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-4.mp4"),
+    ("x-user-6", "celebrity", "Shenzhen at night looks straight out of 2050", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-6.mp4"),
+    ("x-user-8", "celebrity", "Every fandom when their favorite character gets the spotlight", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-8.mp4"),
+    ("x-user-9", "celebrity", "Inside Japan luxury seaside inn with its own giant live pool", "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/ig-hd-9.mp4"),
     ("flp-concert-vibes", "concert", "Wait for the note", _pages_url("flp-concert-vibes.mp4")),
     ("x-clip-3", "concert", "Wait for the note", _pages_url("x-clip-3.mp4")),
     ("flp-anime-sakuga", "anime_4k", "This animation is insane", _pages_url("flp-anime-sakuga.mp4")),
@@ -2143,9 +2217,9 @@ def _take_preferring_global(
     return chosen
 
 
-def _dishpilot_compatible(clip: dict) -> bool:
-    """X and YouTube Shorts only pay Dishpilot, so a rascals-marked clip cannot go there."""
-    return clip.get("campaign_lock") in (None, DISHPILOT_ID)
+def _primary_compatible(clip: dict) -> bool:
+    """X and YouTube take unlocked clips or clips already locked to Flip.gg."""
+    return clip.get("campaign_lock") in (None, FLIPGG_ID)
 
 
 def _deal_preferring_global(
@@ -2157,8 +2231,8 @@ def _deal_preferring_global(
 ) -> tuple[list[dict], list[dict], list[dict]]:
     """Deal ranked clips round-robin to X, Instagram, and TikTok.
 
-    Each lane gets a share of the priority categories. The X lane skips clips with a
-    rascals mark burned in, since X only pays Dishpilot.
+    Each lane gets a share of the priority categories. The X lane skips a clip
+    only when it is locked to a campaign other than Flip.gg.
     """
     pool = _take_preferring_global(catalog, 3 * count, seen_ids, used_today, uses)
     lanes: tuple[list[dict], list[dict], list[dict]] = ([], [], [])
@@ -2166,7 +2240,7 @@ def _deal_preferring_global(
     for clip in pool:
         for offset in range(3):
             lane = (cursor + offset) % 3
-            if len(lanes[lane]) >= count or (lane == 0 and not _dishpilot_compatible(clip)):
+            if len(lanes[lane]) >= count or (lane == 0 and not _primary_compatible(clip)):
                 continue
             lanes[lane].append(clip)
             cursor = (lane + 1) % 3
@@ -2251,10 +2325,9 @@ def build_daily_30(
 ) -> tuple[dict, dict]:
     """Pick 10 unseen clips for each of X, YouTube, Instagram, and TikTok (40 a day).
 
-    Every post is stamped Dishpilot or Rascals, never both. X and YouTube Shorts
-    are Dishpilot. Instagram alternates Rascals and Dishpilot. TikTok alternates
-    Dishpilot and Rascals. A clip with a burned-in mark (`campaign_lock`) always
-    gets that campaign. YouTube keeps 8 Indian actor/cinema clips. X, Instagram,
+    Every default post is stamped Flip.gg. A clip with a burned-in mark
+    (`campaign_lock`) always gets that campaign when the platform pays it.
+    YouTube keeps 8 Indian actor/cinema clips. X, Instagram,
     and TikTok pick first from the priority categories (romantic couples,
     glamorous girls, 4K anime, 4K movie edits), then YouTube's two global slots
     take what is left. A clip already in `seen` is reused only after every
@@ -2288,12 +2361,14 @@ def build_daily_30(
         seen_ids,
         used_today,
         uses,
-        eligible=_dishpilot_compatible,
+        eligible=_primary_compatible,
     )
     links_blocked = x_links_blocked(campaigns_data)
     items: list[dict] = []
     for slot, clip in enumerate(x_clips, start=1):
-        campaign = _campaign_for_daily_slot(campaigns_data, DISHPILOT_ID, "x")
+        campaign = _campaign_for_daily_slot(
+            campaigns_data, clip.get("campaign_lock") or FLIPGG_ID, "x"
+        )
         items.append(
             _daily_item(
                 slot=slot,
@@ -2307,7 +2382,7 @@ def build_daily_30(
         )
     youtube_clips = indian + youtube_global
     for slot, clip in enumerate(youtube_clips, start=1):
-        campaign_id = DISHPILOT_ID
+        campaign_id = clip.get("campaign_lock") or FLIPGG_ID
         campaign = _campaign_for_daily_slot(campaigns_data, campaign_id, "youtube_shorts")
         items.append(
             _daily_item(
@@ -2655,19 +2730,15 @@ def resolve_clean_mp4_url(url: str, fetch_json, metadata_sink: dict | None = Non
     return None
 
 
-def single_campaign_drawtext(font_path: str, text: str) -> str:
-    """Ingest watermark: one campaign name, top-left, white 0.78 on a thin dark box."""
+def single_campaign_drawtext(font_path: str, text: str, placement: str = "bottom") -> str:
+    """One subtle semi-transparent campaign name. Bottom-center unless top-corner."""
     if text not in SINGLE_CAMPAIGN_NAMES or "·" in text:
         raise CampaignPlatformError(
             f"Watermark must be one of {sorted(SINGLE_CAMPAIGN_NAMES)}, not {text!r}"
         )
-    safe = escape_drawtext(text)
-    return (
-        f"drawtext=fontfile='{font_path}':text='{safe}':"
-        "fontsize=22:fontcolor=white@0.78:"
-        "box=1:boxcolor=black@0.28:boxborderw=8:"
-        "x=(w-text_w)/2:y=h-text_h-180"
-    )
+    if _RETIRED_HASHTAG_RE.search(text) or is_dishpilot_badge(text):
+        raise CampaignPlatformError(f"Refusing retired watermark {text!r}")
+    return subtle_corner_drawtext(font_path, text, placement)
 
 
 def ingest_ffmpeg_command(

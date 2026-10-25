@@ -3,9 +3,12 @@ name: Whop Clipper
 # Platform mapping for Whop Content Rewards, plus the daily 40-clip feed.
 # 00:15 UTC is 05:45 IST. 01:15 UTC is the 06:45 IST backup.
 # 10 posts each: X (@chadriyo), YouTube Shorts (Denzen), Instagram Reels
-# (@benreelr), and TikTok (@bi67325). Every video carries one campaign name,
-# dishpilot or rascals. Output: whop/daily_40_ready.json, whop/daily_30_ready.json,
-# and whop/feed/daily_30_ready.json. Stamped clips are hosted on a daily-YYYY-MM-DD release.
+# (@benreelr), and TikTok (@bi67325). Every video carries one subtle
+# semi-transparent flip.gg mark (white@0.65, black@0.28 box, bottom
+# x=(w-text_w)/2:y=h-text_h-110, or top corner x=w-text_w-36:y=48).
+# Dishpilot (biz_yHrLny75uFGcUZ) and Rascals are retired. Output:
+# whop/daily_40_ready.json, whop/daily_30_ready.json, and
+# whop/feed/daily_30_ready.json. Stamped clips are hosted on a daily-YYYY-MM-DD release.
 # Pool Guard rejects high-denial bounties (whop-ai-shane-gillis at 99.8%).
 on:
   schedule:
@@ -30,11 +33,11 @@ on:
       campaign:
         description: "Single campaign watermark"
         required: false
-        default: dishpilot
+        default: flipgg
         type: choice
         options:
-          - dishpilot
-          - rascals
+          - flipgg
+          - arrafund
           - mrpa
       platforms:
         description: "all or a comma-separated list (x, youtube_shorts, instagram_reels, tiktok)"
