@@ -1,5 +1,5 @@
 {
-  "generated_at": "2026-10-24T20:47:33Z",
+  "generated_at": "2026-10-25T09:49:59Z",
   "whop_user": "@bi60",
   "quality_profile": "1080x1920_lanczos_unsharp_crf16_fast",
   "platform_mapping": "Every X, YouTube, Instagram, and TikTok item uses an active campaign permitted by PLATFORM_ELIGIBLE_CAMPAIGNS, with its exact badge and hashtag",
@@ -93,7 +93,7 @@
         "shadow": "thin",
         "box": false
       },
-      "requirements": "One subtle top-left corner mark reads dishpilot (x=w*0.025:y=h*0.03, white 0.58 alpha, thin shadow, no box). X captions use #Dishpilot. YouTube Shorts captions use #Dishpilot #Shorts. Instagram Reels carry one campaign mark each (dishpilot, rascals, or mr. pa) with its single tag.",
+      "requirements": "One subtle top-left corner mark reads dishpilot (x=(w-text_w)/2:y=h-text_h-48, white 0.58 alpha, thin shadow, no box). X captions use #Dishpilot. YouTube Shorts captions use #Dishpilot #Shorts. Instagram Reels carry one campaign mark each (dishpilot, rascals, or mr. pa) with its single tag.",
       "pool_guard_status": "OK (remaining=$5000, paid=0.0%, spots=999)"
     },
     {

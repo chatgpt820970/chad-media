@@ -575,6 +575,60 @@
       "reason": "",
       "duration": 66.5,
       "seen_at": "2026-10-24T13:25:04Z"
+    },
+    "x-2100328947477336525": {
+      "source_url": "https://x.com/Sparkleredpanda/status/2100328947477336525",
+      "platform": "x",
+      "lane": "chinese",
+      "outcome": "rejected",
+      "reason": "no audio",
+      "duration": 122.167,
+      "seen_at": "2026-10-25T09:44:53Z"
+    },
+    "tt-7700266244179512589": {
+      "source_url": "https://www.tiktok.com/@dudeperfect/video/7700266244179512589",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 52.0,
+      "seen_at": "2026-10-25T09:45:54Z"
+    },
+    "tt-7083663507819875586": {
+      "source_url": "https://www.tiktok.com/@yoyohoneysingh/video/7083663507819875586",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 58.7,
+      "seen_at": "2026-10-25T09:47:18Z"
+    },
+    "tt-7630077755060735245": {
+      "source_url": "https://www.tiktok.com/@spencerx/video/7630077755060735245",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 46.5,
+      "seen_at": "2026-10-25T09:48:13Z"
+    },
+    "tt-7155435602832297217": {
+      "source_url": "https://www.tiktok.com/@yoyohoneysingh/video/7155435602832297217",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 37.6,
+      "seen_at": "2026-10-25T09:48:54Z"
+    },
+    "tt-7619784074105736462": {
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7619784074105736462",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 69.6,
+      "seen_at": "2026-10-25T09:49:59Z"
     }
   }
 }

@@ -1,31 +1,109 @@
 {
-  "generated_at": "2026-10-24T16:37:21Z",
-  "ready_today": 15,
+  "generated_at": "2026-10-25T09:49:59Z",
+  "ready_today": 5,
   "daily_target": 10,
   "collects_today": [
     {
-      "at": "2026-10-24T01:07:00Z",
-      "added": 5
-    },
-    {
-      "at": "2026-10-24T09:06:36Z",
-      "added": 5
-    },
-    {
-      "at": "2026-10-24T12:17:27Z",
-      "added": 5
-    },
-    {
-      "at": "2026-10-24T13:25:04Z",
+      "at": "2026-10-25T09:49:59Z",
       "added": 5
     }
   ],
   "sources": {
-    "tiktok": "ok: public play file",
+    "tiktok": "ok",
     "x": "ok",
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7619784074105736462",
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7619784074105736462",
+      "platform": "tiktok",
+      "duration": 69.6,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7619784074105736462.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7619784074105736462-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7619784074105736462-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7619784074105736462-3.jpg"
+      ],
+      "title": "Let’s all joybait each other!",
+      "caption": "This one earns the replay. Let’s all joybait each other! 😊 Video",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-25T09:49:59Z"
+    },
+    {
+      "id": "tt-7155435602832297217",
+      "source_url": "https://www.tiktok.com/@yoyohoneysingh/video/7155435602832297217",
+      "platform": "tiktok",
+      "duration": 37.6,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7155435602832297217.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7155435602832297217-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7155435602832297217-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7155435602832297217-3.jpg"
+      ],
+      "title": "out now my youtube channel",
+      "caption": "Something warm for the middle of the day. out now my youtube channel.",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-25T09:48:54Z"
+    },
+    {
+      "id": "tt-7630077755060735245",
+      "source_url": "https://www.tiktok.com/@spencerx/video/7630077755060735245",
+      "platform": "tiktok",
+      "duration": 46.5,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7630077755060735245.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7630077755060735245-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7630077755060735245-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7630077755060735245-3.jpg"
+      ],
+      "title": "beatbox challenge: food",
+      "caption": "This one earns the replay. beatbox challenge: food",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-25T09:48:13Z"
+    },
+    {
+      "id": "tt-7083663507819875586",
+      "source_url": "https://www.tiktok.com/@yoyohoneysingh/video/7083663507819875586",
+      "platform": "tiktok",
+      "duration": 58.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7083663507819875586.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7083663507819875586-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7083663507819875586-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7083663507819875586-3.jpg"
+      ],
+      "title": "A little warmth for today",
+      "caption": "Something warm for the middle of the day.",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-25T09:47:18Z"
+    },
+    {
+      "id": "tt-7700266244179512589",
+      "source_url": "https://www.tiktok.com/@dudeperfect/video/7700266244179512589",
+      "platform": "tiktok",
+      "duration": 52.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7700266244179512589.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7700266244179512589-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7700266244179512589-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7700266244179512589-3.jpg"
+      ],
+      "title": "Coby found a way to make this trick shot even more difficult 🤣",
+      "caption": "This one earns the replay. Coby found a way to make this trick shot even more difficult 🤣",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-25T09:45:54Z"
+    },
     {
       "id": "tt-6838105025865207041",
       "source_url": "https://www.tiktok.com/@thefoodranger/video/6838105025865207041",
