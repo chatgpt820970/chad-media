@@ -674,6 +674,51 @@
       "reason": "",
       "duration": 30.3,
       "seen_at": "2026-10-26T01:11:06Z"
+    },
+    "tt-7597898882210680119": {
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7597898882210680119",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 55.9,
+      "seen_at": "2026-10-26T09:05:02Z"
+    },
+    "tt-7534622386382064914": {
+      "source_url": "https://www.tiktok.com/@armaanmalik/video/7534622386382064914",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 34.5,
+      "seen_at": "2026-10-26T09:06:12Z"
+    },
+    "tt-7683001292481891598": {
+      "source_url": "https://www.tiktok.com/@kingbach/video/7683001292481891598",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 37.3,
+      "seen_at": "2026-10-26T09:07:22Z"
+    },
+    "tt-7683983792238824717": {
+      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7683983792238824717",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 73.8,
+      "seen_at": "2026-10-26T09:09:30Z"
+    },
+    "tt-7687079710311845134": {
+      "source_url": "https://www.tiktok.com/@spencerx/video/7687079710311845134",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 34.4,
+      "seen_at": "2026-10-26T09:10:36Z"
     }
   }
 }

@@ -1,10 +1,14 @@
 {
-  "generated_at": "2026-10-26T06:16:11Z",
-  "ready_today": 5,
+  "generated_at": "2026-10-26T09:10:36Z",
+  "ready_today": 10,
   "daily_target": 10,
   "collects_today": [
     {
       "at": "2026-10-26T01:11:06Z",
+      "added": 5
+    },
+    {
+      "at": "2026-10-26T09:10:36Z",
       "added": 5
     }
   ],
@@ -14,6 +18,96 @@
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7687079710311845134",
+      "source_url": "https://www.tiktok.com/@spencerx/video/7687079710311845134",
+      "platform": "tiktok",
+      "duration": 34.4,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7687079710311845134.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7687079710311845134-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7687079710311845134-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7687079710311845134-3.jpg"
+      ],
+      "title": "Casually beatboxing while opening up a 30th Celebration pack when I pulled this 🤯",
+      "caption": "This one earns the replay. Casually beatboxing while opening up a 30th Celebration pack when I pulled this 🤯",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-26T09:10:36Z"
+    },
+    {
+      "id": "tt-7683983792238824717",
+      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7683983792238824717",
+      "platform": "tiktok",
+      "duration": 73.8,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7683983792238824717.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683983792238824717-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683983792238824717-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683983792238824717-3.jpg"
+      ],
+      "title": "Aura World Tour 2026",
+      "caption": "Something warm for the middle of the day. Aura World Tour 2026",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-26T09:09:30Z"
+    },
+    {
+      "id": "tt-7683001292481891598",
+      "source_url": "https://www.tiktok.com/@kingbach/video/7683001292481891598",
+      "platform": "tiktok",
+      "duration": 37.3,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7683001292481891598.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683001292481891598-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683001292481891598-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683001292481891598-3.jpg"
+      ],
+      "title": "Fiancé had to get closure from her ex boyfriend before her wedding ❤️ Rae",
+      "caption": "This one earns the replay. Fiancé had to get closure from her ex boyfriend before her wedding ❤️ Rae",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-26T09:07:22Z"
+    },
+    {
+      "id": "tt-7534622386382064914",
+      "source_url": "https://www.tiktok.com/@armaanmalik/video/7534622386382064914",
+      "platform": "tiktok",
+      "duration": 34.5,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7534622386382064914.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7534622386382064914-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7534622386382064914-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7534622386382064914-3.jpg"
+      ],
+      "title": "Sometimes we sing out what we couldn’t say.",
+      "caption": "Something warm for the middle of the day. Sometimes we sing out what we couldn’t say. Bade Din Huye out now 🫶🏻",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-26T09:06:12Z"
+    },
+    {
+      "id": "tt-7597898882210680119",
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7597898882210680119",
+      "platform": "tiktok",
+      "duration": 55.9,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7597898882210680119.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7597898882210680119-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7597898882210680119-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7597898882210680119-3.jpg"
+      ],
+      "title": "a real dream i had while in milan for",
+      "caption": "This one earns the replay. a real dream i had while in milan for",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-26T09:05:02Z"
+    },
     {
       "id": "tt-7638246210398211341",
       "source_url": "https://www.tiktok.com/@spencerx/video/7638246210398211341",
@@ -499,96 +593,6 @@
       "lane": "chinese",
       "youtube_category_id": "23",
       "queued_at": "2026-10-23T09:47:26Z"
-    },
-    {
-      "id": "tt-7699120594402479373",
-      "source_url": "https://www.tiktok.com/@humankind/video/7699120594402479373",
-      "platform": "tiktok",
-      "duration": 34.8,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699120594402479373.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699120594402479373-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699120594402479373-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699120594402479373-3.jpg"
-      ],
-      "title": "Only in New York does your dog have a favorite doorman to a building you DON'T live in.",
-      "caption": "Something warm for the middle of the day. Only in New York does your dog have a favorite doorman to a building you DON'T live in. 😂",
-      "status": "ready",
-      "lane": "feelgood",
-      "youtube_category_id": "10",
-      "queued_at": "2026-10-23T09:46:54Z"
-    },
-    {
-      "id": "tt-7694335322922044703",
-      "source_url": "https://www.tiktok.com/@khaby.lame/video/7694335322922044703",
-      "platform": "tiktok",
-      "duration": 30.633,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7694335322922044703.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694335322922044703-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694335322922044703-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694335322922044703-3.jpg"
-      ],
-      "title": "Was the ball out, or was it just my imagination?",
-      "caption": "This one earns the replay. Was the ball out, or was it just my imagination? 🤨",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-23T09:46:28Z"
-    },
-    {
-      "id": "tt-7408963192170335534",
-      "source_url": "https://www.tiktok.com/@madewithlau/video/7408963192170335534",
-      "platform": "tiktok",
-      "duration": 54.9,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7408963192170335534.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7408963192170335534-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7408963192170335534-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7408963192170335534-3.jpg"
-      ],
-      "title": "My parents are getting their kitchen remodeled (Part 1!) Their kitchen was on its last",
-      "caption": "A sharp little bit of comedy. My parents are getting their kitchen remodeled (Part 1!) Their kitchen was on its last legs, and when their stove finally broke it was time to pull the trigger. Thanks to our friends at Hauslane for helping us get setup with a new range hood (the",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-23T09:45:47Z"
-    },
-    {
-      "id": "tt-7407447628339776814",
-      "source_url": "https://www.tiktok.com/@madewithlau/video/7407447628339776814",
-      "platform": "tiktok",
-      "duration": 50.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7407447628339776814.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7407447628339776814-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7407447628339776814-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7407447628339776814-3.jpg"
-      ],
-      "title": "Are you over-steeping your tea?",
-      "caption": "A sharp little bit of comedy. Are you over-steeping your tea? Doing so can release tannins and bitter flavors into the tea, causing it to lose its original aroma. Daddy Lau teaches how to steep your tea properly 🍵 Visit madewithlau.com/club to access this exclusive course and",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-23T01:08:00Z"
-    },
-    {
-      "id": "tt-7683220492567809294",
-      "source_url": "https://www.tiktok.com/@diljitdosanjh/video/7683220492567809294",
-      "platform": "tiktok",
-      "duration": 53.1,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7683220492567809294.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683220492567809294-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683220492567809294-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7683220492567809294-3.jpg"
-      ],
-      "title": "DAURA WORLD TOUR 2026 🇳🇱",
-      "caption": "Something warm for the middle of the day. DAURA WORLD TOUR 2026 🇳🇱",
-      "status": "ready",
-      "lane": "feelgood",
-      "youtube_category_id": "10",
-      "queued_at": "2026-10-23T01:07:28Z"
     }
   ]
 }
