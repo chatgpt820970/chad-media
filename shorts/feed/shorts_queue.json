@@ -1,10 +1,10 @@
 {
-  "generated_at": "2026-10-25T22:17:24Z",
+  "generated_at": "2026-10-26T01:11:06Z",
   "ready_today": 5,
   "daily_target": 10,
   "collects_today": [
     {
-      "at": "2026-10-25T09:49:59Z",
+      "at": "2026-10-26T01:11:06Z",
       "added": 5
     }
   ],
@@ -14,6 +14,96 @@
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7638246210398211341",
+      "source_url": "https://www.tiktok.com/@spencerx/video/7638246210398211341",
+      "platform": "tiktok",
+      "duration": 30.3,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7638246210398211341.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7638246210398211341-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7638246210398211341-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7638246210398211341-3.jpg"
+      ],
+      "title": "beatbox challenge: food part 2",
+      "caption": "This one earns the replay. beatbox challenge: food part 2",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-26T01:11:06Z"
+    },
+    {
+      "id": "tt-7538842137526422804",
+      "source_url": "https://www.tiktok.com/@jonitamusic/video/7538842137526422804",
+      "platform": "tiktok",
+      "duration": 42.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7538842137526422804.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7538842137526422804-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7538842137526422804-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7538842137526422804-3.jpg"
+      ],
+      "title": "Me and my hoorparis 👧🏻👧🏻👧🏻",
+      "caption": "Something warm for the middle of the day. Me and my hoorparis 👧🏻👧🏻👧🏻",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-26T01:10:05Z"
+    },
+    {
+      "id": "tt-7699240317345647885",
+      "source_url": "https://www.tiktok.com/@dudeperfect/video/7699240317345647885",
+      "platform": "tiktok",
+      "duration": 53.8,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699240317345647885.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699240317345647885-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699240317345647885-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699240317345647885-3.jpg"
+      ],
+      "title": "The bowling ball was the best hit 🤣",
+      "caption": "This one earns the replay. The bowling ball was the best hit 🤣",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-26T01:08:41Z"
+    },
+    {
+      "id": "tt-7700295683894562062",
+      "source_url": "https://www.tiktok.com/@humankind/video/7700295683894562062",
+      "platform": "tiktok",
+      "duration": 60.2,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7700295683894562062.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7700295683894562062-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7700295683894562062-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7700295683894562062-3.jpg"
+      ],
+      "title": "His wife secretly plans a reunion with the parents he hasn't seen in 23 years",
+      "caption": "Something warm for the middle of the day. His wife secretly plans a reunion with the parents he hasn't seen in 23 years.",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-26T01:07:24Z"
+    },
+    {
+      "id": "tt-7598688394549464375",
+      "source_url": "https://www.tiktok.com/@benoftheweek/video/7598688394549464375",
+      "platform": "tiktok",
+      "duration": 61.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7598688394549464375.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7598688394549464375-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7598688394549464375-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7598688394549464375-3.jpg"
+      ],
+      "title": "How to become friends with any Federal Prisoner!",
+      "caption": "This one earns the replay. How to become friends with any Federal Prisoner!",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-26T01:05:41Z"
+    },
     {
       "id": "tt-7619784074105736462",
       "source_url": "https://www.tiktok.com/@benoftheweek/video/7619784074105736462",
@@ -499,42 +589,6 @@
       "lane": "feelgood",
       "youtube_category_id": "10",
       "queued_at": "2026-10-23T01:07:28Z"
-    },
-    {
-      "id": "tt-7653329285284908301",
-      "source_url": "https://www.tiktok.com/@benoftheweek/video/7653329285284908301",
-      "platform": "tiktok",
-      "duration": 67.2,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7653329285284908301.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7653329285284908301-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7653329285284908301-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7653329285284908301-3.jpg"
-      ],
-      "title": "i went on the jojo siwa cruise and all i got was this hantavirus!",
-      "caption": "This one earns the replay. i went on the jojo siwa cruise and all i got was this hantavirus!",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-23T01:06:44Z"
-    },
-    {
-      "id": "tt-7419446077172108586",
-      "source_url": "https://www.tiktok.com/@madewithlau/video/7419446077172108586",
-      "platform": "tiktok",
-      "duration": 47.9,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7419446077172108586.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7419446077172108586-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7419446077172108586-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7419446077172108586-3.jpg"
-      ],
-      "title": "Char Siu doesn’t have to be a long, laborious process.",
-      "caption": "A sharp little bit of comedy. Char Siu doesn’t have to be a long, laborious process. Introducing Char Siu Chicken Drumsticks (叉燒雞髀), a riff on our most popular recipe! This recipe uses a marinade modified to pair with one of the most versatile, healthy, and affordable cuts of",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-23T01:05:54Z"
     }
   ]
 }
