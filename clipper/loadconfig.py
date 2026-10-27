@@ -73,6 +73,22 @@ def active_campaigns(bundle: dict) -> list[dict]:
     return [row for row in bundle["campaigns"]["campaigns"] if row.get("active")]
 
 
+def posting_platforms(bundle: dict) -> list[str]:
+    """Platforms that may receive a post. Missing `enabled` stays on.
+
+    Instagram is left in the campaign lists and in the slot clock. Set
+    `channels.platforms.instagram.enabled` to false to skip it until that
+    account can link to Content Rewards, then set it back to true.
+    """
+    channels = (bundle.get("channels") or {}).get("platforms") or {}
+    enabled: list[str] = []
+    for platform in PLATFORMS:
+        spec = channels.get(platform) or {}
+        if spec.get("enabled", True):
+            enabled.append(platform)
+    return enabled
+
+
 def campaign_map(bundle: dict) -> dict[str, dict]:
     return {row["id"]: row for row in bundle["campaigns"]["campaigns"]}
 
@@ -172,6 +188,8 @@ def check_bundle(bundle: dict) -> list[str]:
         errors.append("max_posts_per_platform cannot exceed 10")
     if pipeline.get("min_views_threshold") is None:
         errors.append("min_views_threshold must be set as a warning line")
+    from clipper.engine import min_slot_gap_minutes
+
     for platform in PLATFORMS:
         spec = pipeline["schedule"][platform]
         if spec.get("timezone") != "Asia/Kolkata":
@@ -179,6 +197,8 @@ def check_bundle(bundle: dict) -> list[str]:
         slots = spec["slots"]
         if len(slots) != maximum:
             errors.append(f"{platform} needs exactly {maximum} IST slots")
+        if min_slot_gap_minutes(slots) < 90:
+            errors.append(f"{platform} slots must stay at least 90 minutes apart")
         limits = (pipeline.get("platform_limits") or {}).get(platform) or {}
         if "max_hashtags" not in limits or "max_duration_sec" not in limits:
             errors.append(f"{platform} needs platform_limits")

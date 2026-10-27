@@ -27,7 +27,7 @@ from clipper.engine import (
     ytdlp_command,
 )
 from clipper.fetchsrc import download_command
-from clipper.loadconfig import PLATFORMS, canonical_platform, check_bundle
+from clipper.loadconfig import PLATFORMS, canonical_platform, check_bundle, posting_platforms
 from clipper.render import logo_filter
 from clipper.safety import classify
 from clipper.submissions import live_item
@@ -188,8 +188,12 @@ def run_pipeline(
     used_captions: dict[str, set[str]] = defaultdict(set)
     open_slots: dict[str, int] = {}
     char_limit = int(pipeline["x_char_limit"])
+    enabled = set(posting_platforms(bundle))
 
     for platform in PLATFORMS:
+        if platform not in enabled:
+            open_slots[platform] = 0
+            continue
         limits = (pipeline.get("platform_limits") or {}).get(platform) or {}
         platform_cap = limits.get("max_duration_sec")
         buckets: dict[str, list[dict]] = defaultdict(list)
@@ -425,12 +429,27 @@ def run_pipeline(
         summary[package["status"]] += 1
     scheduled_count = summary.get("scheduled", 0) + summary.get("reminder", 0)
     posting = "enabled" if scheduled_count else "disabled"
+    if "instagram" in enabled:
+        instagram_note = "Instagram posting is enabled. "
+        dhan_note = (
+            "Dhan Aziz stays in awaiting_approval until the source id is listed in state/approvals.json. "
+        )
+    else:
+        instagram_note = (
+            "Instagram is disabled until that account can link to Content Rewards. "
+            "Turn platforms.instagram.enabled back to true to post Reels again. "
+        )
+        dhan_note = (
+            "Dhan Aziz stays in awaiting_approval until the source id is listed in state/approvals.json, "
+            "and it posts to YouTube only while Instagram is disabled. "
+        )
     posting_note = (
-        "X has no active campaign, so those slots use the owner's content plan "
+        instagram_note
+        + "X has no active campaign, so those slots use the owner's content plan "
         "(trending, celebrity, 4K anime) with no logo. "
-        "TikTok, Instagram, and YouTube slots that an active campaign does not fill "
-        "use that platform's content plan, also with no logo. "
-        "Dhan Aziz stays in awaiting_approval until the source id is listed in state/approvals.json. "
+        "Sui BaseCamp posts on each enabled platform that campaign allows. "
+        + dhan_note
+        + "Slots an active campaign does not fill use that platform's content plan, also with no logo. "
         "A views-to-first-payout warning does not turn a campaign on or off."
     )
     if posting == "disabled":
@@ -455,7 +474,10 @@ def run_pipeline(
         }
         for row in campaigns
     ]
-    posts_per_day = {platform: len(pipeline["schedule"][platform]["slots"]) for platform in PLATFORMS}
+    posts_per_day = {
+        platform: len(pipeline["schedule"][platform]["slots"]) if platform in enabled else 0
+        for platform in PLATFORMS
+    }
     return {
         "mode": "dry-run",
         "now": due_stamp(now),

@@ -4,6 +4,7 @@
   "platforms": {
     "x": {
       "label": "X",
+      "enabled": true,
       "handle": "@chadriyo",
       "audience": "worldwide",
       "buffer_service": "twitter",
@@ -14,6 +15,7 @@
     },
     "youtube": {
       "label": "YouTube Shorts",
+      "enabled": true,
       "handle": "Denzen",
       "username": "@denzen0",
       "audience": "mostly Indian",
@@ -26,6 +28,8 @@
     },
     "instagram": {
       "label": "Instagram Reels",
+      "enabled": false,
+      "enabled_note": "Off until this account can link to Content Rewards. Turn enabled back to true to post Reels again.",
       "handle": "@benreelr",
       "audience": "about half Indian, plus movies, anime, and romantic reels",
       "buffer_service": "instagram",
@@ -36,6 +40,7 @@
     },
     "tiktok": {
       "label": "TikTok",
+      "enabled": true,
       "handle": "@bi67325",
       "audience": "international",
       "buffer_service": "tiktok",

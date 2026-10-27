@@ -1,0 +1,606 @@
+"""Post one due clip per platform through Buffer's GraphQL API.
+
+The dry-run still builds example.invalid payloads and never calls this.
+A live run only sends an https URL for a file fetch-media actually downloaded.
+The same source is posted at most once per platform. A Buffer error or a
+removed post pauses that platform in state/platform_alerts.json.
+"""
+
+from __future__ import annotations
+
+import copy
+import json
+import os
+import subprocess
+from datetime import datetime, timedelta, timezone
+from pathlib import Path
+from zoneinfo import ZoneInfo
+
+from clipper.alerts import alert
+from clipper.buffer_api import BufferError, ErrorBudget, build_post_input, create_post, due_stamp
+from clipper.engine import build_caption, content_plan_caption, normalize_caption, rotated_hashtags, variant_for
+from clipper.fetchsrc import fetch_sui_clip
+from clipper.loadconfig import posting_platforms
+from clipper.render import apply_filters, ffmpeg_available, logo_filter
+from clipper.run import _channel_id
+from clipper.safety import classify
+from clipper.strikes import (
+    FAILED_STATUSES,
+    alert_text,
+    blocked_identities,
+    empty_alerts,
+    is_paused,
+    pause_platform,
+    record_safety,
+)
+from clipper.submissions import empty_pending, load_json, record_sent_posts, save_json
+
+HORIZON_MINUTES = 120
+GRACE_MINUTES = 20
+CLIP_SECONDS = 8.0
+_VIDEO_SUFFIXES = {".mp4", ".mov", ".m4v", ".webm"}
+_USE_DEFAULT_FETCHER = object()
+
+
+def due_slots(
+    now: datetime,
+    clock_times: list[str],
+    timezone_name: str,
+    *,
+    horizon_minutes: int = HORIZON_MINUTES,
+    grace_minutes: int = GRACE_MINUTES,
+) -> list[datetime]:
+    """Peak slots from `grace` minutes ago through `horizon` minutes ahead.
+
+    The live cron is every two hours. Slot spacing is about 2h15, so a two-hour
+    window contains one slot. The grace covers a runner that starts just after
+    the clock time. Slots inside the quiet gap fall outside the window.
+    """
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+    zone = ZoneInfo(timezone_name)
+    local = now.astimezone(zone)
+    found: list[datetime] = []
+    for value in clock_times:
+        hour, minute = (int(part) for part in value.split(":"))
+        for shift in (-1, 0, 1):
+            day = (local + timedelta(days=shift)).replace(hour=hour, minute=minute, second=0, microsecond=0)
+            found.append(day.astimezone(timezone.utc))
+    window_start = now - timedelta(minutes=grace_minutes)
+    window_end = now + timedelta(minutes=horizon_minutes)
+    chosen = [slot for slot in found if window_start <= slot <= window_end]
+    return sorted(set(chosen))
+
+
+def slot_key(platform: str, slot: datetime) -> str:
+    return f"{platform}:{due_stamp(slot)}"
+
+
+def source_key(platform: str, identity: str) -> str:
+    return f"{platform}:{identity}"
+
+
+def empty_ledger() -> dict:
+    return {"version": 1, "posted": [], "sources": [], "captions": []}
+
+
+def prune_ledger(ledger: dict, now: datetime) -> dict:
+    cutoff = now.astimezone(timezone.utc) - timedelta(days=3)
+    kept = []
+    for row in ledger.get("posted") or []:
+        raw = str(row.get("due_at") or "")
+        if not raw:
+            continue
+        try:
+            moment = datetime.fromisoformat(raw.replace("Z", "+00:00"))
+        except ValueError:
+            continue
+        if moment >= cutoff:
+            kept.append(row)
+    ledger["posted"] = kept
+    ledger["sources"] = list(ledger.get("sources") or [])
+    ledger["captions"] = list(ledger.get("captions") or [])
+    ledger["version"] = 1
+    return ledger
+
+
+def ledger_has(ledger: dict, platform: str, slot: datetime) -> bool:
+    key = slot_key(platform, slot)
+    return any(row.get("key") == key for row in ledger.get("posted") or [])
+
+
+def posted_identities(ledger: dict, platform: str) -> set[str]:
+    prefix = f"{platform}:"
+    found: set[str] = set()
+    for key in ledger.get("sources") or []:
+        text = str(key)
+        if text.startswith(prefix):
+            found.add(text[len(prefix):])
+    return found
+
+
+def prefetch_exclude_ids(ledger: dict, platforms: list[str]) -> set[str]:
+    """Drive ids already posted on every listed platform.
+
+    A file posted only to YouTube can still be the TikTok cut. Skip a download
+    only when every platform in the list has already used that id.
+    """
+    groups = [posted_identities(ledger, platform) for platform in platforms]
+    if not groups:
+        return set()
+    return set.intersection(*groups)
+
+
+def public_video_url(url: str) -> str:
+    """Buffer can fetch only a public https file. Dry-run hosts are refused."""
+    text = (url or "").strip()
+    if "example.invalid" in text or not text.startswith("https://"):
+        raise BufferError("refusing a video URL Buffer cannot fetch")
+    if text.startswith("https://example.invalid"):
+        raise BufferError("refusing a video URL Buffer cannot fetch")
+    return text
+
+
+def release_download_url(repo: str, tag: str, name: str) -> str:
+    return public_video_url(f"https://github.com/{repo}/releases/download/{tag}/{name}")
+
+
+def upload_release_asset(path: Path, name: str, *, repo: str, tag: str, token: str) -> str:
+    """Publish one mp4 on the clip-media release and return its public URL."""
+    if not repo or not token:
+        raise RuntimeError("GH_TOKEN and GITHUB_REPOSITORY are required to publish media")
+    if "/" in name or name.startswith(".") or "example.invalid" in name:
+        raise RuntimeError("refusing release asset name")
+    env = os.environ.copy()
+    env["GH_TOKEN"] = token
+    view = subprocess.run(
+        ["gh", "release", "view", tag, "--repo", repo],
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if view.returncode != 0:
+        created = subprocess.run(
+            [
+                "gh",
+                "release",
+                "create",
+                tag,
+                "--repo",
+                repo,
+                "--prerelease",
+                "--title",
+                "Clip media",
+                "--notes",
+                "Live clips for Buffer. Buffer is not called from the release itself.",
+            ],
+            env=env,
+            check=False,
+            capture_output=True,
+            text=True,
+        )
+        if created.returncode != 0:
+            detail = (created.stderr or created.stdout or "gh release create failed")[-400:]
+            raise RuntimeError(detail)
+    uploaded = subprocess.run(
+        ["gh", "release", "upload", tag, f"{path}#{name}", "--repo", repo, "--clobber"],
+        env=env,
+        check=False,
+        capture_output=True,
+        text=True,
+    )
+    if uploaded.returncode != 0:
+        detail = (uploaded.stderr or uploaded.stdout or "gh release upload failed")[-400:]
+        raise RuntimeError(detail)
+    return release_download_url(repo, tag, name)
+
+
+def _campaign(bundle: dict, campaign_id: str) -> dict | None:
+    for row in bundle["campaigns"]["campaigns"]:
+        if row["id"] == campaign_id:
+            return row
+    return None
+
+
+def _remember(ledger: dict, platform: str, identity: str, caption: str, slot: datetime, post: dict, video_url: str, campaign_id: str | None) -> None:
+    key = source_key(platform, identity)
+    if key not in ledger["sources"]:
+        ledger["sources"].append(key)
+    normalized = normalize_caption(caption)
+    if not any(row.get("platform") == platform and row.get("text") == normalized for row in ledger["captions"]):
+        ledger["captions"].append({"platform": platform, "text": normalized})
+    ledger["posted"].append(
+        {
+            "key": slot_key(platform, slot),
+            "platform": platform,
+            "due_at": due_stamp(slot),
+            "source_key": key,
+            "buffer_post_id": post.get("id") or "",
+            "video_url": video_url,
+            "campaign_id": campaign_id,
+            "status": post.get("status") or "",
+        }
+    )
+
+
+def _call_fetcher(fetcher, exclude: set[str]) -> dict | None:
+    if fetcher is None:
+        return None
+    try:
+        fetched = fetcher(set(exclude))
+    except Exception as exc:
+        print(f"Sui download skipped: {exc.__class__.__name__}: {exc}")
+        return None
+    if not isinstance(fetched, dict) or fetched.get("status") == "exhausted" or not fetched.get("path"):
+        return None
+    return fetched
+
+
+def _dhan_videos(media_dir: Path) -> list[Path]:
+    folder = media_dir / "dhan"
+    if not folder.is_dir():
+        return []
+    return [
+        path
+        for path in sorted(folder.iterdir())
+        if path.is_file() and path.suffix.lower() in _VIDEO_SUFFIXES
+    ]
+
+
+def _gather_candidates(
+    platform: str,
+    bundle: dict,
+    manifest: dict,
+    media_dir: Path,
+    ledger: dict,
+    alerts: dict,
+    fetcher,
+) -> list[tuple[str, Path, str, dict | None]]:
+    """Sui file, then an approved Dhan file, then the content plan. Used files are skipped."""
+    used = set(ledger.get("sources") or [])
+    blocked = blocked_identities(alerts)
+    items: list[tuple[str, Path, str, dict | None]] = []
+
+    def add(kind: str, path: Path, identity: str, campaign: dict | None) -> bool:
+        if not identity or not path.is_file():
+            return False
+        if identity in blocked or source_key(platform, identity) in used:
+            return False
+        items.append((kind, path, identity, campaign))
+        return True
+
+    sui = _campaign(bundle, "sui-basecamp") or {}
+    if sui.get("active") and platform in (sui.get("platforms") or []):
+        meta = manifest.get("sui") or {}
+        path = Path(str(meta.get("path") or ""))
+        if not path.is_file():
+            short = media_dir / "sui-basecamp-short.mp4"
+            path = short if short.is_file() else path
+        identity = str(meta.get("file_id") or (path.stem if path.is_file() else ""))
+        if not add("sui", path, identity, sui):
+            exclude = posted_identities(ledger, platform) | blocked
+            fetched = _call_fetcher(fetcher, exclude)
+            if fetched:
+                add(
+                    "sui",
+                    Path(str(fetched.get("path") or "")),
+                    str(fetched.get("file_id") or Path(str(fetched.get("path") or "")).stem),
+                    sui,
+                )
+
+    dhan = _campaign(bundle, "dhan-aziz") or {}
+    approved = {str(item) for item in (bundle.get("approvals") or {}).get("approved") or []}
+    if dhan.get("active") and platform in (dhan.get("platforms") or []) and approved:
+        for path in _dhan_videos(media_dir):
+            if path.stem not in approved and path.name not in approved:
+                continue
+            add("dhan", path, path.stem, dhan)
+
+    for row in manifest.get("content_plan") or []:
+        if row.get("platform") != platform or row.get("status") != "downloaded":
+            continue
+        path = Path(str(row.get("path") or ""))
+        add("content_plan", path, path.stem, None)
+    return items
+
+
+def _caption_for(
+    kind: str,
+    platform: str,
+    source: Path,
+    identity: str,
+    bundle: dict,
+    limits: dict,
+    used: set[str],
+    salt: str,
+    campaign: dict | None,
+) -> tuple[dict | None, str]:
+    char_limit = int(bundle["pipeline"]["x_char_limit"])
+    clip = {"source_id": identity, "title": source.stem}
+    if kind in {"sui", "dhan"}:
+        if campaign is None:
+            raise RuntimeError(f"{kind} campaign is missing")
+        disclosure = ((campaign.get("caption") or {}).get("disclosure") or "").strip()
+        reserved = 1 if disclosure.startswith("#") else 0
+        tags = rotated_hashtags(limits, salt, reserved=reserved)
+        campaign = copy.deepcopy(campaign)
+        existing = list(campaign["caption"].get("hashtags") or [])
+        for tag in tags:
+            if tag not in existing:
+                existing.append(tag)
+        campaign["caption"]["hashtags"] = existing
+        caption = build_caption(campaign, clip, platform, char_limit, limits=limits, used=used)
+        if kind == "sui" and "x.com/SuiNetwork" not in caption:
+            raise RuntimeError("Sui caption is missing x.com/SuiNetwork")
+        if kind == "dhan" and "@DHANAZIZ" not in caption:
+            raise RuntimeError("Dhan Aziz caption is missing @DHANAZIZ")
+        return campaign, caption
+    tags = rotated_hashtags(limits, salt, reserved=0)
+    caption = content_plan_caption(
+        clip,
+        platform,
+        char_limit,
+        limits=limits,
+        used=used,
+        extra_hashtags=tags,
+    )
+    if caption.startswith("#Ad") or "x.com/SuiNetwork" in caption:
+        raise RuntimeError("content-plan caption picked up a campaign line")
+    return None, caption
+
+
+def render_variant(source: Path, dest: Path, platform: str, campaign: dict | None) -> None:
+    if not ffmpeg_available():
+        raise RuntimeError("ffmpeg is not installed")
+    variant = variant_for(platform)
+    rules = campaign if campaign and (campaign.get("logo") or {}).get("required") else {"logo": {"required": False}}
+    graph, uses_logo = logo_filter(rules, 720, 1280, float(variant["crop_x"]))
+    if uses_logo or "drawtext" in graph:
+        raise RuntimeError("live render must not stamp a logo or text")
+    apply_filters(source, dest, graph, None, CLIP_SECONDS, float(variant["start_sec"]))
+
+
+def _asset_name(platform: str, slot: datetime) -> str:
+    stamp = due_stamp(slot).replace("-", "").replace(":", "")
+    return f"live-{platform}-{stamp}.mp4"
+
+
+def live_payload(package: dict, channel_id: str, video_url: str, now: datetime) -> dict:
+    """GraphQL createPost input. A slot that just passed is shareNow, not a past dueAt."""
+    url = public_video_url(video_url)
+    payload = build_post_input(package, channel_id, url)
+    due = datetime.fromisoformat(str(package["due_at"]).replace("Z", "+00:00"))
+    if due <= now.astimezone(timezone.utc) + timedelta(seconds=30):
+        payload["mode"] = "shareNow"
+        payload.pop("dueAt", None)
+    if "example.invalid" in json.dumps(payload):
+        raise BufferError("refusing a video URL Buffer cannot fetch")
+    return payload
+
+
+def _next_slot(platform: str, bundle: dict, now: datetime, ledger: dict) -> datetime | None:
+    schedule = bundle["pipeline"]["schedule"][platform]
+    slots = due_slots(now, schedule["slots"], schedule["timezone"])
+    for slot in slots:
+        if not ledger_has(ledger, platform, slot):
+            return slot
+    return None
+
+
+def _download_next_sui(bundle: dict, media_dir: Path, exclude: set[str]) -> dict | None:
+    sui = _campaign(bundle, "sui-basecamp") or {}
+    url = str((sui.get("source") or {}).get("url") or "")
+    if not url:
+        return None
+    return fetch_sui_clip(url, media_dir, exclude_ids=exclude)
+
+
+def _used_captions(ledger: dict, platform: str) -> set[str]:
+    return {
+        str(row.get("text") or "")
+        for row in ledger.get("captions") or []
+        if row.get("platform") == platform and row.get("text")
+    }
+
+
+def execute_live(
+    bundle: dict,
+    *,
+    now: datetime,
+    env: dict,
+    media_dir: Path,
+    output_dir: Path,
+    uploader=None,
+    poster=None,
+    fetcher=_USE_DEFAULT_FETCHER,
+    ledger_path: Path | None = None,
+    pending_path: Path | None = None,
+    alerts_path: Path | None = None,
+) -> int:
+    """Send at most one post per enabled platform for the slot due in this window."""
+    if now.tzinfo is None:
+        now = now.replace(tzinfo=timezone.utc)
+    token = (env.get("BUFFER_API_TOKEN") or "").strip()
+    if not token:
+        print("Refusing a live post. BUFFER_API_TOKEN is empty.", flush=True)
+        return 2
+    api = bundle["pipeline"]["buffer_api_url"]
+    if api.rstrip("/") != "https://api.buffer.com":
+        print(f"Refusing a live post. Buffer API must be GraphQL at https://api.buffer.com, got {api}.", flush=True)
+        return 2
+    manifest_path = media_dir / "manifest.json"
+    if manifest_path.is_file():
+        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+    else:
+        manifest = {"sui": {}, "content_plan": []}
+    repo = (env.get("GITHUB_REPOSITORY") or "").strip()
+    tag = str(bundle["pipeline"].get("release_tag") or "clip-media")
+    gh_token = (env.get("GH_TOKEN") or env.get("GITHUB_TOKEN") or "").strip()
+    uploader = uploader or (
+        lambda path, name: upload_release_asset(path, name, repo=repo, tag=tag, token=gh_token)
+    )
+    poster = poster or (lambda post_input: create_post(api, token, post_input))
+    if fetcher is _USE_DEFAULT_FETCHER:
+        fetcher = lambda exclude: _download_next_sui(bundle, media_dir, exclude)
+
+    root: Path = bundle["root"]
+    ledger_path = ledger_path or (root / "state" / "live.json")
+    ledger = prune_ledger(load_json(ledger_path, empty_ledger()), now)
+    pending_path = pending_path or (root / bundle["pipeline"]["submissions"]["pending_path"])
+    pending = load_json(
+        pending_path,
+        empty_pending(bundle["pipeline"]["submissions"]["raw_url"], int(bundle["pipeline"]["submit_within_minutes"])),
+    )
+    alerts_path = alerts_path or (root / "state" / "platform_alerts.json")
+    alerts = load_json(alerts_path, empty_alerts())
+    minutes = int(bundle["pipeline"]["submit_within_minutes"])
+    limit = int((bundle["pipeline"].get("rate_limit") or {}).get("max_errors_before_stop") or 2)
+    budget = ErrorBudget(limit)
+    output_dir.mkdir(parents=True, exist_ok=True)
+    variants = output_dir / "variants"
+    sent_rows: list[dict] = []
+    failures = 0
+    posted = 0
+
+    def persist() -> None:
+        save_json(ledger_path, ledger)
+        save_json(pending_path, pending)
+        save_json(alerts_path, alerts)
+
+    for platform in posting_platforms(bundle):
+        if is_paused(alerts, platform) or platform in budget.halted:
+            print(f"{platform}: paused, not posting")
+            continue
+        slot = _next_slot(platform, bundle, now, ledger)
+        if slot is None:
+            print(f"{platform}: no peak slot in this window")
+            continue
+        limits = (bundle["pipeline"].get("platform_limits") or {}).get(platform) or {}
+        chosen = None
+        campaign = None
+        caption = ""
+        kind = ""
+        source = Path()
+        identity = ""
+        unsafe = False
+        for candidate in _gather_candidates(platform, bundle, manifest, media_dir, ledger, alerts, fetcher):
+            kind, source, identity, campaign_hint = candidate
+            try:
+                campaign, caption = _caption_for(
+                    kind,
+                    platform,
+                    source,
+                    identity,
+                    bundle,
+                    limits,
+                    _used_captions(ledger, platform),
+                    source_key(platform, identity),
+                    campaign_hint,
+                )
+            except Exception as exc:
+                failures += 1
+                message = f"live caption {platform} failed: {exc.__class__.__name__}: {exc}"
+                print(message)
+                alert(message)
+                chosen = None
+                break
+            hit = classify(f"{source.name}\n{source.stem}\n{caption}")
+            if hit:
+                unsafe = True
+                key = source_key(platform, identity)
+                if record_safety(alerts, platform, key, hit, when=now):
+                    message = f"{platform} skipped {key}: safety category {hit}. The platform is not paused."
+                    print(message)
+                    alert(message)
+                persist()
+                continue
+            chosen = candidate
+            break
+        if chosen is None:
+            if not unsafe:
+                print(f"{platform}: no unused safe file, not posting")
+            else:
+                print(f"{platform}: remaining files were blocked by the safety filter, not posting")
+            continue
+        kind, source, identity, _hint = chosen
+        try:
+            if kind == "sui":
+                dest = variants / f"{platform}.mp4"
+                render_variant(source, dest, platform, campaign)
+                upload_path = dest
+            else:
+                upload_path = source
+            video_url = public_video_url(uploader(upload_path, _asset_name(platform, slot)))
+            channel = _channel_id(bundle["channels"], campaign or {"account_mode": "shared"}, platform, env)
+            if not channel:
+                raise RuntimeError(f"no Buffer channel id for {platform}")
+            package = {
+                "platform": platform,
+                "status": "scheduled",
+                "caption": caption,
+                "due_at": due_stamp(slot),
+                "campaign_id": (campaign or {}).get("id"),
+                "source_id": identity,
+                "content_rewards_campaign_id": (campaign or {}).get("content_rewards_campaign_id") or "",
+                "submit_page": (campaign or {}).get("submit_page") or "",
+            }
+            payload = live_payload(package, channel, video_url, now)
+        except Exception as exc:
+            failures += 1
+            message = f"live post {platform} failed before Buffer: {exc.__class__.__name__}: {exc}"
+            print(message)
+            alert(message)
+            continue
+        try:
+            post = poster(payload)
+        except Exception as exc:
+            failures += 1
+            reason = f"{exc.__class__.__name__}: {exc}"
+            pause_platform(alerts, platform, reason, "buffer_error", when=now)
+            message = alert_text(platform, "buffer_error", reason)
+            print(message)
+            alert(message)
+            budget.record(platform, str(exc))
+            persist()
+            continue
+        status = str(post.get("status") or "").strip().lower()
+        if status in FAILED_STATUSES:
+            failures += 1
+            kind_name = "removed" if status in {"removed", "deleted"} else "buffer_error"
+            reason = f"Buffer reported status {status}"
+            post_id = str(post.get("id") or "")
+            pause_platform(alerts, platform, reason, kind_name, buffer_post_id=post_id, when=now)
+            message = alert_text(platform, kind_name, reason, post_id)
+            print(message)
+            alert(message)
+            persist()
+            continue
+        posted += 1
+        _remember(ledger, platform, identity, caption, slot, post, video_url, package["campaign_id"])
+        text = post.get("text") or caption
+        enriched = dict(post)
+        enriched["text"] = text
+        if enriched.get("status") == "sent":
+            record_sent_posts(pending, [enriched], platform, bundle["campaigns"]["campaigns"], minutes)
+        sent_rows.append(
+            {
+                "platform": platform,
+                "due_at": package["due_at"],
+                "video_url": video_url,
+                "buffer_post_id": post.get("id") or "",
+                "status": post.get("status") or "",
+                "campaign_id": package["campaign_id"],
+                "source_key": source_key(platform, identity),
+            }
+        )
+        print(f"posted {platform} {package['due_at']} {post.get('id') or ''}")
+        persist()
+
+    persist()
+    (output_dir / "live.json").write_text(
+        json.dumps({"posted": sent_rows, "failures": failures}, indent=2) + "\n",
+        encoding="utf-8",
+    )
+    print(f"live posted {posted} failure {failures}")
+    return 1 if failures else 0

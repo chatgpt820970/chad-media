@@ -4,16 +4,16 @@ Clipping pipeline for an India-based clipper posting through [Buffer](https://pu
 
 Joined campaigns are **Sui BaseCamp** and **Dhan Aziz**. Everything else in `config/campaigns.json` is inactive. Dhan Aziz is prepared as a draft and is not posted until that clip's id is listed in `state/approvals.json`.
 
-X has no campaign. X posts the owner's own plan (trending, celebrity, 4K anime), clean, with no logo. TikTok, Instagram, and YouTube slots that a campaign does not fill use that platform's content plan, also with no logo.
+X has no campaign. X posts the owner's own plan (trending, celebrity, 4K anime), clean, with no logo. Instagram posting is off until that account can link to Content Rewards (`channels.platforms.instagram.enabled` is false). The Reels code and the IST clock stay in the repo. TikTok and YouTube slots that a campaign does not fill use that platform's content plan, also with no logo.
 
 ## What a run does
 
 1. Read `config/campaigns.json`, `config/sources.json`, `config/channels.json`, and `config/pipeline.json`.
-2. Drop clips that match the safety guard (sexual or nude, gore, hate, dangerous acts, misleading or spam captions). Romantic, movie, anime, and sports clips stay allowed.
+2. Drop clips that match the safety guard (sexual or nude, gore, hate, dangerous acts, misleading or spam captions), including the filename and title. Romantic, movie, anime, and sports clips stay allowed. A safety skip does not pause the platform.
 3. Skip a source that still has a burned-in creator or platform watermark after one cover pass. A mark in the center is always skipped. The campaign logo, if that campaign requires one, is overlaid only after the frame is clean. Branding is a transparent PNG, not a text box.
 4. Assign campaign footage only when that campaign is active, allows the platform and content type, fits the duration, has budget left for at least one minimum payout, and is not a duplicate. Sui BaseCamp is cut from its Google Drive folder. Dhan Aziz is an exact Dropbox repost and stays in `awaiting_approval` until you approve it. X, and any short-form slot a campaign does not take, uses the platform content plan with no logo and no campaign caption.
 5. Split the day's slots by expected earnings. Same source never posts twice on one platform. Campaigns marked `one_shortform` post once inside YouTube, Instagram, and TikTok.
-6. Schedule ten slots a day on each platform, about two hours apart, in IST. The quiet gap sits in that audience's dead hours. X, YouTube, Instagram, and TikTok do not share one clock. Edit the times in `config/pipeline.json`.
+6. Schedule ten slots a day on each platform, at least 90 minutes apart, in IST. The quiet gap sits in that audience's dead hours. X, YouTube, Instagram, and TikTok do not share one clock. Edit the times in `config/pipeline.json`. Instagram keeps its clock, but live posting skips it while `enabled` is false.
 
 Views to the first payout (`min_payout / rate_per_1k * 1000`) is printed as a **warning** when it is above `min_views_threshold` (default 1500). T Bird is about 10,000 views to the first $10. That warning does not reject the campaign and does not change `active`. Turning a campaign on is a config edit you make yourself.
 
@@ -70,11 +70,13 @@ X is the owner's plan: trending, celebrity, and 4K anime, with no logo and no ca
 
 ## Schedule (IST)
 
+Ten slots a day on each platform. Adjacent slots in this file are 135 minutes apart, and `clipper check` rejects a clock whose minimum gap, including the midnight wrap, is under 90 minutes. Instagram uses the YouTube clock so it can be turned back on without retiming.
+
 X, weighted to US evening, Europe evening, and India evening. Quiet about 10:15–14:00 IST:
 
 `14:00, 16:15, 18:30, 20:45, 23:00, 01:15, 03:30, 05:45, 08:00, 10:15`
 
-YouTube Shorts and Instagram, India lunch and evening. Quiet about 03:15–07:00 IST:
+YouTube Shorts, India afternoon and night (about 12:00–14:00 and 19:00–23:00 IST). Quiet about 03:15–07:00 IST. Instagram keeps this same list for when Reels are enabled again:
 
 `07:00, 09:15, 11:30, 13:45, 16:00, 18:15, 20:30, 22:45, 01:00, 03:15`
 
@@ -97,9 +99,9 @@ CLIPPER_MONITOR=true python -m clipper monitor
 
 CI cuts that Sui file to an 8-second 720x1280 clip, writes `caption.txt` containing `x.com/SuiNetwork`, and uploads it as the `sui-basecamp-short` artifact and as an asset on the `clip-media` prerelease.
 
-The 15-minute monitor stays on the schedule, but the job does not start a runner unless `CLIPPER_MONITOR` is `true`. When it runs, it writes `submissions/pending.json` in that same run as soon as Buffer reports a campaign post `sent` with a public URL. The 30-minute clock uses `sentAt`, not the scheduled time. The job is capped at 3 minutes.
+The 15-minute monitor stays on the schedule, but the job does not start a runner unless `CLIPPER_MONITOR` is `true`. When it runs, it writes `submissions/pending.json` in that same run as soon as Buffer reports a campaign post `sent` with a public URL. The 30-minute clock uses `sentAt`, not the scheduled time. The same poll pauses a platform in `state/platform_alerts.json` when Buffer reports the post `error`, `failed`, `rejected`, `removed`, or `deleted`. The job is capped at 3 minutes. `BUFFER_API_TOKEN` is passed in so the poll can run.
 
-`python -m clipper run --live` also requires the variable `CLIPPER_LIVE=true`, and it still refuses `example.invalid` URLs.
+`python -m clipper run --live` posts one due slot per enabled platform (X, YouTube Shorts, TikTok) through Buffer's GraphQL `createPost` at `https://api.buffer.com`. It also requires `CLIPPER_LIVE=true` and a real `https` video URL. It refuses `example.invalid`. A slot that is already in the past is sent as `shareNow` so Buffer does not reject a past `dueAt`. Each post gets its own caption and a rotated hashtag slice. The same source is stored in `state/live.json` and is not posted to that platform again. A Buffer error pauses that platform until you edit `state/platform_alerts.json`. The 2-hour Actions job does not start a runner unless `CLIPPER_LIVE` is `true`, including when you dispatch it by hand.
 
 ## Secrets and variables
 
@@ -147,8 +149,9 @@ The assistant pastes each URL into Content Rewards in the browser. Whop-linked a
 
 ## Workflows
 
-- **Clip pipeline** runs on pull requests and on `main`. It installs ffmpeg and tesseract, runs the unit tests, `python -m clipper check`, and a dry-run. The dry-run must exit 0, schedule Sui BaseCamp, leave Dhan Aziz as a draft, and keep every payload on `example.invalid`.
-- **Clip monitor** is scheduled every 15 minutes but the job is skipped unless `CLIPPER_MONITOR` is `true`. Dispatch it to mark a submission.
+- **Clip pipeline** runs on pull requests and on `main`. It installs ffmpeg and tesseract, runs the unit tests, `python -m clipper check`, and a dry-run. The dry-run must exit 0, schedule Sui BaseCamp, leave Dhan Aziz as a draft, and keep every payload on `example.invalid`. A second job, **fetch-media**, downloads the Sui Drive clip, the Dhan Aziz Dropbox zip, and the content-plan sources, cuts an 8-second 720x1280 short, and uploads it to the `clip-media` release. It does not call Buffer.
+- **Clip live** is scheduled every 2 hours (`0 */2 * * *`) and can be dispatched by hand. The job does not start a runner unless `CLIPPER_LIVE` is `true`. It posts the one peak-hour slot due in that window on X, YouTube, and TikTok.
+- **Clip monitor** is scheduled every 15 minutes but the job is skipped unless `CLIPPER_MONITOR` is `true`. Dispatch it to mark a submission. It receives `BUFFER_API_TOKEN` and writes pause alerts into `state/platform_alerts.json`.
 - **Whop Clipper** and **Shorts** are retired echo jobs. They no longer download, rebase, or upload video artifacts.
 - **Prepare media** and **Scanner watchdog** are unchanged. Leave them disabled.
 - **Publish Pages** is unchanged.
@@ -158,8 +161,9 @@ Videos are gitignored (`*.mp4`). Do not commit mp4s. Rendered files for a live p
 ## What this does not automate
 
 - Submitting a post URL to Content Rewards. No creator submit endpoint is documented. Whop's bounty API is a different product. Content-plan posts (X, and leftover TikTok, Instagram, and YouTube slots) are not submitted there.
-- Approving a Dhan Aziz draft. The run only lists `awaiting_approval`. Add the `source_id` to `state/approvals.json` after you have looked at the file.
-- Downloading the Drive or Dropbox folders inside CI. The dry-run records `gdown --folder` and a Dropbox `dl=1` curl. It does not fetch the videos.
+- Approving a Dhan Aziz draft. The run only lists `awaiting_approval`. Add the `source_id` to `state/approvals.json` after you have looked at the file. The live cron does not download the Dropbox zip.
+- Turning Instagram back on. Set `platforms.instagram.enabled` to true in `config/channels.json` once that account can link to Content Rewards. No campaign platform list has to change.
+- Clearing a platform pause. Delete that platform's entry under `paused` in `state/platform_alerts.json` after you report the Buffer or removal error. The file is the alert log.
 - Rolling Stone (30% Tier 1 and music pages) and Oz Ali (60% Tier 1 and 45% UK). Both stay inactive.
 - Jackelyne fan-page username, bio (`@jackyalvvarez` and `https://www.instagram.com/jackyalvvarez/` plus a meme line), YouTube bio `@Jackyalvvarez`, profile photo, and pinned comment. Buffer cannot set those. `#unboxd` is in the caption because it was requested; it is not in the public brief excerpt.
 - The official Jackelyne logo. The file in `logos/` is a placeholder, and live posting is blocked while `placeholder` is true.
