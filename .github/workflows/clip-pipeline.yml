@@ -109,7 +109,7 @@ jobs:
       - name: Install ffmpeg, gdown, and yt-dlp
         run: |
           sudo apt-get update && sudo apt-get install -y ffmpeg
-          python -m pip install --upgrade gdown yt-dlp
+          python -m pip install --upgrade gdown yt-dlp curl_cffi gallery-dl
 
       - name: Cookie files
         env:
@@ -180,3 +180,50 @@ jobs:
         run: |
           gh release view clip-media >/dev/null 2>&1 || gh release create clip-media --prerelease --title "Clip media" --notes "Dry-run renders. Buffer is not called."
           gh release upload clip-media work/fetch/sui-basecamp-short.mp4 work/fetch/caption.txt --clobber
+
+  public-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, tesseract, yt-dlp, and gallery-dl
+        run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg tesseract-ocr
+          python -m pip install --upgrade yt-dlp curl_cffi gallery-dl
+
+      - name: Probe cookie-free sources
+        run: python -m clipper fetch-public --output-dir work/public
+
+      - name: Check the public-source report
+        run: |
+          python - << 'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("work/public/report.json").read_text())
+          rows = {row["name"]: row for row in report["sources"]}
+          required = {"x_public", "tiktok_public", "reddit_json", "youtube_frontend"}
+          if set(rows) != required:
+              raise SystemExit(f"report names {sorted(rows)} != {sorted(required)}")
+          for name, row in rows.items():
+              if row["status"] not in ("downloaded", "unavailable"):
+                  raise SystemExit(f"{name} status {row['status']}")
+              if row["status"] == "downloaded" and int(row.get("bytes") or 0) < 8000:
+                  raise SystemExit(f"{name} downloaded without a real video")
+              print(name, row["status"], row.get("bytes"), row.get("method") or "", (row.get("error") or "")[:180])
+          print("public sources report ok")
+          PY
+
+      - name: Upload public-source report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-sources
+          path: work/public/
+          if-no-files-found: error

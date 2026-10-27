@@ -1,8 +1,9 @@
 name: Clip monitor
 
-# Off unless the repository variable CLIPPER_MONITOR is true.
+# On unless the repository variable CLIPPER_MONITOR is the lowercase string false.
 # The job checks submissions/pending.json and fails when a live post is past
 # its 30-minute Content Rewards deadline so GitHub can email the assistant.
+# The job stays capped at 3 minutes.
 on:
   schedule:
     - cron: "*/15 * * * *"
@@ -19,8 +20,7 @@ permissions:
 
 jobs:
   monitor:
-    # A skipped job does not start a runner. Leave CLIPPER_MONITOR unset and this cron costs no minutes.
-    if: ${{ vars.CLIPPER_MONITOR == 'true' || github.event_name == 'workflow_dispatch' }}
+    if: ${{ vars.CLIPPER_MONITOR != 'false' }}
     runs-on: ubuntu-latest
     timeout-minutes: 3
     concurrency:
@@ -46,7 +46,7 @@ jobs:
         run: python -m clipper monitor
 
       - name: Commit queue updates
-        if: ${{ vars.CLIPPER_MONITOR == 'true' }}
+        if: ${{ vars.CLIPPER_MONITOR != 'false' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

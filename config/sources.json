@@ -67,6 +67,24 @@
       ]
     }
   },
+  "public_sources": {
+    "user_agent": "chad-media/1.0 (public clip research; +https://github.com/chatgpt820970/chad-media)",
+    "x": {
+      "search_queries": ["4k anime edit", "anime sakuga", "celebrity interview"],
+      "profiles": ["Crunchyroll"]
+    },
+    "tiktok": {
+      "tags": ["anime", "animeedit", "hollywood"]
+    },
+    "reddit": {
+      "youtube": ["Cricket", "BollyBlindsNGossip", "IndianCinema"],
+      "tiktok": ["anime", "AnimeEdits", "movies"],
+      "x": ["anime", "AnimeEdits"]
+    },
+    "youtube_frontends": {
+      "queries": ["cricket match highlight India", "Bollywood movie scene dialogue", "PM Modi speech clip"]
+    }
+  },
   "campaign_queries": {
     "crookbrown": {
       "platforms": ["tiktok"],

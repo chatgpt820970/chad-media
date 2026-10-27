@@ -274,9 +274,14 @@ def _run_attempts(commands: list[list[str]], target: Path) -> tuple[int, list[Pa
 
 
 def fetch_content_plan(bundle: dict, output: Path, env: dict) -> list[dict]:
-    """yt-dlp one clip per platform. Cookies are optional files, never logged."""
+    """One clip per platform. Cookie-free public sources run first.
+
+    Cookie files stay optional. A public miss is "unavailable", not "failed",
+    so a bot-wall or a blocked listing does not fail the Sui download.
+    """
+    from clipper.publicsrc import public_file_for_platform
+
     output.mkdir(parents=True, exist_ok=True)
-    ytdlp_argv()
     root = bundle["root"]
     results = []
     for platform, spec in bundle["sources"].get("platforms", {}).items():
@@ -287,40 +292,59 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict) -> list[dict]:
         target = output / platform
         target.mkdir(parents=True, exist_ok=True)
         template = str(target / "%(id)s.mp4")
+        public = None
         if inbox:
             label = inbox[0]
             if platform == "youtube" or "youtube.com" in label or "youtu.be" in label:
                 commands = youtube_attempts(label, template, cookies or None)
             else:
                 commands = [ytdlp_command(label, template, cookies or None)]
-        elif platform == "youtube" or cookies:
+        else:
+            if platform in {"x", "youtube", "tiktok"}:
+                try:
+                    public = public_file_for_platform(bundle, platform, target)
+                except Exception as exc:
+                    public = {"status": "unavailable", "error": f"{exc.__class__.__name__}: {exc}"}
+                if public and public.get("status") == "downloaded" and public.get("path"):
+                    results.append(
+                        {
+                            "platform": platform,
+                            "status": "downloaded",
+                            "source": public.get("url") or public.get("method") or "public",
+                            "path": public["path"],
+                            "bytes": public.get("bytes") or 0,
+                            "via": "public",
+                        }
+                    )
+                    continue
+            if platform != "youtube" and not cookies:
+                results.append(
+                    {
+                        "platform": platform,
+                        "status": "unavailable" if public else "skipped",
+                        "reason": (public or {}).get("error") or "no inbox URL and no cookie file",
+                    }
+                )
+                continue
             query = queries[0] if queries else platform
             label = f"ytsearch1:{query}"
             if platform == "youtube":
                 commands = youtube_attempts(label, template, cookies or None)
             else:
                 commands = [_search_command(label, template, cookies or None)]
-        else:
-            results.append(
-                {
-                    "platform": platform,
-                    "status": "skipped",
-                    "reason": "no inbox URL and no cookie file",
-                }
-            )
-            continue
         code, files, log = _run_attempts(commands, target)
         if not files:
             blocked = platform == "youtube" and not cookies and _needs_cookies(log)
-            results.append(
-                {
-                    "platform": platform,
-                    "status": "needs_cookies" if blocked else "failed",
-                    "source": label,
-                    "returncode": code,
-                    "error": log[-400:],
-                }
-            )
+            row = {
+                "platform": platform,
+                "status": "needs_cookies" if blocked else "failed",
+                "source": label,
+                "returncode": code,
+                "error": log[-400:],
+            }
+            if public and public.get("error"):
+                row["public_error"] = str(public.get("error"))[:400]
+            results.append(row)
             continue
         results.append(
             {
