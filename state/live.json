@@ -10,10 +10,32 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261027T214500.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "sent"
+    },
+    {
+      "key": "x:2026-10-28T00:15:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T00:15:00.000Z",
+      "source_key": "x:N1jSmRW2VlQ",
+      "buffer_post_id": "6ae12f22b24fed5fb48cff3d",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T001500.000Z.mp4",
+      "campaign_id": null,
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-27T23:30:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-27T23:30:00.000Z",
+      "source_key": "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
+      "buffer_post_id": "6ae12f23b24fed5fb48cffa8",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261027T233000.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "scheduled"
     }
   ],
   "sources": [
-    "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk"
+    "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
+    "x:N1jSmRW2VlQ",
+    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk"
   ],
   "captions": [
     {
@@ -27,6 +49,16 @@
     {
       "platform": "tiktok",
       "text": "#ad this moment from sui basecamp x.com/suinetwork #movies #anime #clips"
+    },
+    {
+      "platform": "x",
+      "source": "N1jSmRW2VlQ",
+      "text": "he's not the villain, he just has taste \ud83d\udc80 #movies #anime"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
+      "text": "#ad sui basecamp went off and you missed it \ud83d\ude2d x.com/suinetwork #sui #suibasecamp #crypto"
     }
   ],
   "topics": [
@@ -40,6 +72,10 @@
     },
     {
       "topic": "blw2cxnywe0 blw2cxnywe0 when",
+      "posted_at": "2026-10-28T00:15:00.000Z"
+    },
+    {
+      "topic": "n1jsmrw2vlq n1jsmrw2vlq he's",
       "posted_at": "2026-10-28T00:15:00.000Z"
     }
   ]
