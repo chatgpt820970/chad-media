@@ -661,7 +661,7 @@ def execute_live(
                 if real_video(source):
                     dest = variants / f"{platform}.mp4"
                     line = x_overlay_text("", source_key(platform, identity))
-                    apply_filters(source, dest, x_overlay_graph(line), None, 15.0, 0.0)
+                    apply_filters(source, dest, x_overlay_graph(line), None, CLIP_SECONDS, 0.0)
                     upload_path = dest
             elif kind == "sui":
                 dest = variants / f"{platform}.mp4"
