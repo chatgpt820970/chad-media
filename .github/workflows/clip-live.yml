@@ -41,7 +41,7 @@ jobs:
 
       - name: Install ffmpeg, gdown, and yt-dlp
         run: |
-          timeout 300 bash script/ci_apt.sh ffmpeg tesseract-ocr fonts-dejavu-core
+          timeout 360 bash script/ci_apt.sh ffmpeg tesseract-ocr fonts-dejavu-core
           timeout 180 python -m pip install --upgrade gdown curl_cffi gallery-dl
           timeout 180 python -m pip install -U --pre yt-dlp
 
