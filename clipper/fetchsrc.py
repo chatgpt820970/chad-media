@@ -250,7 +250,134 @@ def _needs_cookies(log: str) -> bool:
     return "not a bot" in text or "sign in to confirm" in text
 
 
-def _run_attempts(commands: list[list[str]], target: Path) -> tuple[int, list[Path], str]:
+def redact_log(log: str) -> str:
+    """Drop lines that can carry a cookie. The temp path itself is not a secret."""
+    kept: list[str] = []
+    for line in (log or "").splitlines():
+        lower = line.lower()
+        if (
+            "cookie:" in lower
+            or line.startswith("#HttpOnly")
+            or line.startswith("# Netscape")
+            or "set-cookie" in lower
+        ):
+            kept.append("[cookie line redacted]")
+            continue
+        kept.append(line)
+    return "\n".join(kept)[-1500:]
+
+
+def cookie_file(path: str | None) -> str | None:
+    """A non-empty Netscape file. The contents are never read into a log."""
+    text = (path or "").strip()
+    if not text:
+        return None
+    file = Path(text)
+    if not file.is_file() or file.stat().st_size < 8:
+        return None
+    return str(file)
+
+
+def site_cookie_commands(
+    platform: str,
+    query: str,
+    output: str,
+    cookies: str,
+    tags: list[str] | None = None,
+) -> list[list[str]]:
+    """yt-dlp for one site, with --cookies. TikTok excludes watermarked formats."""
+    if platform == "youtube":
+        return youtube_attempts(f"ytsearch1:{query}", output, cookies)[:2]
+    if platform == "tiktok":
+        from clipper.publicsrc import TIKTOK_FORMAT, _impersonate
+
+        extra = _impersonate()
+        commands = []
+        slugs = []
+        for tag in tags or ["anime", "hollywood"]:
+            slug = "".join(ch for ch in str(tag).lower() if ch.isalnum())
+            if slug and slug not in slugs:
+                slugs.append(slug)
+        if len(slugs) > 2:
+            slugs = [slugs[0], slugs[-1]]
+        for slug in slugs[:2]:
+            command = [
+                "yt-dlp",
+                *extra,
+                "-f",
+                TIKTOK_FORMAT,
+                "--no-playlist",
+                "--max-downloads",
+                "1",
+                "--download-sections",
+                "*0-12",
+                "--force-keyframes-at-cuts",
+                "--merge-output-format",
+                "mp4",
+                "--retries",
+                "1",
+                "--cookies",
+                cookies,
+                "-o",
+                output,
+                f"https://www.tiktok.com/tag/{slug}",
+            ]
+            commands.append(command)
+        return commands
+    if platform == "instagram":
+        return [
+            [
+                "yt-dlp",
+                "-f",
+                "b[height<=720]/bv*[height<=720]+ba/b",
+                "--no-playlist",
+                "--max-downloads",
+                "1",
+                "--download-sections",
+                "*0-12",
+                "--merge-output-format",
+                "mp4",
+                "--retries",
+                "1",
+                "--cookies",
+                cookies,
+                "-o",
+                output,
+                "https://www.instagram.com/explore/tags/bollywood/",
+            ]
+        ]
+    if platform == "x":
+        from urllib.parse import quote
+
+        return [
+            [
+                "yt-dlp",
+                "-f",
+                "bv*[height<=720]+ba/b[height<=720]/b",
+                "--no-playlist",
+                "--max-downloads",
+                "1",
+                "--download-sections",
+                "*0-12",
+                "--merge-output-format",
+                "mp4",
+                "--retries",
+                "1",
+                "--cookies",
+                cookies,
+                "-o",
+                output,
+                f"https://x.com/search?q={quote(query)}&f=live",
+            ]
+        ]
+    return []
+
+
+def _run_attempts(
+    commands: list[list[str]],
+    target: Path,
+    timeout: int = 240,
+) -> tuple[int, list[Path], str]:
     argv = ytdlp_argv()
     last = 1
     log = ""
@@ -259,12 +386,13 @@ def _run_attempts(commands: list[list[str]], target: Path) -> tuple[int, list[Pa
         if command and command[0] == "yt-dlp":
             command = argv + command[1:]
         try:
-            result = subprocess.run(command, check=False, text=True, timeout=240, capture_output=True)
+            result = subprocess.run(command, check=False, text=True, timeout=timeout, capture_output=True)
             last = result.returncode
-            log = ((result.stderr or "") + (result.stdout or ""))[-1500:]
+            log = redact_log((result.stderr or "") + (result.stdout or ""))
         except subprocess.TimeoutExpired as exc:
             last = 1
-            log = ((exc.stderr or "") if isinstance(exc.stderr, str) else "")[-1500:] or "yt-dlp timed out"
+            err = exc.stderr if isinstance(exc.stderr, str) else ""
+            log = redact_log(err) or "yt-dlp timed out"
         if log:
             print(log)
         files = [path for path in _video_files(target) if path.stat().st_size > 20000]
@@ -273,89 +401,114 @@ def _run_attempts(commands: list[list[str]], target: Path) -> tuple[int, list[Pa
     return last, [], log
 
 
-def fetch_content_plan(bundle: dict, output: Path, env: dict) -> list[dict]:
-    """One clip per platform. Cookie-free public sources run first.
+def _downloaded_row(platform: str, source: str, path: Path, via: str) -> dict:
+    return {
+        "platform": platform,
+        "status": "downloaded",
+        "source": source,
+        "path": str(path),
+        "bytes": path.stat().st_size,
+        "via": via,
+    }
 
-    Cookie files stay optional. A public miss is "unavailable", not "failed",
-    so a bot-wall or a blocked listing does not fail the Sui download.
+
+def fetch_content_plan(bundle: dict, output: Path, env: dict) -> list[dict]:
+    """One clip per platform.
+
+    A Netscape cookie file for that site is passed to yt-dlp with --cookies.
+    A missing file, or a cookie download that saves nothing, falls back to the
+    cookie-free public sources. A miss is unavailable or needs_cookies, never
+    a fetch failure, and it does not pause a platform.
     """
     from clipper.publicsrc import public_file_for_platform
 
     output.mkdir(parents=True, exist_ok=True)
     root = bundle["root"]
+    public_cfg = (bundle.get("sources") or {}).get("public_sources") or {}
     results = []
     for platform, spec in bundle["sources"].get("platforms", {}).items():
         channel = bundle["channels"]["platforms"][platform]
-        cookies = str(env.get(channel.get("cookies_env") or "") or "").strip()
+        if not channel.get("enabled", True):
+            results.append({"platform": platform, "status": "skipped", "reason": "platform disabled"})
+            continue
+        cookies = cookie_file(str(env.get(channel.get("cookies_env") or "") or ""))
         inbox = read_inbox_lines(root / "config" / "inbox" / f"{platform}.txt")
         queries = [str(item.get("q") or "") for item in spec.get("queries") or [] if item.get("q")]
+        query = queries[0] if queries else platform
         target = output / platform
         target.mkdir(parents=True, exist_ok=True)
         template = str(target / "%(id)s.mp4")
-        public = None
         if inbox:
             label = inbox[0]
             if platform == "youtube" or "youtube.com" in label or "youtu.be" in label:
-                commands = youtube_attempts(label, template, cookies or None)
+                commands = youtube_attempts(label, template, cookies)
             else:
-                commands = [ytdlp_command(label, template, cookies or None)]
-        else:
-            if platform in {"x", "youtube", "tiktok"}:
-                try:
-                    public = public_file_for_platform(bundle, platform, target)
-                except Exception as exc:
-                    public = {"status": "unavailable", "error": f"{exc.__class__.__name__}: {exc}"}
-                if public and public.get("status") == "downloaded" and public.get("path"):
-                    results.append(
-                        {
-                            "platform": platform,
-                            "status": "downloaded",
-                            "source": public.get("url") or public.get("method") or "public",
-                            "path": public["path"],
-                            "bytes": public.get("bytes") or 0,
-                            "via": "public",
-                        }
-                    )
-                    continue
-            # A cookie file must not turn TikTok, X, or Instagram into a YouTube
-            # search. Those platforms already tried the public sources. YouTube
-            # still falls through to yt-dlp, and a miss stays needs_cookies.
-            if platform != "youtube":
+                commands = [ytdlp_command(label, template, cookies)]
+            code, files, log = _run_attempts(commands, target, timeout=90)
+            if files:
+                results.append(_downloaded_row(platform, label, files[0], "inbox"))
+            else:
                 results.append(
                     {
                         "platform": platform,
-                        "status": "unavailable" if public else "skipped",
-                        "reason": (public or {}).get("error") or "no inbox URL and no cookie file",
+                        "status": "unavailable",
+                        "source": label,
+                        "returncode": code,
+                        "error": redact_log(log)[-400:],
+                    }
+                )
+            continue
+        if cookies:
+            tags = [str(item) for item in (public_cfg.get(platform) or {}).get("tags") or []]
+            commands = site_cookie_commands(platform, query, template, cookies, tags or None)
+            if commands:
+                code, files, log = _run_attempts(commands, target, timeout=70)
+                if files:
+                    results.append(_downloaded_row(platform, commands[-1][-1], files[0], "cookies"))
+                    continue
+        public = None
+        if platform in {"x", "youtube", "tiktok"}:
+            try:
+                public = public_file_for_platform(bundle, platform, target)
+            except Exception as exc:
+                public = {"status": "unavailable", "error": f"{exc.__class__.__name__}: {exc}"}
+            if public and public.get("status") == "downloaded" and public.get("path"):
+                results.append(
+                    {
+                        "platform": platform,
+                        "status": "downloaded",
+                        "source": public.get("url") or public.get("method") or "public",
+                        "path": public["path"],
+                        "bytes": public.get("bytes") or 0,
+                        "via": "public",
                     }
                 )
                 continue
-            query = queries[0] if queries else platform
+        if platform == "youtube" and not cookies:
             label = f"ytsearch1:{query}"
-            if platform == "youtube":
-                commands = youtube_attempts(label, template, cookies or None)
-            else:
-                commands = [_search_command(label, template, cookies or None)]
-        code, files, log = _run_attempts(commands, target)
-        if not files:
-            blocked = platform == "youtube" and _needs_cookies(log)
-            row = {
-                "platform": platform,
-                "status": "needs_cookies" if blocked else "unavailable",
-                "source": label,
-                "returncode": code,
-                "error": log[-400:],
-            }
-            if public and public.get("error"):
-                row["public_error"] = str(public.get("error"))[:400]
-            results.append(row)
+            code, files, log = _run_attempts(youtube_attempts(label, template, None)[:2], target, timeout=60)
+            if files:
+                results.append(_downloaded_row(platform, label, files[0], "yt-dlp"))
+                continue
+            status = "needs_cookies" if _needs_cookies(log) else "unavailable"
+            results.append(
+                {
+                    "platform": platform,
+                    "status": status,
+                    "source": label,
+                    "returncode": code,
+                    "error": redact_log(log)[-400:],
+                    "public_error": str((public or {}).get("error") or "")[:400],
+                }
+            )
             continue
+        reason = (public or {}).get("error") or ("cookie download missed" if cookies else "no cookie file")
         results.append(
             {
                 "platform": platform,
-                "status": "downloaded",
-                "source": label,
-                "path": str(files[0]),
-                "bytes": files[0].stat().st_size,
+                "status": "needs_cookies" if platform == "youtube" else "unavailable",
+                "reason": str(reason)[:400],
+                "via": "cookies" if cookies else "public",
             }
         )
     return results
@@ -412,11 +565,7 @@ def fetch_media(
         manifest["content_plan"] = plan
         youtube = next((row for row in plan if row["platform"] == "youtube"), None)
         youtube_status = (youtube or {}).get("status")
-        if youtube_status == "downloaded":
-            pass
-        elif youtube_status == "needs_cookies":
-            pass
-        else:
+        if youtube_status not in ("downloaded", "needs_cookies", "unavailable"):
             errors.append("content plan: YouTube yt-dlp did not save a clip")
         for row in plan:
             if row.get("status") == "failed":

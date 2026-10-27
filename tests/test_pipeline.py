@@ -1070,6 +1070,50 @@ class PublicSourceTests(unittest.TestCase):
         self.assertIn("format_note!*=watermark", TIKTOK_FORMAT)
         self.assertNotIn("!*?=", TIKTOK_FORMAT)
 
+    def test_cookie_commands_stay_on_their_own_site_and_logs_drop_cookie_lines(self):
+        import os
+        import stat
+        import tempfile
+
+        from clipper.fetchsrc import cookie_file, redact_log, site_cookie_commands
+        from script.write_cookies import write_cookies
+
+        folder = Path(tempfile.mkdtemp())
+        cookies = folder / "yt.txt"
+        cookies.write_text("# Netscape HTTP Cookie File\n.youtube.com\tTRUE\t/\tTRUE\t0\tsid\tabc\n", encoding="utf-8")
+        self.assertEqual(cookie_file(str(cookies)), str(cookies))
+        self.assertIsNone(cookie_file(""))
+        youtube = site_cookie_commands("youtube", "cricket match highlight India", "out.mp4", str(cookies))
+        self.assertTrue(youtube)
+        self.assertIn("--cookies", youtube[0])
+        self.assertTrue(any(part.startswith("ytsearch1:") for part in youtube[0]))
+        self.assertFalse(any("tiktok.com" in part for part in youtube[0]))
+        tiktok = site_cookie_commands("tiktok", "anime fight", "out.mp4", str(cookies), ["anime", "hollywood"])
+        self.assertEqual(len(tiktok), 2)
+        self.assertIn("https://www.tiktok.com/tag/anime", tiktok[0])
+        self.assertIn("--cookies", tiktok[0])
+        self.assertIn("format_note!*=watermark", " ".join(tiktok[0]))
+        self.assertFalse(any(part.startswith("ytsearch") for part in tiktok[0]))
+        redacted = redact_log("ERROR: sign in\nCookie: sid=abc\n#HttpOnly_.youtube.com\tTRUE")
+        self.assertIn("sign in", redacted)
+        self.assertNotIn("sid=abc", redacted)
+        self.assertNotIn("#HttpOnly", redacted)
+        env_file = folder / "env"
+        env_file.write_text("", encoding="utf-8")
+        secret = "netscape line one\nnetscape line two"
+        written = write_cookies(
+            {"YT_COOKIES": secret, "TIKTOK_COOKIES": "", "INSTAGRAM_COOKIES": "", "X_COOKIES": ""},
+            folder,
+            env_file,
+        )
+        self.assertEqual(written, ["YT_COOKIES_FILE"])
+        saved = (folder / "yt_cookies.txt").read_text(encoding="utf-8")
+        self.assertEqual(saved, secret + "\n")
+        self.assertEqual(stat.S_IMODE((folder / "yt_cookies.txt").stat().st_mode) & 0o777, 0o600)
+        self.assertIn(f"YT_COOKIES_FILE={folder / 'yt_cookies.txt'}", env_file.read_text(encoding="utf-8"))
+        self.assertNotIn("TIKTOK_COOKIES_FILE", env_file.read_text(encoding="utf-8"))
+        del os
+
 
 if __name__ == "__main__":
     unittest.main()

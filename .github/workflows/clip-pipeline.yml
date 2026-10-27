@@ -45,12 +45,7 @@ jobs:
           X_COOKIES: ${{ secrets.X_COOKIES }}
           INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
           TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
-        run: |
-          if [ -n "$YT_COOKIES" ]; then printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/yt_cookies.txt"; export YT_COOKIES_FILE="$RUNNER_TEMP/yt_cookies.txt"; fi
-          if [ -n "$X_COOKIES" ]; then printf '%s\n' "$X_COOKIES" > "$RUNNER_TEMP/x_cookies.txt"; export X_COOKIES_FILE="$RUNNER_TEMP/x_cookies.txt"; fi
-          if [ -n "$INSTAGRAM_COOKIES" ]; then printf '%s\n' "$INSTAGRAM_COOKIES" > "$RUNNER_TEMP/ig_cookies.txt"; export INSTAGRAM_COOKIES_FILE="$RUNNER_TEMP/ig_cookies.txt"; fi
-          if [ -n "$TIKTOK_COOKIES" ]; then printf '%s\n' "$TIKTOK_COOKIES" > "$RUNNER_TEMP/tt_cookies.txt"; export TIKTOK_COOKIES_FILE="$RUNNER_TEMP/tt_cookies.txt"; fi
-          unset YT_COOKIES X_COOKIES INSTAGRAM_COOKIES TIKTOK_COOKIES
+        run: python script/write_cookies.py
 
       - name: Unit tests
         run: python -m unittest discover -s tests -v
@@ -117,12 +112,7 @@ jobs:
           X_COOKIES: ${{ secrets.X_COOKIES }}
           INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
           TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
-        run: |
-          if [ -n "$YT_COOKIES" ]; then printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/yt_cookies.txt"; echo "YT_COOKIES_FILE=$RUNNER_TEMP/yt_cookies.txt" >> "$GITHUB_ENV"; fi
-          if [ -n "$X_COOKIES" ]; then printf '%s\n' "$X_COOKIES" > "$RUNNER_TEMP/x_cookies.txt"; echo "X_COOKIES_FILE=$RUNNER_TEMP/x_cookies.txt" >> "$GITHUB_ENV"; fi
-          if [ -n "$INSTAGRAM_COOKIES" ]; then printf '%s\n' "$INSTAGRAM_COOKIES" > "$RUNNER_TEMP/ig_cookies.txt"; echo "INSTAGRAM_COOKIES_FILE=$RUNNER_TEMP/ig_cookies.txt" >> "$GITHUB_ENV"; fi
-          if [ -n "$TIKTOK_COOKIES" ]; then printf '%s\n' "$TIKTOK_COOKIES" > "$RUNNER_TEMP/tt_cookies.txt"; echo "TIKTOK_COOKIES_FILE=$RUNNER_TEMP/tt_cookies.txt" >> "$GITHUB_ENV"; fi
-          unset YT_COOKIES X_COOKIES INSTAGRAM_COOKIES TIKTOK_COOKIES
+        run: python script/write_cookies.py
 
       - name: Download Sui, Dropbox, and content-plan media
         env:
@@ -157,8 +147,10 @@ jobs:
               if handle.read(2) != b"PK":
                   raise SystemExit("Dropbox download is not a zip")
           youtube = next(row for row in manifest["content_plan"] if row["platform"] == "youtube")
-          if youtube.get("status") not in ("downloaded", "needs_cookies"):
-              raise SystemExit("YouTube content-plan download missing: " + json.dumps(youtube))
+          if youtube.get("status") not in ("downloaded", "needs_cookies", "unavailable"):
+              raise SystemExit("YouTube content-plan download missing: " + youtube.get("status"))
+          for row in manifest["content_plan"]:
+              print(row["platform"], row.get("status"), row.get("via") or "", row.get("bytes") or 0)
           print("sui short ok", clip.stat().st_size, "dropbox", archive.stat().st_size, "youtube", youtube.get("status"))
           PY
 
