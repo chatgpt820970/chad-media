@@ -37,7 +37,7 @@ jobs:
           python-version: "3.12"
 
       - name: Install ffmpeg and tesseract
-        run: sudo timeout 300 apt-get update && sudo timeout 300 apt-get install -y ffmpeg tesseract-ocr
+        run: timeout 300 bash script/ci_apt.sh ffmpeg tesseract-ocr
 
       - name: Cookie files
         env:
@@ -112,8 +112,7 @@ jobs:
 
       - name: Install ffmpeg, gdown, and yt-dlp
         run: |
-          sudo timeout 300 apt-get update
-          sudo timeout 300 apt-get install -y ffmpeg tesseract-ocr
+          timeout 300 bash script/ci_apt.sh ffmpeg tesseract-ocr
           timeout 180 python -m pip install --upgrade gdown curl_cffi gallery-dl
           timeout 180 python -m pip install -U --pre yt-dlp
 
@@ -198,8 +197,7 @@ jobs:
 
       - name: Install ffmpeg, tesseract, yt-dlp, and gallery-dl
         run: |
-          sudo timeout 300 apt-get update
-          sudo timeout 300 apt-get install -y ffmpeg tesseract-ocr
+          timeout 300 bash script/ci_apt.sh ffmpeg tesseract-ocr
           timeout 180 python -m pip install --upgrade curl_cffi gallery-dl
           timeout 180 python -m pip install -U --pre yt-dlp
 
@@ -247,8 +245,7 @@ jobs:
 
       - name: Install ffmpeg, tesseract, and yt-dlp
         run: |
-          sudo timeout 300 apt-get update
-          sudo timeout 300 apt-get install -y ffmpeg tesseract-ocr
+          timeout 300 bash script/ci_apt.sh ffmpeg tesseract-ocr
           timeout 300 python -m pip install --upgrade curl_cffi
           timeout 300 python -m pip install -U --pre yt-dlp
 
