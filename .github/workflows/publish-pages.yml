@@ -152,7 +152,13 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           mkdir -p site/live
-          gh release download clip-media -p 'live-*.mp4' -D site/live --clobber || true
+          if ! out=$(gh release download clip-media -R "${GITHUB_REPOSITORY}" -p 'live-*.mp4' -D site/live --clobber 2>&1); then
+            echo "$out"
+            case "$out" in
+              *"no assets match"*) echo "no live clips on clip-media yet" ;;
+              *) exit 1 ;;
+            esac
+          fi
           find site/live -type f -name '*.mp4' -size -8k -delete || true
 
       - uses: actions/upload-pages-artifact@v4
