@@ -235,7 +235,7 @@ jobs:
 
   cookie-downloads:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
         with:
@@ -247,10 +247,10 @@ jobs:
 
       - name: Install ffmpeg, tesseract, and yt-dlp
         run: |
-          sudo timeout 180 apt-get update
-          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
-          timeout 180 python -m pip install --upgrade curl_cffi
-          timeout 180 python -m pip install -U --pre yt-dlp
+          sudo timeout 300 apt-get update
+          sudo timeout 300 apt-get install -y ffmpeg tesseract-ocr
+          timeout 300 python -m pip install --upgrade curl_cffi
+          timeout 300 python -m pip install -U --pre yt-dlp
 
       - name: Cookie files
         env:
