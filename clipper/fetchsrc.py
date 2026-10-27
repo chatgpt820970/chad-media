@@ -177,7 +177,7 @@ def youtube_attempts(
     source: str,
     output: str,
     cookies: str | None,
-    section: str = "*0-12",
+    section: str = "*0-40",
 ) -> list[list[str]]:
     """yt-dlp commands for a YouTube watch URL or ytsearch.
 
@@ -200,7 +200,7 @@ def youtube_attempts(
         command.extend(
             [
             "-f",
-            "b[height<=720]/bv*[height<=720]+ba/b",
+            "bv*[height<=1080]+ba/bv*[height<=720]+ba/b[height<=720]/b",
             "--no-playlist",
             "--max-downloads",
             "1",
@@ -231,7 +231,7 @@ def _search_command(source: str, output: str, cookies: str | None) -> list[str]:
         "--max-downloads",
         "1",
         "--download-sections",
-        "*0-12",
+        "*0-40",
         "--force-keyframes-at-cuts",
         "--merge-output-format",
         "mp4",
@@ -322,7 +322,7 @@ def site_cookie_commands(
     cookies: str,
     tags: list[str] | None = None,
     users: list[str] | None = None,
-    section: str = "*0-12",
+    section: str = "*0-40",
 ) -> list[list[str]]:
     """yt-dlp for one site, with --cookies. TikTok excludes watermarked formats."""
     if platform == "youtube":
@@ -350,7 +350,7 @@ def site_cookie_commands(
                     "--max-downloads",
                     "1",
                     "--download-sections",
-                    "*0-12",
+                    "*0-40",
                     "--force-keyframes-at-cuts",
                     "--merge-output-format",
                     "mp4",
@@ -382,7 +382,7 @@ def site_cookie_commands(
                 "--max-downloads",
                 "1",
                 "--download-sections",
-                "*0-12",
+                "*0-40",
                 "--force-keyframes-at-cuts",
                 "--merge-output-format",
                 "mp4",
@@ -401,12 +401,12 @@ def site_cookie_commands(
             [
                 "yt-dlp",
                 "-f",
-                "b[height<=720]/bv*[height<=720]+ba/b",
+                "bv*[height<=1080]+ba/bv*[height<=720]+ba/b[height<=720]/b",
                 "--no-playlist",
                 "--max-downloads",
                 "1",
                 "--download-sections",
-                "*0-12",
+                "*0-40",
                 "--merge-output-format",
                 "mp4",
                 "--retries",
@@ -430,7 +430,7 @@ def site_cookie_commands(
                 "--max-downloads",
                 "1",
                 "--download-sections",
-                "*0-12",
+                "*0-40",
                 "--merge-output-format",
                 "mp4",
                 "--retries",
