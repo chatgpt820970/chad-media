@@ -49,7 +49,7 @@ from clipper.submissions import empty_pending, load_json, record_sent_posts, sav
 
 HORIZON_MINUTES = 120
 GRACE_MINUTES = 20
-CLIP_SECONDS = 8.0
+CLIP_SECONDS = 40.0
 _VIDEO_SUFFIXES = {".mp4", ".mov", ".m4v", ".webm"}
 _USE_DEFAULT_FETCHER = object()
 
@@ -661,7 +661,7 @@ def execute_live(
                 if real_video(source):
                     dest = variants / f"{platform}.mp4"
                     line = x_overlay_text("", source_key(platform, identity))
-                    apply_filters(source, dest, x_overlay_graph(line), None, CLIP_SECONDS, 0.0)
+                    apply_filters(source, dest, x_overlay_graph(line), None, 15.0, 0.0)
                     upload_path = dest
             elif kind == "sui":
                 dest = variants / f"{platform}.mp4"
