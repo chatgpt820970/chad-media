@@ -41,7 +41,7 @@ def logo_filter(campaign: dict, width: int, height: int, crop_x: float) -> tuple
     logo_w = max(48, int(width * ratio))
     graph = (
         f"[0:v]{base}[base];"
-        f"[1:v]format=rgba,scale={logo_w}:-1[lg];"
+        f"[1:v]format=rgba,scale={logo_w}:-1,colorchannelmixer=aa={float(logo.get('opacity') or 0.6)}[lg];"
         f"[base][lg]overlay={PLACEMENTS[placement]}[v]"
     )
     return graph, True
