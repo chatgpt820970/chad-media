@@ -80,6 +80,37 @@ def blocked_identities(state: dict) -> set[str]:
     return found
 
 
+def record_cookies_expired(
+    state: dict,
+    platform: str,
+    reason: str,
+    when: datetime | None = None,
+) -> bool:
+    """Note a rejected cookie file once. Posting stays on."""
+    state.setdefault("paused", {})
+    state.setdefault("alerts", [])
+    state.setdefault("blocked_sources", [])
+    already = any(
+        row.get("kind") == "cookies_expired" and row.get("platform") == platform
+        for row in state["alerts"]
+    )
+    if already:
+        return False
+    stamp = _stamp(when)
+    state["alerts"].append(
+        {
+            "platform": platform,
+            "at": stamp,
+            "reason": (reason or "cookie download rejected")[:300],
+            "kind": "cookies_expired",
+            "buffer_post_id": "",
+            "source_key": "",
+            "identity": "",
+        }
+    )
+    return True
+
+
 def record_safety(
     state: dict,
     platform: str,

@@ -108,6 +108,26 @@ def iter_queries(sources: dict) -> list[tuple[str, str]]:
     for campaign_id, spec in sources.get("campaign_queries", {}).items():
         for query in spec.get("queries", []):
             found.append((f"{campaign_id}:{query.get('content_type')}", str(query.get("q", ""))))
+    public = sources.get("public_sources") or {}
+    x_public = public.get("x") or {}
+    for query in x_public.get("search_queries") or []:
+        found.append(("public:x", str(query)))
+    for profile in x_public.get("profiles") or []:
+        found.append(("public:x-profile", str(profile)))
+    for tag in (public.get("tiktok") or {}).get("tags") or []:
+        found.append(("public:tiktok", str(tag)))
+    for query in (public.get("youtube_frontends") or {}).get("queries") or []:
+        found.append(("public:youtube", str(query)))
+    for platform, subs in (public.get("reddit") or {}).items():
+        for sub in subs or []:
+            found.append((f"public:reddit:{platform}", str(sub)))
+    for platform, spec in (sources.get("instagram_source") or {}).items():
+        if platform == "note" or not isinstance(spec, dict):
+            continue
+        for tag in spec.get("hashtags") or []:
+            found.append((f"instagram-source:{platform}", str(tag)))
+        for account in spec.get("accounts") or []:
+            found.append((f"instagram-source:{platform}", str(account)))
     return found
 
 

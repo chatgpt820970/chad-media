@@ -67,6 +67,39 @@
       ]
     }
   },
+  "public_sources": {
+    "user_agent": "chad-media/1.0 (public clip research; +https://github.com/chatgpt820970/chad-media)",
+    "x": {
+      "search_queries": ["4k anime edit", "anime sakuga", "celebrity interview"],
+      "profiles": ["Crunchyroll"]
+    },
+    "tiktok": {
+      "tags": ["anime", "animeedit", "hollywood"]
+    },
+    "reddit": {
+      "youtube": ["Cricket", "BollyBlindsNGossip", "IndianCinema"],
+      "tiktok": ["anime", "AnimeEdits", "movies"],
+      "x": ["anime", "AnimeEdits"]
+    },
+    "youtube_frontends": {
+      "queries": ["cricket match highlight India", "Bollywood movie scene dialogue", "PM Modi speech clip"]
+    }
+  },
+  "instagram_source": {
+    "note": "Instagram posting stays off. These public reels are downloaded with INSTAGRAM_COOKIES and routed to X, YouTube, or TikTok. Account URLs are profile pages, not /reels/.",
+    "x": {
+      "hashtags": ["animeedit", "4kanime", "celebrity"],
+      "accounts": []
+    },
+    "youtube": {
+      "hashtags": ["cricket", "bollywood", "romantic"],
+      "accounts": ["icc", "bcci.tv"]
+    },
+    "tiktok": {
+      "hashtags": ["animeedit", "hollywood", "movieclips"],
+      "accounts": []
+    }
+  },
   "campaign_queries": {
     "crookbrown": {
       "platforms": ["tiktok"],

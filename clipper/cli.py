@@ -12,7 +12,9 @@ from pathlib import Path
 from clipper.alerts import alert
 from clipper.buffer_api import POSTS_QUERY, graphql, post_nodes
 from clipper.engine import threshold_warning
+from clipper.cookiesrc import probe_cookie_downloads
 from clipper.fetchsrc import fetch_media
+from clipper.publicsrc import fetch_public_report
 from clipper.loadconfig import check_bundle, load_bundle, posting_platforms, repo_root
 from clipper.livepost import empty_ledger, execute_live, prefetch_exclude_ids
 from clipper.run import planned_downloads, run_pipeline, write_report
@@ -92,10 +94,44 @@ def command_fetch(bundle: dict, args: argparse.Namespace) -> int:
     return 0 if manifest.get("ok") else 1
 
 
+def actions_enabled(name: str) -> bool:
+    """Unset is on. The lowercase string false is the off switch."""
+    return os.environ.get(name, "").strip().lower() != "false"
+
+
+def command_fetch_public(bundle: dict, args: argparse.Namespace) -> int:
+    output = Path(args.output_dir)
+    report = fetch_public_report(bundle, output)
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    for row in report["sources"]:
+        print(f"{row['name']} {row['status']} bytes={row.get('bytes') or 0} method={row.get('method') or '-'}")
+    return 0
+
+
+def command_fetch_cookies(bundle: dict, args: argparse.Namespace) -> int:
+    """Probe YT, TikTok, and Instagram cookie files. A miss still exits 0."""
+    output = Path(args.output_dir)
+    alerts_path = bundle["root"] / "state" / "platform_alerts.json"
+    alerts = load_json(alerts_path, empty_alerts())
+    before = json.dumps(alerts, sort_keys=True)
+    report = probe_cookie_downloads(bundle, output, dict(os.environ), alerts)
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    (output / "alerts.json").write_text(json.dumps(alerts, indent=2) + "\n", encoding="utf-8")
+    if json.dumps(alerts, sort_keys=True) != before:
+        save_json(alerts_path, alerts)
+    for row in report["sources"]:
+        print(f"{row['name']} {row['status']} bytes={row.get('bytes') or 0} reason={row.get('reason') or '-'}")
+    if alerts.get("paused"):
+        print("paused " + ",".join(sorted(alerts["paused"])))
+    return 0
+
+
 def command_run(bundle: dict, args: argparse.Namespace) -> int:
     if args.live:
-        if os.environ.get("CLIPPER_LIVE", "").lower() != "true":
-            print("Refusing a live post. Set the CLIPPER_LIVE variable to true as well as --live.", file=sys.stderr)
+        if not actions_enabled("CLIPPER_LIVE"):
+            print("Refusing a live post. CLIPPER_LIVE is false.", file=sys.stderr)
             return 2
         if not (os.environ.get("BUFFER_API_TOKEN") or "").strip():
             print("Refusing a live post. BUFFER_API_TOKEN is empty.", file=sys.stderr)
@@ -196,8 +232,8 @@ def sync_sent_posts(bundle: dict, pending: dict) -> int:
 
 
 def command_monitor(bundle: dict) -> int:
-    if os.environ.get("CLIPPER_MONITOR", "").lower() != "true":
-        print("CLIPPER_MONITOR is not true. Deadline check skipped.")
+    if not actions_enabled("CLIPPER_MONITOR"):
+        print("CLIPPER_MONITOR is false. Deadline check skipped.")
         return 0
     pending_path, submitted_path, views_path = _paths(bundle)
     pipeline = bundle["pipeline"]
@@ -233,7 +269,11 @@ def build_parser() -> argparse.ArgumentParser:
 
     run = sub.add_parser("run")
     run.add_argument("--dry-run", action="store_true", help="Plan only. This is the default.")
-    run.add_argument("--live", action="store_true", help="Post the due slot via Buffer GraphQL. Requires CLIPPER_LIVE=true.")
+    run.add_argument(
+        "--live",
+        action="store_true",
+        help="Post the due slot via Buffer GraphQL. Refuses when CLIPPER_LIVE is false. Unset is on.",
+    )
     run.add_argument("--now", default="")
     run.add_argument("--output-dir", default="work/dry-run")
     run.add_argument("--media-dir", default="work/fetch", help="fetch-media output used by --live.")
@@ -247,6 +287,12 @@ def build_parser() -> argparse.ArgumentParser:
         action="store_true",
         help="Skip a Drive file only when every live Sui platform has already posted it.",
     )
+
+    public = sub.add_parser("fetch-public")
+    public.add_argument("--output-dir", default="work/public")
+
+    cookies = sub.add_parser("fetch-cookies")
+    cookies.add_argument("--output-dir", default="work/cookies")
 
     mark = sub.add_parser("mark-submitted")
     mark.add_argument("--key", required=True, help="Pending item id or post URL")
@@ -266,6 +312,10 @@ def main(argv: list[str] | None = None) -> int:
         return command_run(bundle, args)
     if args.command == "fetch":
         return command_fetch(bundle, args)
+    if args.command == "fetch-public":
+        return command_fetch_public(bundle, args)
+    if args.command == "fetch-cookies":
+        return command_fetch_cookies(bundle, args)
     if args.command == "mark-submitted":
         return command_mark_submitted(bundle, args.key)
     if args.command == "monitor":

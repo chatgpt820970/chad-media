@@ -4,7 +4,7 @@ Clipping pipeline for an India-based clipper posting through [Buffer](https://pu
 
 Joined campaigns are **Sui BaseCamp** and **Dhan Aziz**. Everything else in `config/campaigns.json` is inactive. Dhan Aziz is prepared as a draft and is not posted until that clip's id is listed in `state/approvals.json`.
 
-X has no campaign. X posts the owner's own plan (trending, celebrity, 4K anime), clean, with no logo. Instagram posting is off until that account can link to Content Rewards (`channels.platforms.instagram.enabled` is false). The Reels code and the IST clock stay in the repo. TikTok and YouTube slots that a campaign does not fill use that platform's content plan, also with no logo.
+X has no campaign. X posts the owner's own plan (trending, celebrity, 4K anime), clean, with no logo. Instagram posting is off until that account can link to Content Rewards (`channels.platforms.instagram.enabled` is false). Public Instagram Reels are still downloaded, with cookies, as a source for X, YouTube, and TikTok. The Reels code and the IST clock stay in the repo. TikTok and YouTube slots that a campaign does not fill use that platform's content plan, also with no logo.
 
 ## What a run does
 
@@ -95,13 +95,13 @@ python -m clipper mark-submitted --key "campaign:platform:source-id"
 CLIPPER_MONITOR=true python -m clipper monitor
 ```
 
-`python -m clipper run --dry-run` writes the plan only. `python -m clipper fetch` downloads for real: `gdown` lists the Sui Drive folder and saves the smallest clip, `curl` saves the Dhan Aziz Dropbox share with `dl=1`, and `yt-dlp` saves content-plan videos. Cookie files are optional (`YT_COOKIES_FILE` and the other `*_COOKIES_FILE` paths). YouTube is searched from the content-plan query and tried with public player clients (`tv_downgraded`, `visionos`, `web_safari`, then `android_vr`) because GitHub runners are datacenter IPs. If YouTube answers with the bot wall and `YT_COOKIES` is not set, the fetch records `needs_cookies` and still keeps the Sui clip and the Dropbox zip. A cookie file that is set and then fails the download fails the fetch. X, Instagram, and TikTok are downloaded when an inbox URL or a cookie file is present, and skipped otherwise. Fetch does not call Buffer.
+`python -m clipper run --dry-run` writes the plan only. `python -m clipper fetch` downloads for real: `gdown` lists the Sui Drive folder and saves the smallest clip, `curl` saves the Dhan Aziz Dropbox share with `dl=1`, and content-plan slots try a Netscape cookie file for that site before any public source. `YT_COOKIES`, `TIKTOK_COOKIES`, and `INSTAGRAM_COOKIES` are written to a temp file at runtime, masked in the log, and passed to yt-dlp as `--cookies`. They are never committed. A missing secret, or a cookie download that saves nothing, falls back to cookie-free sources. X uses public search, then a syndication profile, then yt-dlp or gallery-dl, then the public mp4. TikTok uses the tag page with cookies when the file exists, then public tag pages, and skips a format whose note says watermark. Reddit uses public JSON with a User-Agent and then yt-dlp on v.redd.it. YouTube uses the cookie file, then an Invidious or Piped frontend. A miss is `unavailable` or, for YouTube, `needs_cookies`. Neither one fails the Sui download, and neither one pauses a platform. Instagram posting stays off. When `INSTAGRAM_COOKIES` is present, public Reels from that platform's hashtags and accounts (anime 4K edits, celebrity, Bollywood, cricket, Hollywood, romantic) are downloaded with those cookies and routed to X, YouTube Shorts, or TikTok. OCR drops a reel with a visible Instagram watermark or creator handle. The same reel is not posted to a second platform. Sexual titles are skipped. The caption is the usual unique content-plan caption. A missing cookie file skips that source. An expired cookie file records a `cookies_expired` alert in `state/platform_alerts.json` and leaves `paused` empty. `python -m clipper fetch-public` probes each cookie-free source once. `python -m clipper fetch-cookies` probes the YouTube, TikTok, and Instagram cookie files once and writes `report.json`. Fetch does not call Buffer.
 
 CI cuts that Sui file to an 8-second 720x1280 clip, writes `caption.txt` containing `x.com/SuiNetwork`, and uploads it as the `sui-basecamp-short` artifact and as an asset on the `clip-media` prerelease.
 
-The 15-minute monitor stays on the schedule, but the job does not start a runner unless `CLIPPER_MONITOR` is `true`. When it runs, it writes `submissions/pending.json` in that same run as soon as Buffer reports a campaign post `sent` with a public URL. The 30-minute clock uses `sentAt`, not the scheduled time. The same poll pauses a platform in `state/platform_alerts.json` when Buffer reports the post `error`, `failed`, `rejected`, `removed`, or `deleted`. The job is capped at 3 minutes. `BUFFER_API_TOKEN` is passed in so the poll can run.
+The 15-minute monitor is on unless `CLIPPER_MONITOR` is the lowercase string `false`. When it runs, it writes `submissions/pending.json` in that same run as soon as Buffer reports a campaign post `sent` with a public URL and `sentAt`. The 30-minute clock uses `sentAt`, not the scheduled time. The same poll pauses a platform in `state/platform_alerts.json` when Buffer reports the post `error`, `failed`, `rejected`, `removed`, or `deleted`. A missing cookie, an expired cookie, or a skipped content-plan source does not pause. An expired cookie writes a `cookies_expired` alert and leaves `paused` empty. The job is capped at 3 minutes. `BUFFER_API_TOKEN` is passed in so the poll can run.
 
-`python -m clipper run --live` posts one due slot per enabled platform (X, YouTube Shorts, TikTok) through Buffer's GraphQL `createPost` at `https://api.buffer.com`. It also requires `CLIPPER_LIVE=true` and a real `https` video URL. It refuses `example.invalid`. A slot that is already in the past is sent as `shareNow` so Buffer does not reject a past `dueAt`. Each post gets its own caption and a rotated hashtag slice. The same source is stored in `state/live.json` and is not posted to that platform again. A Buffer error pauses that platform until you edit `state/platform_alerts.json`. The 2-hour Actions job does not start a runner unless `CLIPPER_LIVE` is `true`, including when you dispatch it by hand.
+`python -m clipper run --live` posts one due slot per enabled platform (X, YouTube Shorts, TikTok) through Buffer's GraphQL `createPost` at `https://api.buffer.com`. It runs unless `CLIPPER_LIVE` is the lowercase string `false`, and it still requires `BUFFER_API_TOKEN` and a real `https` video URL. It refuses `example.invalid`. A slot that is already in the past is sent as `shareNow` so Buffer does not reject a past `dueAt`. Each post gets its own caption and a rotated hashtag slice. The same source is stored in `state/live.json` and is not posted to that platform again. A sent campaign post is written to `submissions/pending.json` with that public URL and `sentAt`. A Buffer error pauses that platform until you edit `state/platform_alerts.json`. The 2-hour Actions job starts unless `CLIPPER_LIVE` is `false`, including when you dispatch it by hand.
 
 ## Secrets and variables
 
@@ -112,7 +112,7 @@ Set these in the GitHub repo (Settings → Secrets and variables → Actions). D
 | `BUFFER_API_TOKEN` | secret | live posting | Bearer token for `https://api.buffer.com` GraphQL `createPost` |
 | `YT_COOKIES` | secret | optional | Netscape cookie file contents for yt-dlp on YouTube. The workflow writes a temp file and unsets the raw secret |
 | `X_COOKIES` | secret | optional | Same for X |
-| `INSTAGRAM_COOKIES` | secret | optional | Same for Instagram |
+| `INSTAGRAM_COOKIES` | secret | optional | Netscape cookies for public Reels used as a source for X, YouTube, and TikTok. Instagram posting stays off. A missing or expired file is skipped |
 | `TIKTOK_COOKIES` | secret | optional | Same for TikTok |
 | `ALERT_WEBHOOK_URL` | secret | optional | Alert when a platform is stopped for errors or rate limits |
 | `JACKELYNE_BUFFER_CHANNEL_INSTAGRAM` | secret or variable | Jackelyne only | Fan-page Buffer channel id |
@@ -122,8 +122,8 @@ Set these in the GitHub repo (Settings → Secrets and variables → Actions). D
 | `BUFFER_CHANNEL_YOUTUBE` | variable | optional | Overrides Denzen |
 | `BUFFER_CHANNEL_INSTAGRAM` | variable | optional | Overrides @benreelr |
 | `BUFFER_CHANNEL_TIKTOK` | variable | optional | Overrides @bi67325 |
-| `CLIPPER_LIVE` | variable | live posting | Must be the string `true` or scheduled live posts stay off |
-| `CLIPPER_MONITOR` | variable | deadline cron | Must be `true` or the 15-minute monitor job is skipped and does not use a runner |
+| `CLIPPER_LIVE` | variable | off switch | Live posting is on unless this is the lowercase string `false` |
+| `CLIPPER_MONITOR` | variable | off switch | The 15-minute monitor is on unless this is the lowercase string `false` |
 | `GITHUB_TOKEN` | provided | release upload | Uploads rendered mp4s to the `clip-media` release. Already available to Actions |
 
 There is no Content Rewards API key. Account keys cannot submit clip URLs.
@@ -149,9 +149,9 @@ The assistant pastes each URL into Content Rewards in the browser. Whop-linked a
 
 ## Workflows
 
-- **Clip pipeline** runs on pull requests and on `main`. It installs ffmpeg and tesseract, runs the unit tests, `python -m clipper check`, and a dry-run. The dry-run must exit 0, schedule Sui BaseCamp, leave Dhan Aziz as a draft, and keep every payload on `example.invalid`. A second job, **fetch-media**, downloads the Sui Drive clip, the Dhan Aziz Dropbox zip, and the content-plan sources, cuts an 8-second 720x1280 short, and uploads it to the `clip-media` release. It does not call Buffer.
-- **Clip live** is scheduled every 2 hours (`0 */2 * * *`) and can be dispatched by hand. The job does not start a runner unless `CLIPPER_LIVE` is `true`. It posts the one peak-hour slot due in that window on X, YouTube, and TikTok.
-- **Clip monitor** is scheduled every 15 minutes but the job is skipped unless `CLIPPER_MONITOR` is `true`. Dispatch it to mark a submission. It receives `BUFFER_API_TOKEN` and writes pause alerts into `state/platform_alerts.json`.
+- **Clip pipeline** runs on pull requests and on `main`. It installs ffmpeg and tesseract, runs the unit tests, `python -m clipper check`, and a dry-run. The dry-run must exit 0, schedule Sui BaseCamp, leave Dhan Aziz as a draft, and keep every payload on `example.invalid`. **fetch-media** downloads the Sui Drive clip, the Dhan Aziz Dropbox zip, and the content-plan sources, cuts an 8-second 720x1280 short, and uploads it to the `clip-media` release. **public-sources** probes X, TikTok, Reddit, and a YouTube frontend without cookies and uploads `report.json`. **cookie-downloads** probes `YT_COOKIES`, `TIKTOK_COOKIES`, and `INSTAGRAM_COOKIES` and uploads that report too. A source that does not download a video is recorded as unavailable, missing, or `cookies_expired` and does not fail the job. None of these jobs call Buffer.
+- **Clip live** is scheduled every 2 hours (`0 */2 * * *`) and can be dispatched by hand. The job runs unless `CLIPPER_LIVE` is `false`. It posts the one peak-hour slot due in that window on X, YouTube, and TikTok.
+- **Clip monitor** is scheduled every 15 minutes and runs unless `CLIPPER_MONITOR` is `false`. Dispatch it to mark a submission. It receives `BUFFER_API_TOKEN` and writes pause alerts into `state/platform_alerts.json`. The job is capped at 3 minutes.
 - **Whop Clipper** and **Shorts** are retired echo jobs. They no longer download, rebase, or upload video artifacts.
 - **Prepare media** and **Scanner watchdog** are unchanged. Leave them disabled.
 - **Publish Pages** is unchanged.

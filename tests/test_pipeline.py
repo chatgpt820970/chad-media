@@ -745,17 +745,120 @@ class LivePostTests(unittest.TestCase):
         varied = {tuple(rotated_hashtags(limits, salt)) for salt in ("a", "b", "c", "d", "e", "f", "g")}
         self.assertGreater(len(varied), 1)
 
-    def test_live_command_refuses_without_the_variable(self):
+    def test_live_and_monitor_stay_on_unless_the_variable_is_false(self):
         import os
+        from contextlib import redirect_stderr, redirect_stdout
+        from io import StringIO
 
         from clipper.cli import main
 
-        previous = os.environ.pop("CLIPPER_LIVE", None)
+        previous_live = os.environ.pop("CLIPPER_LIVE", None)
+        previous_token = os.environ.pop("BUFFER_API_TOKEN", None)
+        previous_monitor = os.environ.pop("CLIPPER_MONITOR", None)
         try:
-            self.assertEqual(main(["run", "--live"]), 2)
+            err = StringIO()
+            with redirect_stderr(err):
+                self.assertEqual(main(["run", "--live"]), 2)
+            self.assertIn("BUFFER_API_TOKEN", err.getvalue())
+            self.assertNotIn("CLIPPER_LIVE is false", err.getvalue())
+            os.environ["CLIPPER_LIVE"] = "false"
+            err = StringIO()
+            with redirect_stderr(err):
+                self.assertEqual(main(["run", "--live"]), 2)
+            self.assertIn("CLIPPER_LIVE is false", err.getvalue())
+            os.environ.pop("CLIPPER_LIVE", None)
+            out = StringIO()
+            with redirect_stdout(out):
+                self.assertEqual(main(["monitor"]), 0)
+            self.assertNotIn("Deadline check skipped", out.getvalue())
+            os.environ["CLIPPER_MONITOR"] = "false"
+            out = StringIO()
+            with redirect_stdout(out):
+                self.assertEqual(main(["monitor"]), 0)
+            self.assertIn("Deadline check skipped", out.getvalue())
         finally:
-            if previous is not None:
-                os.environ["CLIPPER_LIVE"] = previous
+            if previous_live is None:
+                os.environ.pop("CLIPPER_LIVE", None)
+            else:
+                os.environ["CLIPPER_LIVE"] = previous_live
+            if previous_token is None:
+                os.environ.pop("BUFFER_API_TOKEN", None)
+            else:
+                os.environ["BUFFER_API_TOKEN"] = previous_token
+            if previous_monitor is None:
+                os.environ.pop("CLIPPER_MONITOR", None)
+            else:
+                os.environ["CLIPPER_MONITOR"] = previous_monitor
+
+    def test_missing_cookies_do_not_pause_and_sent_posts_keep_the_url(self):
+        if not ffmpeg_available():
+            self.skipTest("ffmpeg is not installed")
+        from clipper.livepost import execute_live
+        from clipper.render import render_color
+
+        bundle = _bundle()
+        root, media, out = self._dirs()
+        source = media / "evan.mp4"
+        render_color(source, 160, 284, 3.0, "clean")
+        manifest = {
+            "sui": {"file_id": "drive-evan", "path": str(source), "status": "downloaded"},
+            "content_plan": [
+                {"platform": "x", "status": "unavailable", "reason": "no public clip and no cookie file"},
+                {"platform": "youtube", "status": "needs_cookies"},
+                {"platform": "tiktok", "status": "skipped", "reason": "no inbox URL and no cookie file"},
+            ],
+        }
+        (media / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+        seen = []
+
+        def poster(payload):
+            seen.append(payload)
+            suffix = payload["channelId"][-6:]
+            return {
+                "id": f"buf-{suffix}",
+                "status": "sent",
+                "sentAt": "2026-10-27T00:00:10.000Z",
+                "externalLink": f"https://www.youtube.com/shorts/{suffix}",
+                "text": payload["text"],
+            }
+
+        def uploader(path, name):
+            return f"https://github.com/chatgpt820970/chad-media/releases/download/clip-media/{name}"
+
+        kwargs = dict(
+            now=NOW,
+            env={"BUFFER_API_TOKEN": "test-token"},
+            media_dir=media,
+            output_dir=out,
+            uploader=uploader,
+            poster=poster,
+            fetcher=lambda exclude: None,
+            ledger_path=root / "live.json",
+            pending_path=root / "pending.json",
+            alerts_path=root / "alerts.json",
+        )
+        code = execute_live(bundle, **kwargs)
+        self.assertEqual(code, 0)
+        channels = {item["channelId"] for item in seen}
+        self.assertEqual(
+            channels,
+            {"6ac4da806a5c39ccb62eab64", "6add07e4778b240e2fb35110"},
+        )
+        self.assertTrue(all(item["text"].count("example.invalid") == 0 for item in seen))
+        self.assertTrue(all("x.com/SuiNetwork" in item["text"] for item in seen))
+        alerts = json.loads((root / "alerts.json").read_text())
+        self.assertEqual(alerts["paused"], {})
+        pending = json.loads((root / "pending.json").read_text())
+        self.assertEqual(len(pending["items"]), 2)
+        for item in pending["items"]:
+            self.assertTrue(item["post_url"].startswith("https://"))
+            self.assertNotIn("example.invalid", item["post_url"])
+            self.assertEqual(item["posted_at"], "2026-10-27T00:00:10.000Z")
+        ledger = json.loads((root / "live.json").read_text())
+        self.assertEqual(set(ledger["sources"]), {"youtube:drive-evan", "tiktok:drive-evan"})
+        again = execute_live(bundle, **kwargs)
+        self.assertEqual(again, 0)
+        self.assertEqual(len(seen), 2)
 
     def test_approved_dhan_file_beats_the_content_plan_and_sui_beats_dhan(self):
         from clipper.livepost import _gather_candidates, empty_ledger
@@ -789,7 +892,45 @@ class LivePostTests(unittest.TestCase):
             "youtube", unapproved, manifest, media, empty_ledger(), empty_alerts(), lambda exclude: None
         )
         self.assertEqual([item[0] for item in gathered], ["sui", "content_plan"])
+        reel = self._file(media, "ig-abc.mp4")
+        shared = {
+            "sui": {"file_id": "drive-evan", "path": str(sui), "status": "downloaded"},
+            "content_plan": [
+                {"platform": "youtube", "status": "downloaded", "path": str(reel)},
+                {"platform": "tiktok", "status": "downloaded", "path": str(reel)},
+            ],
+        }
+        posted = empty_ledger()
+        posted["sources"].append("youtube:ig-abc")
+        yt_shared = _gather_candidates(
+            "youtube", bundle, shared, media, posted, empty_alerts(), lambda exclude: None
+        )
+        self.assertNotIn("content_plan", [item[0] for item in yt_shared])
+        self.assertIn("sui", [item[0] for item in yt_shared])
+        tt_shared = _gather_candidates(
+            "tiktok", bundle, shared, media, posted, empty_alerts(), lambda exclude: None
+        )
+        self.assertEqual([item[0] for item in tt_shared], ["sui"])
+        sui_only = empty_ledger()
+        sui_only["sources"].append("youtube:drive-evan")
+        tt_sui = _gather_candidates(
+            "tiktok", bundle, shared, media, sui_only, empty_alerts(), lambda exclude: None
+        )
+        self.assertEqual([item[0] for item in tt_sui], ["sui", "content_plan"])
         del out, root
+
+    def test_cookies_expired_does_not_pause(self):
+        from clipper.strikes import empty_alerts, is_paused, record_cookies_expired
+
+        state = empty_alerts()
+        self.assertTrue(record_cookies_expired(state, "instagram", "cookie download rejected: login required"))
+        self.assertFalse(record_cookies_expired(state, "instagram", "cookie download rejected: login required"))
+        self.assertTrue(record_cookies_expired(state, "youtube", "cookie download rejected: not a bot"))
+        self.assertEqual(state["paused"], {})
+        self.assertFalse(is_paused(state, "instagram"))
+        self.assertFalse(is_paused(state, "youtube"))
+        self.assertEqual([row["kind"] for row in state["alerts"]], ["cookies_expired", "cookies_expired"])
+        self.assertEqual(state["alerts"][0]["platform"], "instagram")
 
     def test_sui_render_uses_a_real_caption_when_ffmpeg_exists(self):
         if not ffmpeg_available():
@@ -833,6 +974,229 @@ class LivePostTests(unittest.TestCase):
         self.assertLessEqual(youtube["text"].count("#"), 5)
         pending = json.loads((root / "pending.json").read_text())
         self.assertTrue(any(item["platform"] == "youtube" and item["posted_at"] == "2026-10-27T00:00:00.000Z" for item in pending["items"]))
+
+
+class PublicSourceTests(unittest.TestCase):
+    def test_parsers_drop_sexual_titles_and_watermarked_formats(self):
+        from clipper.publicsrc import (
+            TIKTOK_FORMAT,
+            format_is_watermarked,
+            parse_invidious_search,
+            parse_reddit_listing,
+            parse_x_timeline,
+            pick_h264_itag,
+            pick_x_variant,
+        )
+
+        timeline = {
+            "props": {
+                "pageProps": {
+                    "timeline": {
+                        "entries": [
+                            {
+                                "content": {
+                                    "tweet": {
+                                        "id_str": "2115",
+                                        "full_text": "An enchanting melody",
+                                        "user": {"screen_name": "Crunchyroll"},
+                                        "extended_entities": {
+                                            "media": [
+                                                {
+                                                    "type": "video",
+                                                    "video_info": {
+                                                        "variants": [
+                                                            {
+                                                                "content_type": "application/x-mpegURL",
+                                                                "url": "https://video.twimg.com/a.m3u8",
+                                                            },
+                                                            {
+                                                                "bitrate": 832000,
+                                                                "content_type": "video/mp4",
+                                                                "url": "https://video.twimg.com/vid/avc1/640x360/a.mp4",
+                                                            },
+                                                            {
+                                                                "bitrate": 2176000,
+                                                                "content_type": "video/mp4",
+                                                                "url": "https://video.twimg.com/vid/avc1/1280x720/b.mp4",
+                                                            },
+                                                            {
+                                                                "bitrate": 10368000,
+                                                                "content_type": "video/mp4",
+                                                                "url": "https://video.twimg.com/vid/avc1/1920x1080/c.mp4",
+                                                            },
+                                                        ]
+                                                    },
+                                                }
+                                            ]
+                                        },
+                                    }
+                                }
+                            },
+                            {
+                                "content": {
+                                    "tweet": {
+                                        "id_str": "9",
+                                        "full_text": "explicit sex tape",
+                                        "user": {"screen_name": "nope"},
+                                        "extended_entities": {
+                                            "media": [
+                                                {
+                                                    "type": "video",
+                                                    "video_info": {
+                                                        "variants": [
+                                                            {
+                                                                "content_type": "video/mp4",
+                                                                "bitrate": 1000,
+                                                                "url": "https://video.twimg.com/vid/avc1/640x360/x.mp4",
+                                                            }
+                                                        ]
+                                                    },
+                                                }
+                                            ]
+                                        },
+                                    }
+                                }
+                            },
+                        ]
+                    }
+                }
+            }
+        }
+        html = '<script id="__NEXT_DATA__" type="application/json">' + json.dumps(timeline) + "</script>"
+        posts = parse_x_timeline(html)
+        self.assertEqual([post["id"] for post in posts], ["2115"])
+        chosen = pick_x_variant(posts[0]["variants"])
+        self.assertEqual(chosen["height"], 720)
+        self.assertIn("1280x720", chosen["url"])
+        listing = {
+            "data": {
+                "children": [
+                    {
+                        "data": {
+                            "id": "ok",
+                            "title": "cricket last over",
+                            "is_video": True,
+                            "over_18": False,
+                            "url": "https://v.redd.it/abc",
+                            "permalink": "/r/Cricket/comments/ok/cricket/",
+                            "media": {"reddit_video": {"fallback_url": "https://v.redd.it/abc/DASH_720.mp4"}},
+                        }
+                    },
+                    {"data": {"id": "nsfw", "title": "fine", "over_18": True, "is_video": True, "url": "https://v.redd.it/no"}},
+                    {"data": {"id": "sex", "title": "naked scene", "over_18": False, "is_video": True, "url": "https://v.redd.it/no2"}},
+                    {"data": {"id": "link", "title": "article", "over_18": False, "is_video": False, "url": "https://example.com"}},
+                ]
+            }
+        }
+        reddit = parse_reddit_listing(listing)
+        self.assertEqual([row["id"] for row in reddit], ["ok"])
+        self.assertEqual(reddit[0]["watch"], "https://www.reddit.com/r/Cricket/comments/ok/cricket/")
+        videos = parse_invidious_search(
+            [
+                {"type": "video", "videoId": "abc", "title": "India cricket highlights"},
+                {"type": "video", "videoId": "bad", "title": "explicit scene"},
+                {"type": "playlist", "videoId": "pl", "title": "mix"},
+            ]
+        )
+        self.assertEqual(videos, [{"id": "abc", "title": "India cricket highlights"}])
+        self.assertEqual(
+            pick_h264_itag({"adaptiveFormats": [{"itag": 18, "type": "video/mp4"}, {"itag": 160, "type": 'video/mp4; codecs="avc1.4d401e"'}]}),
+            160,
+        )
+        self.assertTrue(format_is_watermarked("watermarked"))
+        self.assertFalse(format_is_watermarked("h264"))
+        self.assertIn("format_note!*=watermark", TIKTOK_FORMAT)
+        self.assertNotIn("!*?=", TIKTOK_FORMAT)
+
+    def test_cookie_commands_stay_on_their_own_site_and_logs_drop_cookie_lines(self):
+        import os
+        import stat
+        import tempfile
+
+        from clipper.fetchsrc import cookie_file, redact_log, site_cookie_commands
+        from script.write_cookies import write_cookies
+
+        folder = Path(tempfile.mkdtemp())
+        cookies = folder / "yt.txt"
+        cookies.write_text("# Netscape HTTP Cookie File\n.youtube.com\tTRUE\t/\tTRUE\t0\tsid\tabc\n", encoding="utf-8")
+        self.assertEqual(cookie_file(str(cookies)), str(cookies))
+        self.assertIsNone(cookie_file(""))
+        youtube = site_cookie_commands("youtube", "cricket match highlight India", "out.mp4", str(cookies))
+        self.assertTrue(youtube)
+        self.assertIn("--cookies", youtube[0])
+        self.assertTrue(any(part.startswith("ytsearch1:") for part in youtube[0]))
+        self.assertFalse(any("tiktok.com" in part for part in youtube[0]))
+        tiktok = site_cookie_commands("tiktok", "anime fight", "out.mp4", str(cookies), ["anime", "hollywood"])
+        self.assertEqual(len(tiktok), 2)
+        self.assertIn("https://www.tiktok.com/tag/anime", tiktok[0])
+        self.assertIn("--cookies", tiktok[0])
+        self.assertIn("format_note!*=watermark", " ".join(tiktok[0]))
+        self.assertFalse(any(part.startswith("ytsearch") for part in tiktok[0]))
+        redacted = redact_log("ERROR: sign in\nCookie: sid=abc\n#HttpOnly_.youtube.com\tTRUE")
+        self.assertIn("sign in", redacted)
+        self.assertNotIn("sid=abc", redacted)
+        self.assertNotIn("#HttpOnly", redacted)
+        env_file = folder / "env"
+        env_file.write_text("", encoding="utf-8")
+        secret = "netscape line one\nnetscape line two"
+        written = write_cookies(
+            {"YT_COOKIES": secret, "TIKTOK_COOKIES": "", "INSTAGRAM_COOKIES": "", "X_COOKIES": ""},
+            folder,
+            env_file,
+        )
+        self.assertEqual(written, ["YT_COOKIES_FILE"])
+        saved = (folder / "yt_cookies.txt").read_text(encoding="utf-8")
+        self.assertEqual(saved, secret + "\n")
+        self.assertEqual(stat.S_IMODE((folder / "yt_cookies.txt").stat().st_mode) & 0o777, 0o600)
+        self.assertIn(f"YT_COOKIES_FILE={folder / 'yt_cookies.txt'}", env_file.read_text(encoding="utf-8"))
+        self.assertNotIn("TIKTOK_COOKIES_FILE", env_file.read_text(encoding="utf-8"))
+        del os
+
+    def test_expired_cookie_reason_keeps_the_log_out_of_the_alert(self):
+        from clipper.fetchsrc import cookies_look_expired, expired_reason
+
+        self.assertTrue(cookies_look_expired("ERROR: Sign in to confirm you're not a bot"))
+        self.assertTrue(cookies_look_expired("Requested content is not available, rate-limit reached or login required"))
+        self.assertFalse(cookies_look_expired("HTTP Error 403"))
+        self.assertFalse(cookies_look_expired(""))
+        reason = expired_reason("ERROR: login required\nCookie: sid=secret")
+        self.assertEqual(reason, "cookie download rejected: login required")
+        self.assertNotIn("secret", reason)
+
+    def test_instagram_targets_rank_clean_reels_and_skip_handles_page(self):
+        from clipper.igsource import instagram_targets, rank_reels, reel_shortcode
+
+        bundle = {
+            "sources": {
+                "instagram_source": {
+                    "youtube": {"hashtags": ["Bollywood"], "accounts": ["icc"]},
+                    "x": {"hashtags": ["animeedit"], "accounts": []},
+                }
+            }
+        }
+        urls = instagram_targets(bundle, "youtube")
+        self.assertEqual(
+            urls,
+            [
+                "https://www.instagram.com/explore/tags/bollywood/",
+                "https://www.instagram.com/icc/",
+            ],
+        )
+        self.assertFalse(any("/reels/" in url for url in urls))
+        self.assertEqual(reel_shortcode("https://www.instagram.com/reel/AbC123/", ""), "AbC123")
+        ranked = rank_reels(
+            {
+                "entries": [
+                    {"id": "low", "title": "cricket highlight", "view_count": 10, "url": "https://www.instagram.com/reel/low/"},
+                    {"id": "high", "title": "bollywood scene", "view_count": 90, "url": "https://www.instagram.com/reel/high/"},
+                    {"id": "bad", "title": "explicit scene", "view_count": 999, "url": "https://www.instagram.com/reel/bad/"},
+                    None,
+                    {"id": "same", "title": "anime edit", "view_count": 5, "url": "https://www.instagram.com/p/same/"},
+                ]
+            },
+            seen={"high"},
+        )
+        self.assertEqual([row["id"] for row in ranked], ["low", "same"])
 
 
 if __name__ == "__main__":

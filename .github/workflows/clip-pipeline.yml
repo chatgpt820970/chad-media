@@ -45,12 +45,7 @@ jobs:
           X_COOKIES: ${{ secrets.X_COOKIES }}
           INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
           TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
-        run: |
-          if [ -n "$YT_COOKIES" ]; then printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/yt_cookies.txt"; export YT_COOKIES_FILE="$RUNNER_TEMP/yt_cookies.txt"; fi
-          if [ -n "$X_COOKIES" ]; then printf '%s\n' "$X_COOKIES" > "$RUNNER_TEMP/x_cookies.txt"; export X_COOKIES_FILE="$RUNNER_TEMP/x_cookies.txt"; fi
-          if [ -n "$INSTAGRAM_COOKIES" ]; then printf '%s\n' "$INSTAGRAM_COOKIES" > "$RUNNER_TEMP/ig_cookies.txt"; export INSTAGRAM_COOKIES_FILE="$RUNNER_TEMP/ig_cookies.txt"; fi
-          if [ -n "$TIKTOK_COOKIES" ]; then printf '%s\n' "$TIKTOK_COOKIES" > "$RUNNER_TEMP/tt_cookies.txt"; export TIKTOK_COOKIES_FILE="$RUNNER_TEMP/tt_cookies.txt"; fi
-          unset YT_COOKIES X_COOKIES INSTAGRAM_COOKIES TIKTOK_COOKIES
+        run: python script/write_cookies.py
 
       - name: Unit tests
         run: python -m unittest discover -s tests -v
@@ -108,8 +103,9 @@ jobs:
 
       - name: Install ffmpeg, gdown, and yt-dlp
         run: |
-          sudo apt-get update && sudo apt-get install -y ffmpeg
-          python -m pip install --upgrade gdown yt-dlp
+          sudo timeout 180 apt-get update
+          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
+          timeout 180 python -m pip install --upgrade gdown yt-dlp curl_cffi gallery-dl
 
       - name: Cookie files
         env:
@@ -117,12 +113,7 @@ jobs:
           X_COOKIES: ${{ secrets.X_COOKIES }}
           INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
           TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
-        run: |
-          if [ -n "$YT_COOKIES" ]; then printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/yt_cookies.txt"; echo "YT_COOKIES_FILE=$RUNNER_TEMP/yt_cookies.txt" >> "$GITHUB_ENV"; fi
-          if [ -n "$X_COOKIES" ]; then printf '%s\n' "$X_COOKIES" > "$RUNNER_TEMP/x_cookies.txt"; echo "X_COOKIES_FILE=$RUNNER_TEMP/x_cookies.txt" >> "$GITHUB_ENV"; fi
-          if [ -n "$INSTAGRAM_COOKIES" ]; then printf '%s\n' "$INSTAGRAM_COOKIES" > "$RUNNER_TEMP/ig_cookies.txt"; echo "INSTAGRAM_COOKIES_FILE=$RUNNER_TEMP/ig_cookies.txt" >> "$GITHUB_ENV"; fi
-          if [ -n "$TIKTOK_COOKIES" ]; then printf '%s\n' "$TIKTOK_COOKIES" > "$RUNNER_TEMP/tt_cookies.txt"; echo "TIKTOK_COOKIES_FILE=$RUNNER_TEMP/tt_cookies.txt" >> "$GITHUB_ENV"; fi
-          unset YT_COOKIES X_COOKIES INSTAGRAM_COOKIES TIKTOK_COOKIES
+        run: python script/write_cookies.py
 
       - name: Download Sui, Dropbox, and content-plan media
         env:
@@ -157,8 +148,10 @@ jobs:
               if handle.read(2) != b"PK":
                   raise SystemExit("Dropbox download is not a zip")
           youtube = next(row for row in manifest["content_plan"] if row["platform"] == "youtube")
-          if youtube.get("status") not in ("downloaded", "needs_cookies"):
-              raise SystemExit("YouTube content-plan download missing: " + json.dumps(youtube))
+          if youtube.get("status") not in ("downloaded", "needs_cookies", "unavailable"):
+              raise SystemExit("YouTube content-plan download missing: " + youtube.get("status"))
+          for row in manifest["content_plan"]:
+              print(row["platform"], row.get("status"), row.get("via") or "", row.get("bytes") or 0)
           print("sui short ok", clip.stat().st_size, "dropbox", archive.stat().st_size, "youtube", youtube.get("status"))
           PY
 
@@ -180,3 +173,114 @@ jobs:
         run: |
           gh release view clip-media >/dev/null 2>&1 || gh release create clip-media --prerelease --title "Clip media" --notes "Dry-run renders. Buffer is not called."
           gh release upload clip-media work/fetch/sui-basecamp-short.mp4 work/fetch/caption.txt --clobber
+
+  public-sources:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, tesseract, yt-dlp, and gallery-dl
+        run: |
+          sudo timeout 180 apt-get update
+          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
+          timeout 180 python -m pip install --upgrade yt-dlp curl_cffi gallery-dl
+
+      - name: Probe cookie-free sources
+        run: python -m clipper fetch-public --output-dir work/public
+
+      - name: Check the public-source report
+        run: |
+          python - << 'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("work/public/report.json").read_text())
+          rows = {row["name"]: row for row in report["sources"]}
+          required = {"x_public", "tiktok_public", "reddit_json", "youtube_frontend"}
+          if set(rows) != required:
+              raise SystemExit(f"report names {sorted(rows)} != {sorted(required)}")
+          for name, row in rows.items():
+              if row["status"] not in ("downloaded", "unavailable"):
+                  raise SystemExit(f"{name} status {row['status']}")
+              if row["status"] == "downloaded" and int(row.get("bytes") or 0) < 8000:
+                  raise SystemExit(f"{name} downloaded without a real video")
+              print(name, row["status"], row.get("bytes"), row.get("method") or "", (row.get("error") or "")[:180])
+          print("public sources report ok")
+          PY
+
+      - name: Upload public-source report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: public-sources
+          path: work/public/
+          if-no-files-found: error
+
+  cookie-downloads:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, tesseract, and yt-dlp
+        run: |
+          sudo timeout 180 apt-get update
+          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
+          timeout 180 python -m pip install --upgrade yt-dlp curl_cffi
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: python script/write_cookies.py
+
+      - name: Probe YouTube, TikTok, and Instagram cookie downloads
+        env:
+          CLIPPER_LIVE: "false"
+        run: python -m clipper fetch-cookies --output-dir work/cookies
+
+      - name: Check the cookie report
+        run: |
+          python - << 'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("work/cookies/report.json").read_text())
+          alerts = json.loads(Path("work/cookies/alerts.json").read_text())
+          rows = {row["name"]: row for row in report["sources"]}
+          required = {"youtube", "tiktok", "instagram"}
+          allowed = {"missing", "cookies_expired", "downloaded", "unavailable"}
+          if set(rows) != required:
+              raise SystemExit(f"report names {sorted(rows)} != {sorted(required)}")
+          if alerts.get("paused"):
+              raise SystemExit("cookie probe paused a platform: " + ",".join(sorted(alerts["paused"])))
+          for name, row in rows.items():
+              status = row.get("status")
+              if status not in allowed:
+                  raise SystemExit(f"{name} status {status}")
+              if status == "downloaded" and int(row.get("bytes") or 0) < 8000:
+                  raise SystemExit(f"{name} downloaded without a real video")
+              print(name, status, "bytes", row.get("bytes") or 0, "reason", row.get("reason") or "-")
+          print("cookie downloads report ok")
+          PY
+
+      - name: Upload cookie report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookie-downloads
+          path: work/cookies/
+          if-no-files-found: error
