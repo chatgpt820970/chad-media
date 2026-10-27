@@ -260,6 +260,19 @@ def command_monitor(bundle: dict) -> int:
     return 1
 
 
+def command_validate_media_url(url: str) -> int:
+    """HEAD/GET a video URL. Exit 0 only for a direct public mp4. Does not call Buffer."""
+    from clipper.mediahost import MediaURLError, verify_public_mp4
+
+    try:
+        verify_public_mp4(url)
+    except MediaURLError as exc:
+        print(f"media url rejected: {exc}")
+        return 1
+    print("media url ok")
+    return 0
+
+
 def build_parser() -> argparse.ArgumentParser:
     parser = argparse.ArgumentParser(prog="clipper")
     parser.add_argument("--root", default="")
@@ -298,6 +311,9 @@ def build_parser() -> argparse.ArgumentParser:
     mark.add_argument("--key", required=True, help="Pending item id or post URL")
 
     sub.add_parser("monitor")
+
+    media = sub.add_parser("validate-media-url")
+    media.add_argument("--url", required=True, help="Public https mp4. Does not call Buffer.")
     return parser
 
 
@@ -320,6 +336,8 @@ def main(argv: list[str] | None = None) -> int:
         return command_mark_submitted(bundle, args.key)
     if args.command == "monitor":
         return command_monitor(bundle)
+    if args.command == "validate-media-url":
+        return command_validate_media_url(args.url)
     parser.error(f"unknown command {args.command}")
     return 2
 

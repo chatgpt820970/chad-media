@@ -348,11 +348,15 @@ class DownloadTests(unittest.TestCase):
         self.assertFalse(download_saved(101, False))
         self.assertFalse(download_saved(1, True))
         attempts = youtube_attempts("ytsearch1:cricket match highlight India", "out.mp4", None)
-        self.assertEqual(len(attempts), 4)
+        self.assertEqual(len(attempts), 3)
         self.assertIn("youtube:player_client=tv_downgraded", attempts[0])
         self.assertNotIn("--cookies", attempts[0])
+        self.assertNotIn("visionos", " ".join(attempts[0]))
         self.assertTrue(attempts[0][-1].startswith("ytsearch1:"))
         with_cookies = youtube_attempts("https://www.youtube.com/watch?v=abc", "out.mp4", "/tmp/yt.txt")
+        self.assertEqual(len(with_cookies), 3)
+        self.assertIn("youtube:player_client=web", with_cookies[0])
+        self.assertNotIn("visionos", " ".join(with_cookies[0]))
         self.assertIn("--cookies", with_cookies[1])
         self.assertIn("/tmp/yt.txt", with_cookies[1])
         self.assertNotIn("secret-cookie-value", " ".join(with_cookies[1]))
@@ -975,6 +979,185 @@ class LivePostTests(unittest.TestCase):
         pending = json.loads((root / "pending.json").read_text())
         self.assertTrue(any(item["platform"] == "youtube" and item["posted_at"] == "2026-10-27T00:00:00.000Z" for item in pending["items"]))
 
+    def test_media_url_failure_does_not_pause(self):
+        from clipper.buffer_api import BufferError
+        from clipper.livepost import execute_live
+        from clipper.mediahost import MediaURLError
+        from clipper.strikes import empty_alerts, record_media_url
+
+        state = empty_alerts()
+        self.assertTrue(record_media_url(state, "x", "content-type application/octet-stream", NOW))
+        self.assertFalse(record_media_url(state, "x", "content-type application/octet-stream", NOW))
+        self.assertEqual(state["paused"], {})
+        self.assertEqual([row["kind"] for row in state["alerts"]], ["media_url"])
+
+        bundle = _bundle()
+        root, media, out = self._dirs()
+        path = self._file(media, "anime-x.mp4")
+        rows = [{"platform": "x", "status": "downloaded", "path": str(path)}]
+        self._manifest(media, rows)
+        seen = []
+
+        def poster(payload):
+            seen.append(payload)
+            raise BufferError("Invalid post: Video could not be read from its URL.")
+
+        def uploader(path, name):
+            return f"https://github.com/chatgpt820970/chad-media/releases/download/clip-media/{name}"
+
+        kwargs = dict(
+            now=NOW,
+            env={"BUFFER_API_TOKEN": "test-token"},
+            media_dir=media,
+            output_dir=out,
+            uploader=uploader,
+            poster=poster,
+            fetcher=lambda exclude: None,
+            ledger_path=root / "live.json",
+            pending_path=root / "pending.json",
+            alerts_path=root / "alerts.json",
+            url_check=lambda url: None,
+        )
+        code = execute_live(bundle, **kwargs)
+        self.assertEqual(code, 1)
+        self.assertEqual(len(seen), 1)
+        alerts = json.loads((root / "alerts.json").read_text())
+        self.assertEqual(alerts["paused"], {})
+        self.assertEqual([row["kind"] for row in alerts["alerts"]], ["media_url"])
+        ledger = json.loads((root / "live.json").read_text())
+        self.assertEqual(ledger["posted"], [])
+        self.assertEqual(ledger["sources"], [])
+        again = execute_live(bundle, **kwargs)
+        alerts = json.loads((root / "alerts.json").read_text())
+        self.assertEqual(len([row for row in alerts["alerts"] if row["kind"] == "media_url"]), 1)
+        self.assertEqual(alerts["paused"], {})
+
+        seen.clear()
+
+        def blocked_check(url):
+            raise MediaURLError("redirect 302")
+
+        kwargs["url_check"] = blocked_check
+        kwargs["poster"] = lambda payload: seen.append(payload)
+        code = execute_live(bundle, **kwargs)
+        self.assertEqual(code, 1)
+        self.assertEqual(seen, [])
+        alerts = json.loads((root / "alerts.json").read_text())
+        self.assertEqual(alerts["paused"], {})
+
+    def test_topic_cooldown_skips_a_clip_and_still_lists_sui(self):
+        from clipper.guard import blocked_reason
+        from clipper.livepost import _gather_candidates, empty_ledger, execute_live
+        from clipper.strikes import empty_alerts
+
+        ledger = empty_ledger()
+        self.assertIsNone(blocked_reason(ROOT, "cricket highlight", ledger, NOW))
+        self.assertIn("dua lipa", blocked_reason(ROOT, "Dua Lipa stage clip", ledger, NOW) or "")
+        ledger["topics"] = [{"topic": "dakota johnson", "posted_at": "2026-10-26T00:00:00.000Z"}]
+        self.assertIn("dakota johnson", blocked_reason(ROOT, "Dakota Johnson interview", ledger, NOW) or "")
+        stale = empty_ledger()
+        stale["topics"] = [{"topic": "dakota johnson", "posted_at": "2026-10-19T00:00:00.000Z"}]
+        self.assertIsNone(blocked_reason(ROOT, "Dakota Johnson interview", stale, NOW))
+
+        bundle = _bundle()
+        root, media, out = self._dirs()
+        sui = self._file(media, "evan.mp4")
+        blocked = self._file(media, "dua-lipa-stage.mp4")
+        kept = self._file(media, "cricket-highlight.mp4")
+        manifest = {
+            "sui": {"file_id": "drive-evan", "path": str(sui), "status": "downloaded"},
+            "content_plan": [
+                {"platform": "youtube", "status": "downloaded", "path": str(blocked), "title": "Dua Lipa stage"},
+                {"platform": "youtube", "status": "downloaded", "path": str(kept), "title": "India cricket highlights"},
+            ],
+        }
+        gathered = _gather_candidates(
+            "youtube", bundle, manifest, media, empty_ledger(), empty_alerts(), lambda exclude: None
+        )
+        self.assertEqual(gathered[0][0], "sui")
+        self.assertIn("content_plan", [item[0] for item in gathered])
+        (media / "manifest.json").write_text(json.dumps(manifest), encoding="utf-8")
+        manifest["sui"] = {}
+        (media / "sui-basecamp-short.mp4").unlink(missing_ok=True)
+        sui.unlink()
+        (media / "manifest.json").write_text(
+            json.dumps({"sui": {}, "content_plan": manifest["content_plan"]}),
+            encoding="utf-8",
+        )
+        seen = []
+
+        def poster(payload):
+            seen.append(payload["text"])
+            return {"id": "buf-ok", "status": "scheduled", "text": payload["text"]}
+
+        code = execute_live(
+            bundle,
+            now=NOW,
+            env={"BUFFER_API_TOKEN": "test-token"},
+            media_dir=media,
+            output_dir=out,
+            uploader=lambda path, name: f"https://github.com/chatgpt820970/chad-media/releases/download/clip-media/{name}",
+            poster=poster,
+            fetcher=lambda exclude: None,
+            ledger_path=root / "live.json",
+            pending_path=root / "pending.json",
+            alerts_path=root / "alerts.json",
+        )
+        self.assertEqual(code, 0)
+        self.assertEqual(len(seen), 1)
+        ledger = json.loads((root / "live.json").read_text())
+        self.assertIn("youtube:cricket-highlight", ledger["sources"])
+        self.assertNotIn("youtube:dua-lipa-stage", ledger["sources"])
+        alerts = json.loads((root / "alerts.json").read_text())
+        self.assertEqual(alerts["paused"], {})
+
+    def test_x_caption_hook_and_overlay_graph(self):
+        from clipper.render import x_overlay_graph
+
+        bundle = _bundle()
+        _root, media, out = self._dirs()
+        path = self._file(media, "anime-x.mp4")
+        rows = [{"platform": "x", "status": "downloaded", "path": str(path), "title": "anime fight"}]
+        seen = []
+
+        def poster(payload):
+            seen.append(payload)
+            return {"id": "buf-x", "status": "scheduled", "text": payload["text"]}
+
+        code, calls = self._run(bundle, media, out, rows, poster)
+        self.assertEqual(code, 0)
+        text = next(item["text"] for item in seen if item["channelId"].endswith("fdf1"))
+        self.assertTrue(
+            any(hook in text for hook in ("Worth another look", "The part people replay", "From today", "Clean cut", "Still going around"))
+        )
+        self.assertNotIn("x.com/SuiNetwork", text)
+        self.assertFalse(text.startswith("#Ad"))
+        self.assertTrue(calls)
+        graph = x_overlay_graph("Clean cut")
+        self.assertIn("drawtext", graph)
+        self.assertIn("[0:v]", graph)
+        plain, uses_logo = logo_filter({"logo": {"required": False}}, 720, 1280, 0.0)
+        self.assertFalse(uses_logo)
+        self.assertNotIn("drawtext", plain)
+
+    def test_heatmap_peak_ignores_the_opening(self):
+        from clipper.heatmap import pick_heatmap_start, section_arg
+
+        points = []
+        for index in range(12):
+            start = index * 5
+            points.append({"start_time": start, "end_time": start + 5, "value": 100 if start == 0 else 1})
+        points[8]["value"] = 40
+        info = {"duration": 70, "heatmap": points}
+        start, why = pick_heatmap_start(info, 12)
+        self.assertGreater(start, 0)
+        self.assertNotAlmostEqual(start, 0.0)
+        self.assertIn("heatmap", why)
+        self.assertLess(start, 45)
+        self.assertEqual(section_arg(0), "*0-12")
+        self.assertTrue(section_arg(start).startswith("*"))
+        self.assertEqual(pick_heatmap_start({"duration": 8, "heatmap": points}, 12)[0], 0.0)
+
 
 class PublicSourceTests(unittest.TestCase):
     def test_parsers_drop_sexual_titles_and_watermarked_formats(self):
@@ -1124,6 +1307,7 @@ class PublicSourceTests(unittest.TestCase):
         youtube = site_cookie_commands("youtube", "cricket match highlight India", "out.mp4", str(cookies))
         self.assertTrue(youtube)
         self.assertIn("--cookies", youtube[0])
+        self.assertIn("player_client=web", " ".join(youtube[0]))
         self.assertTrue(any(part.startswith("ytsearch1:") for part in youtube[0]))
         self.assertFalse(any("tiktok.com" in part for part in youtube[0]))
         tiktok = site_cookie_commands("tiktok", "anime fight", "out.mp4", str(cookies), ["anime", "hollywood"])
@@ -1132,6 +1316,19 @@ class PublicSourceTests(unittest.TestCase):
         self.assertIn("--cookies", tiktok[0])
         self.assertIn("format_note!*=watermark", " ".join(tiktok[0]))
         self.assertFalse(any(part.startswith("ytsearch") for part in tiktok[0]))
+        profiles = site_cookie_commands(
+            "tiktok",
+            "anime fight",
+            "out.mp4",
+            str(cookies),
+            ["anime", "hollywood"],
+            ["crunchyroll", "netflix"],
+        )
+        self.assertEqual(len(profiles), 3)
+        self.assertIn("https://www.tiktok.com/@crunchyroll", profiles[0])
+        self.assertIn("--playlist-end", profiles[0])
+        self.assertNotIn("--no-playlist", profiles[0])
+        self.assertIn("https://www.tiktok.com/tag/anime", profiles[2])
         redacted = redact_log("ERROR: sign in\nCookie: sid=abc\n#HttpOnly_.youtube.com\tTRUE")
         self.assertIn("sign in", redacted)
         self.assertNotIn("sid=abc", redacted)
@@ -1178,8 +1375,8 @@ class PublicSourceTests(unittest.TestCase):
         self.assertEqual(
             urls,
             [
-                "https://www.instagram.com/explore/tags/bollywood/",
                 "https://www.instagram.com/icc/",
+                "https://www.instagram.com/explore/tags/bollywood/",
             ],
         )
         self.assertFalse(any("/reels/" in url for url in urls))

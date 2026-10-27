@@ -111,6 +111,34 @@ def record_cookies_expired(
     return True
 
 
+def record_media_url(
+    state: dict,
+    platform: str,
+    reason: str,
+    when: datetime | None = None,
+) -> bool:
+    """The video URL failed our check or Buffer could not read it. Posting stays on."""
+    state.setdefault("paused", {})
+    state.setdefault("alerts", [])
+    state.setdefault("blocked_sources", [])
+    already = any(row.get("kind") == "media_url" and row.get("platform") == platform for row in state["alerts"])
+    if already:
+        return False
+    stamp = _stamp(when)
+    state["alerts"].append(
+        {
+            "platform": platform,
+            "at": stamp,
+            "reason": (reason or "video URL was not a direct mp4")[:300],
+            "kind": "media_url",
+            "buffer_post_id": "",
+            "source_key": "",
+            "identity": "",
+        }
+    )
+    return True
+
+
 def record_safety(
     state: dict,
     platform: str,

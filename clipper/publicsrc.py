@@ -386,13 +386,20 @@ def _ffmpeg_cut(url: str, dest: Path, header_ua: str) -> bool:
     return real_video(dest)
 
 
-def _ytdlp(url: str, folder: Path, stem: str, extra: list[str], timeout: int = 70) -> Path | None:
+def _ytdlp(
+    url: str,
+    folder: Path,
+    stem: str,
+    extra: list[str],
+    timeout: int = 70,
+    playlist: bool = False,
+) -> Path | None:
     from clipper.fetchsrc import ytdlp_argv
 
     folder.mkdir(parents=True, exist_ok=True)
     template = str(folder / f"{stem}.%(ext)s")
-    command = ytdlp_argv() + [
-        "--no-playlist",
+    scope = ["--playlist-end", "1"] if playlist else ["--no-playlist"]
+    command = ytdlp_argv() + scope + [
         "--max-downloads",
         "1",
         "--download-sections",
@@ -628,7 +635,33 @@ def probe_tiktok(bundle: dict, folder: Path) -> dict:
     cfg = ((bundle.get("sources") or {}).get("public_sources") or {}).get("tiktok") or {}
     attempts: list[str] = []
     seen: set[str] = set()
-    for tag in list(cfg.get("tags") or [])[:3]:
+    handles: list[str] = []
+    for user in cfg.get("users") or []:
+        handle = "".join(ch for ch in str(user).strip().lstrip("@") if ch.isalnum() or ch in "._")
+        if handle and handle not in handles:
+            handles.append(handle)
+    for handle in handles[:2]:
+        url = f"https://www.tiktok.com/@{handle}"
+        if url in seen:
+            continue
+        seen.add(url)
+        saved = _ytdlp(
+            url,
+            folder,
+            f"tiktok-{handle}",
+            ["-f", TIKTOK_FORMAT, *_impersonate()],
+            timeout=70,
+            playlist=True,
+        )
+        attempts.append(f"yt-dlp {url} -> {'saved' if saved else 'miss'}")
+        if not saved:
+            continue
+        done = _finish("tiktok_public", saved, url, "yt-dlp-no-watermark", attempts)
+        if done:
+            return done
+    tags = [str(tag) for tag in (cfg.get("tags") or [])]
+    tags = tags[:1] if handles else tags[:3]
+    for tag in tags:
         for url in discover_tiktok_urls(str(tag), attempts):
             if url in seen:
                 continue

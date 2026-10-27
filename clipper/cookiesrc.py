@@ -89,9 +89,10 @@ def _probe_tiktok(bundle: dict, folder: Path, env: dict, alerts: dict) -> dict:
         return _row("tiktok", "missing", reason="no cookie file")
     public = ((bundle.get("sources") or {}).get("public_sources") or {}).get("tiktok") or {}
     tags = [str(item) for item in (public.get("tags") or []) if item]
+    users = [str(item) for item in (public.get("users") or []) if item]
     tag = tags[0] if tags else "anime"
     template = str(folder / "%(id)s.mp4")
-    commands = site_cookie_commands("tiktok", tag, template, cookies, [tag])[:1]
+    commands = site_cookie_commands("tiktok", tag, template, cookies, tags or [tag], users or None)[:1]
     _code, files, log = _run_attempts(commands, folder, timeout=90)
     return _judge("tiktok", files, log, alerts, include_handles=False)
 
@@ -101,13 +102,15 @@ def _probe_instagram(bundle: dict, folder: Path, env: dict, alerts: dict) -> dic
     cookies = cookie_file(str(env.get("INSTAGRAM_COOKIES_FILE") or ""))
     if not cookies:
         return _row("instagram", "missing", reason="no cookie file")
-    # One plan hashtag. x's first tag is animeedit, which matches the 4K anime plan.
+    # Profile pages. Tag extractors return "Unable to extract data" on the runners.
+    x_source = ((bundle.get("sources") or {}).get("instagram_source") or {}).get("x") or {}
+    accounts = [str(item) for item in (x_source.get("accounts") or []) if item] or ["crunchyroll"]
     scoped = {
         "sources": {
             "instagram_source": {
                 "instagram": {
-                    "hashtags": ((bundle.get("sources") or {}).get("instagram_source") or {}).get("x", {}).get("hashtags") or ["animeedit"],
-                    "accounts": [],
+                    "hashtags": [],
+                    "accounts": accounts[:1],
                 }
             }
         }

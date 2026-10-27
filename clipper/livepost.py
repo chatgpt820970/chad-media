@@ -2,8 +2,8 @@
 
 The dry-run still builds example.invalid payloads and never calls this.
 A live run only sends an https URL for a file fetch-media actually downloaded.
-The same source is posted at most once per platform. A Buffer error or a
-removed post pauses that platform in state/platform_alerts.json.
+The same source is posted at most once per platform. A Buffer or account
+error pauses that platform. A video URL we cannot fetch is skipped instead.
 """
 
 from __future__ import annotations
@@ -12,16 +12,25 @@ import copy
 import json
 import os
 import subprocess
+import time
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 from clipper.alerts import alert
 from clipper.buffer_api import BufferError, ErrorBudget, build_post_input, create_post, due_stamp
-from clipper.engine import build_caption, content_plan_caption, normalize_caption, rotated_hashtags, variant_for
+from clipper.engine import (
+    build_caption,
+    content_plan_caption,
+    normalize_caption,
+    rotated_hashtags,
+    variant_for,
+)
 from clipper.fetchsrc import fetch_sui_clip
+from clipper.guard import blocked_reason, prune_topics, remember_topics
 from clipper.loadconfig import posting_platforms
-from clipper.render import apply_filters, ffmpeg_available, logo_filter
+from clipper.mediahost import MediaURLError, is_media_url_error, pages_video_url, publish_live_pages, verify_public_mp4
+from clipper.render import apply_filters, ffmpeg_available, logo_filter, x_overlay_graph, x_overlay_text
 from clipper.run import _channel_id
 from clipper.safety import classify
 from clipper.strikes import (
@@ -31,6 +40,7 @@ from clipper.strikes import (
     empty_alerts,
     is_paused,
     pause_platform,
+    record_media_url,
     record_safety,
 )
 from clipper.submissions import empty_pending, load_json, record_sent_posts, save_json
@@ -81,7 +91,7 @@ def source_key(platform: str, identity: str) -> str:
 
 
 def empty_ledger() -> dict:
-    return {"version": 1, "posted": [], "sources": [], "captions": []}
+    return {"version": 1, "posted": [], "sources": [], "captions": [], "topics": []}
 
 
 def prune_ledger(ledger: dict, now: datetime) -> dict:
@@ -100,6 +110,7 @@ def prune_ledger(ledger: dict, now: datetime) -> dict:
     ledger["posted"] = kept
     ledger["sources"] = list(ledger.get("sources") or [])
     ledger["captions"] = list(ledger.get("captions") or [])
+    prune_topics(ledger, now, 7)
     ledger["version"] = 1
     return ledger
 
@@ -256,13 +267,13 @@ def _gather_candidates(
     ledger: dict,
     alerts: dict,
     fetcher,
-) -> list[tuple[str, Path, str, dict | None]]:
+) -> list[tuple]:
     """Sui file, then an approved Dhan file, then the content plan. Used files are skipped."""
     used = set(ledger.get("sources") or [])
     blocked = blocked_identities(alerts)
-    items: list[tuple[str, Path, str, dict | None]] = []
+    items: list[tuple] = []
 
-    def add(kind: str, path: Path, identity: str, campaign: dict | None) -> bool:
+    def add(kind: str, path: Path, identity: str, campaign: dict | None, title: str = "") -> bool:
         if not identity or not path.is_file():
             return False
         if identity in blocked or source_key(platform, identity) in used:
@@ -271,7 +282,7 @@ def _gather_candidates(
             needle = f":{identity}"
             if any(str(key) == identity or str(key).endswith(needle) for key in used):
                 return False
-        items.append((kind, path, identity, campaign))
+        items.append((kind, path, identity, campaign, title or path.stem))
         return True
 
     sui = _campaign(bundle, "sui-basecamp") or {}
@@ -305,7 +316,7 @@ def _gather_candidates(
         if row.get("platform") != platform or row.get("status") != "downloaded":
             continue
         path = Path(str(row.get("path") or ""))
-        add("content_plan", path, path.stem, None)
+        add("content_plan", path, path.stem, None, str(row.get("title") or path.stem))
     return items
 
 
@@ -319,9 +330,13 @@ def _caption_for(
     used: set[str],
     salt: str,
     campaign: dict | None,
+    clip_title: str = "",
 ) -> tuple[dict | None, str]:
     char_limit = int(bundle["pipeline"]["x_char_limit"])
-    clip = {"source_id": identity, "title": source.stem}
+    title = clip_title or source.stem
+    if platform == "x" and kind not in {"sui", "dhan"}:
+        title = x_overlay_text(title, salt)
+    clip = {"source_id": identity, "title": title}
     if kind in {"sui", "dhan"}:
         if campaign is None:
             raise RuntimeError(f"{kind} campaign is missing")
@@ -421,6 +436,8 @@ def execute_live(
     ledger_path: Path | None = None,
     pending_path: Path | None = None,
     alerts_path: Path | None = None,
+    publisher=None,
+    url_check=None,
 ) -> int:
     """Send at most one post per enabled platform for the slot due in this window."""
     if now.tzinfo is None:
@@ -441,10 +458,22 @@ def execute_live(
     repo = (env.get("GITHUB_REPOSITORY") or "").strip()
     tag = str(bundle["pipeline"].get("release_tag") or "clip-media")
     gh_token = (env.get("GH_TOKEN") or env.get("GITHUB_TOKEN") or "").strip()
-    uploader = uploader or (
-        lambda path, name: upload_release_asset(path, name, repo=repo, tag=tag, token=gh_token)
-    )
+    own_uploader = uploader is None
+    if own_uploader:
+        def uploader(path, name, _repo=repo, _tag=tag, _token=gh_token):
+            upload_release_asset(path, name, repo=_repo, tag=_tag, token=_token)
+            return pages_video_url(_repo, name)
+
+        if publisher is None:
+            publisher = publish_live_pages
+        if url_check is None:
+            url_check = verify_public_mp4
+    else:
+        publisher = None
+        if url_check is None:
+            url_check = lambda url: None
     poster = poster or (lambda post_input: create_post(api, token, post_input))
+    retry_check = url_check is verify_public_mp4
     if fetcher is _USE_DEFAULT_FETCHER:
         fetcher = lambda exclude: _download_next_sui(bundle, media_dir, exclude)
 
@@ -466,11 +495,23 @@ def execute_live(
     sent_rows: list[dict] = []
     failures = 0
     posted = 0
+    ready: list[dict] = []
 
     def persist() -> None:
         save_json(ledger_path, ledger)
         save_json(pending_path, pending)
         save_json(alerts_path, alerts)
+
+    def skip_media(platform_name: str, reason: str) -> None:
+        nonlocal failures
+        failures += 1
+        if record_media_url(alerts, platform_name, reason, when=now):
+            message = f"{platform_name} skipped this slot: {reason}. The platform is not paused."
+            print(message)
+            alert(message)
+        else:
+            print(f"{platform_name} skipped this slot: {reason}. The platform is not paused.")
+        persist()
 
     for platform in posting_platforms(bundle):
         if is_paused(alerts, platform) or platform in budget.halted:
@@ -487,9 +528,12 @@ def execute_live(
         kind = ""
         source = Path()
         identity = ""
+        clip_title = ""
         unsafe = False
+        cooled = False
         for candidate in _gather_candidates(platform, bundle, manifest, media_dir, ledger, alerts, fetcher):
-            kind, source, identity, campaign_hint = candidate
+            kind, source, identity, campaign_hint = candidate[:4]
+            clip_title = candidate[4] if len(candidate) > 4 else source.stem
             try:
                 campaign, caption = _caption_for(
                     kind,
@@ -501,6 +545,7 @@ def execute_live(
                     _used_captions(ledger, platform),
                     source_key(platform, identity),
                     campaign_hint,
+                    clip_title,
                 )
             except Exception as exc:
                 failures += 1
@@ -509,6 +554,18 @@ def execute_live(
                 alert(message)
                 chosen = None
                 break
+            guard_ids = (identity,) if str(identity).isdigit() else ()
+            blocked = blocked_reason(
+                root,
+                f"{source.name}\n{source.stem}\n{clip_title}\n{identity}\n{caption}",
+                ledger,
+                now,
+                guard_ids,
+            )
+            if blocked:
+                cooled = True
+                print(f"{platform} skipped {source_key(platform, identity)}: {blocked}. The platform is not paused.")
+                continue
             hit = classify(f"{source.name}\n{source.stem}\n{caption}")
             if hit:
                 unsafe = True
@@ -522,19 +579,29 @@ def execute_live(
             chosen = candidate
             break
         if chosen is None:
-            if not unsafe:
-                print(f"{platform}: no unused safe file, not posting")
-            else:
+            if unsafe:
                 print(f"{platform}: remaining files were blocked by the safety filter, not posting")
+            elif cooled:
+                print(f"{platform}: remaining files are in the topic cooldown, not posting")
+            else:
+                print(f"{platform}: no unused safe file, not posting")
             continue
-        kind, source, identity, _hint = chosen
+        kind, source, identity, _hint = chosen[:4]
+        clip_title = chosen[4] if len(chosen) > 4 else source.stem
         try:
-            if kind == "sui":
+            upload_path = source
+            if platform == "x" and kind != "sui":
+                from clipper.publicsrc import real_video
+
+                if real_video(source):
+                    dest = variants / f"{platform}.mp4"
+                    line = x_overlay_text(clip_title or source.stem, source_key(platform, identity))
+                    apply_filters(source, dest, x_overlay_graph(line), None, CLIP_SECONDS, 0.0)
+                    upload_path = dest
+            elif kind == "sui":
                 dest = variants / f"{platform}.mp4"
                 render_variant(source, dest, platform, campaign)
                 upload_path = dest
-            else:
-                upload_path = source
             video_url = public_video_url(uploader(upload_path, _asset_name(platform, slot)))
             channel = _channel_id(bundle["channels"], campaign or {"account_mode": "shared"}, platform, env)
             if not channel:
@@ -550,15 +617,73 @@ def execute_live(
                 "submit_page": (campaign or {}).get("submit_page") or "",
             }
             payload = live_payload(package, channel, video_url, now)
+        except MediaURLError as exc:
+            skip_media(platform, str(exc))
+            continue
         except Exception as exc:
             failures += 1
             message = f"live post {platform} failed before Buffer: {exc.__class__.__name__}: {exc}"
             print(message)
             alert(message)
             continue
+        ready.append(
+            {
+                "platform": platform,
+                "slot": slot,
+                "identity": identity,
+                "caption": caption,
+                "video_url": video_url,
+                "package": package,
+                "payload": payload,
+                "source": source,
+            }
+        )
+
+    if ready and publisher is not None:
         try:
-            post = poster(payload)
+            publisher(repo, gh_token)
         except Exception as exc:
+            detail = f"{exc.__class__.__name__}: {exc}"
+            for item in ready:
+                skip_media(item["platform"], detail)
+            ready = []
+
+    def verify(url: str) -> None:
+        attempts = 4 if retry_check else 1
+        last: Exception | None = None
+        for index in range(attempts):
+            try:
+                url_check(url)
+                return
+            except MediaURLError as exc:
+                last = exc
+                if index + 1 < attempts:
+                    time.sleep(15)
+        if last is not None:
+            raise last
+
+    for item in ready:
+        platform = item["platform"]
+        if is_paused(alerts, platform) or platform in budget.halted:
+            print(f"{platform}: paused, not posting")
+            continue
+        identity = item["identity"]
+        caption = item["caption"]
+        video_url = item["video_url"]
+        package = item["package"]
+        source = item["source"]
+        slot = item["slot"]
+        try:
+            verify(video_url)
+        except MediaURLError as exc:
+            skip_media(platform, str(exc))
+            continue
+        try:
+            post = poster(item["payload"])
+        except Exception as exc:
+            if is_media_url_error(str(exc)) or isinstance(exc, MediaURLError):
+                skip_media(platform, f"{exc.__class__.__name__}: {exc}")
+                continue
             failures += 1
             reason = f"{exc.__class__.__name__}: {exc}"
             pause_platform(alerts, platform, reason, "buffer_error", when=now)
@@ -582,6 +707,7 @@ def execute_live(
             continue
         posted += 1
         _remember(ledger, platform, identity, caption, slot, post, video_url, package["campaign_id"])
+        remember_topics(ledger, f"{source.stem}\n{identity}\n{caption}", slot)
         text = post.get("text") or caption
         enriched = dict(post)
         enriched["text"] = text
