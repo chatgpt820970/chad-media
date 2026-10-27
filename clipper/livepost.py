@@ -224,8 +224,8 @@ def _remember(ledger: dict, platform: str, identity: str, caption: str, slot: da
     if key not in ledger["sources"]:
         ledger["sources"].append(key)
     normalized = normalize_caption(caption)
-    if not any(row.get("platform") == platform and row.get("text") == normalized for row in ledger["captions"]):
-        ledger["captions"].append({"platform": platform, "text": normalized})
+    if not any(row.get("source") == identity and row.get("text") == normalized for row in ledger["captions"]):
+        ledger["captions"].append({"platform": platform, "source": identity, "text": normalized})
     ledger["posted"].append(
         {
             "key": slot_key(platform, slot),
@@ -291,7 +291,7 @@ def _gather_candidates(
         return True
 
     sui = _campaign(bundle, "sui-basecamp") or {}
-    if sui.get("active") and platform in (sui.get("platforms") or []):
+    if sui.get("active") and float((sui.get("budget_snapshot") or {}).get("remaining_usd", 1)) > 0 and platform in (sui.get("platforms") or []):
         meta = manifest.get("sui") or {}
         path = Path(str(meta.get("path") or ""))
         if not path.is_file():
@@ -311,7 +311,7 @@ def _gather_candidates(
 
     dhan = _campaign(bundle, "dhan-aziz") or {}
     approved = {str(item) for item in (bundle.get("approvals") or {}).get("approved") or []}
-    if dhan.get("active") and platform in (dhan.get("platforms") or []) and approved:
+    if dhan.get("active") and float((dhan.get("budget_snapshot") or {}).get("remaining_usd", 1)) > 0 and platform in (dhan.get("platforms") or []) and approved:
         for path in _dhan_videos(media_dir):
             if path.stem not in approved and path.name not in approved:
                 continue
@@ -439,9 +439,10 @@ def render_variant(source: Path, dest: Path, platform: str, campaign: dict | Non
     variant = variant_for(platform)
     rules = campaign if campaign and (campaign.get("logo") or {}).get("required") else {"logo": {"required": False}}
     graph, uses_logo = logo_filter(rules, 720, 1280, float(variant["crop_x"]))
-    if uses_logo or "drawtext" in graph:
-        raise RuntimeError("live render must not stamp a logo or text")
-    apply_filters(source, dest, graph, None, CLIP_SECONDS, float(variant["start_sec"]))
+    if "drawtext" in graph:
+        raise RuntimeError("live render must not stamp text")
+    logo_path = Path(str(rules["logo"]["file"])) if uses_logo else None
+    apply_filters(source, dest, graph, logo_path, CLIP_SECONDS, float(variant["start_sec"]))
 
 
 def _asset_name(platform: str, slot: datetime) -> str:
@@ -479,11 +480,11 @@ def _download_next_sui(bundle: dict, media_dir: Path, exclude: set[str]) -> dict
     return fetch_sui_clip(url, media_dir, exclude_ids=exclude)
 
 
-def _used_captions(ledger: dict, platform: str) -> set[str]:
+def _used_captions(ledger: dict, identity: str) -> set[str]:
     return {
         str(row.get("text") or "")
         for row in ledger.get("captions") or []
-        if row.get("platform") == platform and row.get("text")
+        if row.get("source") != identity and row.get("text")
     }
 
 
@@ -606,8 +607,8 @@ def execute_live(
                     identity,
                     bundle,
                     limits,
-                    _used_captions(ledger, platform),
-                    source_key(platform, identity),
+                    _used_captions(ledger, identity),
+                    identity,
                     campaign_hint,
                     clip_title,
                 )
