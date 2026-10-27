@@ -65,8 +65,8 @@
     "youtube": {
       "max_duration_sec": 60,
       "max_hashtags": 5,
-      "require_hashtags": ["#shorts"],
-      "optional_hashtags": ["#movies", "#cricket", "#bollywood"],
+      "require_hashtags": [],
+      "optional_hashtags": ["#movies", "#anime", "#clips"],
       "char_limit": 5000,
       "aspect": "9:16"
     },
@@ -74,7 +74,7 @@
       "max_duration_sec": 90,
       "max_hashtags": 5,
       "require_hashtags": [],
-      "optional_hashtags": ["#reels", "#movies"],
+      "optional_hashtags": ["#movies", "#anime", "#clips"],
       "char_limit": 2200,
       "aspect": "9:16"
     },
