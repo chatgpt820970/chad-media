@@ -41,8 +41,8 @@ jobs:
 
       - name: Install ffmpeg, gdown, and yt-dlp
         run: |
-          sudo timeout 180 apt-get update
-          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr fonts-dejavu-core
+          sudo timeout 300 apt-get update
+          sudo timeout 300 apt-get install -y ffmpeg tesseract-ocr fonts-dejavu-core
           timeout 180 python -m pip install --upgrade gdown curl_cffi gallery-dl
           timeout 180 python -m pip install -U --pre yt-dlp
 
