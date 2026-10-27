@@ -85,6 +85,21 @@
       "queries": ["cricket match highlight India", "Bollywood movie scene dialogue", "PM Modi speech clip"]
     }
   },
+  "instagram_source": {
+    "note": "Instagram posting stays off. These public reels are downloaded with INSTAGRAM_COOKIES and routed to X, YouTube, or TikTok. Account URLs are profile pages, not /reels/.",
+    "x": {
+      "hashtags": ["animeedit", "4kanime", "celebrity"],
+      "accounts": []
+    },
+    "youtube": {
+      "hashtags": ["cricket", "bollywood", "romantic"],
+      "accounts": ["icc", "bcci.tv"]
+    },
+    "tiktok": {
+      "hashtags": ["animeedit", "hollywood", "movieclips"],
+      "accounts": []
+    }
+  },
   "campaign_queries": {
     "crookbrown": {
       "platforms": ["tiktok"],

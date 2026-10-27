@@ -267,6 +267,10 @@ def _gather_candidates(
             return False
         if identity in blocked or source_key(platform, identity) in used:
             return False
+        if kind == "content_plan":
+            needle = f":{identity}"
+            if any(str(key) == identity or str(key).endswith(needle) for key in used):
+                return False
         items.append((kind, path, identity, campaign))
         return True
 

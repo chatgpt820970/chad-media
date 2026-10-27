@@ -234,11 +234,12 @@ def real_video(path: Path, min_bytes: int = MIN_BYTES) -> bool:
     return probe.returncode == 0 and "video" in (probe.stdout or "")
 
 
-def visible_platform_mark(path: Path) -> str | None:
+def visible_platform_mark(path: Path, *, include_handles: bool = False) -> str | None:
     """OCR the corners. The synthetic ink detector is not used on real frames.
 
     Returns a platform word when tesseract sees one, an empty string when
-    tesseract is missing, and None when the corners are clean.
+    tesseract is missing, and None when the corners are clean. Instagram
+    reels also pass include_handles so a burned-in @name is a skip.
     """
     if not shutil.which("tesseract") or not shutil.which("ffmpeg"):
         return ""
@@ -276,7 +277,8 @@ def visible_platform_mark(path: Path) -> str | None:
                 continue
             text = ocr_image(image)
             for item in scan_text(text):
-                if PLATFORM_MARK.search(item) and item not in marks:
+                keep = bool(PLATFORM_MARK.search(item)) or (include_handles and item.startswith("@"))
+                if keep and item not in marks:
                     marks.append(item)
     finally:
         shutil.rmtree(folder, ignore_errors=True)

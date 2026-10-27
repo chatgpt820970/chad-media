@@ -892,7 +892,45 @@ class LivePostTests(unittest.TestCase):
             "youtube", unapproved, manifest, media, empty_ledger(), empty_alerts(), lambda exclude: None
         )
         self.assertEqual([item[0] for item in gathered], ["sui", "content_plan"])
+        reel = self._file(media, "ig-abc.mp4")
+        shared = {
+            "sui": {"file_id": "drive-evan", "path": str(sui), "status": "downloaded"},
+            "content_plan": [
+                {"platform": "youtube", "status": "downloaded", "path": str(reel)},
+                {"platform": "tiktok", "status": "downloaded", "path": str(reel)},
+            ],
+        }
+        posted = empty_ledger()
+        posted["sources"].append("youtube:ig-abc")
+        yt_shared = _gather_candidates(
+            "youtube", bundle, shared, media, posted, empty_alerts(), lambda exclude: None
+        )
+        self.assertNotIn("content_plan", [item[0] for item in yt_shared])
+        self.assertIn("sui", [item[0] for item in yt_shared])
+        tt_shared = _gather_candidates(
+            "tiktok", bundle, shared, media, posted, empty_alerts(), lambda exclude: None
+        )
+        self.assertEqual([item[0] for item in tt_shared], ["sui"])
+        sui_only = empty_ledger()
+        sui_only["sources"].append("youtube:drive-evan")
+        tt_sui = _gather_candidates(
+            "tiktok", bundle, shared, media, sui_only, empty_alerts(), lambda exclude: None
+        )
+        self.assertEqual([item[0] for item in tt_sui], ["sui", "content_plan"])
         del out, root
+
+    def test_cookies_expired_does_not_pause(self):
+        from clipper.strikes import empty_alerts, is_paused, record_cookies_expired
+
+        state = empty_alerts()
+        self.assertTrue(record_cookies_expired(state, "instagram", "cookie download rejected: login required"))
+        self.assertFalse(record_cookies_expired(state, "instagram", "cookie download rejected: login required"))
+        self.assertTrue(record_cookies_expired(state, "youtube", "cookie download rejected: not a bot"))
+        self.assertEqual(state["paused"], {})
+        self.assertFalse(is_paused(state, "instagram"))
+        self.assertFalse(is_paused(state, "youtube"))
+        self.assertEqual([row["kind"] for row in state["alerts"]], ["cookies_expired", "cookies_expired"])
+        self.assertEqual(state["alerts"][0]["platform"], "instagram")
 
     def test_sui_render_uses_a_real_caption_when_ffmpeg_exists(self):
         if not ffmpeg_available():
@@ -1113,6 +1151,52 @@ class PublicSourceTests(unittest.TestCase):
         self.assertIn(f"YT_COOKIES_FILE={folder / 'yt_cookies.txt'}", env_file.read_text(encoding="utf-8"))
         self.assertNotIn("TIKTOK_COOKIES_FILE", env_file.read_text(encoding="utf-8"))
         del os
+
+    def test_expired_cookie_reason_keeps_the_log_out_of_the_alert(self):
+        from clipper.fetchsrc import cookies_look_expired, expired_reason
+
+        self.assertTrue(cookies_look_expired("ERROR: Sign in to confirm you're not a bot"))
+        self.assertTrue(cookies_look_expired("Requested content is not available, rate-limit reached or login required"))
+        self.assertFalse(cookies_look_expired("HTTP Error 403"))
+        self.assertFalse(cookies_look_expired(""))
+        reason = expired_reason("ERROR: login required\nCookie: sid=secret")
+        self.assertEqual(reason, "cookie download rejected: login required")
+        self.assertNotIn("secret", reason)
+
+    def test_instagram_targets_rank_clean_reels_and_skip_handles_page(self):
+        from clipper.igsource import instagram_targets, rank_reels, reel_shortcode
+
+        bundle = {
+            "sources": {
+                "instagram_source": {
+                    "youtube": {"hashtags": ["Bollywood"], "accounts": ["icc"]},
+                    "x": {"hashtags": ["animeedit"], "accounts": []},
+                }
+            }
+        }
+        urls = instagram_targets(bundle, "youtube")
+        self.assertEqual(
+            urls,
+            [
+                "https://www.instagram.com/explore/tags/bollywood/",
+                "https://www.instagram.com/icc/",
+            ],
+        )
+        self.assertFalse(any("/reels/" in url for url in urls))
+        self.assertEqual(reel_shortcode("https://www.instagram.com/reel/AbC123/", ""), "AbC123")
+        ranked = rank_reels(
+            {
+                "entries": [
+                    {"id": "low", "title": "cricket highlight", "view_count": 10, "url": "https://www.instagram.com/reel/low/"},
+                    {"id": "high", "title": "bollywood scene", "view_count": 90, "url": "https://www.instagram.com/reel/high/"},
+                    {"id": "bad", "title": "explicit scene", "view_count": 999, "url": "https://www.instagram.com/reel/bad/"},
+                    None,
+                    {"id": "same", "title": "anime edit", "view_count": 5, "url": "https://www.instagram.com/p/same/"},
+                ]
+            },
+            seen={"high"},
+        )
+        self.assertEqual([row["id"] for row in ranked], ["low", "same"])
 
 
 if __name__ == "__main__":

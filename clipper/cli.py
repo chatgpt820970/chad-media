@@ -12,6 +12,7 @@ from pathlib import Path
 from clipper.alerts import alert
 from clipper.buffer_api import POSTS_QUERY, graphql, post_nodes
 from clipper.engine import threshold_warning
+from clipper.cookiesrc import probe_cookie_downloads
 from clipper.fetchsrc import fetch_media
 from clipper.publicsrc import fetch_public_report
 from clipper.loadconfig import check_bundle, load_bundle, posting_platforms, repo_root
@@ -105,6 +106,25 @@ def command_fetch_public(bundle: dict, args: argparse.Namespace) -> int:
     (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
     for row in report["sources"]:
         print(f"{row['name']} {row['status']} bytes={row.get('bytes') or 0} method={row.get('method') or '-'}")
+    return 0
+
+
+def command_fetch_cookies(bundle: dict, args: argparse.Namespace) -> int:
+    """Probe YT, TikTok, and Instagram cookie files. A miss still exits 0."""
+    output = Path(args.output_dir)
+    alerts_path = bundle["root"] / "state" / "platform_alerts.json"
+    alerts = load_json(alerts_path, empty_alerts())
+    before = json.dumps(alerts, sort_keys=True)
+    report = probe_cookie_downloads(bundle, output, dict(os.environ), alerts)
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "report.json").write_text(json.dumps(report, indent=2) + "\n", encoding="utf-8")
+    (output / "alerts.json").write_text(json.dumps(alerts, indent=2) + "\n", encoding="utf-8")
+    if json.dumps(alerts, sort_keys=True) != before:
+        save_json(alerts_path, alerts)
+    for row in report["sources"]:
+        print(f"{row['name']} {row['status']} bytes={row.get('bytes') or 0} reason={row.get('reason') or '-'}")
+    if alerts.get("paused"):
+        print("paused " + ",".join(sorted(alerts["paused"])))
     return 0
 
 
@@ -271,6 +291,9 @@ def build_parser() -> argparse.ArgumentParser:
     public = sub.add_parser("fetch-public")
     public.add_argument("--output-dir", default="work/public")
 
+    cookies = sub.add_parser("fetch-cookies")
+    cookies.add_argument("--output-dir", default="work/cookies")
+
     mark = sub.add_parser("mark-submitted")
     mark.add_argument("--key", required=True, help="Pending item id or post URL")
 
@@ -291,6 +314,8 @@ def main(argv: list[str] | None = None) -> int:
         return command_fetch(bundle, args)
     if args.command == "fetch-public":
         return command_fetch_public(bundle, args)
+    if args.command == "fetch-cookies":
+        return command_fetch_cookies(bundle, args)
     if args.command == "mark-submitted":
         return command_mark_submitted(bundle, args.key)
     if args.command == "monitor":

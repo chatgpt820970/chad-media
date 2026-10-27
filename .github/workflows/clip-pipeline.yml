@@ -104,7 +104,7 @@ jobs:
       - name: Install ffmpeg, gdown, and yt-dlp
         run: |
           sudo timeout 180 apt-get update
-          sudo timeout 180 apt-get install -y ffmpeg
+          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
           timeout 180 python -m pip install --upgrade gdown yt-dlp curl_cffi gallery-dl
 
       - name: Cookie files
@@ -188,8 +188,9 @@ jobs:
 
       - name: Install ffmpeg, tesseract, yt-dlp, and gallery-dl
         run: |
-          sudo apt-get update && sudo apt-get install -y ffmpeg tesseract-ocr
-          python -m pip install --upgrade yt-dlp curl_cffi gallery-dl
+          sudo timeout 180 apt-get update
+          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
+          timeout 180 python -m pip install --upgrade yt-dlp curl_cffi gallery-dl
 
       - name: Probe cookie-free sources
         run: python -m clipper fetch-public --output-dir work/public
@@ -219,4 +220,67 @@ jobs:
         with:
           name: public-sources
           path: work/public/
+          if-no-files-found: error
+
+  cookie-downloads:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, tesseract, and yt-dlp
+        run: |
+          sudo timeout 180 apt-get update
+          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
+          timeout 180 python -m pip install --upgrade yt-dlp curl_cffi
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: python script/write_cookies.py
+
+      - name: Probe YouTube, TikTok, and Instagram cookie downloads
+        env:
+          CLIPPER_LIVE: "false"
+        run: python -m clipper fetch-cookies --output-dir work/cookies
+
+      - name: Check the cookie report
+        run: |
+          python - << 'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("work/cookies/report.json").read_text())
+          alerts = json.loads(Path("work/cookies/alerts.json").read_text())
+          rows = {row["name"]: row for row in report["sources"]}
+          required = {"youtube", "tiktok", "instagram"}
+          allowed = {"missing", "cookies_expired", "downloaded", "unavailable"}
+          if set(rows) != required:
+              raise SystemExit(f"report names {sorted(rows)} != {sorted(required)}")
+          if alerts.get("paused"):
+              raise SystemExit("cookie probe paused a platform: " + ",".join(sorted(alerts["paused"])))
+          for name, row in rows.items():
+              status = row.get("status")
+              if status not in allowed:
+                  raise SystemExit(f"{name} status {status}")
+              if status == "downloaded" and int(row.get("bytes") or 0) < 8000:
+                  raise SystemExit(f"{name} downloaded without a real video")
+              print(name, status, "bytes", row.get("bytes") or 0, "reason", row.get("reason") or "-")
+          print("cookie downloads report ok")
+          PY
+
+      - name: Upload cookie report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cookie-downloads
+          path: work/cookies/
           if-no-files-found: error

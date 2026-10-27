@@ -250,6 +250,36 @@ def _needs_cookies(log: str) -> bool:
     return "not a bot" in text or "sign in to confirm" in text
 
 
+_EXPIRED_MARKERS = (
+    "login required",
+    "please log in",
+    "log in to continue",
+    "no longer valid",
+    "checkpoint",
+    "sign in to confirm",
+    "not a bot",
+    "login_required",
+)
+
+
+def cookies_look_expired(log: str) -> bool:
+    """True when a cookie file was used and the site rejected the session.
+
+    A bot wall with no cookie file is needs_cookies, not this.
+    """
+    text = (log or "").lower()
+    return any(marker in text for marker in _EXPIRED_MARKERS)
+
+
+def expired_reason(log: str) -> str:
+    """A short alert reason. The yt-dlp log is not copied into state."""
+    text = (log or "").lower()
+    for marker in _EXPIRED_MARKERS:
+        if marker in text:
+            return f"cookie download rejected: {marker}"
+    return "cookie download rejected"
+
+
 def redact_log(log: str) -> str:
     """Drop lines that can carry a cookie. The temp path itself is not a secret."""
     kept: list[str] = []
@@ -412,19 +442,40 @@ def _downloaded_row(platform: str, source: str, path: Path, via: str) -> dict:
     }
 
 
-def fetch_content_plan(bundle: dict, output: Path, env: dict) -> list[dict]:
-    """One clip per platform.
+def _posted_reel_ids(bundle: dict) -> set[str]:
+    """Instagram shortcodes already stored on any platform's ledger."""
+    from clipper.submissions import load_json
+
+    ledger = load_json(bundle["root"] / "state" / "live.json", {"sources": []})
+    seen: set[str] = set()
+    for key in ledger.get("sources") or []:
+        text = str(key)
+        identity = text.split(":", 1)[1] if ":" in text else text
+        if identity.startswith("ig-"):
+            seen.add(identity.removeprefix("ig-"))
+            seen.add(identity)
+    return seen
+
+
+def fetch_content_plan(bundle: dict, output: Path, env: dict, alerts: dict | None = None) -> list[dict]:
+    """One clip per enabled platform.
 
     A Netscape cookie file for that site is passed to yt-dlp with --cookies.
-    A missing file, or a cookie download that saves nothing, falls back to the
-    cookie-free public sources. A miss is unavailable or needs_cookies, never
-    a fetch failure, and it does not pause a platform.
+    Instagram posting stays off. INSTAGRAM_COOKIES, when present, is a source
+    of public reels for X, YouTube, and TikTok. A missing file, or a cookie
+    download that saves nothing, falls back to the cookie-free public sources.
+    An expired cookie file records cookies_expired and does not pause posting.
+    A miss is unavailable or needs_cookies, never a fetch failure.
     """
+    from clipper.igsource import fetch_instagram_reel
     from clipper.publicsrc import public_file_for_platform
+    from clipper.strikes import record_cookies_expired
 
     output.mkdir(parents=True, exist_ok=True)
     root = bundle["root"]
     public_cfg = (bundle.get("sources") or {}).get("public_sources") or {}
+    seen_reels = _posted_reel_ids(bundle)
+    ig_cookies = cookie_file(str(env.get("INSTAGRAM_COOKIES_FILE") or ""))
     results = []
     for platform, spec in bundle["sources"].get("platforms", {}).items():
         channel = bundle["channels"]["platforms"][platform]
@@ -466,6 +517,22 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict) -> list[dict]:
                 if files:
                     results.append(_downloaded_row(platform, commands[-1][-1], files[0], "cookies"))
                     continue
+                if alerts is not None and cookies_look_expired(log):
+                    record_cookies_expired(alerts, platform, expired_reason(log))
+        if platform in {"x", "youtube", "tiktok"} and ig_cookies:
+            ig = fetch_instagram_reel(
+                bundle,
+                platform,
+                target,
+                ig_cookies,
+                seen_reels,
+                alerts,
+                max_listings=1,
+                max_downloads=2,
+            )
+            if ig.get("status") == "downloaded" and ig.get("path"):
+                results.append(ig)
+                continue
         public = None
         if platform in {"x", "youtube", "tiktok"}:
             try:
@@ -560,9 +627,17 @@ def fetch_media(
             errors.append(f"dropbox: {exc}")
     else:
         manifest["dropbox"] = {"status": "skipped", "reason": "not requested"}
+    from clipper.strikes import empty_alerts
+    from clipper.submissions import load_json, save_json
+
+    alerts_path = bundle["root"] / "state" / "platform_alerts.json"
+    alerts = load_json(alerts_path, empty_alerts())
+    alerts_before = len(alerts.get("alerts") or [])
     try:
-        plan = fetch_content_plan(bundle, output / "content-plan", env)
+        plan = fetch_content_plan(bundle, output / "content-plan", env, alerts)
         manifest["content_plan"] = plan
+        if len(alerts.get("alerts") or []) != alerts_before:
+            save_json(alerts_path, alerts)
         youtube = next((row for row in plan if row["platform"] == "youtube"), None)
         youtube_status = (youtube or {}).get("status")
         if youtube_status not in ("downloaded", "needs_cookies", "unavailable"):

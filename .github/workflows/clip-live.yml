@@ -39,7 +39,7 @@ jobs:
       - name: Install ffmpeg, gdown, and yt-dlp
         run: |
           sudo timeout 180 apt-get update
-          sudo timeout 180 apt-get install -y ffmpeg
+          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
           timeout 180 python -m pip install --upgrade gdown yt-dlp curl_cffi gallery-dl
 
       - name: Cookie files

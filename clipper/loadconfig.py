@@ -121,6 +121,13 @@ def iter_queries(sources: dict) -> list[tuple[str, str]]:
     for platform, subs in (public.get("reddit") or {}).items():
         for sub in subs or []:
             found.append((f"public:reddit:{platform}", str(sub)))
+    for platform, spec in (sources.get("instagram_source") or {}).items():
+        if platform == "note" or not isinstance(spec, dict):
+            continue
+        for tag in spec.get("hashtags") or []:
+            found.append((f"instagram-source:{platform}", str(tag)))
+        for account in spec.get("accounts") or []:
+            found.append((f"instagram-source:{platform}", str(account)))
     return found
 
 
