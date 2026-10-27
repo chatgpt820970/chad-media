@@ -415,7 +415,7 @@ def build_caption(
     hooks = list(caption.get("hooks") or [])
     if not hooks:
         hooks = [""]
-    start = _stable_index(clip["source_id"], len(hooks))
+    start = _stable_index(f"{platform}:{clip['source_id']}", len(hooks))
     ordered = hooks[start:] + hooks[:start]
     last = ""
     for hook in ordered:
