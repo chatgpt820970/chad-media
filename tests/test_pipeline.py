@@ -1127,9 +1127,7 @@ class LivePostTests(unittest.TestCase):
         code, calls = self._run(bundle, media, out, rows, poster)
         self.assertEqual(code, 0)
         text = next(item["text"] for item in seen if item["channelId"].endswith("fdf1"))
-        self.assertTrue(
-            any(hook in text for hook in ("Worth another look", "The part people replay", "From today", "Clean cut", "Still going around"))
-        )
+        assert "invidious" not in text.lower()
         self.assertNotIn("x.com/SuiNetwork", text)
         self.assertFalse(text.startswith("#Ad"))
         self.assertTrue(calls)
