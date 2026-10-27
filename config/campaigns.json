@@ -102,13 +102,16 @@
       "caption": {
         "disclosure": "#Ad",
         "hooks": [
-          "Sui BaseCamp live",
-          "This moment from Sui BaseCamp"
+          "Sui BaseCamp just dropped the future of Web3 and nobody's ready 🔥",
+          "The crypto conference moment everyone's skipping… big mistake 👀",
+          "This is why everyone's talking about Sui BaseCamp 🤯",
+          "Sui BaseCamp went off and you missed it 😭",
+          "Not your usual boring tech talk 💀 Sui BaseCamp live"
         ],
         "required_phrases": [
           "x.com/SuiNetwork"
         ],
-        "hashtags": [],
+        "hashtags": ["#Sui", "#SuiBaseCamp", "#crypto"],
         "platform_tags": {},
         "exclusive_tokens": [
           "x.com/SuiNetwork",
