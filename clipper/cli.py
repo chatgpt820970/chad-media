@@ -13,8 +13,10 @@ from clipper.alerts import alert
 from clipper.buffer_api import POSTS_QUERY, graphql, post_nodes
 from clipper.engine import threshold_warning
 from clipper.fetchsrc import fetch_media
-from clipper.loadconfig import check_bundle, load_bundle, repo_root
+from clipper.loadconfig import check_bundle, load_bundle, posting_platforms, repo_root
+from clipper.livepost import empty_ledger, execute_live, prefetch_exclude_ids
 from clipper.run import planned_downloads, run_pipeline, write_report
+from clipper.strikes import empty_alerts, record_post_statuses
 from clipper.submissions import (
     empty_pending,
     empty_views,
@@ -69,7 +71,19 @@ def command_check(bundle: dict) -> int:
 
 def command_fetch(bundle: dict, args: argparse.Namespace) -> int:
     output = Path(args.output_dir)
-    manifest = fetch_media(bundle, output, env=dict(os.environ))
+    exclude = None
+    if args.respect_ledger:
+        ledger = load_json(bundle["root"] / "state" / "live.json", empty_ledger())
+        sui = next(row for row in bundle["campaigns"]["campaigns"] if row["id"] == "sui-basecamp")
+        platforms = [name for name in posting_platforms(bundle) if name in set(sui.get("platforms") or [])]
+        exclude = prefetch_exclude_ids(ledger, platforms)
+    manifest = fetch_media(
+        bundle,
+        output,
+        env=dict(os.environ),
+        include_dropbox=not args.skip_dropbox,
+        exclude_sui_ids=exclude,
+    )
     output.mkdir(parents=True, exist_ok=True)
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(f"fetch ok={manifest['ok']} sui={bool(manifest.get('short'))}")
@@ -83,12 +97,16 @@ def command_run(bundle: dict, args: argparse.Namespace) -> int:
         if os.environ.get("CLIPPER_LIVE", "").lower() != "true":
             print("Refusing a live post. Set the CLIPPER_LIVE variable to true as well as --live.", file=sys.stderr)
             return 2
-        print(
-            "Refusing to post. Dry-run media uses example.invalid URLs. "
-            "Upload rendered files to the clip-media release before a live run.",
-            file=sys.stderr,
+        if not (os.environ.get("BUFFER_API_TOKEN") or "").strip():
+            print("Refusing a live post. BUFFER_API_TOKEN is empty.", file=sys.stderr)
+            return 2
+        return execute_live(
+            bundle,
+            now=_now(args.now),
+            env=dict(os.environ),
+            media_dir=Path(args.media_dir),
+            output_dir=Path(args.output_dir),
         )
-        return 2
     report = run_pipeline(
         bundle,
         now=_now(args.now),
@@ -147,7 +165,11 @@ def sync_sent_posts(bundle: dict, pending: dict) -> int:
     api = bundle["pipeline"]["buffer_api_url"]
     org = bundle["channels"]["buffer_organization_id"]
     minutes = int(bundle["pipeline"]["submit_within_minutes"])
+    alerts_path = bundle["root"] / "state" / "platform_alerts.json"
+    alerts = load_json(alerts_path, empty_alerts())
     added = 0
+    paused = False
+    when = datetime.now(timezone.utc)
     for platform, spec in bundle["channels"]["platforms"].items():
         channel = str(os.environ.get(spec.get("channel_id_env") or "") or spec["buffer_channel_id"])
         try:
@@ -155,13 +177,19 @@ def sync_sent_posts(bundle: dict, pending: dict) -> int:
         except Exception as exc:
             print(f"buffer poll {platform} failed: {exc.__class__.__name__}")
             continue
+        nodes = post_nodes(data)
         added += record_sent_posts(
             pending,
-            post_nodes(data),
+            nodes,
             platform,
             bundle["campaigns"]["campaigns"],
             minutes,
         )
+        for note in record_post_statuses(alerts, platform, nodes, when):
+            alert(note)
+            paused = True
+    if paused:
+        save_json(alerts_path, alerts)
     if added:
         print(f"recorded {added} sent post(s) into submissions/pending.json")
     return added
@@ -205,13 +233,20 @@ def build_parser() -> argparse.ArgumentParser:
 
     run = sub.add_parser("run")
     run.add_argument("--dry-run", action="store_true", help="Plan only. This is the default.")
-    run.add_argument("--live", action="store_true", help="Blocked unless CLIPPER_LIVE=true, and still refuses example.invalid URLs.")
+    run.add_argument("--live", action="store_true", help="Post the due slot via Buffer GraphQL. Requires CLIPPER_LIVE=true.")
     run.add_argument("--now", default="")
     run.add_argument("--output-dir", default="work/dry-run")
+    run.add_argument("--media-dir", default="work/fetch", help="fetch-media output used by --live.")
     run.add_argument("--simulate-live", action="store_true")
 
     fetch = sub.add_parser("fetch")
     fetch.add_argument("--output-dir", default="work/fetch")
+    fetch.add_argument("--skip-dropbox", action="store_true", help="Skip the Dhan Aziz zip. Live posting does not send it.")
+    fetch.add_argument(
+        "--respect-ledger",
+        action="store_true",
+        help="Skip a Drive file only when every live Sui platform has already posted it.",
+    )
 
     mark = sub.add_parser("mark-submitted")
     mark.add_argument("--key", required=True, help="Pending item id or post URL")

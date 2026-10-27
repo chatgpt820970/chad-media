@@ -1,0 +1,85 @@
+name: Clip live
+
+# Every two hours, post one clip on each enabled platform whose peak-hour
+# slot falls in that window. Times are IST (Asia/Kolkata), 10 per platform,
+# at least 90 minutes apart:
+#   X        14:00 16:15 18:30 20:45 23:00 01:15 03:30 05:45 08:00 10:15
+#   YouTube  07:00 09:15 11:30 13:45 16:00 18:15 20:30 22:45 01:00 03:15
+#   TikTok   15:30 17:45 20:00 22:15 00:30 02:45 05:00 07:15 09:30 11:45
+# Instagram keeps the YouTube clock but stays disabled until its channel
+# can link to Content Rewards.
+# A skipped job does not start a runner. Leave CLIPPER_LIVE unset and this
+# cron costs no minutes and does not call Buffer. workflow_dispatch uses
+# the same gate.
+on:
+  schedule:
+    - cron: "0 */2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  post:
+    if: ${{ vars.CLIPPER_LIVE == 'true' }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    concurrency:
+      group: clip-live
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, gdown, and yt-dlp
+        run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg
+          python -m pip install --upgrade gdown yt-dlp
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: |
+          if [ -n "$YT_COOKIES" ]; then printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/yt_cookies.txt"; echo "YT_COOKIES_FILE=$RUNNER_TEMP/yt_cookies.txt" >> "$GITHUB_ENV"; fi
+          if [ -n "$X_COOKIES" ]; then printf '%s\n' "$X_COOKIES" > "$RUNNER_TEMP/x_cookies.txt"; echo "X_COOKIES_FILE=$RUNNER_TEMP/x_cookies.txt" >> "$GITHUB_ENV"; fi
+          if [ -n "$INSTAGRAM_COOKIES" ]; then printf '%s\n' "$INSTAGRAM_COOKIES" > "$RUNNER_TEMP/ig_cookies.txt"; echo "INSTAGRAM_COOKIES_FILE=$RUNNER_TEMP/ig_cookies.txt" >> "$GITHUB_ENV"; fi
+          if [ -n "$TIKTOK_COOKIES" ]; then printf '%s\n' "$TIKTOK_COOKIES" > "$RUNNER_TEMP/tt_cookies.txt"; echo "TIKTOK_COOKIES_FILE=$RUNNER_TEMP/tt_cookies.txt" >> "$GITHUB_ENV"; fi
+          unset YT_COOKIES X_COOKIES INSTAGRAM_COOKIES TIKTOK_COOKIES
+
+      - name: Download Sui and content-plan media
+        env:
+          CLIPPER_LIVE: "false"
+        run: python -m clipper fetch --output-dir work/fetch --skip-dropbox --respect-ledger
+
+      - name: Post the due slot
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          CLIPPER_LIVE: ${{ vars.CLIPPER_LIVE }}
+          BUFFER_CHANNEL_X: ${{ vars.BUFFER_CHANNEL_X }}
+          BUFFER_CHANNEL_YOUTUBE: ${{ vars.BUFFER_CHANNEL_YOUTUBE }}
+          BUFFER_CHANNEL_INSTAGRAM: ${{ vars.BUFFER_CHANNEL_INSTAGRAM }}
+          BUFFER_CHANNEL_TIKTOK: ${{ vars.BUFFER_CHANNEL_TIKTOK }}
+          GH_TOKEN: ${{ github.token }}
+        run: python -m clipper run --live --media-dir work/fetch --output-dir work/live
+
+      - name: Commit the live ledger
+        if: ${{ vars.CLIPPER_LIVE == 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add state/live.json state/platform_alerts.json submissions/pending.json || true
+          if git diff --cached --quiet; then
+            echo "no live ledger changes"
+          else
+            git commit -m "chore(live): record Buffer posts"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

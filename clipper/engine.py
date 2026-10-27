@@ -224,14 +224,25 @@ def clock_minutes(value: str) -> int:
     return hour * 60 + minute
 
 
-def quiet_gap_minutes(clock_times: list[str]) -> int:
-    """Largest break between slots, including the wrap past midnight."""
+def _slot_gaps(clock_times: list[str]) -> list[int]:
     minutes = sorted(clock_minutes(value) for value in clock_times)
     if len(minutes) < 2:
-        return 0
+        return []
     gaps = [minutes[index + 1] - minutes[index] for index in range(len(minutes) - 1)]
     gaps.append((minutes[0] + 24 * 60) - minutes[-1])
-    return max(gaps)
+    return gaps
+
+
+def quiet_gap_minutes(clock_times: list[str]) -> int:
+    """Largest break between slots, including the wrap past midnight."""
+    gaps = _slot_gaps(clock_times)
+    return max(gaps) if gaps else 0
+
+
+def min_slot_gap_minutes(clock_times: list[str]) -> int:
+    """Smallest break between slots, including the wrap past midnight."""
+    gaps = _slot_gaps(clock_times)
+    return min(gaps) if gaps else 0
 
 
 def upcoming_slots(now: datetime, clock_times: list[str], timezone: str, count: int) -> list[datetime]:
@@ -277,6 +288,33 @@ def _stable_index(key: str, size: int) -> int:
         return 0
     digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
     return int(digest[:8], 16) % size
+
+
+def rotated_hashtags(limits: dict | None, salt: str, reserved: int = 0) -> list[str]:
+    """Pick a different optional-tag slice for each post, inside the platform cap.
+
+    `reserved` counts hashtags the caption already has to keep, such as `#Ad`.
+    Required tags (`#shorts`) are counted from `limits` and are not repeated here.
+    """
+    limits = limits or {}
+    pool = [str(tag) for tag in (limits.get("optional_hashtags") or []) if str(tag).startswith("#")]
+    if not pool:
+        return []
+    required = [str(tag) for tag in (limits.get("require_hashtags") or []) if tag]
+    max_tags = int(limits["max_hashtags"]) if limits.get("max_hashtags") is not None else len(pool)
+    room = max(0, max_tags - len(required) - max(0, int(reserved)))
+    if room <= 0:
+        return []
+    start = _stable_index(f"{salt}:tags", len(pool))
+    ordered = pool[start:] + pool[:start]
+    picked: list[str] = []
+    for tag in ordered:
+        if tag in picked or tag in required:
+            continue
+        picked.append(tag)
+        if len(picked) >= room:
+            break
+    return picked
 
 
 _HASHTAG = re.compile(r"#[A-Za-z0-9_]+")
@@ -449,6 +487,7 @@ def content_plan_caption(
     char_limit: int,
     limits: dict | None = None,
     used: set[str] | None = None,
+    extra_hashtags: list[str] | None = None,
 ) -> str:
     """Owner content-plan caption. No paid disclosure and no campaign logo line."""
     limits = limits or {}
@@ -456,6 +495,9 @@ def content_plan_caption(
     if platform == "x":
         title = strip_urls(title)
     tags = [tag for tag in (limits.get("require_hashtags") or []) if tag]
+    for tag in extra_hashtags or []:
+        if tag and tag not in tags:
+            tags.append(tag)
     text = title if not tags else title + "\n" + " ".join(tags)
     max_tags = limits.get("max_hashtags")
     if max_tags is not None:

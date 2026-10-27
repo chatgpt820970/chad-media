@@ -98,24 +98,35 @@ def _video_files(folder: Path) -> list[Path]:
     ]
 
 
-def fetch_sui_clip(folder_url: str, output: Path) -> dict:
-    """List the Drive folder with gdown and download the smallest real clip."""
+def fetch_sui_clip(folder_url: str, output: Path, exclude_ids: set[str] | None = None) -> dict:
+    """List the Drive folder with gdown and download the smallest clip not already posted."""
     import gdown
 
     output.mkdir(parents=True, exist_ok=True)
     listed = gdown.download_folder(url=folder_url, skip_download=True, quiet=True) or []
     if not listed:
         raise RuntimeError("Sui Drive folder returned no files")
+    excluded = {str(item) for item in (exclude_ids or set()) if item}
     ranked: list[tuple[int, str, str]] = []
     for item in listed:
         file_id = str(getattr(item, "id", "") or "")
         name = Path(str(getattr(item, "path", "") or file_id)).name
         if not file_id or Path(name).suffix.lower() not in _VIDEO_SUFFIXES:
             continue
+        if file_id in excluded:
+            continue
         size = _drive_file_bytes(file_id) or 10**12
         ranked.append((size, file_id, name))
     if not ranked:
-        raise RuntimeError("Sui Drive folder has no video files")
+        return {
+            "status": "exhausted",
+            "file_id": "",
+            "name": "",
+            "listed": len(listed),
+            "bytes": 0,
+            "path": "",
+            "excluded": sorted(excluded),
+        }
     ranked.sort()
     size, file_id, name = ranked[0]
     source = output / "sui-source" / name
@@ -124,6 +135,7 @@ def fetch_sui_clip(folder_url: str, output: Path) -> dict:
     if not source.is_file() or source.stat().st_size < 100000:
         raise RuntimeError(f"gdown did not save a real clip at {source}")
     return {
+        "status": "downloaded",
         "file_id": file_id,
         "name": name,
         "listed": len(listed),
@@ -322,7 +334,14 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict) -> list[dict]:
     return results
 
 
-def fetch_media(bundle: dict, output: Path, env: dict | None = None) -> dict:
+def fetch_media(
+    bundle: dict,
+    output: Path,
+    env: dict | None = None,
+    *,
+    include_dropbox: bool = True,
+    exclude_sui_ids: set[str] | None = None,
+) -> dict:
     """Download Sui, Dhan Aziz, and content-plan media. Does not call Buffer."""
     env = env or {}
     output.mkdir(parents=True, exist_ok=True)
@@ -332,29 +351,35 @@ def fetch_media(bundle: dict, output: Path, env: dict | None = None) -> dict:
     sui = campaigns["sui-basecamp"]
     dhan = campaigns["dhan-aziz"]
     try:
-        fetched = fetch_sui_clip(sui["source"]["url"], output)
+        fetched = fetch_sui_clip(sui["source"]["url"], output, exclude_ids=exclude_sui_ids)
         manifest["sui"] = fetched
-        short = output / "sui-basecamp-short.mp4"
-        cut_vertical(Path(fetched["path"]), short, 8.0)
-        limits = (bundle["pipeline"].get("platform_limits") or {}).get("youtube") or {}
-        caption = build_caption(
-            sui,
-            {"source_id": Path(fetched["name"]).stem, "title": fetched["name"]},
-            "youtube",
-            int(bundle["pipeline"]["x_char_limit"]),
-            limits=limits,
-        )
-        if "x.com/SuiNetwork" not in caption:
-            raise RuntimeError("Sui caption is missing x.com/SuiNetwork")
-        (output / "caption.txt").write_text(caption + "\n", encoding="utf-8")
-        manifest["short"] = str(short)
-        manifest["caption"] = caption
+        if fetched.get("status") == "exhausted":
+            pass
+        else:
+            short = output / "sui-basecamp-short.mp4"
+            cut_vertical(Path(fetched["path"]), short, 8.0)
+            limits = (bundle["pipeline"].get("platform_limits") or {}).get("youtube") or {}
+            caption = build_caption(
+                sui,
+                {"source_id": Path(fetched["name"]).stem, "title": fetched["name"]},
+                "youtube",
+                int(bundle["pipeline"]["x_char_limit"]),
+                limits=limits,
+            )
+            if "x.com/SuiNetwork" not in caption:
+                raise RuntimeError("Sui caption is missing x.com/SuiNetwork")
+            (output / "caption.txt").write_text(caption + "\n", encoding="utf-8")
+            manifest["short"] = str(short)
+            manifest["caption"] = caption
     except Exception as exc:
         errors.append(f"sui: {exc}")
-    try:
-        manifest["dropbox"] = fetch_dropbox(dhan["source"]["url"], output / "dhan-aziz.zip")
-    except Exception as exc:
-        errors.append(f"dropbox: {exc}")
+    if include_dropbox:
+        try:
+            manifest["dropbox"] = fetch_dropbox(dhan["source"]["url"], output / "dhan-aziz.zip")
+        except Exception as exc:
+            errors.append(f"dropbox: {exc}")
+    else:
+        manifest["dropbox"] = {"status": "skipped", "reason": "not requested"}
     try:
         plan = fetch_content_plan(bundle, output / "content-plan", env)
         manifest["content_plan"] = plan

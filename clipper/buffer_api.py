@@ -1,4 +1,8 @@
-"""Buffer's current GraphQL API. Dry-run builds the same payload and does not send it."""
+"""Buffer's current GraphQL API at https://api.buffer.com.
+
+createPost is the GraphQL mutation. The retired REST v1 API is not used.
+Dry-run builds the same payload and does not send it.
+"""
 
 from __future__ import annotations
 
@@ -61,7 +65,8 @@ def build_post_input(package: dict, channel_id: str, video_url: str) -> dict:
     if platform == "instagram":
         payload["metadata"] = {"instagram": {"type": "reel", "shouldShareToFeed": True}}
     elif platform == "youtube":
-        title = caption.split("\n")[-1][:100] or "Short"
+        lines = [line.strip() for line in caption.splitlines() if line.strip() and not line.strip().startswith("#")]
+        title = (lines[0] if lines else caption.split("\n")[0])[:100] or "Short"
         payload["metadata"] = {
             "youtube": {
                 "title": title[:100],
