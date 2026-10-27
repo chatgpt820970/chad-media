@@ -2,8 +2,10 @@
 
 from __future__ import annotations
 
+import hashlib
 import shutil
 import subprocess
+from datetime import datetime, timezone
 from pathlib import Path
 
 PLACEMENTS = {
@@ -88,6 +90,49 @@ def render_color(path: Path, width: int, height: int, seconds: float, kind: str)
         str(path),
     ]
     run_ffmpeg(command)
+
+
+def x_overlay_text(title: str, salt: str) -> str:
+    """A short original line. The same source gets the same line on a given UTC day."""
+    hooks = (
+        "Worth another look",
+        "The part people replay",
+        "From today",
+        "Clean cut",
+        "Still going around",
+    )
+    day = datetime.now(timezone.utc).strftime("%Y-%m-%d")
+    hook = hooks[_stable_hash(f"{salt}:{day}", len(hooks))]
+    words = (title or "").replace("\n", " ").strip()
+    line = hook if not words else f"{hook}: {words}"
+    cleaned = "".join(ch if ch.isalnum() or ch in " '" else " " for ch in line)
+    return " ".join(cleaned.split())[:48]
+
+
+def _stable_hash(key: str, size: int) -> int:
+    if size <= 1:
+        return 0
+    digest = hashlib.sha256(key.encode("utf-8")).hexdigest()
+    return int(digest[:8], 16) % size
+
+
+def x_overlay_graph(text: str) -> str:
+    """Light bottom line so an X post is not a plain reupload. No logo."""
+    base = scale_filter(720, 1280, 0.03)
+    font = ""
+    for candidate in (
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf",
+        "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf",
+    ):
+        if Path(candidate).is_file():
+            font = candidate
+            break
+    safe = (text or "Clip").replace("\\", " ").replace(":", " ").replace("'", "").replace(",", " ")
+    font_arg = f"fontfile='{font}':" if font else ""
+    return (
+        f"[0:v]{base},drawtext={font_arg}text='{safe}':fontsize=26:fontcolor=white:"
+        f"borderw=2:bordercolor=black@0.65:x=(w-text_w)/2:y=h*0.84[v]"
+    )
 
 
 def apply_filters(source: Path, dest: Path, graph: str, logo: Path | None, seconds: float, start: float) -> None:

@@ -116,6 +116,8 @@ def iter_queries(sources: dict) -> list[tuple[str, str]]:
         found.append(("public:x-profile", str(profile)))
     for tag in (public.get("tiktok") or {}).get("tags") or []:
         found.append(("public:tiktok", str(tag)))
+    for user in (public.get("tiktok") or {}).get("users") or []:
+        found.append(("public:tiktok-user", str(user)))
     for query in (public.get("youtube_frontends") or {}).get("queries") or []:
         found.append(("public:youtube", str(query)))
     for platform, subs in (public.get("reddit") or {}).items():

@@ -8,22 +8,25 @@ name: Clip live
 #   TikTok   15:30 17:45 20:00 22:15 00:30 02:45 05:00 07:15 09:30 11:45
 # Instagram keeps the YouTube clock but stays disabled until its channel
 # can link to Content Rewards.
-# Live posting is on unless the repository variable CLIPPER_LIVE is the
-# lowercase string false. Unset starts the runner. workflow_dispatch uses
-# the same gate. Set CLIPPER_LIVE to false to stop the cron.
+# Live posting is on unless CLIPPER_LIVE is the lowercase string false.
+# GitHub drops schedules that land on minute 0 under load. Minute 17 is
+# still every two hours, and the 140-minute slot window still covers the
+# same IST clocks. workflow_dispatch stays.
 on:
   schedule:
-    - cron: "0 */2 * * *"
+    - cron: "17 */2 * * *"
+      timezone: UTC
   workflow_dispatch:
 
 permissions:
   contents: write
+  actions: write
 
 jobs:
   post:
     if: ${{ vars.CLIPPER_LIVE != 'false' }}
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 45
     concurrency:
       group: clip-live
       cancel-in-progress: false
@@ -39,8 +42,9 @@ jobs:
       - name: Install ffmpeg, gdown, and yt-dlp
         run: |
           sudo timeout 180 apt-get update
-          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
-          timeout 180 python -m pip install --upgrade gdown yt-dlp curl_cffi gallery-dl
+          sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr fonts-dejavu-core
+          timeout 180 python -m pip install --upgrade gdown curl_cffi gallery-dl
+          timeout 180 python -m pip install -U --pre yt-dlp
 
       - name: Cookie files
         env:
@@ -67,7 +71,7 @@ jobs:
         run: python -m clipper run --live --media-dir work/fetch --output-dir work/live
 
       - name: Commit the live ledger
-        if: ${{ vars.CLIPPER_LIVE != 'false' }}
+        if: ${{ always() && vars.CLIPPER_LIVE != 'false' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

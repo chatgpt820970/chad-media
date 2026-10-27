@@ -173,16 +173,23 @@ def ytdlp_argv() -> list[str]:
     return [sys.executable, "-m", "yt_dlp"]
 
 
-def youtube_attempts(source: str, output: str, cookies: str | None) -> list[list[str]]:
+def youtube_attempts(
+    source: str,
+    output: str,
+    cookies: str | None,
+    section: str = "*0-12",
+) -> list[list[str]]:
     """yt-dlp commands for a YouTube watch URL or ytsearch.
 
-    GitHub-hosted runners are datacenter IPs. tv_downgraded and visionos are
-    the public clients that still work without a login; web_safari and
-    android_vr are the fallbacks. Each attempt is separate so a blocked
-    client does not hide a working one.
+    A cookie file uses the web and mweb clients, which read that file.
+    Without cookies, tv_downgraded, web_safari, and android_vr are the
+    datacenter clients. Each attempt is separate so a blocked client does
+    not hide a working one. `section` is a yt-dlp download section, usually
+    the most-replayed window.
     """
     attempts = []
-    for client in ("tv_downgraded", "visionos", "web_safari", "android_vr"):
+    clients = ("web", "mweb", "tv_downgraded") if cookies else ("tv_downgraded", "web_safari", "android_vr")
+    for client in clients:
         command = [
             "yt-dlp",
             "--extractor-args",
@@ -198,7 +205,7 @@ def youtube_attempts(source: str, output: str, cookies: str | None) -> list[list
             "--max-downloads",
             "1",
             "--download-sections",
-            "*0-12",
+            section,
             "--force-keyframes-at-cuts",
             "--merge-output-format",
             "mp4",
@@ -314,21 +321,56 @@ def site_cookie_commands(
     output: str,
     cookies: str,
     tags: list[str] | None = None,
+    users: list[str] | None = None,
+    section: str = "*0-12",
 ) -> list[list[str]]:
     """yt-dlp for one site, with --cookies. TikTok excludes watermarked formats."""
     if platform == "youtube":
-        return youtube_attempts(f"ytsearch1:{query}", output, cookies)[:2]
+        return youtube_attempts(f"ytsearch1:{query}", output, cookies, section)[:2]
     if platform == "tiktok":
         from clipper.publicsrc import TIKTOK_FORMAT, _impersonate
 
         extra = _impersonate()
         commands = []
+        handles = []
+        for user in users or []:
+            handle = str(user).strip().lstrip("@")
+            handle = "".join(ch for ch in handle if ch.isalnum() or ch in "._")
+            if handle and handle not in handles:
+                handles.append(handle)
+        for handle in handles[:2]:
+            commands.append(
+                [
+                    "yt-dlp",
+                    *extra,
+                    "-f",
+                    TIKTOK_FORMAT,
+                    "--playlist-end",
+                    "1",
+                    "--max-downloads",
+                    "1",
+                    "--download-sections",
+                    "*0-12",
+                    "--force-keyframes-at-cuts",
+                    "--merge-output-format",
+                    "mp4",
+                    "--retries",
+                    "1",
+                    "--cookies",
+                    cookies,
+                    "-o",
+                    output,
+                    f"https://www.tiktok.com/@{handle}",
+                ]
+            )
         slugs = []
         for tag in tags or ["anime", "hollywood"]:
             slug = "".join(ch for ch in str(tag).lower() if ch.isalnum())
             if slug and slug not in slugs:
                 slugs.append(slug)
-        if len(slugs) > 2:
+        if handles:
+            slugs = slugs[:1]
+        elif len(slugs) > 2:
             slugs = [slugs[0], slugs[-1]]
         for slug in slugs[:2]:
             command = [
@@ -511,7 +553,21 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict, alerts: dict | Non
             continue
         if cookies:
             tags = [str(item) for item in (public_cfg.get(platform) or {}).get("tags") or []]
-            commands = site_cookie_commands(platform, query, template, cookies, tags or None)
+            users = [str(item) for item in (public_cfg.get(platform) or {}).get("users") or []]
+            section = "*0-12"
+            if platform == "youtube":
+                from clipper.heatmap import probe_heatmap_section
+
+                section = probe_heatmap_section(f"ytsearch1:{query}", cookies) or "*0-12"
+            commands = site_cookie_commands(
+                platform,
+                query,
+                template,
+                cookies,
+                tags or None,
+                users or None,
+                section,
+            )
             if commands:
                 code, files, log = _run_attempts(commands, target, timeout=70)
                 if files:

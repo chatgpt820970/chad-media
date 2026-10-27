@@ -6,7 +6,10 @@ name: Clip monitor
 # The job stays capped at 3 minutes.
 on:
   schedule:
-    - cron: "*/15 * * * *"
+    # Off :00/:15/:30/:45. GitHub drops congested quarter-hour schedules.
+    # Still every 15 minutes. The job stays capped at 3 minutes.
+    - cron: "7,22,37,52 * * * *"
+      timezone: UTC
   workflow_dispatch:
     inputs:
       key:
@@ -46,7 +49,7 @@ jobs:
         run: python -m clipper monitor
 
       - name: Commit queue updates
-        if: ${{ vars.CLIPPER_MONITOR != 'false' }}
+        if: ${{ always() && vars.CLIPPER_MONITOR != 'false' }}
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"

@@ -147,6 +147,14 @@ jobs:
           done
           du -sh site/whop
 
+      - name: Attach live clip mp4s
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          mkdir -p site/live
+          gh release download clip-media -p 'live-*.mp4' -D site/live --clobber || true
+          find site/live -type f -name '*.mp4' -size -8k -delete || true
+
       - uses: actions/upload-pages-artifact@v4
         with:
           path: site

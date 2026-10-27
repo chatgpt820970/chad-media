@@ -35,14 +35,14 @@ def instagram_targets(bundle: dict, platform: str) -> list[str]:
     if not isinstance(spec, dict):
         return []
     urls: list[str] = []
-    for tag in spec.get("hashtags") or []:
-        slug = "".join(ch for ch in str(tag).lower() if ch.isalnum())
-        if slug:
-            urls.append(f"https://www.instagram.com/explore/tags/{slug}/")
     for account in spec.get("accounts") or []:
         user = str(account).strip().lstrip("@")
         if user and "/" not in user and user not in {"reels", "explore", "p", "stories"}:
             urls.append(f"https://www.instagram.com/{user}/")
+    for tag in spec.get("hashtags") or []:
+        slug = "".join(ch for ch in str(tag).lower() if ch.isalnum())
+        if slug:
+            urls.append(f"https://www.instagram.com/explore/tags/{slug}/")
     return urls
 
 

@@ -74,7 +74,8 @@
       "profiles": ["Crunchyroll"]
     },
     "tiktok": {
-      "tags": ["anime", "animeedit", "hollywood"]
+      "tags": ["anime", "animeedit", "hollywood"],
+      "users": ["crunchyroll", "netflix"]
     },
     "reddit": {
       "youtube": ["Cricket", "BollyBlindsNGossip", "IndianCinema"],
@@ -89,15 +90,15 @@
     "note": "Instagram posting stays off. These public reels are downloaded with INSTAGRAM_COOKIES and routed to X, YouTube, or TikTok. Account URLs are profile pages, not /reels/.",
     "x": {
       "hashtags": ["animeedit", "4kanime", "celebrity"],
-      "accounts": []
+      "accounts": ["crunchyroll"]
     },
     "youtube": {
       "hashtags": ["cricket", "bollywood", "romantic"],
       "accounts": ["icc", "bcci.tv"]
     },
     "tiktok": {
-      "hashtags": ["animeedit", "hollywood", "movieclips"],
-      "accounts": []
+      "hashtags": ["hollywood", "movieclips"],
+      "accounts": ["netflix"]
     }
   },
   "campaign_queries": {

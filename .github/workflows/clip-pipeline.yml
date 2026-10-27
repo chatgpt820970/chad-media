@@ -81,6 +81,15 @@ jobs:
           print("dry-run ok")
           PY
 
+      - name: Validate a direct mp4 URL
+        run: |
+          python -m clipper validate-media-url --url "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-1.mp4"
+          if python -m clipper validate-media-url --url "https://github.com/chatgpt820970/chad-media/releases/download/clip-media/youtube.mp4"; then
+            echo "release download URL must be rejected"
+            exit 1
+          fi
+          echo "media url check ok"
+
       - name: Upload dry-run report
         if: always()
         uses: actions/upload-artifact@v4
@@ -105,7 +114,8 @@ jobs:
         run: |
           sudo timeout 180 apt-get update
           sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
-          timeout 180 python -m pip install --upgrade gdown yt-dlp curl_cffi gallery-dl
+          timeout 180 python -m pip install --upgrade gdown curl_cffi gallery-dl
+          timeout 180 python -m pip install -U --pre yt-dlp
 
       - name: Cookie files
         env:
@@ -190,7 +200,8 @@ jobs:
         run: |
           sudo timeout 180 apt-get update
           sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
-          timeout 180 python -m pip install --upgrade yt-dlp curl_cffi gallery-dl
+          timeout 180 python -m pip install --upgrade curl_cffi gallery-dl
+          timeout 180 python -m pip install -U --pre yt-dlp
 
       - name: Probe cookie-free sources
         run: python -m clipper fetch-public --output-dir work/public
@@ -238,7 +249,8 @@ jobs:
         run: |
           sudo timeout 180 apt-get update
           sudo timeout 180 apt-get install -y ffmpeg tesseract-ocr
-          timeout 180 python -m pip install --upgrade yt-dlp curl_cffi
+          timeout 180 python -m pip install --upgrade curl_cffi
+          timeout 180 python -m pip install -U --pre yt-dlp
 
       - name: Cookie files
         env:
