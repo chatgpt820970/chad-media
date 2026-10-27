@@ -83,7 +83,7 @@ jobs:
 
       - name: Validate a direct mp4 URL
         run: |
-          python -m clipper validate-media-url --url "https://chatgpt820970.github.io/chad-media/whop/v/x-clip-1.mp4"
+          python -m clipper validate-media-url --url "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261027T233000.000Z.mp4"
           if python -m clipper validate-media-url --url "https://github.com/chatgpt820970/chad-media/releases/download/clip-media/youtube.mp4"; then
             echo "release download URL must be rejected"
             exit 1

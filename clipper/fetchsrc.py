@@ -518,6 +518,7 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict, alerts: dict | Non
     public_cfg = (bundle.get("sources") or {}).get("public_sources") or {}
     seen_reels = _posted_reel_ids(bundle)
     ig_cookies = cookie_file(str(env.get("INSTAGRAM_COOKIES_FILE") or ""))
+    yt_cookies = cookie_file(str(env.get("YT_COOKIES_FILE") or ""))
     results = []
     for platform, spec in bundle["sources"].get("platforms", {}).items():
         channel = bundle["channels"]["platforms"][platform]
