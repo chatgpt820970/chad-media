@@ -30,12 +30,23 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261027T233000.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-28T00:15:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T00:15:00.000Z",
+      "source_key": "x:Blw2cXNywE0",
+      "buffer_post_id": "6ae12804c039c7bc1c8c25cd",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T001500.000Z.mp4",
+      "campaign_id": null,
+      "status": "scheduled"
     }
   ],
   "sources": [
     "x:invidious-geyekiEkEsM",
     "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
-    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk"
+    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
+    "x:Blw2cXNywE0"
   ],
   "captions": [
     {
@@ -49,6 +60,11 @@
     {
       "platform": "tiktok",
       "text": "#ad this moment from sui basecamp x.com/suinetwork #movies #anime #clips"
+    },
+    {
+      "platform": "x",
+      "source": "Blw2cXNywE0",
+      "text": "when the side chick gets more screen time \ud83d\ude2d #anime #clips"
     }
   ],
   "topics": [
@@ -59,6 +75,10 @@
     {
       "topic": "evan cheng kjzyc7f1ofeuvoehdujso1umupzk",
       "posted_at": "2026-10-27T21:45:00.000Z"
+    },
+    {
+      "topic": "blw2cxnywe0 blw2cxnywe0 when",
+      "posted_at": "2026-10-28T00:15:00.000Z"
     }
   ]
 }
