@@ -126,6 +126,7 @@ def record_sent_posts(
     platform: str,
     campaigns: list[dict],
     minutes: int,
+    submitted: dict | None = None,
 ) -> int:
     """Write a pending row as soon as Buffer reports the post sent.
 
@@ -134,8 +135,13 @@ def record_sent_posts(
     and are left out.
     """
     added = 0
-    existing_urls = {item.get("post_url") for item in pending.get("items") or []}
-    existing_ids = {item.get("buffer_post_id") for item in pending.get("items") or []}
+    done_items = (submitted or {}).get("items") or []
+    existing_urls = {item.get("post_url") for item in pending.get("items") or []} | {
+        item.get("post_url") for item in done_items
+    }
+    existing_ids = {item.get("buffer_post_id") for item in pending.get("items") or []} | {
+        item.get("buffer_post_id") for item in done_items
+    }
     for post in posts:
         if post.get("status") != "sent":
             continue

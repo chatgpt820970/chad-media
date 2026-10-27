@@ -154,7 +154,7 @@ def fetch_dropbox(url: str, dest: Path) -> dict:
     return {"path": str(dest), "bytes": dest.stat().st_size}
 
 
-def cut_vertical(source: Path, dest: Path, seconds: float = 8.0) -> None:
+def cut_vertical(source: Path, dest: Path, seconds: float = 40.0) -> None:
     if not ffmpeg_available():
         raise RuntimeError("ffmpeg is not installed")
     graph, uses_logo = logo_filter({"logo": {"required": False}}, 720, 1280, 0.0)
@@ -554,11 +554,11 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict, alerts: dict | Non
         if cookies:
             tags = [str(item) for item in (public_cfg.get(platform) or {}).get("tags") or []]
             users = [str(item) for item in (public_cfg.get(platform) or {}).get("users") or []]
-            section = "*0-12"
+            section = "*0-40"
             if platform == "youtube":
                 from clipper.heatmap import probe_heatmap_section
 
-                section = probe_heatmap_section(f"ytsearch1:{query}", cookies) or "*0-12"
+                section = probe_heatmap_section(f"ytsearch1:{query}", cookies, 40.0) or "*0-40"
             commands = site_cookie_commands(
                 platform,
                 query,
@@ -589,6 +589,18 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict, alerts: dict | Non
             if ig.get("status") == "downloaded" and ig.get("path"):
                 results.append(ig)
                 continue
+        if platform in {"x", "youtube", "tiktok"} and (platform != "youtube" or not cookies):
+            label = f"ytsearch1:{query}"
+            attempts = youtube_attempts(label, template, yt_cookies if platform != "youtube" else None, "*0-40")[:2]
+            if yt_cookies and platform != "youtube":
+                attempts.extend(youtube_attempts(label, template, None, "*0-40")[:2])
+            code, files, log = _run_attempts(attempts, target, timeout=75)
+            if files:
+                results.append(_downloaded_row(platform, label, files[0], "yt-dlp"))
+                continue
+        else:
+            label = f"ytsearch1:{query}"
+            code, log = 1, ""
         public = None
         if platform in {"x", "youtube", "tiktok"}:
             try:
@@ -607,12 +619,7 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict, alerts: dict | Non
                     }
                 )
                 continue
-        if platform == "youtube" and not cookies:
-            label = f"ytsearch1:{query}"
-            code, files, log = _run_attempts(youtube_attempts(label, template, None)[:2], target, timeout=60)
-            if files:
-                results.append(_downloaded_row(platform, label, files[0], "yt-dlp"))
-                continue
+        if platform in {"x", "youtube", "tiktok"} and (platform != "youtube" or not cookies):
             status = "needs_cookies" if _needs_cookies(log) else "unavailable"
             results.append(
                 {
@@ -660,7 +667,7 @@ def fetch_media(
             pass
         else:
             short = output / "sui-basecamp-short.mp4"
-            cut_vertical(Path(fetched["path"]), short, 8.0)
+            cut_vertical(Path(fetched["path"]), short, 40.0)
             limits = (bundle["pipeline"].get("platform_limits") or {}).get("youtube") or {}
             caption = build_caption(
                 sui,

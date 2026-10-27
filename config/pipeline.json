@@ -12,7 +12,11 @@
     "formula": "allocation_weight * rate_per_1k * (0.35 + 0.65 * min(remaining/rate, headroom_cap) / headroom_cap). A campaign with remaining budget below its min payout, or active false, scores 0 and its slots are given to the others. Views-to-first-payout is not part of the score."
   },
   "duplicate_protection": {
-    "risky_platforms": ["youtube", "instagram", "tiktok"],
+    "risky_platforms": [
+      "youtube",
+      "instagram",
+      "tiktok"
+    ],
     "modes": {
       "vary": "Same source may post on more than one platform, but each file uses a different crop and start offset so the bytes are not identical. The same source never posts twice on one platform.",
       "one_shortform": "Same source may post once inside the risky short-form group (YouTube, Instagram, TikTok). X is still a separate platform."
@@ -22,8 +26,16 @@
     "policy": "cover_then_skip",
     "corner_fraction": 0.16,
     "ink_ratio_trigger": 0.05,
-    "prefer_clean_hosts": ["youtube.com", "youtu.be"],
-    "deprioritize_hosts": ["tiktok.com", "vm.tiktok.com", "instagram.com", "instagr.am"],
+    "prefer_clean_hosts": [
+      "youtube.com",
+      "youtu.be"
+    ],
+    "deprioritize_hosts": [
+      "tiktok.com",
+      "vm.tiktok.com",
+      "instagram.com",
+      "instagr.am"
+    ],
     "note": "Burned-in TikTok, Instagram, and other creators' marks are detected on corners and edges (contrast plus OCR). The pipeline blurs and covers that region, checks again, and skips the clip if the mark remains. The campaign logo is applied only after the frame is clean."
   },
   "schedule": {
@@ -32,25 +44,69 @@
       "timezone": "Asia/Kolkata",
       "audience": "worldwide: US evening, Europe evening, and India evening",
       "quiet": "About 10:15-14:00 IST, which is US late night and Europe early morning.",
-      "slots": ["14:00", "16:15", "18:30", "20:45", "23:00", "01:15", "03:30", "05:45", "08:00", "10:15"]
+      "slots": [
+        "14:00",
+        "16:15",
+        "18:30",
+        "20:45",
+        "23:00",
+        "01:15",
+        "03:30",
+        "05:45",
+        "08:00",
+        "10:15"
+      ]
     },
     "youtube": {
       "timezone": "Asia/Kolkata",
       "audience": "India. Peaks around 12:00-14:00 and 19:00-23:00 IST.",
       "quiet": "About 03:15-07:00 IST.",
-      "slots": ["07:00", "09:15", "11:30", "13:45", "16:00", "18:15", "20:30", "22:45", "01:00", "03:15"]
+      "slots": [
+        "07:00",
+        "09:15",
+        "11:30",
+        "13:45",
+        "16:00",
+        "18:15",
+        "20:30",
+        "22:45",
+        "01:00",
+        "03:15"
+      ]
     },
     "instagram": {
       "timezone": "Asia/Kolkata",
       "audience": "India. Peaks around 12:00-14:00 and 19:00-23:00 IST.",
       "quiet": "About 03:15-07:00 IST.",
-      "slots": ["07:00", "09:15", "11:30", "13:45", "16:00", "18:15", "20:30", "22:45", "01:00", "03:15"]
+      "slots": [
+        "07:00",
+        "09:15",
+        "11:30",
+        "13:45",
+        "16:00",
+        "18:15",
+        "20:30",
+        "22:45",
+        "01:00",
+        "03:15"
+      ]
     },
     "tiktok": {
       "timezone": "Asia/Kolkata",
       "audience": "international, weighted to US and Europe evenings",
       "quiet": "About 11:45-15:30 IST, which is the dead of night in the US.",
-      "slots": ["15:30", "17:45", "20:00", "22:15", "00:30", "02:45", "05:00", "07:15", "09:30", "11:45"]
+      "slots": [
+        "15:30",
+        "17:45",
+        "20:00",
+        "22:15",
+        "00:30",
+        "02:45",
+        "05:00",
+        "07:15",
+        "09:30",
+        "11:45"
+      ]
     }
   },
   "platform_limits": {
@@ -58,15 +114,25 @@
       "max_duration_sec": 140,
       "max_hashtags": 2,
       "require_hashtags": [],
-      "optional_hashtags": ["#movies", "#anime", "#clips"],
+      "optional_hashtags": [
+        "#movies",
+        "#anime",
+        "#clips"
+      ],
       "char_limit": 280,
       "aspect": "9:16"
     },
     "youtube": {
       "max_duration_sec": 60,
       "max_hashtags": 5,
-      "require_hashtags": [],
-      "optional_hashtags": ["#movies", "#anime", "#clips"],
+      "require_hashtags": [
+        "#shorts"
+      ],
+      "optional_hashtags": [
+        "#movies",
+        "#anime",
+        "#clips"
+      ],
       "char_limit": 5000,
       "aspect": "9:16"
     },
@@ -74,7 +140,11 @@
       "max_duration_sec": 90,
       "max_hashtags": 5,
       "require_hashtags": [],
-      "optional_hashtags": ["#movies", "#anime", "#clips"],
+      "optional_hashtags": [
+        "#movies",
+        "#anime",
+        "#clips"
+      ],
       "char_limit": 2200,
       "aspect": "9:16"
     },
@@ -82,13 +152,23 @@
       "max_duration_sec": 60,
       "max_hashtags": 5,
       "require_hashtags": [],
-      "optional_hashtags": ["#movies", "#anime", "#clips"],
+      "optional_hashtags": [
+        "#movies",
+        "#anime",
+        "#clips"
+      ],
       "char_limit": 2200,
       "aspect": "9:16"
     }
   },
   "safety": {
-    "categories": ["sexual", "gore", "hate", "dangerous", "misleading"],
+    "categories": [
+      "sexual",
+      "gore",
+      "hate",
+      "dangerous",
+      "misleading"
+    ],
     "note": "A clip is skipped before post when the filename, title, or caption matches one of these categories. A safety skip does not pause the platform. Romantic, movie, anime, and sports clips stay allowed."
   },
   "rate_limit": {
@@ -96,8 +176,16 @@
     "note": "A Buffer or platform error, or a post that comes back failed or removed, pauses that platform in state/platform_alerts.json until you clear it. A safety skip does not pause. The in-run counter still stops a platform after max_errors_before_stop."
   },
   "output": {
-    "dry_run": {"width": 720, "height": 1280, "max_seconds": 2},
-    "live": {"width": 1080, "height": 1920, "max_seconds": 60}
+    "dry_run": {
+      "width": 720,
+      "height": 1280,
+      "max_seconds": 2
+    },
+    "live": {
+      "width": 1080,
+      "height": 1920,
+      "max_seconds": 60
+    }
   },
   "submissions": {
     "pending_path": "submissions/pending.json",

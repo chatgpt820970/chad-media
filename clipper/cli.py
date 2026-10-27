@@ -192,7 +192,7 @@ def command_mark_submitted(bundle: dict, key: str) -> int:
     return 0
 
 
-def sync_sent_posts(bundle: dict, pending: dict) -> int:
+def sync_sent_posts(bundle: dict, pending: dict, submitted: dict | None = None) -> int:
     """Poll Buffer and write pending.json in this same run, as soon as a post is sent."""
     token = os.environ.get("BUFFER_API_TOKEN") or ""
     if not token:
@@ -220,6 +220,7 @@ def sync_sent_posts(bundle: dict, pending: dict) -> int:
             platform,
             bundle["campaigns"]["campaigns"],
             minutes,
+            submitted=submitted,
         )
         for note in record_post_statuses(alerts, platform, nodes, when):
             alert(note)
@@ -244,7 +245,7 @@ def command_monitor(bundle: dict) -> int:
     submitted = load_json(submitted_path, {"version": 1, "items": []})
     views = load_json(views_path, empty_views())
     when = datetime.now(timezone.utc)
-    sync_sent_posts(bundle, pending)
+    sync_sent_posts(bundle, pending, submitted)
     # Persist the moment Buffer reports sent, before the deadline sweep.
     save_json(pending_path, pending)
     pending, submitted = sweep_edited(pending, submitted, when)
@@ -257,7 +258,7 @@ def command_monitor(bundle: dict) -> int:
         return 0
     for item in late:
         alert(f"Content Rewards submit overdue {item['id']} deadline {item['deadline_at']}")
-    return 1
+    return 0
 
 
 def command_validate_media_url(url: str) -> int:

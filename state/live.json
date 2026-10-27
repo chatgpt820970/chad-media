@@ -2,16 +2,6 @@
   "version": 1,
   "posted": [
     {
-      "key": "x:2026-10-27T22:00:00.000Z",
-      "platform": "x",
-      "due_at": "2026-10-27T22:00:00.000Z",
-      "source_key": "x:invidious-geyekiEkEsM",
-      "buffer_post_id": "6ae11c6f03bc55f7e02d7c4b",
-      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261027T220000.000Z.mp4",
-      "campaign_id": null,
-      "status": "scheduled"
-    },
-    {
       "key": "youtube:2026-10-27T21:45:00.000Z",
       "platform": "youtube",
       "due_at": "2026-10-27T21:45:00.000Z",
@@ -20,33 +10,10 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261027T214500.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "sent"
-    },
-    {
-      "key": "tiktok:2026-10-27T23:30:00.000Z",
-      "platform": "tiktok",
-      "due_at": "2026-10-27T23:30:00.000Z",
-      "source_key": "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
-      "buffer_post_id": "6ae11c737ee83e48a97a3779",
-      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261027T233000.000Z.mp4",
-      "campaign_id": "sui-basecamp",
-      "status": "scheduled"
-    },
-    {
-      "key": "x:2026-10-28T00:15:00.000Z",
-      "platform": "x",
-      "due_at": "2026-10-28T00:15:00.000Z",
-      "source_key": "x:Blw2cXNywE0",
-      "buffer_post_id": "6ae12804c039c7bc1c8c25cd",
-      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T001500.000Z.mp4",
-      "campaign_id": null,
-      "status": "scheduled"
     }
   ],
   "sources": [
-    "x:invidious-geyekiEkEsM",
-    "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
-    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
-    "x:Blw2cXNywE0"
+    "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk"
   ],
   "captions": [
     {
@@ -60,11 +27,6 @@
     {
       "platform": "tiktok",
       "text": "#ad this moment from sui basecamp x.com/suinetwork #movies #anime #clips"
-    },
-    {
-      "platform": "x",
-      "source": "Blw2cXNywE0",
-      "text": "when the side chick gets more screen time \ud83d\ude2d #anime #clips"
     }
   ],
   "topics": [

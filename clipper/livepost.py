@@ -283,7 +283,7 @@ def _gather_candidates(
             return False
         if identity in blocked or source_key(platform, identity) in used:
             return False
-        if kind == "content_plan" and platform != "x":
+        if kind == "content_plan":
             needle = f":{identity}"
             if any(str(key) == identity or str(key).endswith(needle) for key in used):
                 return False
@@ -317,9 +317,8 @@ def _gather_candidates(
                 continue
             add("dhan", path, path.stem, dhan)
 
-    shared = {platform, "youtube", "tiktok"} if platform == "x" else {platform}
     for row in manifest.get("content_plan") or []:
-        if row.get("platform") not in shared or row.get("status") != "downloaded":
+        if row.get("platform") != platform or row.get("status") != "downloaded":
             continue
         path = Path(str(row.get("path") or ""))
         add("content_plan", path, path.stem, None, str(row.get("title") or path.stem))
@@ -655,18 +654,17 @@ def execute_live(
         clip_title = chosen[4] if len(chosen) > 4 else source.stem
         try:
             upload_path = source
-            if platform == "x" and kind != "sui":
+            if kind == "sui":
+                dest = variants / f"{platform}.mp4"
+                render_variant(source, dest, platform, campaign)
+                upload_path = dest
+            else:
                 from clipper.publicsrc import real_video
 
                 if real_video(source):
                     dest = variants / f"{platform}.mp4"
-                    line = x_overlay_text("", source_key(platform, identity))
-                    apply_filters(source, dest, x_overlay_graph(line), None, CLIP_SECONDS, 0.0)
+                    render_variant(source, dest, platform, campaign)
                     upload_path = dest
-            elif kind == "sui":
-                dest = variants / f"{platform}.mp4"
-                render_variant(source, dest, platform, campaign)
-                upload_path = dest
             video_url = public_video_url(uploader(upload_path, _asset_name(platform, slot)))
             channel = _channel_id(bundle["channels"], campaign or {"account_mode": "shared"}, platform, env)
             if not channel:

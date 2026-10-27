@@ -631,10 +631,12 @@ class LivePostTests(unittest.TestCase):
             seen.append(payload)
             return {"id": "buf", "status": "scheduled", "text": payload["text"]}
 
-        code, _calls = self._run(bundle, media, out, rows, poster)
+        code, _calls = self._run(bundle, media, out, rows, poster, ledger=root / "live.json")
         self.assertEqual(code, 0)
         self.assertEqual(len(seen), 1)
-        self.assertIn("cricket-highlight", seen[0]["text"])
+        ledger = json.loads((root / "live.json").read_text())
+        self.assertIn("youtube:cricket-highlight", ledger["sources"])
+        self.assertNotIn("youtube:explicit-clip", ledger["sources"])
         alerts = json.loads((root / "alerts.json").read_text())
         self.assertEqual(alerts["paused"], {})
         self.assertTrue(any(row["kind"] == "safety" for row in alerts["alerts"]))

@@ -48,7 +48,7 @@ def section_arg(start: float, clip_seconds: float = 12.0) -> str:
     return f"*{start:.1f}-{start + clip_seconds:.1f}"
 
 
-def probe_heatmap_section(url: str, cookies: str | None, clip_seconds: float = 12.0) -> str | None:
+def probe_heatmap_section(url: str, cookies: str | None, clip_seconds: float = 40.0) -> str | None:
     """yt-dlp -J for one YouTube URL. None when the heatmap is missing or the probe fails."""
     command = ytdlp_argv() + ["-J", "--skip-download", "--no-warnings", "--no-playlist"]
     if cookies:
