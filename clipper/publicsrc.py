@@ -37,7 +37,7 @@ BROWSER_UA = (
 )
 SOURCE_NAMES = ("x_public", "tiktok_public", "reddit_json", "youtube_frontend")
 MIN_BYTES = 8000
-CLIP_SECONDS = "12"
+CLIP_SECONDS = "40"
 # Progressive itag 18 is often missing. These are the avc1 video itags.
 H264_ITAGS = (136, 135, 134, 133, 160)
 TIKTOK_FORMAT = (
