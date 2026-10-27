@@ -9,6 +9,7 @@ error pauses that platform. A video URL we cannot fetch is skipped instead.
 from __future__ import annotations
 
 import copy
+import hashlib
 import json
 import os
 import shutil
@@ -325,6 +326,71 @@ def _gather_candidates(
     return items
 
 
+CAPTION_POOL = (
+    "That suit fits tighter than my budget 💀",
+    "Me planning the perfect date vs her saying \"I'm tired\" 💀",
+    "He said one more episode. It's 4am 😭",
+    "Bro fell in love in 3 seconds and I respect it 💀",
+    "Her: you're not even listening. Me during this scene 😭",
+    "This is my villain origin story and I'm not okay 💀",
+    "Rent is due but this scene is worth it 😭",
+    "POV: you said you'd sleep early 💀",
+    "Main character energy on a side character budget 😭",
+    "Nobody told me the plot would hit this hard 💀",
+    "My standards after watching this one 😭",
+    "Told myself I'm over it. Then this played 💀",
+    "She looked at him once and he forgot his own name 💀",
+    "My ex walking past like this scene 😭",
+    "Bro's confidence is higher than my salary 💀",
+    "That look should be illegal 😭",
+    "Me pretending I'm not attached to fictional people 💀",
+    "He fixed his hair and the whole room lost it 😭",
+    "This hit harder than my last relationship 💀",
+    "Rizz level: unpaid internship 😭",
+    "She said \"we need to talk\" and he did THIS 💀",
+    "My mom calling while I'm watching this part 😭",
+    "Single for a reason and this is the reason 💀",
+    "When the side chick gets more screen time 😭",
+    "He's not the villain, he just has taste 💀",
+    "My wallet watching me buy merch after this 😭",
+    "Bro said \"trust me\" and the plot said no 💀",
+    "This scene owes me emotional damages 😭",
+    "Me acting cool after replaying this 12 times 💀",
+    "Her glow up came with a warning label 😭",
+    "Red flag but make it fashionable 💀",
+    "He walked in and my standards walked out 😭",
+    "That's not a smile, that's a threat 💀",
+    "Brain: sleep. Me: one more clip 😭",
+    "If looks could kill this whole cast is in jail 💀",
+    "He really said \"I got this\" with zero plan 😭",
+    "My crush texting back like this scene 💀",
+    "She didn't even try and still won 😭",
+    "The audacity of this man 💀",
+    "Delulu is the solulu and this proves it 😭",
+    "I'd fumble this so fast it's embarrassing 💀",
+    "When the background character steals the show 😭",
+    "That outfit cost more than my whole personality 💀",
+    "Bro said \"I'm fine\" and then did this 😭",
+    "This is why I have trust issues 💀",
+    "Watching this instead of studying again 😭",
+    "Not him being down bad on main 💀",
+    "She knew exactly what she was doing 😭",
+    "Built different, broke the same as me 💀",
+    "This aged like milk and I'm still watching 😭",
+)
+
+
+def _pool_caption(platform: str, clip: dict, char_limit: int, limits: dict, used: set[str], tags: list[str], salt: str) -> str:
+    start = int(hashlib.sha256(salt.encode("utf-8")).hexdigest()[:8], 16)
+    for index in range(len(CAPTION_POOL)):
+        line = CAPTION_POOL[(start + index) % len(CAPTION_POOL)]
+        trial = content_plan_caption({**clip, "title": line}, platform, char_limit, limits=limits, used=None, extra_hashtags=tags)
+        if normalize_caption(trial) not in used:
+            used.add(normalize_caption(trial))
+            return trial
+    raise RuntimeError(f"caption pool exhausted for {platform}; add lines to CAPTION_POOL")
+
+
 def _caption_for(
     kind: str,
     platform: str,
@@ -347,7 +413,7 @@ def _caption_for(
             raise RuntimeError(f"{kind} campaign is missing")
         disclosure = ((campaign.get("caption") or {}).get("disclosure") or "").strip()
         reserved = 1 if disclosure.startswith("#") else 0
-        tags = rotated_hashtags(limits, salt, reserved=reserved)
+        tags = [] if kind == "sui" else rotated_hashtags(limits, salt, reserved=reserved)
         campaign = copy.deepcopy(campaign)
         existing = list(campaign["caption"].get("hashtags") or [])
         for tag in tags:
@@ -361,14 +427,7 @@ def _caption_for(
             raise RuntimeError("Dhan Aziz caption is missing @DHANAZIZ")
         return campaign, caption
     tags = rotated_hashtags(limits, salt, reserved=0)
-    caption = content_plan_caption(
-        clip,
-        platform,
-        char_limit,
-        limits=limits,
-        used=used,
-        extra_hashtags=tags,
-    )
+    caption = _pool_caption(platform, clip, char_limit, limits, used, tags, salt)
     if caption.startswith("#Ad") or "x.com/SuiNetwork" in caption:
         raise RuntimeError("content-plan caption picked up a campaign line")
     return None, caption
@@ -600,7 +659,7 @@ def execute_live(
 
                 if real_video(source):
                     dest = variants / f"{platform}.mp4"
-                    line = x_overlay_text(clip_title or source.stem, source_key(platform, identity))
+                    line = x_overlay_text("", source_key(platform, identity))
                     apply_filters(source, dest, x_overlay_graph(line), None, CLIP_SECONDS, 0.0)
                     upload_path = dest
             elif kind == "sui":
