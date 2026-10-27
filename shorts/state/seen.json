@@ -719,6 +719,51 @@
       "reason": "",
       "duration": 34.4,
       "seen_at": "2026-10-26T09:10:36Z"
+    },
+    "tt-7681223423661542669": {
+      "source_url": "https://www.tiktok.com/@kingbach/video/7681223423661542669",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 54.3,
+      "seen_at": "2026-10-27T01:05:11Z"
+    },
+    "tt-7621248497769205013": {
+      "source_url": "https://www.tiktok.com/@jonitamusic/video/7621248497769205013",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 48.1,
+      "seen_at": "2026-10-27T01:06:43Z"
+    },
+    "tt-7699586335887166734": {
+      "source_url": "https://www.tiktok.com/@dudeperfect/video/7699586335887166734",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 73.4,
+      "seen_at": "2026-10-27T01:08:05Z"
+    },
+    "tt-7699909255062736158": {
+      "source_url": "https://www.tiktok.com/@humankind/video/7699909255062736158",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 71.5,
+      "seen_at": "2026-10-27T01:10:11Z"
+    },
+    "tt-7670729245278113038": {
+      "source_url": "https://www.tiktok.com/@kingbach/video/7670729245278113038",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 58.4,
+      "seen_at": "2026-10-27T01:11:48Z"
     }
   }
 }

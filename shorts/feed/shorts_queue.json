@@ -1,23 +1,109 @@
 {
-  "generated_at": "2026-10-26T23:18:23Z",
-  "ready_today": 10,
+  "generated_at": "2026-10-27T01:11:48Z",
+  "ready_today": 5,
   "daily_target": 10,
   "collects_today": [
     {
-      "at": "2026-10-26T01:11:06Z",
-      "added": 5
-    },
-    {
-      "at": "2026-10-26T09:10:36Z",
+      "at": "2026-10-27T01:11:48Z",
       "added": 5
     }
   ],
   "sources": {
-    "tiktok": "ok",
+    "tiktok": "ok: public play file",
     "x": "ok",
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7670729245278113038",
+      "source_url": "https://www.tiktok.com/@kingbach/video/7670729245278113038",
+      "platform": "tiktok",
+      "duration": 58.4,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7670729245278113038.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7670729245278113038-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7670729245278113038-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7670729245278113038-3.jpg"
+      ],
+      "title": "Langue did a collab without a human on his new song",
+      "caption": "This one earns the replay. Langue did a collab without a human on his new song",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-27T01:11:48Z"
+    },
+    {
+      "id": "tt-7699909255062736158",
+      "source_url": "https://www.tiktok.com/@humankind/video/7699909255062736158",
+      "platform": "tiktok",
+      "duration": 71.5,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699909255062736158.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699909255062736158-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699909255062736158-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699909255062736158-3.jpg"
+      ],
+      "title": "The second he met his baby brother, he lost it.",
+      "caption": "Something warm for the middle of the day. The second he met his baby brother, he lost it. 😭",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-27T01:10:11Z"
+    },
+    {
+      "id": "tt-7699586335887166734",
+      "source_url": "https://www.tiktok.com/@dudeperfect/video/7699586335887166734",
+      "platform": "tiktok",
+      "duration": 73.4,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7699586335887166734.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699586335887166734-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699586335887166734-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7699586335887166734-3.jpg"
+      ],
+      "title": "They went down to the WIRE 🤯",
+      "caption": "This one earns the replay. They went down to the WIRE 🤯",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-27T01:08:05Z"
+    },
+    {
+      "id": "tt-7621248497769205013",
+      "source_url": "https://www.tiktok.com/@jonitamusic/video/7621248497769205013",
+      "platform": "tiktok",
+      "duration": 48.1,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7621248497769205013.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7621248497769205013-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7621248497769205013-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7621248497769205013-3.jpg"
+      ],
+      "title": "What if we only had minutes?",
+      "caption": "Something warm for the middle of the day. What if we only had minutes? 🥺",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-27T01:06:43Z"
+    },
+    {
+      "id": "tt-7681223423661542669",
+      "source_url": "https://www.tiktok.com/@kingbach/video/7681223423661542669",
+      "platform": "tiktok",
+      "duration": 54.3,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7681223423661542669.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7681223423661542669-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7681223423661542669-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7681223423661542669-3.jpg"
+      ],
+      "title": "Asked him to unfollow her Rae Myles Barrett",
+      "caption": "This one earns the replay. Asked him to unfollow her Rae Myles Barrett",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-27T01:05:11Z"
+    },
     {
       "id": "tt-7687079710311845134",
       "source_url": "https://www.tiktok.com/@spencerx/video/7687079710311845134",
@@ -503,96 +589,6 @@
       "lane": "chinese",
       "youtube_category_id": "23",
       "queued_at": "2026-10-24T01:06:11Z"
-    },
-    {
-      "id": "tt-7548779492546825473",
-      "source_url": "https://www.tiktok.com/@armaanmalik/video/7548779492546825473",
-      "platform": "tiktok",
-      "duration": 40.9,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7548779492546825473.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548779492546825473-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548779492546825473-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548779492546825473-3.jpg"
-      ],
-      "title": "for everyone who’s ever loved and lost…this one’s for you 🩶",
-      "caption": "Something warm for the middle of the day. for everyone who’s ever loved and lost…this one’s for you 🩶",
-      "status": "ready",
-      "lane": "feelgood",
-      "youtube_category_id": "10",
-      "queued_at": "2026-10-24T01:05:18Z"
-    },
-    {
-      "id": "tt-7691740195418377502",
-      "source_url": "https://www.tiktok.com/@khaby.lame/video/7691740195418377502",
-      "platform": "tiktok",
-      "duration": 34.7,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7691740195418377502.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691740195418377502-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691740195418377502-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7691740195418377502-3.jpg"
-      ],
-      "title": "Just give me 5 more minutes 😭",
-      "caption": "This one earns the replay. Just give me 5 more minutes 😭",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-24T01:04:57Z"
-    },
-    {
-      "id": "tt-7423544912349646126",
-      "source_url": "https://www.tiktok.com/@madewithlau/video/7423544912349646126",
-      "platform": "tiktok",
-      "duration": 49.6,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7423544912349646126.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7423544912349646126-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7423544912349646126-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7423544912349646126-3.jpg"
-      ],
-      "title": "Bring on the nostalgia!",
-      "caption": "A sharp little bit of comedy. Bring on the nostalgia! Today we’re making Fuzzy Melon with Vermicelli & Shrimp (節瓜粉絲蝦煲), a dish that reminds of us of our parents’ and grandparents’ home cooking. We’ll show you the best way to handle fuzzy melon, as well as how beautifully it",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-24T01:04:37Z"
-    },
-    {
-      "id": "tt-7625798204092632333",
-      "source_url": "https://www.tiktok.com/@spencerx/video/7625798204092632333",
-      "platform": "tiktok",
-      "duration": 38.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7625798204092632333.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625798204092632333-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625798204092632333-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7625798204092632333-3.jpg"
-      ],
-      "title": "beatbox challenge: thanks 🗣️🙏🏼",
-      "caption": "This one earns the replay. beatbox challenge: thanks 🗣️🙏🏼",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-23T09:47:55Z"
-    },
-    {
-      "id": "tt-7409055770500746542",
-      "source_url": "https://www.tiktok.com/@madewithlau/video/7409055770500746542",
-      "platform": "tiktok",
-      "duration": 49.4,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7409055770500746542.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7409055770500746542-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7409055770500746542-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7409055770500746542-3.jpg"
-      ],
-      "title": "Let’s make Pineapple Fried Rice (菠蘿炒飯)!",
-      "caption": "A sharp little bit of comedy. Let’s make Pineapple Fried Rice (菠蘿炒飯)! Our Cantonese take on this Thai dish was a favorite at Daddy Lau’s old restaurants, and is a great way to add another dimension of flavor to the traditionally savory fried rice dishes. Watch our latest YouTube",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-23T09:47:26Z"
     }
   ]
 }
