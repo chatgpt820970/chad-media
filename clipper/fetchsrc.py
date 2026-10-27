@@ -317,7 +317,10 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict) -> list[dict]:
                         }
                     )
                     continue
-            if platform != "youtube" and not cookies:
+            # A cookie file must not turn TikTok, X, or Instagram into a YouTube
+            # search. Those platforms already tried the public sources. YouTube
+            # still falls through to yt-dlp, and a miss stays needs_cookies.
+            if platform != "youtube":
                 results.append(
                     {
                         "platform": platform,
@@ -334,10 +337,10 @@ def fetch_content_plan(bundle: dict, output: Path, env: dict) -> list[dict]:
                 commands = [_search_command(label, template, cookies or None)]
         code, files, log = _run_attempts(commands, target)
         if not files:
-            blocked = platform == "youtube" and not cookies and _needs_cookies(log)
+            blocked = platform == "youtube" and _needs_cookies(log)
             row = {
                 "platform": platform,
-                "status": "needs_cookies" if blocked else "failed",
+                "status": "needs_cookies" if blocked else "unavailable",
                 "source": label,
                 "returncode": code,
                 "error": log[-400:],
