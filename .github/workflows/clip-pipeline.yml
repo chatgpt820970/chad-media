@@ -1,0 +1,90 @@
+name: Clip pipeline
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Plan only. Live posting also requires the CLIPPER_LIVE variable."
+        type: boolean
+        default: true
+      now:
+        description: "Optional ISO timestamp used as now for the dry-run."
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: read
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg and tesseract
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg tesseract-ocr
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: |
+          if [ -n "$YT_COOKIES" ]; then printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/yt_cookies.txt"; export YT_COOKIES_FILE="$RUNNER_TEMP/yt_cookies.txt"; fi
+          if [ -n "$X_COOKIES" ]; then printf '%s\n' "$X_COOKIES" > "$RUNNER_TEMP/x_cookies.txt"; export X_COOKIES_FILE="$RUNNER_TEMP/x_cookies.txt"; fi
+          if [ -n "$INSTAGRAM_COOKIES" ]; then printf '%s\n' "$INSTAGRAM_COOKIES" > "$RUNNER_TEMP/ig_cookies.txt"; export INSTAGRAM_COOKIES_FILE="$RUNNER_TEMP/ig_cookies.txt"; fi
+          if [ -n "$TIKTOK_COOKIES" ]; then printf '%s\n' "$TIKTOK_COOKIES" > "$RUNNER_TEMP/tt_cookies.txt"; export TIKTOK_COOKIES_FILE="$RUNNER_TEMP/tt_cookies.txt"; fi
+          unset YT_COOKIES X_COOKIES INSTAGRAM_COOKIES TIKTOK_COOKIES
+
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Config check
+        run: python -m clipper check
+
+      - name: Dry-run
+        env:
+          CLIPPER_LIVE: "false"
+        run: |
+          python -m clipper run --dry-run --now "${{ inputs.now || '2026-10-27T00:00:00Z' }}" --output-dir work/dry-run --simulate-live
+          python - << 'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("work/dry-run/report.json").read_text())
+          payloads = json.loads(Path("work/dry-run/buffer_payloads.json").read_text())
+          if report["errors"]:
+              raise SystemExit("dry-run reported errors: " + "; ".join(report["errors"]))
+          if report["posting"] != "enabled":
+              raise SystemExit("expected a plan while Sui BaseCamp is active")
+          if not any(row.get("campaign_id") == "sui-basecamp" and row["status"] == "scheduled" for row in report["packages"]):
+              raise SystemExit("Sui BaseCamp should be scheduled")
+          if any(row.get("campaign_id") == "dhan-aziz" and row["status"] == "scheduled" for row in report["packages"]):
+              raise SystemExit("Dhan Aziz drafts must not post before approval")
+          if not any(row["status"] == "awaiting_approval" for row in report["packages"]):
+              raise SystemExit("expected Dhan Aziz drafts")
+          if not payloads or any("example.invalid" not in json.dumps(item) for item in payloads):
+              raise SystemExit("dry-run payloads must stay on example.invalid")
+          blob = "\n".join(report["warnings"])
+          if "t-bird" not in blob or "10000" not in blob:
+              raise SystemExit("expected a T Bird views warning")
+          print("dry-run ok")
+          PY
+
+      - name: Upload dry-run report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clip-dry-run
+          path: work/dry-run/
+          if-no-files-found: ignore

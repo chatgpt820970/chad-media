@@ -1,0 +1,2 @@
+# Approved T Bird feature-film URLs from the Content Rewards reference file.
+# One URL per line. Open search is not used for this campaign.

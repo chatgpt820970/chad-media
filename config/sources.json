@@ -1,0 +1,81 @@
+{
+  "safety": {
+    "blocked_pattern": "(?i)\\b(nude|nudes|naked|nsfw|porn|xxx|onlyfans|only\\s*fans|hentai|explicit|sexual|sex\\s*tape|gore|gory|beheading|dismember(?:ment)?|snuff|hate crime|white power|kill all|blackout challenge|tide pod|choking challenge|guaranteed profit|double your money|risk[- ]free crypto|get rich quick)\\b",
+    "note": "Romantic, celebrity, movie, and anime clips are allowed. Sexual, nude, gore, hate, dangerous-act, and misleading queries are dropped. Category patterns live in clipper/safety.py."
+  },
+  "platforms": {
+    "x": {
+      "audience": "worldwide",
+      "mix": [
+        {"content_type": "anime_4k", "weight": 0.7},
+        {"content_type": "celebrity", "weight": 0.2},
+        {"content_type": "trending", "weight": 0.1}
+      ],
+      "queries": [
+        {"content_type": "anime_4k", "q": "4k anime sakuga fight scene"},
+        {"content_type": "celebrity", "q": "celebrity red carpet interview clip"},
+        {"content_type": "trending", "q": "viral news clip today"}
+      ]
+    },
+    "youtube": {
+      "audience": "mostly Indian",
+      "mix": [
+        {"content_type": "indian_serial", "weight": 0.2},
+        {"content_type": "cricket", "weight": 0.2},
+        {"content_type": "bollywood", "weight": 0.2},
+        {"content_type": "indian_celebrity", "weight": 0.15},
+        {"content_type": "modi", "weight": 0.1},
+        {"content_type": "romantic", "weight": 0.15}
+      ],
+      "queries": [
+        {"content_type": "indian_serial", "q": "Indian TV serial scene dialogue"},
+        {"content_type": "cricket", "q": "cricket match highlight India"},
+        {"content_type": "bollywood", "q": "Bollywood movie scene dialogue"},
+        {"content_type": "indian_celebrity", "q": "Bollywood celebrity interview"},
+        {"content_type": "modi", "q": "PM Modi speech clip"},
+        {"content_type": "romantic", "q": "Bollywood romantic dialogue scene"}
+      ]
+    },
+    "instagram": {
+      "audience": "about half Indian, plus movies, anime, and romantic reels",
+      "mix": [
+        {"content_type": "indian_serial", "weight": 0.2},
+        {"content_type": "bollywood", "weight": 0.15},
+        {"content_type": "indian_celebrity", "weight": 0.15},
+        {"content_type": "movie", "weight": 0.2},
+        {"content_type": "anime_4k", "weight": 0.15},
+        {"content_type": "romantic", "weight": 0.15}
+      ],
+      "queries": [
+        {"content_type": "indian_serial", "q": "Indian serial emotional scene"},
+        {"content_type": "bollywood", "q": "Bollywood movie clip vertical"},
+        {"content_type": "indian_celebrity", "q": "Indian celebrity moment"},
+        {"content_type": "movie", "q": "Hollywood movie scene no spoilers"},
+        {"content_type": "anime_4k", "q": "anime emotional scene"},
+        {"content_type": "romantic", "q": "romantic movie dialogue scene"}
+      ]
+    },
+    "tiktok": {
+      "audience": "international",
+      "mix": [
+        {"content_type": "anime_4k", "weight": 0.5},
+        {"content_type": "hollywood", "weight": 0.5}
+      ],
+      "queries": [
+        {"content_type": "anime_4k", "q": "anime fight scene vertical"},
+        {"content_type": "hollywood", "q": "Hollywood movie clip vertical"}
+      ]
+    }
+  },
+  "campaign_queries": {
+    "crookbrown": {
+      "platforms": ["tiktok"],
+      "note": "Search hits are candidates for an original edit. They are not posted until a finished file is in the ready inbox. Every post still needs the Wait For Me sound, which Buffer cannot attach.",
+      "queries": [
+        {"content_type": "spider_man", "q": "spider-man movie scene"},
+        {"content_type": "sports", "q": "sports highlight vertical"},
+        {"content_type": "trending_movie", "q": "trending movie scene"}
+      ]
+    }
+  }
+}

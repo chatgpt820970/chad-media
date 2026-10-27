@@ -1,128 +1,19 @@
 name: Shorts
 
-# Keyless shorts queue. No repo secrets.
-# Publish Pages already includes these files. Republish is a second combined
-# deploy for the cases where that workflow was started by hand.
+# Retired. This workflow used to rebase and upload a Pages artifact that
+# included the video files. Videos are no longer committed. Use Clip pipeline.
 on:
-  schedule:
-    # Backup for cron-job.org, which dispatches this workflow at 06:30 and
-    # 14:30 IST. These run about 20 minutes later (06:50 and 14:50 IST) and
-    # once more at 22:50 IST, and only add clips when that slot is still short.
-    - cron: "20 1,7,13,19 * * *"
-  # Code changes on main also run it. State and feed commits are not in this
-  # list, so the queue update at the end of a run does not start another one.
-  push:
-    branches: [main]
-    paths:
-      - ".github/workflows/shorts.yml"
-      - "shorts/pipeline.py"
-      - "shorts/requirements.txt"
   workflow_dispatch:
-    inputs:
-      require:
-        description: "Kept for older dispatch calls. The collect step always requires 4 new ready clips."
-        type: string
-        default: "4"
-
-
-permissions:
-  contents: write
-  pages: write
-  id-token: write
-
-concurrency:
-  group: shorts-pipeline
-  cancel-in-progress: false
 
 jobs:
   collect:
-    if: github.event_name != 'workflow_run'
     runs-on: ubuntu-latest
-    timeout-minutes: 60
-    environment:
-      name: github-pages
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install ffmpeg, tesseract, yt-dlp, gallery-dl
-        run: |
-          set -euo pipefail
-          sudo apt-get update
-          sudo apt-get install -y ffmpeg tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim
-          pip install -q -r shorts/requirements.txt
-
-      - name: Collect clips
-        env:
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-        run: |
-          python shorts/pipeline.py collect --target 5 --require 4
-          python whop/whop_clipper.py build-feed
-
-      - name: Store media on the shorts-media release
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python shorts/pipeline.py release-sync
-
-      - name: Build the Pages site (existing media plus shorts)
-        run: python shorts/pipeline.py assemble-site
-
-      - uses: actions/upload-pages-artifact@v4
-        with:
-          path: shorts/work/site
-          retention-days: 1
-
-      - uses: actions/deploy-pages@v4
-
-      - name: Commit the seen log and queue
-        run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add shorts/state/seen.json shorts/state/posted.json shorts/feed/shorts_queue.json whop/feed/whop_ready_feed.json whop/manifest.json
-          if git diff --cached --quiet; then
-            echo "No queue change."
-            exit 0
-          fi
-          git commit -m "chore(shorts): update queue and seen log"
-          # Clean any unstaged changes so rebase can succeed
-          git stash --include-untracked || true
-          for i in 1 2 3 4; do
-            git pull --rebase origin "$GITHUB_REF_NAME" && git push origin "HEAD:$GITHUB_REF_NAME" && exit 0
-            echo "Push failed, retrying ($i)..."
-            sleep 5
-          done
-          exit 1
+      - name: Retired
+        run: echo "Shorts collector is retired. Use the Clip pipeline workflow."
 
   republish:
-    if: github.event_name == 'workflow_run' && github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
-    timeout-minutes: 20
-    environment:
-      name: github-pages
     steps:
-      - uses: actions/checkout@v4
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install Python packages
-        run: pip install -q -r shorts/requirements.txt
-
-      - name: Put the shorts files back on Pages
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python whop/whop_clipper.py build-feed
-          python shorts/pipeline.py republish
-
-      - uses: actions/upload-pages-artifact@v4
-        with:
-          path: shorts/work/site
-          retention-days: 1
-
-      - uses: actions/deploy-pages@v4
+      - name: Retired
+        run: echo "Shorts republish is retired. Publish Pages is unchanged and still manual."

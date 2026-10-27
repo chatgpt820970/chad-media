@@ -1,0 +1,55 @@
+name: Clip monitor
+
+# Off unless the repository variable CLIPPER_MONITOR is true.
+# The job checks submissions/pending.json and fails when a live post is past
+# its 30-minute Content Rewards deadline so GitHub can email the assistant.
+on:
+  schedule:
+    - cron: "*/15 * * * *"
+  workflow_dispatch:
+    inputs:
+      key:
+        description: "Optional pending id or post URL to mark submitted."
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+
+jobs:
+  monitor:
+    # Skipped jobs do not start a runner. Leave CLIPPER_MONITOR unset until you want the cron.
+    if: ${{ vars.CLIPPER_MONITOR == 'true' || github.event_name == 'workflow_dispatch' }}
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Mark submitted
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.key != '' }}
+        run: python -m clipper mark-submitted --key "${{ inputs.key }}"
+
+      - name: Deadlines
+        env:
+          CLIPPER_MONITOR: ${{ vars.CLIPPER_MONITOR }}
+        run: python -m clipper monitor
+
+      - name: Commit queue updates
+        if: ${{ vars.CLIPPER_MONITOR == 'true' }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add submissions state || true
+          if git diff --cached --quiet; then
+            echo "no queue changes"
+          else
+            git commit -m "chore(submissions): update Content Rewards queue"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

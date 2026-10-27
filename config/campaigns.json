@@ -1,0 +1,920 @@
+{
+  "checked_on": "2026-10-27",
+  "activation": "Sui BaseCamp and Dhan Aziz are the joined campaigns and start active. Every other seeded campaign stays inactive until you set active to true. The views-to-first-payout line is a warning, not a reason to turn a campaign on or off. Dhan Aziz still will not post until each source id is listed in state/approvals.json.",
+  "owner_fields": "payout_timing and approval_notes are optional free text. Leave them empty until you have talked to the campaign manager.",
+  "removed": [
+    {
+      "id": "dishpilot",
+      "reason": "whop/urls_queue.json set campaign to dishpilot. whop/clipper.py only accepts flipgg, arrafund, and mrpa, so ingest raised Unknown campaign 'dishpilot'. Not a routable campaign here."
+    },
+    {
+      "id": "flipgg",
+      "reason": "Removed from the active set at the owner's request. The old pipeline stamped a flip.gg text box on every clip."
+    },
+    {
+      "id": "mrpa",
+      "reason": "Removed from the active set at the owner's request."
+    },
+    {
+      "id": "arrafund",
+      "reason": "Removed from the active set at the owner's request."
+    },
+    {
+      "id": "slayground-evangelist",
+      "content_rewards_campaign_id": "7439fd03-87a2-4df8-ae4b-30cb0e28ab26",
+      "reason": "Different campaign from A24 Slayground standard. $2.50/1k horror-trailer brief aimed at US and UK viewers. Not used."
+    }
+  ],
+  "campaigns": [
+    {
+      "id": "sui-basecamp",
+      "active": true,
+      "title": "Sui BaseCamp LIVE STREAM",
+      "brand": "Expos3d Nation",
+      "rate_per_1k_views_usd": 4.0,
+      "min_payout_usd": 4.0,
+      "max_payout_usd": 300.0,
+      "min_payout": 4.0,
+      "max_payout": 300.0,
+      "min_views": 1000,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "tiktok",
+        "instagram",
+        "youtube"
+      ],
+      "content_types": [
+        "sui_basecamp"
+      ],
+      "footage": "campaign_library_only",
+      "edits": "engaging",
+      "account_mode": "shared",
+      "publish_mode": "automatic",
+      "approval": "none",
+      "allocation_weight": 1,
+      "cross_post": "vary",
+      "source": {
+        "kind": "google_drive_folder",
+        "url": "https://drive.google.com/drive/folders/1tepyyEVFtGLi8Ukv8AddBDj2FcIb7d-i",
+        "live_stream": "https://x.com/SuiNetwork/status/2107667372077416613",
+        "example_clip": "https://x.com/jackkk/status/2107707718903685516"
+      },
+      "moments": [
+        {
+          "label": "Hudi trading competition",
+          "window": "Oct 6, 11:30pm-12:45am EST",
+          "source": "owner"
+        },
+        {
+          "label": "Adeniyi keynote",
+          "window": "Oct 7, 1:05-1:30am EST",
+          "source": "owner"
+        },
+        {
+          "label": "Evan Cheng",
+          "window": "Oct 8, 1:25-1:55am EST",
+          "source": "owner and campaign card"
+        },
+        {
+          "label": "Adeniyi closing",
+          "window": "Oct 8, 4:10-4:40am EST",
+          "source": "owner and campaign card"
+        },
+        {
+          "label": "Rooms live demo",
+          "window": "Business 0:59:40-1:10:40",
+          "url": "https://x.com/i/broadcasts/1nKOLQqrrrwGR",
+          "source": "campaign card"
+        }
+      ],
+      "rules": {
+        "min_duration_sec": null,
+        "max_duration_sec": 60,
+        "duration_note": "Cut engaging moments from the Drive folder. The public card does not print a length. Capped at 60 seconds here."
+      },
+      "logo": {
+        "required": false,
+        "file": null,
+        "placement": "bottom-center",
+        "placeholder": false
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "Sui BaseCamp live",
+          "This moment from Sui BaseCamp"
+        ],
+        "required_phrases": [
+          "x.com/SuiNetwork"
+        ],
+        "hashtags": [],
+        "platform_tags": {},
+        "exclusive_tokens": [
+          "x.com/SuiNetwork",
+          "Sui BaseCamp"
+        ]
+      },
+      "sound": null,
+      "content_rewards_campaign_id": "1c64ec71-ba0e-4798-b017-869635798747",
+      "submit_page": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747",
+          "what": "$4/1k, min $4, max $300. Moments include the Rooms live demo, Evan Cheng on Oct 8 1:25-1:55am EST, and Adeniyi closing 4:10-4:40am EST. Checked 2026-10-27."
+        },
+        {
+          "url": "https://clippingalpha.com/campaigns/sui-basecamp-live/clipping",
+          "what": "TikTok, Instagram, and YouTube. About $728 of $1,750 left."
+        }
+      ],
+      "automation_gaps": [
+        "Footage comes only from the Google Drive folder. Download with gdown --folder. Do not search the open web.",
+        "The owner also named the Hudi trading competition (Oct 6, 11:30pm-12:45am EST) and the Adeniyi keynote (Oct 7, 1:05-1:30am EST). The public card text that was visible did not restate those two windows.",
+        "No logo file is on the public card. Nothing is overlaid unless a transparent PNG is added and logo.required is set true.",
+        "Captions must contain x.com/SuiNetwork. Hooks stay generic so a file is not labeled as the wrong moment."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 728,
+        "total_usd": 1750,
+        "as_of": "2026-10-27T13:40:00Z",
+        "source": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747"
+      }
+    },
+    {
+      "id": "dhan-aziz",
+      "active": true,
+      "title": "Dhan Aziz New Music CLIPS",
+      "brand": "Dhan Aziz Clipping",
+      "rate_per_1k_views_usd": 5.0,
+      "min_payout_usd": 5.0,
+      "max_payout_usd": 10.0,
+      "min_payout": 5.0,
+      "max_payout": 10.0,
+      "min_views": 1000,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "instagram",
+        "youtube"
+      ],
+      "content_types": [
+        "dhan_aziz"
+      ],
+      "footage": "exact_repost",
+      "edits": "none",
+      "account_mode": "shared",
+      "publish_mode": "automatic",
+      "approval": "required",
+      "allocation_weight": 1,
+      "cross_post": "exact",
+      "source": {
+        "kind": "dropbox_folder",
+        "url": "https://www.dropbox.com/scl/fo/q7yh4nn5cmjco6tcn9qlp/AH5g6pAm_ok984WYOXul0O0?rlkey=xb4vtwrztelm5hugx8i1kd6tq&dl=0"
+      },
+      "rules": {
+        "min_duration_sec": null,
+        "max_duration_sec": 60,
+        "posts_must_stay_public": true,
+        "duration_note": "Repost the provided file. No cut, crop, cover, or logo."
+      },
+      "logo": {
+        "required": false,
+        "file": null,
+        "placement": "bottom-center",
+        "placeholder": false
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "Dhan Aziz new music"
+        ],
+        "required_phrases": [
+          "@DHANAZIZ"
+        ],
+        "hashtags": [],
+        "platform_tags": {
+          "instagram": [
+            "@DHANAZIZ"
+          ],
+          "youtube": [
+            "@DHANAZIZ"
+          ]
+        },
+        "exclusive_tokens": [
+          "@DHANAZIZ",
+          "Dhan Aziz"
+        ]
+      },
+      "sound": null,
+      "content_rewards_campaign_id": "0f0e96b4-e0dc-4f18-9ac6-e6b41f070b3f",
+      "submit_page": "https://contentrewards.com/c/campaigns/0f0e96b4-e0dc-4f18-9ac6-e6b41f070b3f",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/0f0e96b4-e0dc-4f18-9ac6-e6b41f070b3f",
+          "what": "Card says to open the Dropbox link and repost the content. $5/1k, min $5, max $10. About $736 of $1,000 left. Checked 2026-10-27."
+        },
+        {
+          "url": "https://clippingalpha.com/campaigns/dhan-aziz/music",
+          "what": "Instagram and YouTube. ClippingAlpha also describes edits over promo footage. This pipeline follows the card and the owner: exact repost, no edits, no logo."
+        }
+      ],
+      "automation_gaps": [
+        "Exact file from Dropbox. Download with the share link and dl=1. No crop, no start offset, no watermark cover, no logo.",
+        "Every post tags @DHANAZIZ and stays public.",
+        "Drafts are not posted. The run lists them as awaiting_approval. Add the source id to state/approvals.json after review.",
+        "Not routed to X or TikTok."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 736,
+        "total_usd": 1000,
+        "as_of": "2026-10-27T13:40:00Z",
+        "source": "https://contentrewards.com/c/campaigns/0f0e96b4-e0dc-4f18-9ac6-e6b41f070b3f"
+      }
+    },
+    {
+      "id": "rolling-stone",
+      "active": false,
+      "inactive_reason": "Needs 30% Tier 1 viewers and music pages. The shared India-first channels do not meet that, so this stays off.",
+      "title": "Rolling Stone x Don Toliver & Malcolm Todd",
+      "brand": "creatorXchange",
+      "rate_per_1k_views_usd": 2.0,
+      "min_payout_usd": 2.0,
+      "max_payout_usd": 200.0,
+      "min_payout": 2.0,
+      "max_payout": 200.0,
+      "min_views": 1000,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "tiktok",
+        "instagram"
+      ],
+      "content_types": [
+        "rolling_stone_interview"
+      ],
+      "footage": "campaign_library_only",
+      "edits": "engaging",
+      "account_mode": "shared",
+      "publish_mode": "automatic",
+      "approval": "none",
+      "allocation_weight": 1,
+      "cross_post": "vary",
+      "rules": {
+        "min_duration_sec": null,
+        "max_duration_sec": 60,
+        "duration_note": "Inactive. Do not cut this until the pages match the owner's bar."
+      },
+      "logo": {
+        "required": false,
+        "file": null,
+        "placement": "bottom-center",
+        "placeholder": false
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "Rolling Stone Musicians on Musicians"
+        ],
+        "required_phrases": [
+          "Rolling Stone"
+        ],
+        "hashtags": [],
+        "platform_tags": {},
+        "exclusive_tokens": [
+          "Rolling Stone",
+          "Don Toliver",
+          "Malcolm Todd"
+        ]
+      },
+      "sound": null,
+      "content_rewards_campaign_id": "a016fbcc-f357-441d-b2d1-919bba8777fa",
+      "submit_page": "https://contentrewards.com/c/campaigns/a016fbcc-f357-441d-b2d1-919bba8777fa",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/a016fbcc-f357-441d-b2d1-919bba8777fa",
+          "what": "$2/1k, min $2, max $200. Musicians on Musicians with Don Toliver and Malcolm Todd. Checked 2026-10-27."
+        },
+        {
+          "url": "https://clippingalpha.com/campaigns/rolling-stone/don-toliver-and-malcolm-todd",
+          "what": "TikTok and Instagram. About $2,827 of $3,000 left. The public summary did not print a Tier 1 percentage. Inactive because the owner requires 30% Tier 1 and music pages."
+        }
+      ],
+      "automation_gaps": [
+        "Left inactive. Do not post Rolling Stone to @benreelr or @bi67325."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 2827,
+        "total_usd": 3000,
+        "as_of": "2026-10-27T10:19:00Z",
+        "source": "https://clippingalpha.com/campaigns/rolling-stone/don-toliver-and-malcolm-todd"
+      }
+    },
+    {
+      "id": "oz-ali",
+      "active": false,
+      "inactive_reason": "Needs 60% Tier 1 viewers and 45% UK. These pages do not meet that.",
+      "title": "Oz Ali Clipping",
+      "brand": "Clipping Mart",
+      "rate_per_1k_views_usd": 2.0,
+      "min_payout_usd": 2.0,
+      "max_payout_usd": 250.0,
+      "min_payout": 2.0,
+      "max_payout": 250.0,
+      "min_views": 1000,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "youtube",
+        "tiktok",
+        "instagram"
+      ],
+      "content_types": [
+        "oz_ali"
+      ],
+      "footage": "campaign_library_only",
+      "edits": "engaging",
+      "account_mode": "dedicated",
+      "publish_mode": "automatic",
+      "approval": "none",
+      "allocation_weight": 1,
+      "cross_post": "one_shortform",
+      "rules": {
+        "min_duration_sec": 15,
+        "max_duration_sec": 60,
+        "duration_note": "Public brief says 15 to 60 seconds. Inactive because of the audience bar."
+      },
+      "logo": {
+        "required": false,
+        "file": null,
+        "placement": "bottom-center",
+        "placeholder": false
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "Oz Ali"
+        ],
+        "required_phrases": [
+          "Oz Ali"
+        ],
+        "hashtags": [],
+        "platform_tags": {},
+        "exclusive_tokens": [
+          "Oz Ali"
+        ]
+      },
+      "sound": null,
+      "content_rewards_campaign_id": "7db74a3b-754c-438e-a342-21a8ae67c61b",
+      "submit_page": "https://contentrewards.com/c/campaigns/7db74a3b-754c-438e-a342-21a8ae67c61b",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/7db74a3b-754c-438e-a342-21a8ae67c61b",
+          "what": "YouTube and TikTok card. $2/1k, min $2, max $250. About $907 of $1,000 left. Checked 2026-10-27."
+        },
+        {
+          "url": "https://clipperhub.co/en/c/oz-ali-clipping.html",
+          "what": "Public summary: at least 60% Tier 1, and 30% UK inside that Tier 1 share. The owner set a higher UK bar, 45%. Inactive either way."
+        },
+        {
+          "url": "https://contentrewards.com/c/campaigns/d49691b4-95fa-4f4a-8115-eb0e8620a833",
+          "what": "Separate Instagram-only Oz Ali card. Not used."
+        }
+      ],
+      "automation_gaps": [
+        "Left inactive. Owner bar is 60% Tier 1 and 45% UK. A dedicated Oz Ali page would also be required before this could be turned on.",
+        "Do not put the word clipping in an account name if this is enabled later."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 907,
+        "total_usd": 1000,
+        "as_of": "2026-10-27T13:40:00Z",
+        "source": "https://contentrewards.com/c/campaigns/7db74a3b-754c-438e-a342-21a8ae67c61b"
+      }
+    },
+    {
+      "id": "t-bird",
+      "active": false,
+      "title": "T Bird feature film",
+      "brand": "Filmchilla",
+      "rate_per_1k_views_usd": 1.0,
+      "min_payout_usd": 10.0,
+      "max_payout_usd": 100.0,
+      "min_payout": 10.0,
+      "max_payout": 100.0,
+      "min_views": 10000,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "x",
+        "youtube",
+        "instagram",
+        "tiktok"
+      ],
+      "content_types": [
+        "tbird_film"
+      ],
+      "footage": "campaign_library_only",
+      "account_mode": "shared",
+      "publish_mode": "automatic",
+      "allocation_weight": 1,
+      "cross_post": "vary",
+      "rules": {
+        "min_duration_sec": null,
+        "max_duration_sec": 60,
+        "duration_note": "The public campaign card does not publish a length. This pipeline caps short-form output at 60 seconds."
+      },
+      "logo": {
+        "required": false,
+        "file": null,
+        "placement": "bottom-center",
+        "placeholder": false
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "T BIRD movie streaming now"
+        ],
+        "required_phrases": [
+          "T BIRD movie streaming now"
+        ],
+        "hashtags": [],
+        "platform_tags": {
+          "instagram": [
+            "@chilla"
+          ]
+        },
+        "exclusive_tokens": [
+          "T BIRD movie streaming now",
+          "@chilla"
+        ]
+      },
+      "sound": null,
+      "content_rewards_campaign_id": "7120a2f6-c50b-49f5-8b31-748782428546",
+      "submit_page": "https://contentrewards.com/c/campaigns/7120a2f6-c50b-49f5-8b31-748782428546",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/7120a2f6-c50b-49f5-8b31-748782428546",
+          "what": "Description must say \" T BIRD movie streaming now \". Instagram tag @chilla. $1/1k, min payout $10, max $100. Checked 2026-10-27."
+        },
+        {
+          "url": "https://clippingalpha.com/campaigns/t-bird-feature-film/clipping",
+          "what": "TikTok, Instagram, YouTube, and X. Caption phrase and @chilla on Instagram."
+        }
+      ],
+      "do_not_use": [
+        {
+          "id": "7715fbd5-881a-4508-a1f6-8abeef0f9ead",
+          "url": "https://contentrewards.com/c/campaigns/7715fbd5-881a-4508-a1f6-8abeef0f9ead",
+          "why": "Older T Bird Movie card. Different caption, pre-approval, and a depleted budget. This pipeline uses the feature-film card 7120a2f6."
+        }
+      ],
+      "automation_gaps": [
+        "The reference movie file is visible only after joining. Put approved URLs in config/inbox/campaigns/t-bird.txt.",
+        "Do not add a streaming link. The older card told clippers not to link the FAWESOME page, and the X channel blocks links."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 1929,
+        "total_usd": 2259,
+        "as_of": "2026-10-27T09:14:00Z",
+        "source": "https://clippingalpha.com/campaigns/t-bird-feature-film/clipping"
+      }
+    },
+    {
+      "id": "minogue",
+      "active": false,
+      "title": "Clip for Team Minogue",
+      "brand": "Minogue For MA",
+      "rate_per_1k_views_usd": 1.5,
+      "min_payout_usd": 1.5,
+      "max_payout_usd": 150.0,
+      "min_payout": 1.5,
+      "max_payout": 150.0,
+      "min_views": 1000,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "youtube",
+        "instagram",
+        "tiktok"
+      ],
+      "content_types": [
+        "minogue_brand"
+      ],
+      "footage": "campaign_library_only",
+      "account_mode": "shared",
+      "publish_mode": "automatic",
+      "allocation_weight": 1,
+      "cross_post": "vary",
+      "rules": {
+        "min_duration_sec": 20,
+        "max_duration_sec": 40,
+        "duration_note": "ClippingAlpha says to cut 20 to 40 second moments from the interview and ad footage. The Content Rewards card does not restate a length."
+      },
+      "logo": {
+        "required": false,
+        "file": null,
+        "placement": "bottom-center",
+        "placeholder": false
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "Mike Minogue for Governor of Massachusetts"
+        ],
+        "required_phrases": [
+          "Mike Minogue"
+        ],
+        "hashtags": [],
+        "platform_tags": {},
+        "exclusive_tokens": [
+          "Mike Minogue",
+          "Minogue"
+        ]
+      },
+      "sound": null,
+      "content_rewards_campaign_id": "210e40be-92ca-4b3a-912f-231944511254",
+      "submit_page": "https://contentrewards.com/c/campaigns/210e40be-92ca-4b3a-912f-231944511254",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/210e40be-92ca-4b3a-912f-231944511254",
+          "what": "$1.50/1k, min payout $1.50, max $150. Public card has no required hashtag or logo. Checked 2026-10-27."
+        },
+        {
+          "url": "https://clippingalpha.com/campaigns/minogue-for-ma/minogue",
+          "what": "TikTok, Instagram, and YouTube. Footage is interviews and ads such as SouthCoast Now, the donut ad, and On The Record. Not X."
+        },
+        {
+          "url": "https://contentrewards.com/ftc-compliance",
+          "what": "Paid campaign posts need a clear disclosure. Captions start with #Ad."
+        }
+      ],
+      "automation_gaps": [
+        "No mandatory hashtag was on the public card. The caption names Mike Minogue and discloses #Ad. Confirm the signed-in brief before relying on hashtags.",
+        "X is not a paid platform for this campaign. Clips are not routed there.",
+        "Only brand footage. Open web search is not used. Put joined reference URLs in config/inbox/campaigns/minogue.txt."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 1720,
+        "total_usd": 4000,
+        "as_of": "2026-10-27T08:00:00Z",
+        "source": "https://clippingalpha.com/campaigns/minogue-for-ma/minogue"
+      }
+    },
+    {
+      "id": "jackelyne",
+      "active": false,
+      "title": "Jackelyne",
+      "brand": "Jackelyne Clips",
+      "rate_per_1k_views_usd": 1.5,
+      "min_payout_usd": 2.0,
+      "max_payout_usd": 150.0,
+      "min_payout": 2.0,
+      "max_payout": 150.0,
+      "min_views": 1334,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "youtube",
+        "instagram",
+        "tiktok"
+      ],
+      "content_types": [
+        "jackelyne_footage"
+      ],
+      "footage": "campaign_library_only",
+      "account_mode": "dedicated",
+      "dedicated_channel_env": {
+        "instagram": "JACKELYNE_BUFFER_CHANNEL_INSTAGRAM",
+        "tiktok": "JACKELYNE_BUFFER_CHANNEL_TIKTOK",
+        "youtube": "JACKELYNE_BUFFER_CHANNEL_YOUTUBE"
+      },
+      "publish_mode": "automatic",
+      "allocation_weight": 1,
+      "cross_post": "one_shortform",
+      "rules": {
+        "min_duration_sec": 10,
+        "max_duration_sec": 60,
+        "duration_note": "The quoted brief says minimum 10 seconds. ClippingAlpha suggests cutting 30 to 55 second moments. This pipeline enforces 10 to 60."
+      },
+      "logo": {
+        "required": true,
+        "file": "logos/jackelyne.png",
+        "placement": "bottom-center",
+        "width_ratio": 0.18,
+        "placeholder": true
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "no way Jacky said this",
+          "wtf did Jacky just do"
+        ],
+        "required_phrases": [
+          "Jacky"
+        ],
+        "hashtags": [
+          "#JackyAlvarez",
+          "#unboxd"
+        ],
+        "platform_tags": {
+          "instagram": [
+            "@jackyalvvarez"
+          ],
+          "tiktok": [
+            "@jackyalvvarez"
+          ],
+          "youtube": [
+            "@jackyalvvarez"
+          ]
+        },
+        "exclusive_tokens": [
+          "#JackyAlvarez",
+          "#unboxd",
+          "@jackyalvvarez",
+          "Jacky"
+        ]
+      },
+      "sound": null,
+      "content_rewards_campaign_id": "5991571d-8c83-41e8-941c-34d96476c06b",
+      "submit_page": "https://contentrewards.com/c/campaigns/5991571d-8c83-41e8-941c-34d96476c06b",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/5991571d-8c83-41e8-941c-34d96476c06b",
+          "what": "$1.50/1k, min payout $2, max $150. Dedicated pages required. Checked 2026-10-27. The public card does not print the full brief."
+        },
+        {
+          "url": "https://clipperhub.co/en/c/jackelyne-campaign.html",
+          "what": "Quoted brief: dedicated Instagram, TikTok, and YouTube fan or meme pages, not a promo team. Bio must include @jackyalvvarez and https://www.instagram.com/jackyalvvarez/ plus a meme-style line. Hook must mention Jacky. Caption tags @jackyalvvarez #JackyAlvarez. Minimum 10 seconds. Footage from the campaign Drive."
+        },
+        {
+          "url": "https://clippingalpha.com/campaigns/jackelyne/clipping",
+          "what": "Summary also lists X. The quoted brief does not. X is not routed."
+        }
+      ],
+      "automation_gaps": [
+        "Fan-page username, profile photo, and bio cannot be set through Buffer. The owner has to create the Instagram, TikTok, and YouTube pages, use the same name on each, and put @jackyalvvarez plus https://www.instagram.com/jackyalvvarez/ in the bio with a short meme line. YouTube's bio line in the brief is @Jackyalvvarez.",
+        "Do not post Jackelyne to @benreelr, @bi67325, or Denzen. Those are the shared channels. Live posting stays blocked until JACKELYNE_BUFFER_CHANNEL_INSTAGRAM, JACKELYNE_BUFFER_CHANNEL_TIKTOK, and JACKELYNE_BUFFER_CHANNEL_YOUTUBE are set to the fan-page Buffer channel ids.",
+        "The public brief excerpt does not name a logo file. The owner asked for a logo on screen, so the renderer overlays logos/jackelyne.png at bottom center. That file is a placeholder wordmark. Live posting stays blocked until the official transparent PNG replaces it and logo.placeholder is set to false.",
+        "#unboxd is included because the owner required it. It does not appear in the public brief excerpt, which requires @jackyalvvarez and #JackyAlvarez. Remove it from caption.hashtags if the signed-in brief does not ask for it.",
+        "A YouTube pinned comment such as \"Jacky never disappoints\" is in the brief. Buffer's createPost input has no pinned-comment field.",
+        "X is not routed. ClippingAlpha lists X; the quoted brief says Instagram, TikTok, and YouTube only."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 2458,
+        "total_usd": 5670,
+        "as_of": "2026-10-27T10:33:00Z",
+        "source": "https://clippingalpha.com/campaigns/jackelyne/clipping"
+      }
+    },
+    {
+      "id": "a24-slayground",
+      "active": false,
+      "title": "A24 Slayground (standard)",
+      "brand": "ClipHaus",
+      "rate_per_1k_views_usd": 1.0,
+      "min_payout_usd": 1.0,
+      "max_payout_usd": 150.0,
+      "min_payout": 1.0,
+      "max_payout": 150.0,
+      "min_views": 1000,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "youtube",
+        "instagram",
+        "tiktok"
+      ],
+      "content_types": [
+        "a24_official_trailer"
+      ],
+      "footage": "campaign_library_only",
+      "account_mode": "shared",
+      "publish_mode": "automatic",
+      "allocation_weight": 1,
+      "cross_post": "vary",
+      "rules": {
+        "min_duration_sec": null,
+        "max_duration_sec": 60,
+        "duration_note": "The public standard card says short clips from the official trailer and does not publish a length. Capped at 60 seconds here."
+      },
+      "logo": {
+        "required": false,
+        "file": null,
+        "placement": "bottom-center",
+        "placeholder": false
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "SLAYGROUND — in theaters January 29, 2027"
+        ],
+        "required_phrases": [
+          "SLAYGROUND",
+          "January 29, 2027"
+        ],
+        "hashtags": [],
+        "platform_tags": {},
+        "exclusive_tokens": [
+          "SLAYGROUND",
+          "January 29, 2027"
+        ]
+      },
+      "sound": null,
+      "content_rewards_campaign_id": "b21db5e5-3494-4efe-8783-4be34c17ec54",
+      "submit_page": "https://contentrewards.com/c/campaigns/b21db5e5-3494-4efe-8783-4be34c17ec54",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/b21db5e5-3494-4efe-8783-4be34c17ec54",
+          "what": "Standard ClipHaus campaign. $1/1k, min payout $1, max $150. Official trailer for the suspense thriller in theaters January 29, 2027. One reference file, behind join. Checked 2026-10-27."
+        },
+        {
+          "url": "https://clippingalpha.com/campaigns/a24/slayground",
+          "what": "TikTok, Instagram, and YouTube. Not X. This is the $1 standard round, not the $2.50 Evangelist round."
+        },
+        {
+          "url": "https://clipperhub.co/es/c/a24-slayground.html",
+          "what": "Rules were not public without signing in. Required hashtags and any watermark are unverified."
+        }
+      ],
+      "automation_gaps": [
+        "Required hashtags, mentions, and any logo are on the signed-in brief only. This pipeline does not invent them and does not copy rules from the separate $2.50 Evangelist campaign.",
+        "The caption names the film and the public release date from the campaign card. Add hashtags in config once the brief is visible.",
+        "Trailer URLs go in config/inbox/campaigns/a24-slayground.txt. Open search is not used."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 2914,
+        "total_usd": 3000,
+        "as_of": "2026-10-27T09:32:00Z",
+        "source": "https://clippingalpha.com/campaigns/a24/slayground"
+      }
+    },
+    {
+      "id": "crookbrown",
+      "active": false,
+      "title": "CrookBrown — Wait For Me",
+      "brand": "Artist Influence",
+      "rate_per_1k_views_usd": 1.0,
+      "min_payout_usd": 1.0,
+      "max_payout_usd": 150.0,
+      "min_payout": 1.0,
+      "max_payout": 150.0,
+      "min_views": 1000,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "tiktok"
+      ],
+      "content_types": [
+        "spider_man",
+        "sports",
+        "trending_movie"
+      ],
+      "footage": "own_edit",
+      "account_mode": "shared",
+      "publish_mode": "notification",
+      "allocation_weight": 1,
+      "cross_post": "one_shortform",
+      "rules": {
+        "min_duration_sec": null,
+        "max_duration_sec": 60,
+        "duration_note": "No length on the public card. Capped at 60 seconds."
+      },
+      "logo": {
+        "required": false,
+        "file": null,
+        "placement": "bottom-center",
+        "placeholder": false
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "Wait For Me — CrookBrown"
+        ],
+        "required_phrases": [
+          "Wait For Me"
+        ],
+        "hashtags": [],
+        "platform_tags": {},
+        "exclusive_tokens": [
+          "Wait For Me",
+          "CrookBrown"
+        ]
+      },
+      "sound": {
+        "title": "Wait For Me",
+        "artist": "CrookBrown",
+        "automated": false
+      },
+      "content_rewards_campaign_id": "ac1fbc3c-4d08-491c-8c9a-ff02e266f5dc",
+      "submit_page": "https://contentrewards.com/c/campaigns/ac1fbc3c-4d08-491c-8c9a-ff02e266f5dc",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/ac1fbc3c-4d08-491c-8c9a-ff02e266f5dc",
+          "what": "TikTok only. $1/1k. Restyle drive edits or original edits in three lanes: Spider-Man, current sports, trending TV and movies. Rate card max payout $150. Description also says max payout $200+. Checked 2026-10-27."
+        },
+        {
+          "url": "https://clippingalpha.com/campaigns/crookbrown/wait-for-me-repository-reposts",
+          "what": "Every post uses the sound Wait For Me by CrookBrown. Min payout $1, so 1,000 views."
+        }
+      ],
+      "automation_gaps": [
+        "Buffer createPost has no TikTok sound field. Posts are created as notification reminders, not automatic publishes. The owner attaches Wait For Me by CrookBrown in TikTok before the post goes live.",
+        "A raw download is not an own edit. Search hits stay in needs_edit until a finished file is listed in config/inbox/ready/crookbrown.txt.",
+        "Not routed to X, YouTube, or Instagram."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 1998,
+        "total_usd": 2000,
+        "as_of": "2026-10-27T07:31:00Z",
+        "source": "https://clippingalpha.com/campaigns/crookbrown/wait-for-me-repository-reposts"
+      }
+    },
+    {
+      "id": "ricky-hilfiger",
+      "active": false,
+      "title": "Ricky Hilfiger documentary",
+      "brand": "The Clip Ship",
+      "rate_per_1k_views_usd": 2.0,
+      "min_payout_usd": 3.0,
+      "max_payout_usd": 250.0,
+      "min_payout": 3.0,
+      "max_payout": 250.0,
+      "min_views": 1500,
+      "payout_timing": "",
+      "approval_notes": "",
+      "platforms": [
+        "youtube",
+        "instagram",
+        "tiktok"
+      ],
+      "content_types": [
+        "ricky_documentary"
+      ],
+      "footage": "campaign_library_only",
+      "account_mode": "shared",
+      "publish_mode": "automatic",
+      "allocation_weight": 1,
+      "cross_post": "one_shortform",
+      "rules": {
+        "min_duration_sec": null,
+        "max_duration_sec": 60,
+        "duration_note": "No length on the public card."
+      },
+      "logo": {
+        "required": false,
+        "file": null,
+        "placement": "bottom-center",
+        "placeholder": false
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "Ricky Hil — the documentary"
+        ],
+        "required_phrases": [
+          "Ricky Hil"
+        ],
+        "hashtags": [
+          "#tommyhilfiger",
+          "#documentary"
+        ],
+        "platform_tags": {},
+        "exclusive_tokens": [
+          "#tommyhilfiger",
+          "#documentary",
+          "Ricky Hil"
+        ]
+      },
+      "sound": null,
+      "content_rewards_campaign_id": "a9b951e0-1dcf-4f3b-80bb-49d25cfb97c8",
+      "submit_page": "https://contentrewards.com/c/campaigns/a9b951e0-1dcf-4f3b-80bb-49d25cfb97c8",
+      "sources_checked": [
+        {
+          "url": "https://contentrewards.com/c/campaigns/a9b951e0-1dcf-4f3b-80bb-49d25cfb97c8",
+          "what": "$2/1k, min payout $3 (1,500 views), max $250. Documentary footage so viewers look up the full film. Checked 2026-10-27. Inactive until the owner turns active on."
+        },
+        {
+          "url": "https://clippingalpha.com/campaigns/ricky-hilfiger/clipping",
+          "what": "TikTok, Instagram, and YouTube. Not X."
+        },
+        {
+          "url": "https://clipperhub.co/en/c/ricky-hilfiger-clipping.html",
+          "what": "Public threshold listed as 1,500 views. The rules text itself was not summarised."
+        }
+      ],
+      "automation_gaps": [
+        "Left inactive on purpose.",
+        "Owner note said 2,000 minimum views and hashtags #tommyhilfiger #documentary. The public rate card pays from $3, which is 1,500 views at $2/1k. min_views follows the rate card. The hashtags are stored from the owner note and were not printed on the public card.",
+        "Brand documentary footage only. Do not fill this with unrelated celebrity clips if it is enabled later."
+      ],
+      "budget_snapshot": {
+        "remaining_usd": 1239,
+        "total_usd": 1463,
+        "as_of": "2026-10-27T07:21:00Z",
+        "source": "https://clippingalpha.com/campaigns/ricky-hilfiger/clipping"
+      }
+    }
+  ],
+  "content_plan": "X has no active campaign. X posts the owner's plan: trending, celebrity, and 4K anime, clean, no logo. TikTok, Instagram, and YouTube slots that a campaign does not fill use that platform's content plan, also with no logo."
+}
