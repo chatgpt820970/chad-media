@@ -106,6 +106,16 @@ def create_post(url: str, token: str, post_input: dict) -> dict:
     return post
 
 
+def post_nodes(data: dict) -> list[dict]:
+    edges = ((data or {}).get("posts") or {}).get("edges") or []
+    nodes = []
+    for edge in edges:
+        node = (edge or {}).get("node") or {}
+        if node:
+            nodes.append(node)
+    return nodes
+
+
 def view_count(metrics: list[dict] | None) -> int | None:
     for metric in metrics or []:
         if metric.get("type") == "views":

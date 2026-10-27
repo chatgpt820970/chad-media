@@ -9,7 +9,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from clipper.buffer_api import ErrorBudget, create_post, should_stop_platform
-from clipper.fetchsrc import download_command, dropbox_direct
+from clipper.fetchsrc import (
+    _needs_cookies,
+    download_command,
+    download_saved,
+    drive_bytes_from_headers,
+    dropbox_direct,
+    youtube_attempts,
+)
+from clipper.submissions import empty_pending, record_sent_posts
 from clipper.engine import (
     build_caption,
     quiet_gap_minutes,
@@ -274,6 +282,30 @@ class DownloadTests(unittest.TestCase):
         self.assertTrue(any(item.startswith("gdown") for item in blobs))
         self.assertTrue(any("dl=1" in item for item in blobs))
 
+    def test_drive_warning_page_size(self):
+        html = '<span class="uc-name-size"><a href="/open?id=abc">Adeniyi - Clip 1.mp4</a> (156M)</span>'
+        self.assertEqual(drive_bytes_from_headers("text/html", "2416", html), 156 * 1024 * 1024)
+        self.assertEqual(drive_bytes_from_headers("text/html", "10", "(1.5GB)"), int(1.5 * 1024**3))
+        self.assertEqual(drive_bytes_from_headers("video/mp4", "52029715", ""), 52029715)
+        self.assertIsNone(drive_bytes_from_headers("text/html", "2416", "<html>no size</html>"))
+
+    def test_ytdlp_limit_and_youtube_clients(self):
+        self.assertTrue(download_saved(0, True))
+        self.assertTrue(download_saved(101, True))
+        self.assertFalse(download_saved(101, False))
+        self.assertFalse(download_saved(1, True))
+        attempts = youtube_attempts("ytsearch1:cricket match highlight India", "out.mp4", None)
+        self.assertEqual(len(attempts), 4)
+        self.assertIn("youtube:player_client=tv_downgraded", attempts[0])
+        self.assertNotIn("--cookies", attempts[0])
+        self.assertTrue(attempts[0][-1].startswith("ytsearch1:"))
+        with_cookies = youtube_attempts("https://www.youtube.com/watch?v=abc", "out.mp4", "/tmp/yt.txt")
+        self.assertIn("--cookies", with_cookies[1])
+        self.assertIn("/tmp/yt.txt", with_cookies[1])
+        self.assertNotIn("secret-cookie-value", " ".join(with_cookies[1]))
+        self.assertTrue(_needs_cookies("Sign in to confirm you’re not a bot"))
+        self.assertFalse(_needs_cookies("HTTP Error 404"))
+
 
 class RenderTests(unittest.TestCase):
     def test_ffmpeg_fixture_if_present(self):
@@ -304,6 +336,39 @@ class SubmissionTests(unittest.TestCase):
         self.assertEqual(pending["items"], [])
         self.assertEqual(submitted["items"][0]["status"], "submitted")
         self.assertTrue(json.dumps(item))
+
+    def test_sent_post_starts_the_clock_immediately(self):
+        pending = empty_pending("https://example.invalid/pending.json", 30)
+        campaigns = _bundle()["campaigns"]["campaigns"]
+        sent = {
+            "id": "buf-sui",
+            "status": "sent",
+            "sentAt": "2026-10-27T00:00:00.000Z",
+            "dueAt": "2026-10-26T12:00:00.000Z",
+            "externalLink": "https://www.youtube.com/shorts/example",
+            "text": "#Ad\nSui BaseCamp live\nx.com/SuiNetwork",
+        }
+        scheduled = {
+            "id": "buf-later",
+            "status": "scheduled",
+            "dueAt": "2026-10-27T02:00:00.000Z",
+            "externalLink": "",
+            "text": "x.com/SuiNetwork",
+        }
+        plan = {
+            "id": "buf-plan",
+            "status": "sent",
+            "sentAt": "2026-10-27T00:05:00.000Z",
+            "externalLink": "https://www.youtube.com/shorts/plan",
+            "text": "4K anime sakuga",
+        }
+        added = record_sent_posts(pending, [sent, scheduled, plan, sent], "youtube", campaigns, 30)
+        self.assertEqual(added, 1)
+        item = pending["items"][0]
+        self.assertEqual(item["posted_at"], "2026-10-27T00:00:00.000Z")
+        self.assertEqual(item["deadline_at"], "2026-10-27T00:30:00.000Z")
+        self.assertEqual(item["campaign_id"], "sui-basecamp")
+        self.assertEqual(item["status"], "pending")
 
 
 if __name__ == "__main__":

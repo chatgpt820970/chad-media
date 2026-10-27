@@ -3,13 +3,16 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
 from clipper.alerts import alert
+from clipper.buffer_api import POSTS_QUERY, graphql, post_nodes
 from clipper.engine import threshold_warning
+from clipper.fetchsrc import fetch_media
 from clipper.loadconfig import check_bundle, load_bundle, repo_root
 from clipper.run import planned_downloads, run_pipeline, write_report
 from clipper.submissions import (
@@ -18,6 +21,7 @@ from clipper.submissions import (
     load_json,
     mark_submitted,
     overdue_items,
+    record_sent_posts,
     save_json,
     sweep_edited,
 )
@@ -61,6 +65,17 @@ def command_check(bundle: dict) -> int:
         print("no campaign is active; posting stays disabled until you set active to true")
     print("config ok")
     return 0
+
+
+def command_fetch(bundle: dict, args: argparse.Namespace) -> int:
+    output = Path(args.output_dir)
+    manifest = fetch_media(bundle, output, env=dict(os.environ))
+    output.mkdir(parents=True, exist_ok=True)
+    (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+    print(f"fetch ok={manifest['ok']} sui={bool(manifest.get('short'))}")
+    for error in manifest.get("errors") or []:
+        print(f"error: {error}", file=sys.stderr)
+    return 0 if manifest.get("ok") else 1
 
 
 def command_run(bundle: dict, args: argparse.Namespace) -> int:
@@ -123,6 +138,35 @@ def command_mark_submitted(bundle: dict, key: str) -> int:
     return 0
 
 
+def sync_sent_posts(bundle: dict, pending: dict) -> int:
+    """Poll Buffer and write pending.json in this same run, as soon as a post is sent."""
+    token = os.environ.get("BUFFER_API_TOKEN") or ""
+    if not token:
+        print("BUFFER_API_TOKEN unset; sent posts are not polled")
+        return 0
+    api = bundle["pipeline"]["buffer_api_url"]
+    org = bundle["channels"]["buffer_organization_id"]
+    minutes = int(bundle["pipeline"]["submit_within_minutes"])
+    added = 0
+    for platform, spec in bundle["channels"]["platforms"].items():
+        channel = str(os.environ.get(spec.get("channel_id_env") or "") or spec["buffer_channel_id"])
+        try:
+            data = graphql(api, token, POSTS_QUERY, {"organizationId": org, "channelId": channel})
+        except Exception as exc:
+            print(f"buffer poll {platform} failed: {exc.__class__.__name__}")
+            continue
+        added += record_sent_posts(
+            pending,
+            post_nodes(data),
+            platform,
+            bundle["campaigns"]["campaigns"],
+            minutes,
+        )
+    if added:
+        print(f"recorded {added} sent post(s) into submissions/pending.json")
+    return added
+
+
 def command_monitor(bundle: dict) -> int:
     if os.environ.get("CLIPPER_MONITOR", "").lower() != "true":
         print("CLIPPER_MONITOR is not true. Deadline check skipped.")
@@ -136,6 +180,9 @@ def command_monitor(bundle: dict) -> int:
     submitted = load_json(submitted_path, {"version": 1, "items": []})
     views = load_json(views_path, empty_views())
     when = datetime.now(timezone.utc)
+    sync_sent_posts(bundle, pending)
+    # Persist the moment Buffer reports sent, before the deadline sweep.
+    save_json(pending_path, pending)
     pending, submitted = sweep_edited(pending, submitted, when)
     save_json(pending_path, pending)
     save_json(submitted_path, submitted)
@@ -163,6 +210,9 @@ def build_parser() -> argparse.ArgumentParser:
     run.add_argument("--output-dir", default="work/dry-run")
     run.add_argument("--simulate-live", action="store_true")
 
+    fetch = sub.add_parser("fetch")
+    fetch.add_argument("--output-dir", default="work/fetch")
+
     mark = sub.add_parser("mark-submitted")
     mark.add_argument("--key", required=True, help="Pending item id or post URL")
 
@@ -179,6 +229,8 @@ def main(argv: list[str] | None = None) -> int:
         return command_check(bundle)
     if args.command == "run":
         return command_run(bundle, args)
+    if args.command == "fetch":
+        return command_fetch(bundle, args)
     if args.command == "mark-submitted":
         return command_mark_submitted(bundle, args.key)
     if args.command == "monitor":

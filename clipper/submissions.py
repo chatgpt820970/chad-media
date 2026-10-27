@@ -120,6 +120,59 @@ def upsert_views(
     return document
 
 
+def record_sent_posts(
+    pending: dict,
+    posts: list[dict],
+    platform: str,
+    campaigns: list[dict],
+    minutes: int,
+) -> int:
+    """Write a pending row as soon as Buffer reports the post sent.
+
+    The 30-minute clock starts at sentAt. A scheduled post, or one with no
+    public URL yet, is not queued. Content-plan posts have no campaign phrase
+    and are left out.
+    """
+    added = 0
+    existing_urls = {item.get("post_url") for item in pending.get("items") or []}
+    existing_ids = {item.get("buffer_post_id") for item in pending.get("items") or []}
+    for post in posts:
+        if post.get("status") != "sent":
+            continue
+        link = (post.get("externalLink") or "").strip()
+        sent_at = (post.get("sentAt") or "").strip()
+        buffer_id = (post.get("id") or "").strip()
+        if not link or not sent_at:
+            continue
+        if link in existing_urls or (buffer_id and buffer_id in existing_ids):
+            continue
+        text = post.get("text") or ""
+        campaign = None
+        for row in campaigns:
+            if not row.get("active") or platform not in (row.get("platforms") or []):
+                continue
+            phrases = (row.get("caption") or {}).get("required_phrases") or []
+            if any(phrase and phrase in text for phrase in phrases):
+                campaign = row
+                break
+        if campaign is None:
+            continue
+        package = {
+            "campaign_id": campaign["id"],
+            "platform": platform,
+            "source_id": buffer_id or "buffer",
+            "content_rewards_campaign_id": campaign.get("content_rewards_campaign_id") or "",
+            "submit_page": campaign.get("submit_page") or "",
+        }
+        item = live_item(package, link, parse_stamp(sent_at), minutes, buffer_post_id=buffer_id)
+        add_live_item(pending, item)
+        existing_urls.add(link)
+        if buffer_id:
+            existing_ids.add(buffer_id)
+        added += 1
+    return added
+
+
 def overdue_items(pending: dict, now: datetime) -> list[dict]:
     late = []
     for item in pending.get("items") or []:

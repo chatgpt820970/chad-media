@@ -19,9 +19,13 @@ permissions:
 
 jobs:
   monitor:
-    # Skipped jobs do not start a runner. Leave CLIPPER_MONITOR unset until you want the cron.
+    # A skipped job does not start a runner. Leave CLIPPER_MONITOR unset and this cron costs no minutes.
     if: ${{ vars.CLIPPER_MONITOR == 'true' || github.event_name == 'workflow_dispatch' }}
     runs-on: ubuntu-latest
+    timeout-minutes: 3
+    concurrency:
+      group: clip-monitor
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v4
         with:

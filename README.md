@@ -93,7 +93,11 @@ python -m clipper mark-submitted --key "campaign:platform:source-id"
 CLIPPER_MONITOR=true python -m clipper monitor
 ```
 
-Dry-run writes `work/dry-run/report.md`, `report.json`, `buffer_payloads.json`, and `awaiting_approval.json`. It does not download, post, or edit `submissions/pending.json`. Planned Buffer payloads use `example.invalid` URLs and are not sent. Dhan Aziz stays out of that payload list until you approve it.
+`python -m clipper run --dry-run` writes the plan only. `python -m clipper fetch` downloads for real: `gdown` lists the Sui Drive folder and saves the smallest clip, `curl` saves the Dhan Aziz Dropbox share with `dl=1`, and `yt-dlp` saves content-plan videos. Cookie files are optional (`YT_COOKIES_FILE` and the other `*_COOKIES_FILE` paths). YouTube is searched from the content-plan query and tried with public player clients (`tv_downgraded`, `visionos`, `web_safari`, then `android_vr`) because GitHub runners are datacenter IPs. If YouTube answers with the bot wall and `YT_COOKIES` is not set, the fetch records `needs_cookies` and still keeps the Sui clip and the Dropbox zip. A cookie file that is set and then fails the download fails the fetch. X, Instagram, and TikTok are downloaded when an inbox URL or a cookie file is present, and skipped otherwise. Fetch does not call Buffer.
+
+CI cuts that Sui file to an 8-second 720x1280 clip, writes `caption.txt` containing `x.com/SuiNetwork`, and uploads it as the `sui-basecamp-short` artifact and as an asset on the `clip-media` prerelease.
+
+The 15-minute monitor stays on the schedule, but the job does not start a runner unless `CLIPPER_MONITOR` is `true`. When it runs, it writes `submissions/pending.json` in that same run as soon as Buffer reports a campaign post `sent` with a public URL. The 30-minute clock uses `sentAt`, not the scheduled time. The job is capped at 3 minutes.
 
 `python -m clipper run --live` also requires the variable `CLIPPER_LIVE=true`, and it still refuses `example.invalid` URLs.
 
