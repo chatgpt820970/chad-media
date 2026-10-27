@@ -38,8 +38,9 @@ jobs:
 
       - name: Install ffmpeg, gdown, and yt-dlp
         run: |
-          sudo apt-get update && sudo apt-get install -y ffmpeg
-          python -m pip install --upgrade gdown yt-dlp curl_cffi gallery-dl
+          sudo timeout 180 apt-get update
+          sudo timeout 180 apt-get install -y ffmpeg
+          timeout 180 python -m pip install --upgrade gdown yt-dlp curl_cffi gallery-dl
 
       - name: Cookie files
         env:
