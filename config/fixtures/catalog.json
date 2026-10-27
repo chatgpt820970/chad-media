@@ -1,0 +1,290 @@
+{
+  "note": "Deterministic clips for dry-run and tests. No downloads. source_id values are synthetic.",
+  "clips": [
+    {
+      "source_id": "fixture-anime-x",
+      "platform": "x",
+      "content_type": "anime_4k",
+      "title": "4K anime sakuga",
+      "url": "https://example.invalid/anime-x",
+      "duration_sec": 18,
+      "lane": "editorial",
+      "ready": false
+    },
+    {
+      "source_id": "fixture-celebrity-x",
+      "platform": "x",
+      "content_type": "celebrity",
+      "title": "Celebrity arrival",
+      "url": "https://example.invalid/celebrity-x",
+      "duration_sec": 15,
+      "lane": "editorial",
+      "ready": false
+    },
+    {
+      "source_id": "fixture-tbird-x",
+      "platform": "x",
+      "content_type": "tbird_film",
+      "title": "T Bird alley scene",
+      "url": "https://example.invalid/tbird-x",
+      "duration_sec": 24,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-tbird-ig",
+      "platform": "instagram",
+      "content_type": "tbird_film",
+      "title": "T Bird rooftop scene",
+      "url": "https://example.invalid/tbird-ig",
+      "duration_sec": 22,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-tbird-ig-dup",
+      "platform": "instagram",
+      "content_type": "tbird_film",
+      "title": "T Bird rooftop scene duplicate",
+      "url": "https://example.invalid/tbird-ig",
+      "duration_sec": 22,
+      "lane": "campaign",
+      "ready": true,
+      "source_id_override": "fixture-tbird-ig"
+    },
+    {
+      "source_id": "fixture-minogue-yt",
+      "platform": "youtube",
+      "content_type": "minogue_brand",
+      "title": "Minogue On The Record",
+      "url": "https://example.invalid/minogue-yt",
+      "duration_sec": 32,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-minogue-x",
+      "platform": "x",
+      "content_type": "minogue_brand",
+      "title": "Minogue clip offered to X",
+      "url": "https://example.invalid/minogue-x",
+      "duration_sec": 30,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-minogue-short",
+      "platform": "youtube",
+      "content_type": "minogue_brand",
+      "title": "Minogue too short",
+      "url": "https://example.invalid/minogue-short",
+      "duration_sec": 8,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-a24-yt",
+      "platform": "youtube",
+      "content_type": "a24_official_trailer",
+      "title": "SLAYGROUND trailer beat",
+      "url": "https://example.invalid/a24-yt",
+      "duration_sec": 20,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-jackelyne-ig",
+      "platform": "instagram",
+      "content_type": "jackelyne_footage",
+      "title": "Jacky reaction",
+      "url": "https://example.invalid/jackelyne-ig",
+      "duration_sec": 28,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-crook-ready",
+      "platform": "tiktok",
+      "content_type": "spider_man",
+      "title": "Spider-Man edit ready",
+      "url": "https://example.invalid/crook-ready",
+      "duration_sec": 16,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-crook-raw",
+      "platform": "tiktok",
+      "content_type": "sports",
+      "title": "Sports source still needs an edit",
+      "url": "https://example.invalid/crook-raw",
+      "duration_sec": 14,
+      "lane": "campaign",
+      "ready": false
+    },
+    {
+      "source_id": "fixture-crook-ig",
+      "platform": "instagram",
+      "content_type": "spider_man",
+      "title": "Spider-Man offered to Instagram",
+      "url": "https://example.invalid/crook-ig",
+      "duration_sec": 15,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-yt-cricket",
+      "platform": "youtube",
+      "content_type": "cricket",
+      "title": "Cricket highlight",
+      "url": "https://example.invalid/cricket",
+      "duration_sec": 20,
+      "lane": "editorial",
+      "ready": false
+    },
+    {
+      "source_id": "fixture-ig-romantic",
+      "platform": "instagram",
+      "content_type": "romantic",
+      "title": "Romantic dialogue",
+      "url": "https://example.invalid/romantic",
+      "duration_sec": 18,
+      "lane": "editorial",
+      "ready": false
+    },
+    {
+      "source_id": "fixture-tt-anime",
+      "platform": "tiktok",
+      "content_type": "anime_4k",
+      "title": "Anime clip for TikTok",
+      "url": "https://example.invalid/tt-anime",
+      "duration_sec": 17,
+      "lane": "editorial",
+      "ready": false
+    },
+    {
+      "source_id": "fixture-tt-hollywood",
+      "platform": "tiktok",
+      "content_type": "hollywood",
+      "title": "Hollywood clip for TikTok",
+      "url": "https://example.invalid/tt-hollywood",
+      "duration_sec": 19,
+      "lane": "editorial",
+      "ready": false
+    },
+    {
+      "source_id": "fixture-tbird-yt",
+      "platform": "youtube",
+      "content_type": "tbird_film",
+      "title": "T Bird clean interview cut",
+      "url": "https://example.invalid/tbird-yt",
+      "duration_sec": 21,
+      "lane": "campaign",
+      "ready": true,
+      "watermark": "clean"
+    },
+    {
+      "source_id": "fixture-tbird-corner",
+      "platform": "youtube",
+      "content_type": "tbird_film",
+      "title": "T Bird corner mark",
+      "url": "https://example.invalid/tbird-corner",
+      "duration_sec": 19,
+      "lane": "campaign",
+      "ready": true,
+      "watermark": "corner_logo"
+    },
+    {
+      "source_id": "fixture-tbird-full",
+      "platform": "youtube",
+      "content_type": "tbird_film",
+      "title": "T Bird burned-in center logo",
+      "url": "https://example.invalid/tbird-full",
+      "duration_sec": 19,
+      "lane": "campaign",
+      "ready": true,
+      "watermark": "full_frame"
+    },
+    {
+      "source_id": "fixture-tbird-x-tt",
+      "platform": "tiktok",
+      "content_type": "tbird_film",
+      "title": "T Bird same scene for TikTok",
+      "url": "https://example.invalid/tbird-x",
+      "duration_sec": 24,
+      "lane": "campaign",
+      "ready": true,
+      "watermark": "clean"
+    },
+    {
+      "source_id": "fixture-sui-yt",
+      "platform": "youtube",
+      "content_type": "sui_basecamp",
+      "title": "Sui BaseCamp moment",
+      "url": "https://example.invalid/sui-yt",
+      "duration_sec": 24,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-sui-ig",
+      "platform": "instagram",
+      "content_type": "sui_basecamp",
+      "title": "Sui BaseCamp moment",
+      "url": "https://example.invalid/sui-ig",
+      "duration_sec": 22,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-sui-tt",
+      "platform": "tiktok",
+      "content_type": "sui_basecamp",
+      "title": "Sui BaseCamp moment",
+      "url": "https://example.invalid/sui-tt",
+      "duration_sec": 20,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-dhan-ig",
+      "platform": "instagram",
+      "content_type": "dhan_aziz",
+      "title": "Dhan Aziz provided clip",
+      "url": "https://example.invalid/dhan-ig",
+      "duration_sec": 18,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-dhan-yt",
+      "platform": "youtube",
+      "content_type": "dhan_aziz",
+      "title": "Dhan Aziz provided clip",
+      "url": "https://example.invalid/dhan-yt",
+      "duration_sec": 18,
+      "lane": "campaign",
+      "ready": true
+    },
+    {
+      "source_id": "fixture-blocked",
+      "platform": "x",
+      "content_type": "celebrity",
+      "title": "explicit sex tape",
+      "url": "https://example.invalid/blocked",
+      "duration_sec": 12,
+      "lane": "editorial",
+      "ready": false
+    },
+    {
+      "source_id": "fixture-ricky",
+      "platform": "youtube",
+      "content_type": "ricky_documentary",
+      "title": "Ricky Hil documentary moment",
+      "url": "https://example.invalid/ricky",
+      "duration_sec": 25,
+      "lane": "campaign",
+      "ready": true
+    }
+  ]
+}

@@ -1,0 +1,8 @@
+# Sui BaseCamp footage. This folder only. Do not add other URLs.
+# gdown --folder --remaining-ok -O work/inbox/sui-basecamp <folder>
+https://drive.google.com/drive/folders/1tepyyEVFtGLi8Ukv8AddBDj2FcIb7d-i
+
+# Live stream reference (not a download source):
+# https://x.com/SuiNetwork/status/2107667372077416613
+# Example clip:
+# https://x.com/jackkk/status/2107707718903685516

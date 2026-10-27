@@ -1,0 +1,5 @@
+{
+  "version": 1,
+  "note": "Dry-run writes the current drafts to the output directory as awaiting_approval.json. This file is the empty queue template.",
+  "items": []
+}

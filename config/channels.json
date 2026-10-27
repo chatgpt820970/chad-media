@@ -1,0 +1,48 @@
+{
+  "buffer_organization_id": "6ac41da09a0b5aca7c671500",
+  "note": "Channel ids were already public in whop/campaigns.json. Override any of them with the env vars below. They are account identifiers, not API tokens.",
+  "platforms": {
+    "x": {
+      "label": "X",
+      "handle": "@chadriyo",
+      "audience": "worldwide",
+      "buffer_service": "twitter",
+      "buffer_channel_id": "6ac41eb06a5c39ccb625fdf1",
+      "channel_id_env": "BUFFER_CHANNEL_X",
+      "links_blocked": true,
+      "cookies_env": "X_COOKIES_FILE"
+    },
+    "youtube": {
+      "label": "YouTube Shorts",
+      "handle": "Denzen",
+      "username": "@denzen0",
+      "audience": "mostly Indian",
+      "buffer_service": "youtube",
+      "buffer_channel_id": "6ac4da806a5c39ccb62eab64",
+      "channel_id_env": "BUFFER_CHANNEL_YOUTUBE",
+      "links_blocked": false,
+      "cookies_env": "YT_COOKIES_FILE",
+      "youtube_category_id": "24"
+    },
+    "instagram": {
+      "label": "Instagram Reels",
+      "handle": "@benreelr",
+      "audience": "about half Indian, plus movies, anime, and romantic reels",
+      "buffer_service": "instagram",
+      "buffer_channel_id": "6ac93d936a5c39ccb66624d7",
+      "channel_id_env": "BUFFER_CHANNEL_INSTAGRAM",
+      "links_blocked": false,
+      "cookies_env": "INSTAGRAM_COOKIES_FILE"
+    },
+    "tiktok": {
+      "label": "TikTok",
+      "handle": "@bi67325",
+      "audience": "international",
+      "buffer_service": "tiktok",
+      "buffer_channel_id": "6add07e4778b240e2fb35110",
+      "channel_id_env": "BUFFER_CHANNEL_TIKTOK",
+      "links_blocked": false,
+      "cookies_env": "TIKTOK_COOKIES_FILE"
+    }
+  }
+}

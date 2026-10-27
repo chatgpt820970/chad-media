@@ -1,0 +1,3 @@
+# Finished TikTok edits only, one URL or local path per line.
+# Each edit must already use Wait For Me by CrookBrown as the sound, or you attach that sound
+# when Buffer reminds you to publish. Raw search hits do not belong here.

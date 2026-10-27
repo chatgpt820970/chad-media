@@ -1,0 +1,182 @@
+name: Clip pipeline
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Plan only. Live posting also requires the CLIPPER_LIVE variable."
+        type: boolean
+        default: true
+      now:
+        description: "Optional ISO timestamp used as now for the dry-run."
+        required: false
+        default: ""
+        type: string
+
+permissions:
+  contents: write
+
+# A new push cancels the previous download so two 400MB fetches do not stack.
+concurrency:
+  group: clip-pipeline-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  dry-run:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg and tesseract
+        run: sudo apt-get update && sudo apt-get install -y ffmpeg tesseract-ocr
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: |
+          if [ -n "$YT_COOKIES" ]; then printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/yt_cookies.txt"; export YT_COOKIES_FILE="$RUNNER_TEMP/yt_cookies.txt"; fi
+          if [ -n "$X_COOKIES" ]; then printf '%s\n' "$X_COOKIES" > "$RUNNER_TEMP/x_cookies.txt"; export X_COOKIES_FILE="$RUNNER_TEMP/x_cookies.txt"; fi
+          if [ -n "$INSTAGRAM_COOKIES" ]; then printf '%s\n' "$INSTAGRAM_COOKIES" > "$RUNNER_TEMP/ig_cookies.txt"; export INSTAGRAM_COOKIES_FILE="$RUNNER_TEMP/ig_cookies.txt"; fi
+          if [ -n "$TIKTOK_COOKIES" ]; then printf '%s\n' "$TIKTOK_COOKIES" > "$RUNNER_TEMP/tt_cookies.txt"; export TIKTOK_COOKIES_FILE="$RUNNER_TEMP/tt_cookies.txt"; fi
+          unset YT_COOKIES X_COOKIES INSTAGRAM_COOKIES TIKTOK_COOKIES
+
+      - name: Unit tests
+        run: python -m unittest discover -s tests -v
+
+      - name: Config check
+        run: python -m clipper check
+
+      - name: Dry-run
+        env:
+          CLIPPER_LIVE: "false"
+        run: |
+          python -m clipper run --dry-run --now "${{ inputs.now || '2026-10-27T00:00:00Z' }}" --output-dir work/dry-run --simulate-live
+          python - << 'PY'
+          import json
+          from pathlib import Path
+          report = json.loads(Path("work/dry-run/report.json").read_text())
+          payloads = json.loads(Path("work/dry-run/buffer_payloads.json").read_text())
+          if report["errors"]:
+              raise SystemExit("dry-run reported errors: " + "; ".join(report["errors"]))
+          if report["posting"] != "enabled":
+              raise SystemExit("expected a plan while Sui BaseCamp is active")
+          if not any(row.get("campaign_id") == "sui-basecamp" and row["status"] == "scheduled" for row in report["packages"]):
+              raise SystemExit("Sui BaseCamp should be scheduled")
+          if any(row.get("campaign_id") == "dhan-aziz" and row["status"] == "scheduled" for row in report["packages"]):
+              raise SystemExit("Dhan Aziz drafts must not post before approval")
+          if not any(row["status"] == "awaiting_approval" for row in report["packages"]):
+              raise SystemExit("expected Dhan Aziz drafts")
+          if not payloads or any("example.invalid" not in json.dumps(item) for item in payloads):
+              raise SystemExit("dry-run payloads must stay on example.invalid")
+          blob = "\n".join(report["warnings"])
+          if "t-bird" not in blob or "10000" not in blob:
+              raise SystemExit("expected a T Bird views warning")
+          print("dry-run ok")
+          PY
+
+      - name: Upload dry-run report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: clip-dry-run
+          path: work/dry-run/
+          if-no-files-found: ignore
+
+  fetch-media:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, gdown, and yt-dlp
+        run: |
+          sudo apt-get update && sudo apt-get install -y ffmpeg
+          python -m pip install --upgrade gdown yt-dlp
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: |
+          if [ -n "$YT_COOKIES" ]; then printf '%s\n' "$YT_COOKIES" > "$RUNNER_TEMP/yt_cookies.txt"; echo "YT_COOKIES_FILE=$RUNNER_TEMP/yt_cookies.txt" >> "$GITHUB_ENV"; fi
+          if [ -n "$X_COOKIES" ]; then printf '%s\n' "$X_COOKIES" > "$RUNNER_TEMP/x_cookies.txt"; echo "X_COOKIES_FILE=$RUNNER_TEMP/x_cookies.txt" >> "$GITHUB_ENV"; fi
+          if [ -n "$INSTAGRAM_COOKIES" ]; then printf '%s\n' "$INSTAGRAM_COOKIES" > "$RUNNER_TEMP/ig_cookies.txt"; echo "INSTAGRAM_COOKIES_FILE=$RUNNER_TEMP/ig_cookies.txt" >> "$GITHUB_ENV"; fi
+          if [ -n "$TIKTOK_COOKIES" ]; then printf '%s\n' "$TIKTOK_COOKIES" > "$RUNNER_TEMP/tt_cookies.txt"; echo "TIKTOK_COOKIES_FILE=$RUNNER_TEMP/tt_cookies.txt" >> "$GITHUB_ENV"; fi
+          unset YT_COOKIES X_COOKIES INSTAGRAM_COOKIES TIKTOK_COOKIES
+
+      - name: Download Sui, Dropbox, and content-plan media
+        env:
+          CLIPPER_LIVE: "false"
+        run: python -m clipper fetch --output-dir work/fetch
+
+      - name: Check the Sui short
+        run: |
+          python - << 'PY'
+          import json
+          import subprocess
+          from pathlib import Path
+          root = Path("work/fetch")
+          manifest = json.loads((root / "manifest.json").read_text())
+          if not manifest.get("ok"):
+              raise SystemExit("fetch failed: " + "; ".join(manifest.get("errors") or []))
+          caption = (root / "caption.txt").read_text()
+          if "x.com/SuiNetwork" not in caption:
+              raise SystemExit("caption missing x.com/SuiNetwork")
+          clip = root / "sui-basecamp-short.mp4"
+          if clip.stat().st_size < 1000:
+              raise SystemExit("short clip is empty")
+          probe = subprocess.check_output(
+              ["ffprobe", "-v", "error", "-select_streams", "v:0", "-show_entries", "stream=width,height", "-of", "csv=p=0", str(clip)],
+              text=True,
+          ).strip()
+          width, height = (int(part) for part in probe.split(","))
+          if (width, height) != (720, 1280):
+              raise SystemExit(f"expected 720x1280, got {width}x{height}")
+          archive = Path(manifest["dropbox"]["path"])
+          with archive.open("rb") as handle:
+              if handle.read(2) != b"PK":
+                  raise SystemExit("Dropbox download is not a zip")
+          youtube = next(row for row in manifest["content_plan"] if row["platform"] == "youtube")
+          if youtube.get("status") not in ("downloaded", "needs_cookies"):
+              raise SystemExit("YouTube content-plan download missing: " + json.dumps(youtube))
+          print("sui short ok", clip.stat().st_size, "dropbox", archive.stat().st_size, "youtube", youtube.get("status"))
+          PY
+
+      - name: Upload Sui short
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: sui-basecamp-short
+          path: |
+            work/fetch/sui-basecamp-short.mp4
+            work/fetch/caption.txt
+            work/fetch/manifest.json
+          if-no-files-found: error
+
+      - name: Publish release asset
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release view clip-media >/dev/null 2>&1 || gh release create clip-media --prerelease --title "Clip media" --notes "Dry-run renders. Buffer is not called."
+          gh release upload clip-media work/fetch/sui-basecamp-short.mp4 work/fetch/caption.txt --clobber

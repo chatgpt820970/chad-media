@@ -1,109 +1,13 @@
 name: Whop Clipper
 
-# Platform mapping for Whop Content Rewards, plus the daily 40-clip feed.
-# 00:15 UTC is 05:45 IST. 01:15 UTC is the 06:45 IST backup.
-# 10 posts each: X (@chadriyo), YouTube Shorts (Denzen), Instagram Reels
-# (@benreelr), and TikTok (@bi67325). Every video carries one subtle
-# semi-transparent flip.gg mark (white@0.65, black@0.28 box, bottom
-# x=(w-text_w)/2:y=h-text_h-110, or top corner x=w-text_w-36:y=48).
-# Dishpilot (biz_yHrLny75uFGcUZ) and Rascals are retired. Output:
-# whop/daily_40_ready.json, whop/daily_30_ready.json, and
-# whop/feed/daily_30_ready.json. Stamped clips are hosted on a daily-YYYY-MM-DD release.
-# Pool Guard rejects high-denial bounties (whop-ai-shane-gillis at 99.8%).
+# Retired. The old job ingested dishpilot, stamped a flip.gg text box, and
+# failed with Unknown campaign. clip-pipeline.yml is the clipping workflow.
 on:
-  schedule:
-    - cron: "15 0 * * *"
-    - cron: "15 1 * * *"
-  push:
-    branches: [main]
-    paths:
-      - "whop/**"
-      - ".github/workflows/whop-clipper.yml"
-  pull_request:
-    paths:
-      - "whop/**"
-      - ".github/workflows/whop-clipper.yml"
   workflow_dispatch:
-    inputs:
-      source_urls:
-        description: "Comma or space separated X or TikTok URLs"
-        required: false
-        default: ""
-        type: string
-      campaign:
-        description: "Single campaign watermark"
-        required: false
-        default: flipgg
-        type: choice
-        options:
-          - flipgg
-          - arrafund
-          - mrpa
-      platforms:
-        description: "all or a comma-separated list (x, youtube_shorts, instagram_reels, tiktok)"
-        required: false
-        default: all
-        type: string
-      category:
-        description: "Priority category tag for the ingested links"
-        required: false
-        default: glamorous_girls
-        type: choice
-        options:
-          - anime_4k
-          - glamorous_girls
-          - celebrity
-          - movie_4k
-          - funny
-          - knowledge
-          - concert
-          - other
-
-permissions:
-  contents: write
-
-concurrency:
-  group: whop-clipper-${{ github.ref }}
-  cancel-in-progress: true
 
 jobs:
   platform-mapping:
     runs-on: ubuntu-latest
-    timeout-minutes: 90
     steps:
-      - uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-
-      - uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Test platform campaign mapping and Pool Guard
-        run: python -m unittest whop.test_clipper -v
-
-      - name: Verify the 10-slot manifest pays X and YouTube Shorts separately
-        run: python whop/clipper.py verify-manifest
-
-      - name: Install ffmpeg
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        run: sudo apt-get update && sudo apt-get install -y ffmpeg
-
-      - name: Ingest X and TikTok links
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        env:
-          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          SOURCE_URLS: ${{ github.event.inputs.source_urls || '' }}
-          INGEST_CAMPAIGN: ${{ github.event.inputs.campaign || '' }}
-          INGEST_PLATFORMS: ${{ github.event.inputs.platforms || '' }}
-          INGEST_CATEGORY: ${{ github.event.inputs.category || '' }}
-        run: python whop/whop_clipper.py ingest-urls --from-queue
-
-      - name: Build the daily 40-clip feed (10 per platform)
-        if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
-        env:
-          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
-          GITHUB_EVENT_NAME: ${{ github.event_name }}
-          GH_TOKEN: ${{ github.token }}
-        run: python whop/whop_clipper.py build-daily-40
+      - name: Retired
+        run: echo "Whop clipper is retired. Use the Clip pipeline workflow."
