@@ -764,6 +764,51 @@
       "reason": "",
       "duration": 58.4,
       "seen_at": "2026-10-27T01:11:48Z"
+    },
+    "tt-7694724943296089358": {
+      "source_url": "https://www.tiktok.com/@kingbach/video/7694724943296089358",
+      "platform": "tiktok",
+      "lane": "funny",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 46.7,
+      "seen_at": "2026-10-27T09:04:27Z"
+    },
+    "tt-7548423393733840135": {
+      "source_url": "https://www.tiktok.com/@armaanmalik/video/7548423393733840135",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 34.7,
+      "seen_at": "2026-10-27T09:05:04Z"
+    },
+    "tt-7563608495967243527": {
+      "source_url": "https://www.tiktok.com/@jonitamusic/video/7563608495967243527",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 56.7,
+      "seen_at": "2026-10-27T09:06:07Z"
+    },
+    "tt-7628692721364143378": {
+      "source_url": "https://www.tiktok.com/@jonitamusic/video/7628692721364143378",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 50.0,
+      "seen_at": "2026-10-27T09:07:06Z"
+    },
+    "tt-7551896616626605313": {
+      "source_url": "https://www.tiktok.com/@armaanmalik/video/7551896616626605313",
+      "platform": "tiktok",
+      "lane": "feelgood",
+      "outcome": "queued",
+      "reason": "",
+      "duration": 38.5,
+      "seen_at": "2026-10-27T09:07:41Z"
     }
   }
 }

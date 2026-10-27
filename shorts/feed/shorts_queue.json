@@ -1,19 +1,113 @@
 {
-  "generated_at": "2026-10-27T06:18:16Z",
-  "ready_today": 5,
+  "generated_at": "2026-10-27T09:07:41Z",
+  "ready_today": 10,
   "daily_target": 10,
   "collects_today": [
     {
       "at": "2026-10-27T01:11:48Z",
       "added": 5
+    },
+    {
+      "at": "2026-10-27T09:07:41Z",
+      "added": 5
     }
   ],
   "sources": {
-    "tiktok": "ok: public play file",
+    "tiktok": "ok",
     "x": "ok",
     "instagram": "ok"
   },
   "items": [
+    {
+      "id": "tt-7551896616626605313",
+      "source_url": "https://www.tiktok.com/@armaanmalik/video/7551896616626605313",
+      "platform": "tiktok",
+      "duration": 38.5,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7551896616626605313.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7551896616626605313-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7551896616626605313-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7551896616626605313-3.jpg"
+      ],
+      "title": "for the ones who feel it too 🩶",
+      "caption": "Something warm for the middle of the day. for the ones who feel it too 🩶",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-27T09:07:41Z"
+    },
+    {
+      "id": "tt-7628692721364143378",
+      "source_url": "https://www.tiktok.com/@jonitamusic/video/7628692721364143378",
+      "platform": "tiktok",
+      "duration": 50.0,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7628692721364143378.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7628692721364143378-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7628692721364143378-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7628692721364143378-3.jpg"
+      ],
+      "title": "Like tonight's the last night on earth!",
+      "caption": "Something warm for the middle of the day. Like tonight's the last night on earth!",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-27T09:07:06Z"
+    },
+    {
+      "id": "tt-7563608495967243527",
+      "source_url": "https://www.tiktok.com/@jonitamusic/video/7563608495967243527",
+      "platform": "tiktok",
+      "duration": 56.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7563608495967243527.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7563608495967243527-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7563608495967243527-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7563608495967243527-3.jpg"
+      ],
+      "title": "Milna likha tha sitaaron mein ✨🫶🏼 Heaven (feat.",
+      "caption": "Something warm for the middle of the day. Milna likha tha sitaaron mein ✨🫶🏼 Heaven (feat. Jonita) by Sheeran out now!",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-27T09:06:07Z"
+    },
+    {
+      "id": "tt-7548423393733840135",
+      "source_url": "https://www.tiktok.com/@armaanmalik/video/7548423393733840135",
+      "platform": "tiktok",
+      "duration": 34.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7548423393733840135.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548423393733840135-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548423393733840135-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7548423393733840135-3.jpg"
+      ],
+      "title": "watched baari baari acoustic yet?",
+      "caption": "Something warm for the middle of the day. watched baari baari acoustic yet?",
+      "status": "ready",
+      "lane": "feelgood",
+      "youtube_category_id": "10",
+      "queued_at": "2026-10-27T09:05:04Z"
+    },
+    {
+      "id": "tt-7694724943296089358",
+      "source_url": "https://www.tiktok.com/@kingbach/video/7694724943296089358",
+      "platform": "tiktok",
+      "duration": 46.7,
+      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7694724943296089358.mp4",
+      "frame_urls": [
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694724943296089358-1.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694724943296089358-2.jpg",
+        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7694724943296089358-3.jpg"
+      ],
+      "title": "When the story is boring",
+      "caption": "This one earns the replay. When the story is boring",
+      "status": "ready",
+      "lane": "funny",
+      "youtube_category_id": "23",
+      "queued_at": "2026-10-27T09:04:27Z"
+    },
     {
       "id": "tt-7670729245278113038",
       "source_url": "https://www.tiktok.com/@kingbach/video/7670729245278113038",
@@ -499,96 +593,6 @@
       "lane": "chinese",
       "youtube_category_id": "23",
       "queued_at": "2026-10-24T09:05:45Z"
-    },
-    {
-      "id": "tt-7564513815384116498",
-      "source_url": "https://www.tiktok.com/@jonitamusic/video/7564513815384116498",
-      "platform": "tiktok",
-      "duration": 70.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7564513815384116498.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7564513815384116498-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7564513815384116498-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7564513815384116498-3.jpg"
-      ],
-      "title": "This one came straight from the heart 🫶🏼 Sheeran 🫰🏼",
-      "caption": "Something warm for the middle of the day. This one came straight from the heart 🫶🏼 Sheeran 🫰🏼",
-      "status": "ready",
-      "lane": "feelgood",
-      "youtube_category_id": "10",
-      "queued_at": "2026-10-24T09:05:11Z"
-    },
-    {
-      "id": "tt-7482079182034341162",
-      "source_url": "https://www.tiktok.com/@benoftheweek/video/7482079182034341162",
-      "platform": "tiktok",
-      "duration": 61.4,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7482079182034341162.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7482079182034341162-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7482079182034341162-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7482079182034341162-3.jpg"
-      ],
-      "title": "why it’s good that flying is suddenly dangerous ❤️",
-      "caption": "This one earns the replay. why it’s good that flying is suddenly dangerous ❤️",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-24T09:04:32Z"
-    },
-    {
-      "id": "tt-7406458142877437230",
-      "source_url": "https://www.tiktok.com/@madewithlau/video/7406458142877437230",
-      "platform": "tiktok",
-      "duration": 47.7,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7406458142877437230.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7406458142877437230-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7406458142877437230-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7406458142877437230-3.jpg"
-      ],
-      "title": "I haven’t opened up like this with y’all in a while but I am finally taking a moment to",
-      "caption": "A sharp little bit of comedy. I haven’t opened up like this with y’all in a while but I am finally taking a moment to reflect on the past few months (and years) which have been one of the craziest chapters of my life.. from the James Beard Awards, to the White House, to",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-24T09:03:51Z"
-    },
-    {
-      "id": "tt-7438260086109261086",
-      "source_url": "https://www.tiktok.com/@benoftheweek/video/7438260086109261086",
-      "platform": "tiktok",
-      "duration": 61.8,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-7438260086109261086.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7438260086109261086-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7438260086109261086-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-7438260086109261086-3.jpg"
-      ],
-      "title": "bring back booing with tomatoes",
-      "caption": "This one earns the replay. bring back booing with tomatoes",
-      "status": "ready",
-      "lane": "funny",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-24T01:07:00Z"
-    },
-    {
-      "id": "tt-6838102367699832065",
-      "source_url": "https://www.tiktok.com/@thefoodranger/video/6838102367699832065",
-      "platform": "tiktok",
-      "duration": 60.0,
-      "mp4_url": "https://chatgpt820970.github.io/chad-media/shorts/v/tt-6838102367699832065.mp4",
-      "frame_urls": [
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699832065-1.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699832065-2.jpg",
-        "https://chatgpt820970.github.io/chad-media/shorts/f/tt-6838102367699832065-3.jpg"
-      ],
-      "title": "amazing liuxiang noodle in china6 !",
-      "caption": "A sharp little bit of comedy. amazing liuxiang noodle in china6 !",
-      "status": "ready",
-      "lane": "chinese",
-      "youtube_category_id": "23",
-      "queued_at": "2026-10-24T01:06:11Z"
     }
   ]
 }
