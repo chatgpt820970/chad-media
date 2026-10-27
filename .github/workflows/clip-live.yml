@@ -43,7 +43,7 @@ jobs:
         run: |
           timeout 480 bash script/ci_apt.sh ffmpeg tesseract-ocr fonts-dejavu-core
           timeout 180 python -m pip install --upgrade gdown curl_cffi gallery-dl
-          timeout 180 python -m pip install -U --pre yt-dlp
+          timeout 180 python -m pip install -U --pre "yt-dlp[default]" deno
 
       - name: Cookie files
         env:
