@@ -11,6 +11,7 @@ from __future__ import annotations
 import copy
 import json
 import os
+import shutil
 import subprocess
 import time
 from datetime import datetime, timedelta, timezone
@@ -194,8 +195,11 @@ def upload_release_asset(path: Path, name: str, *, repo: str, tag: str, token: s
         if created.returncode != 0:
             detail = (created.stderr or created.stdout or "gh release create failed")[-400:]
             raise RuntimeError(detail)
+    staged = Path(path).with_name(name)
+    if staged != Path(path):
+        shutil.copyfile(path, staged)
     uploaded = subprocess.run(
-        ["gh", "release", "upload", tag, f"{path}#{name}", "--repo", repo, "--clobber"],
+        ["gh", "release", "upload", tag, str(staged), "--repo", repo, "--clobber"],
         env=env,
         check=False,
         capture_output=True,
@@ -312,8 +316,9 @@ def _gather_candidates(
                 continue
             add("dhan", path, path.stem, dhan)
 
+    shared = {platform, "youtube", "tiktok"} if platform == "x" else {platform}
     for row in manifest.get("content_plan") or []:
-        if row.get("platform") != platform or row.get("status") != "downloaded":
+        if row.get("platform") not in shared or row.get("status") != "downloaded":
             continue
         path = Path(str(row.get("path") or ""))
         add("content_plan", path, path.stem, None, str(row.get("title") or path.stem))
