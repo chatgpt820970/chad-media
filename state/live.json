@@ -260,6 +260,36 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T171500.000Z.mp4",
       "campaign_id": "boxabl",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-28T19:30:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T19:30:00.000Z",
+      "source_key": "x:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
+      "buffer_post_id": "6ae23dc53990f55bf4636717",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T193000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T19:30:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T19:30:00.000Z",
+      "source_key": "youtube:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
+      "buffer_post_id": "6ae23dc5105742705de1a635",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T193000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-28T19:30:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T19:30:00.000Z",
+      "source_key": "tiktok:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
+      "buffer_post_id": "6ae23dc63990f55bf46367c1",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T193000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -288,7 +318,10 @@
     "tiktok:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
     "x:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
     "youtube:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
-    "tiktok:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL"
+    "tiktok:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
+    "x:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
+    "youtube:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
+    "tiktok:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C"
   ],
   "captions": [
     {
@@ -427,6 +460,21 @@
       "platform": "tiktok",
       "source": "1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
       "text": "#ad how boxabl mass-produces factory-built homes that unfold on site @boxabl boxabl.com #boxabl #casita #tinyhome"
+    },
+    {
+      "platform": "x",
+      "source": "12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
+      "text": "#ad see how the boxabl factory builds houses like cars @boxabl boxabl.com #boxabl"
+    },
+    {
+      "platform": "youtube",
+      "source": "12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
+      "text": "#ad factory precision meets modern living inside boxabl @boxabl boxabl.com #boxabl #casita #tinyhome #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
+      "text": "#ad from highway delivery to move-in ready with boxabl @boxabl boxabl.com #boxabl #casita #tinyhome"
     }
   ],
   "topics": [
@@ -505,6 +553,10 @@
     {
       "topic": "ellie space o7pfcdzcifxmefl2cin5tozaziqalqhl",
       "posted_at": "2026-10-28T17:15:00.000Z"
+    },
+    {
+      "topic": "faze rug abk-dqmsyuqyzxz94iuum",
+      "posted_at": "2026-10-28T19:30:00.000Z"
     }
   ]
 }
