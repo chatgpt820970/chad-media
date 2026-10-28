@@ -299,6 +299,20 @@
       "status": "submitted",
       "buffer_post_id": "6ae23dc63990f55bf46367c1",
       "submitted_at": "2026-10-28T19:43:19.000Z"
+    },
+    {
+      "id": "boxabl:youtube:6ae23dc5105742705de1a635",
+      "post_url": "https://www.youtube.com/shorts/n7tefhDU_HE",
+      "platform": "youtube",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-28T19:30:10.000Z",
+      "deadline_at": "2026-10-28T19:50:10.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae23dc5105742705de1a635",
+      "submitted_at": "2026-10-28T19:43:00.000Z",
+      "note": "Verified listed in Content Rewards submissions under Boxabl Official Clipping"
     }
   ]
 }
