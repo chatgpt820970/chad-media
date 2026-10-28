@@ -30,12 +30,34 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261027T233000.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T01:30:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T01:30:00.000Z",
+      "source_key": "youtube:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
+      "buffer_post_id": "6ae14036f6d6782c599dabdb",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T013000.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-28T01:45:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T01:45:00.000Z",
+      "source_key": "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
+      "buffer_post_id": "6ae140378bc396ba2f13f211",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T014500.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "scheduled"
     }
   ],
   "sources": [
     "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
     "x:N1jSmRW2VlQ",
-    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk"
+    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
+    "youtube:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
+    "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom"
   ],
   "captions": [
     {
@@ -59,6 +81,16 @@
       "platform": "tiktok",
       "source": "1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
       "text": "#ad sui basecamp went off and you missed it \ud83d\ude2d x.com/suinetwork #sui #suibasecamp #crypto"
+    },
+    {
+      "platform": "youtube",
+      "source": "1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
+      "text": "#ad sui basecamp just dropped the future of web3 and nobody's ready \ud83d\udd25 x.com/suinetwork #sui #suibasecamp #crypto #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
+      "text": "#ad this is why everyone's talking about sui basecamp \ud83e\udd2f x.com/suinetwork #sui #suibasecamp #crypto"
     }
   ],
   "topics": [
@@ -77,6 +109,14 @@
     {
       "topic": "n1jsmrw2vlq n1jsmrw2vlq he's",
       "posted_at": "2026-10-28T00:15:00.000Z"
+    },
+    {
+      "topic": "adeniyi fjcmgffhtfq8tuajlmegplw1o-zdgbom sui",
+      "posted_at": "2026-10-28T01:30:00.000Z"
+    },
+    {
+      "topic": "adeniyi fjcmgffhtfq8tuajlmegplw1o-zdgbom this",
+      "posted_at": "2026-10-28T01:45:00.000Z"
     }
   ]
 }
