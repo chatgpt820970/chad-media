@@ -180,8 +180,8 @@ def check_bundle(bundle: dict) -> list[str]:
             errors.append(f"missing campaign {required}")
     sui = by_id.get("sui-basecamp")
     if sui:
-        if not set(sui.get("platforms") or []).issubset({"x", "youtube", "instagram", "tiktok"}):
-            errors.append("sui-basecamp has invalid platforms")
+        if set(sui.get("platforms") or []) != {"youtube", "instagram", "tiktok"}:
+            errors.append("sui-basecamp must be TikTok, Instagram, and YouTube only")
         phrases = (sui.get("caption") or {}).get("required_phrases") or []
         if "x.com/SuiNetwork" not in phrases:
             errors.append("sui-basecamp caption must include x.com/SuiNetwork")
