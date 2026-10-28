@@ -60,6 +60,26 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T023000.000Z.mp4",
       "campaign_id": null,
       "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T03:45:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T03:45:00.000Z",
+      "source_key": "youtube:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
+      "buffer_post_id": "6ae15c4aed0a3f2cb4192c2f",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T034500.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-28T04:00:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T04:00:00.000Z",
+      "source_key": "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
+      "buffer_post_id": "6ae15c4bbc763652ae19b2e2",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T040000.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -68,7 +88,9 @@
     "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
     "youtube:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
     "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
-    "x:mnNzR6L31pg"
+    "x:mnNzR6L31pg",
+    "youtube:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
+    "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK"
   ],
   "captions": [
     {
@@ -107,6 +129,16 @@
       "platform": "x",
       "source": "mnNzR6L31pg",
       "text": "red flag but make it fashionable \ud83d\udc80 #anime #clips"
+    },
+    {
+      "platform": "youtube",
+      "source": "1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
+      "text": "#ad sui basecamp went off and you missed it \ud83d\ude2d x.com/suinetwork #sui #suibasecamp #crypto #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
+      "text": "#ad not your usual boring tech talk \ud83d\udc80 sui basecamp live x.com/suinetwork #sui #suibasecamp #crypto"
     }
   ],
   "topics": [
@@ -137,6 +169,14 @@
     {
       "topic": "mnnzr6l31pg mnnzr6l31pg red",
       "posted_at": "2026-10-28T02:30:00.000Z"
+    },
+    {
+      "topic": "adeniyi y8q-82hgg0ydd7hta63lfz2oagnec3ik sui",
+      "posted_at": "2026-10-28T03:45:00.000Z"
+    },
+    {
+      "topic": "adeniyi y8q-82hgg0ydd7hta63lfz2oagnec3ik not",
+      "posted_at": "2026-10-28T04:00:00.000Z"
     }
   ]
 }
