@@ -453,7 +453,27 @@ def render_variant(source: Path, dest: Path, platform: str, campaign: dict | Non
     if "drawtext" in graph:
         raise RuntimeError("live render must not stamp text")
     logo_path = Path(str(rules["logo"]["file"])) if uses_logo else None
-    apply_filters(source, dest, graph, logo_path, CLIP_SECONDS, float(variant["start_sec"]) + float(extra_start))
+    start = float(variant["start_sec"]) + float(extra_start)
+    length = _source_seconds(source)
+    if length > 0 and start > max(length - CLIP_SECONDS, 0.0):
+        # A #cut offset past the end of a short source renders an empty mp4. Wrap it inside the file.
+        room = max(length - CLIP_SECONDS, 0.0)
+        start = (start % room) if room >= 1 else 0.0
+        print(f"{platform}: cut start past source end ({length:.1f}s), using {start:.1f}s", flush=True)
+    apply_filters(source, dest, graph, logo_path, CLIP_SECONDS, start)
+    if not dest.is_file() or _source_seconds(dest) < 1.0:
+        raise RuntimeError(f"{platform} render produced an empty video from {source.name} at {start:.1f}s")
+
+
+def _source_seconds(path: Path) -> float:
+    try:
+        out = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "default=nw=1:nk=1", str(path)],
+            capture_output=True, text=True, timeout=60, check=False,
+        ).stdout.strip()
+        return float(out) if out else 0.0
+    except Exception:
+        return 0.0
 
 
 def _asset_name(platform: str, slot: datetime) -> str:
