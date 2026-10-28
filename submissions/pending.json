@@ -14,44 +14,9 @@
       "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
       "posted_at": "2026-10-28T16:46:32.000Z",
       "deadline_at": "2026-10-28T17:06:32.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae205bfbae3f801a0066ad2"
-    },
-    {
-      "id": "boxabl:x:6ae2219f1d39803183900beb",
-      "post_url": "https://x.com/1906627436428570624/status/2115492633472622945",
-      "platform": "x",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-28T17:15:22.000Z",
-      "deadline_at": "2026-10-28T17:35:22.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae2219f1d39803183900beb"
-    },
-    {
-      "id": "boxabl:youtube:6ae221a04785904534fe1459",
-      "post_url": "https://www.youtube.com/shorts/bN6akHSpgh8",
-      "platform": "youtube",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-28T17:15:16.000Z",
-      "deadline_at": "2026-10-28T17:35:16.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae221a04785904534fe1459"
-    },
-    {
-      "id": "boxabl:tiktok:6ae221a21d39803183900d0a",
-      "post_url": "https://www.tiktok.com/@bi67325/video/7701768933350608149",
-      "platform": "tiktok",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-28T17:17:42.000Z",
-      "deadline_at": "2026-10-28T17:37:42.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae221a21d39803183900d0a"
+      "status": "missed_deadline",
+      "buffer_post_id": "6ae205bfbae3f801a0066ad2",
+      "note": "Content Rewards rejected: not posted within last 30 minutes (off-slot post 22:16 IST)"
     }
   ]
 }
