@@ -1,25 +1,6 @@
 {
   "version": 1,
   "paused": {},
-  "alerts": [
-    {
-      "platform": "youtube",
-      "at": "2026-10-27T21:34:03.000Z",
-      "reason": "HTTP 404",
-      "kind": "media_url",
-      "buffer_post_id": "",
-      "source_key": "",
-      "identity": ""
-    },
-    {
-      "platform": "tiktok",
-      "at": "2026-10-27T21:34:03.000Z",
-      "reason": "HTTP 404",
-      "kind": "media_url",
-      "buffer_post_id": "",
-      "source_key": "",
-      "identity": ""
-    }
-  ],
+  "alerts": [],
   "blocked_sources": []
 }

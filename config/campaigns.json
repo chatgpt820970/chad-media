@@ -152,9 +152,9 @@
         "Captions must contain x.com/SuiNetwork. Hooks stay generic so a file is not labeled as the wrong moment."
       ],
       "budget_snapshot": {
-        "remaining_usd": 728,
+        "remaining_usd": 705,
         "total_usd": 1750,
-        "as_of": "2026-10-27T13:40:00Z",
+        "as_of": "2026-10-28T10:24:00Z",
         "source": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747"
       }
     },
