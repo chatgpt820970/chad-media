@@ -4,5 +4,18 @@
   "submit_within_minutes": 30,
   "raw_url": "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/submissions/pending.json",
   "how_to_mark_submitted": "Run the Mark submitted workflow with this item's id or post_url, or set the item status to submitted and commit the file.",
-  "items": []
+  "items": [
+    {
+      "id": "boxabl:x:6ae205bfbae3f801a0066ad2",
+      "post_url": "https://x.com/1906627436428570624/status/2115485377251205272",
+      "platform": "x",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-28T16:46:32.000Z",
+      "deadline_at": "2026-10-28T17:06:32.000Z",
+      "status": "pending",
+      "buffer_post_id": "6ae205bfbae3f801a0066ad2"
+    }
+  ]
 }
