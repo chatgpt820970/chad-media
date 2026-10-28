@@ -31,6 +31,15 @@ def _stamp(moment: datetime) -> str:
     return moment.astimezone(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.000Z")
 
 
+def normalize_post_url(url: str) -> str:
+    url = url.strip()
+    if url.startswith("https://tiktok.com/"):
+        return "https://www.tiktok.com/" + url[len("https://tiktok.com/"):]
+    if url.startswith("http://tiktok.com/"):
+        return "https://www.tiktok.com/" + url[len("http://tiktok.com/"):]
+    return url
+
+
 def parse_stamp(value: str) -> datetime:
     text = value.replace("Z", "+00:00")
     return datetime.fromisoformat(text)
@@ -40,7 +49,7 @@ def live_item(package: dict, post_url: str, posted_at: datetime, minutes: int, b
     deadline = posted_at.astimezone(timezone.utc) + timedelta(minutes=minutes)
     return {
         "id": f"{package['campaign_id']}:{package['platform']}:{package['source_id']}",
-        "post_url": post_url,
+        "post_url": normalize_post_url(post_url),
         "platform": package["platform"],
         "campaign_id": package["campaign_id"],
         "content_rewards_campaign_id": package.get("content_rewards_campaign_id") or "",
@@ -108,7 +117,7 @@ def upsert_views(
             "id": item_id,
             "platform": platform,
             "campaign_id": campaign_id,
-            "post_url": post_url,
+            "post_url": normalize_post_url(post_url),
             "views": int(views),
             "crossed_1k": int(views) >= flag_at,
             "crossed_campaign_minimum": int(views) >= int(campaign_min_views),
@@ -136,8 +145,8 @@ def record_sent_posts(
     """
     added = 0
     done_items = (submitted or {}).get("items") or []
-    existing_urls = {item.get("post_url") for item in pending.get("items") or []} | {
-        item.get("post_url") for item in done_items
+    existing_urls = {normalize_post_url(item.get("post_url") or "") for item in pending.get("items") or []} | {
+        normalize_post_url(item.get("post_url") or "") for item in done_items
     }
     existing_ids = {item.get("buffer_post_id") for item in pending.get("items") or []} | {
         item.get("buffer_post_id") for item in done_items
@@ -145,7 +154,7 @@ def record_sent_posts(
     for post in posts:
         if post.get("status") != "sent":
             continue
-        link = (post.get("externalLink") or "").strip()
+        link = normalize_post_url((post.get("externalLink") or "").strip())
         sent_at = (post.get("sentAt") or "").strip()
         buffer_id = (post.get("id") or "").strip()
         if not link or not sent_at:
