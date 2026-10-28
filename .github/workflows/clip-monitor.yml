@@ -1,9 +1,9 @@
 name: Clip monitor
 
 # On unless the repository variable CLIPPER_MONITOR is the lowercase string false.
-# The job checks submissions/pending.json and fails when a live post is past
-# its 30-minute Content Rewards deadline so GitHub can email the assistant.
-# The job stays capped at 3 minutes.
+# The job checks submissions/pending.json, platform_alerts.json, and campaign budgets,
+# commits any queue updates first, and fails on any overdue/unsubmitted link (>16m old),
+# paused platform, or low campaign budget (<$1,500 for 5-7 day safety) so BIBI wakes immediately.
 on:
   schedule:
     # Off :00/:15/:30/:45. GitHub drops congested quarter-hour schedules.
@@ -61,3 +61,50 @@ jobs:
             git pull --rebase origin "${GITHUB_REF_NAME}"
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
+
+      - name: Instant emergency check (unsubmitted link >16m, paused platform, or low budget)
+        if: ${{ vars.CLIPPER_MONITOR != 'false' }}
+        run: |
+          python3 - << 'PY'
+          import json, sys
+          from datetime import datetime, timezone
+
+          now = datetime.now(timezone.utc)
+          problems = []
+
+          with open("submissions/pending.json") as f:
+              pending = json.load(f)
+          for item in pending.get("items") or []:
+              if item.get("status") != "pending":
+                  continue
+              posted_raw = item.get("posted_at") or ""
+              try:
+                  posted_dt = datetime.fromisoformat(posted_raw.replace("Z", "+00:00"))
+                  age_min = (now - posted_dt).total_seconds() / 60.0
+                  if age_min >= 16.0:
+                      problems.append(f"Pending link unsubmitted for {age_min:.1f}m (deadline <30m): {item.get('id')} {item.get('post_url')}")
+              except Exception:
+                  problems.append(f"Pending link with unparseable timestamp: {item.get('id')}")
+
+          with open("state/platform_alerts.json") as f:
+              alerts = json.load(f)
+          paused = alerts.get("paused") or {}
+          if paused:
+              problems.append(f"Platform paused due to error: {json.dumps(paused)}")
+
+          with open("config/campaigns.json") as f:
+              campaigns = json.load(f).get("campaigns") or []
+          for camp in campaigns:
+              if not camp.get("active"):
+                  continue
+              rem = float((camp.get("budget_snapshot") or {}).get("remaining_usd") or 0)
+              min_req = float(camp.get("min_safe_budget_usd") or 500.0)
+              if rem < min_req:
+                  problems.append(f"Active campaign {camp.get('id')} budget low (${rem:.2f} < ${min_req:.2f} 5-7 day safety threshold)")
+
+          if problems:
+              for p in problems:
+                  print(f"::error::{p}")
+              sys.exit(1)
+          print("All monitor checks green (no overdue links, no paused platforms, budgets safe).")
+          PY
