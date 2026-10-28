@@ -273,7 +273,7 @@ def _gather_candidates(
     alerts: dict,
     fetcher,
 ) -> list[tuple]:
-    """Sui file, then an approved Dhan file, then the content plan. Used files are skipped."""
+    """Boxabl file, then Sui, then an approved Dhan file, then the content plan. Used files are skipped."""
     used = set(ledger.get("sources") or [])
     blocked = blocked_identities(alerts)
     items: list[tuple] = []
@@ -289,6 +289,16 @@ def _gather_candidates(
                 return False
         items.append((kind, path, identity, campaign, title or path.stem))
         return True
+
+    boxabl = _campaign(bundle, "boxabl") or {}
+    if boxabl.get("active") and float((boxabl.get("budget_snapshot") or {}).get("remaining_usd", 1)) > 0 and platform in (boxabl.get("platforms") or []):
+        meta_bx = manifest.get("boxabl") or {}
+        path_bx = Path(str(meta_bx.get("path") or ""))
+        if not path_bx.is_file():
+            short_bx = media_dir / "boxabl-short.mp4"
+            path_bx = short_bx if short_bx.is_file() else path_bx
+        identity_bx = str(meta_bx.get("file_id") or (path_bx.stem if path_bx.is_file() else ""))
+        add("boxabl", path_bx, identity_bx, boxabl)
 
     sui = _campaign(bundle, "sui-basecamp") or {}
     if sui.get("active") and float((sui.get("budget_snapshot") or {}).get("remaining_usd", 1)) > 0 and platform in (sui.get("platforms") or []):
@@ -308,16 +318,6 @@ def _gather_candidates(
                     str(fetched.get("file_id") or Path(str(fetched.get("path") or "")).stem),
                     sui,
                 )
-
-    boxabl = _campaign(bundle, "boxabl") or {}
-    if boxabl.get("active") and float((boxabl.get("budget_snapshot") or {}).get("remaining_usd", 1)) > 0 and platform in (boxabl.get("platforms") or []):
-        meta_bx = manifest.get("boxabl") or {}
-        path_bx = Path(str(meta_bx.get("path") or ""))
-        if not path_bx.is_file():
-            short_bx = media_dir / "boxabl-short.mp4"
-            path_bx = short_bx if short_bx.is_file() else path_bx
-        identity_bx = str(meta_bx.get("file_id") or (path_bx.stem if path_bx.is_file() else ""))
-        add("boxabl", path_bx, identity_bx, boxabl)
 
     dhan = _campaign(bundle, "dhan-aziz") or {}
     approved = {str(item) for item in (bundle.get("approvals") or {}).get("approved") or []}

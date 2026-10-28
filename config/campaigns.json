@@ -156,7 +156,8 @@
         "total_usd": 1750,
         "as_of": "2026-10-28T10:24:00Z",
         "source": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747"
-      }
+      },
+      "switch_note": "Oct 28 2026: Boxabl now goes first on YouTube and TikTok; Sui is only a fallback. Sui Drive has only 3 clips (50s, 56s, 81s); every #cut45 is used and #cut90+ renders an empty video (262-byte TikTok file, HTTP 404 on Pages). Budget ~$705 is also under the 5-7 day rule."
     },
     {
       "id": "dhan-aziz",
@@ -265,12 +266,13 @@
       "approval_notes": "",
       "budget_snapshot": {
         "total_usd": 85000.0,
-        "spent_usd": 21639.63,
-        "remaining_usd": 63360.37,
+        "remaining_usd": 63345.0,
         "captured_at": "2026-10-28"
       },
       "platforms": [
-        "x"
+        "x",
+        "youtube",
+        "tiktok"
       ],
       "account_mode": "shared",
       "publish_mode": "automatic",
@@ -316,7 +318,8 @@
           "boxabl.com",
           "#BOXABL"
         ]
-      }
+      },
+      "switch_note": "Oct 28 2026: Content Rewards page lists CPM payouts for x, youtube, tiktok (and instagram) at $0.50/1K, min $1, max $500. YouTube and TikTok switched here from Sui BaseCamp."
     },
     {
       "id": "rolling-stone",

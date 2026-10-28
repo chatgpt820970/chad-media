@@ -16,7 +16,7 @@ from clipper.cookiesrc import probe_cookie_downloads
 from clipper.fetchsrc import fetch_media
 from clipper.publicsrc import fetch_public_report
 from clipper.loadconfig import check_bundle, load_bundle, posting_platforms, repo_root
-from clipper.livepost import empty_ledger, execute_live, prefetch_exclude_ids
+from clipper.livepost import posted_identities, empty_ledger, execute_live, prefetch_exclude_ids
 from clipper.run import planned_downloads, run_pipeline, write_report
 from clipper.strikes import empty_alerts, record_post_statuses
 from clipper.submissions import (
@@ -83,7 +83,9 @@ def command_fetch(bundle: dict, args: argparse.Namespace) -> int:
         boxabl = next((row for row in bundle["campaigns"]["campaigns"] if row["id"] == "boxabl"), None)
         if boxabl:
             bx_platforms = [name for name in posting_platforms(bundle) if name in set(boxabl.get("platforms") or [])]
-            exclude_boxabl = prefetch_exclude_ids(ledger, bx_platforms)
+            # Union, not intersection: X, YouTube and TikTok post the same Boxabl file in the
+            # same slot, so the next fetch must be a file none of them has used yet.
+            exclude_boxabl = set().union(*(posted_identities(ledger, name) for name in bx_platforms)) if bx_platforms else set()
     manifest = fetch_media(
         bundle,
         output,
