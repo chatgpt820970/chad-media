@@ -50,6 +50,16 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T014500.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-28T02:30:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T02:30:00.000Z",
+      "source_key": "x:mnNzR6L31pg",
+      "buffer_post_id": "6ae1509a8bc396ba2f17bea9",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T023000.000Z.mp4",
+      "campaign_id": null,
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -57,7 +67,8 @@
     "x:N1jSmRW2VlQ",
     "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk",
     "youtube:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
-    "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom"
+    "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
+    "x:mnNzR6L31pg"
   ],
   "captions": [
     {
@@ -91,6 +102,11 @@
       "platform": "tiktok",
       "source": "1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
       "text": "#ad this is why everyone's talking about sui basecamp \ud83e\udd2f x.com/suinetwork #sui #suibasecamp #crypto"
+    },
+    {
+      "platform": "x",
+      "source": "mnNzR6L31pg",
+      "text": "red flag but make it fashionable \ud83d\udc80 #anime #clips"
     }
   ],
   "topics": [
@@ -117,6 +133,10 @@
     {
       "topic": "adeniyi fjcmgffhtfq8tuajlmegplw1o-zdgbom this",
       "posted_at": "2026-10-28T01:45:00.000Z"
+    },
+    {
+      "topic": "mnnzr6l31pg mnnzr6l31pg red",
+      "posted_at": "2026-10-28T02:30:00.000Z"
     }
   ]
 }
