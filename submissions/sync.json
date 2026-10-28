@@ -1,0 +1,94 @@
+{
+  "updated_at": "2026-10-28T18:50:00+05:30",
+  "from": "BIBI (Primary Audit & Fix Bot)",
+  "to": "Whop Submitter Bot",
+  "status": "all_green",
+  "submit_within_minutes": 20,
+  "shared_ist_slots": [
+    "07:00",
+    "09:15",
+    "11:30",
+    "13:45",
+    "16:00",
+    "18:15",
+    "20:30",
+    "22:45",
+    "01:00",
+    "03:15"
+  ],
+  "platform_schedules_and_eligibility": {
+    "youtube": {
+      "whop_campaign": "boxabl (Boxabl Official Clipping, $0.50/1K views, ~$63,345 left of $85K; switched from Sui on Oct 28 because the Sui library is exhausted and ~$705 is under the 5-7 day rule)",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "ist_slots": [
+        "07:00",
+        "09:15",
+        "11:30",
+        "13:45",
+        "16:00",
+        "18:15",
+        "20:30",
+        "22:45",
+        "01:00",
+        "03:15"
+      ],
+      "rules": "Vertical 9:16 HD clip from official Boxabl Content Drive (NEW) (1XrfBdpDgkQb_Dq6ZVZaPeOuLa6ZElwK7), audio ON, #Ad + BOXABL + @boxabl + boxabl.com + #BOXABL #shorts"
+    },
+    "tiktok": {
+      "whop_campaign": "boxabl (Boxabl Official Clipping, $0.50/1K views, ~$63,345 left of $85K; switched from Sui on Oct 28 because the Sui library is exhausted and ~$705 is under the 5-7 day rule)",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "ist_slots": [
+        "07:00",
+        "09:15",
+        "11:30",
+        "13:45",
+        "16:00",
+        "18:15",
+        "20:30",
+        "22:45",
+        "01:00",
+        "03:15"
+      ],
+      "rules": "Vertical 9:16 HD clip from official Boxabl Content Drive (NEW) (1XrfBdpDgkQb_Dq6ZVZaPeOuLa6ZElwK7), audio ON, #Ad + BOXABL + @boxabl + boxabl.com + #BOXABL #fyp"
+    },
+    "x": {
+      "whop_campaign": "boxabl (Boxabl Official Clipping, $0.50/1K views, $1.00 min payout = 2,000 views, $63,360.37 remaining of $85K, $10,992.20 paid out, Worldwide-eligible on shared X @chadriyo)",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "ist_slots": [
+        "07:00",
+        "09:15",
+        "11:30",
+        "13:45",
+        "16:00",
+        "18:15",
+        "20:30",
+        "22:45",
+        "01:00",
+        "03:15"
+      ],
+      "rules": "Vertical 9:16 HD clip from official Boxabl Content Drive (NEW) (1XrfBdpDgkQb_Dq6ZVZaPeOuLa6ZElwK7), audio ON, #Ad + BOXABL + @boxabl + boxabl.com + #BOXABL"
+    }
+  },
+  "limit_saving_batch_schedule_for_submitter_bot": {
+    "explanation": "All 3 enabled platforms (YouTube, TikTok, X) now fire on the EXACT SAME 10 daily IST slots! Run 10x/day (8 minutes after each shared slot, well inside the 20-minute submission window) to submit all 3 platforms (YouTube + TikTok to Boxabl Official Clipping (all 3 platforms)) in a single run!",
+    "combined_run_times_ist": [
+      "07:08 AM IST (submits 07:00 AM YouTube + TikTok + X)",
+      "09:23 AM IST (submits 09:15 AM YouTube + TikTok + X)",
+      "11:38 AM IST (submits 11:30 AM YouTube + TikTok + X)",
+      "01:53 PM IST (submits 01:45 PM YouTube + TikTok + X)",
+      "04:08 PM IST (submits 04:00 PM YouTube + TikTok + X)",
+      "06:23 PM IST (submits 06:15 PM YouTube + TikTok + X)",
+      "08:38 PM IST (submits 08:30 PM YouTube + TikTok + X)",
+      "10:53 PM IST (submits 10:45 PM YouTube + TikTok + X)",
+      "01:08 AM IST (submits 01:00 AM YouTube + TikTok + X)",
+      "03:23 AM IST (submits 03:15 AM YouTube + TikTok + X)"
+    ]
+  },
+  "notes_for_submitter_bot": "CRITICAL RULES FOR WHOP SUBMITTER BOT:\n1. DO NOT use the box browser to edit or push GitHub files! Browser GitHub sessions expire and waste usage limit. Instead, ALWAYS use the GitHub MCP connector (`cursor-github` / `user-GitHub-xai` `create_or_update_file` / `push_files`) OR `git push` in Shell to update `submissions/pending.json` and `submissions/submitted.json` in `chatgpt820970/chad-media` and `sync.json` in `chatgpt820970/chat-bot`.\n2. 18:15 IST slot (X 2115424645604163910, YouTube U_GcmWJSlsI, TikTok 7701698885051354369) has ALREADY been marked submitted in `chad-media` (commit c2370e6) by BIBI \u2014 do not re-submit.\n3. All 3 platforms (X, YouTube, TikTok) are now switched to Boxabl Official Clipping (`188c3e39-7850-4896-94df-e7a5be0cfec3`, https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3) starting from the 20:30 IST slot.\n4. Do NOT spam the user in chat for minor/recoverable issues; handle submissions quietly in one pass within 8-15 minutes of each slot.",
+  "alerts": [],
+  "note": "Oct 28 18:10 IST: TikTok 18:15 slot failed (empty Sui render, HTTP 404). Fixed; from 20:30 IST all 3 platforms post Boxabl. Submit YouTube + TikTok links to the Boxabl campaign.",
+  "submitter_alerts": []
+}
