@@ -837,23 +837,23 @@ class LivePostTests(unittest.TestCase):
         channels = {item["channelId"] for item in seen}
         self.assertEqual(
             channels,
-            {"6ac4da806a5c39ccb62eab64", "6add07e4778b240e2fb35110"},
+            {"6ac41eb06a5c39ccb625fdf1", "6ac4da806a5c39ccb62eab64", "6add07e4778b240e2fb35110"},
         )
         self.assertTrue(all(item["text"].count("example.invalid") == 0 for item in seen))
         self.assertTrue(all("x.com/SuiNetwork" in item["text"] for item in seen))
         alerts = json.loads((root / "alerts.json").read_text())
         self.assertEqual(alerts["paused"], {})
         pending = json.loads((root / "pending.json").read_text())
-        self.assertEqual(len(pending["items"]), 2)
+        self.assertEqual(len(pending["items"]), 3)
         for item in pending["items"]:
             self.assertTrue(item["post_url"].startswith("https://"))
             self.assertNotIn("example.invalid", item["post_url"])
             self.assertEqual(item["posted_at"], "2026-10-27T00:00:10.000Z")
         ledger = json.loads((root / "live.json").read_text())
-        self.assertEqual(set(ledger["sources"]), {"youtube:drive-evan", "tiktok:drive-evan"})
+        self.assertEqual(set(ledger["sources"]), {"x:drive-evan", "youtube:drive-evan", "tiktok:drive-evan"})
         again = execute_live(bundle, **kwargs)
         self.assertEqual(again, 0)
-        self.assertEqual(len(seen), 2)
+        self.assertEqual(len(seen), 3)
 
     def test_approved_dhan_file_beats_the_content_plan_and_sui_beats_dhan(self):
         from clipper.livepost import _gather_candidates, empty_ledger
@@ -943,7 +943,7 @@ class LivePostTests(unittest.TestCase):
 
         def poster(payload):
             seen.append(payload)
-            return {"id": "buf-sui", "status": "sent", "sentAt": "2026-10-27T00:00:00.000Z", "externalLink": "https://www.youtube.com/shorts/example", "text": payload["text"]}
+            return {"id": f"buf-sui-{len(seen)}", "status": "sent", "sentAt": "2026-10-27T00:00:00.000Z", "externalLink": f"https://www.youtube.com/shorts/example-{len(seen)}", "text": payload["text"]}
 
         def uploader(path, name):
             self.assertTrue(str(name).startswith("live-"))

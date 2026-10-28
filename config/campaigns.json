@@ -40,6 +40,7 @@
       "payout_timing": "",
       "approval_notes": "",
       "platforms": [
+        "x",
         "tiktok",
         "instagram",
         "youtube"
