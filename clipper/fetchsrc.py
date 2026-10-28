@@ -726,7 +726,7 @@ def fetch_media(
                 output,
                 exclude_ids=exclude_boxabl_ids,
                 subfolder="boxabl-source",
-                min_size_bytes=20_000_000,
+                min_size_bytes=45_000_000,
             )
             manifest["boxabl"] = fetched_bx
             if fetched_bx.get("status") != "exhausted":
