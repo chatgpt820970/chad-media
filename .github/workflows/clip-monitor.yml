@@ -102,6 +102,17 @@ jobs:
               if rem < min_req:
                   problems.append(f"Active campaign {camp.get('id')} budget low (${rem:.2f} < ${min_req:.2f} 5-7 day safety threshold)")
 
+          try:
+              with open("submissions/sync.json") as f:
+                  sync_data = json.load(f)
+              for a in (sync_data.get("alerts") or []) + (sync_data.get("submitter_alerts") or []):
+                  if isinstance(a, dict) and not a.get("resolved", False):
+                      problems.append(f"Submitter Bot alert in submissions/sync.json: {json.dumps(a)}")
+                  elif isinstance(a, str) and a.strip():
+                      problems.append(f"Submitter Bot alert in submissions/sync.json: {a}")
+          except FileNotFoundError:
+              pass
+
           if problems:
               for p in problems:
                   print(f"::error::{p}")
