@@ -100,6 +100,26 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T061500.000Z.mp4",
       "campaign_id": null,
       "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T08:15:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T08:15:00.000Z",
+      "source_key": "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
+      "buffer_post_id": "6ae1b0a2707b0dd3619b5a60",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T081500.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "sent"
+    },
+    {
+      "key": "tiktok:2026-10-28T10:00:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T10:00:00.000Z",
+      "source_key": "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
+      "buffer_post_id": "6ae1b0a5074a2fccd988039b",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T100000.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -112,7 +132,9 @@
     "youtube:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
     "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
     "youtube:02RDBIMKfe8",
-    "tiktok:H0szcqT6UBI"
+    "tiktok:H0szcqT6UBI",
+    "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
+    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45"
   ],
   "captions": [
     {
@@ -171,6 +193,16 @@
       "platform": "tiktok",
       "source": "H0szcqT6UBI",
       "text": "my mom calling while i'm watching this part \ud83d\ude2d #anime #clips #movies"
+    },
+    {
+      "platform": "youtube",
+      "source": "1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
+      "text": "#ad the alpha dropped live at sui basecamp \ud83d\udc80\ud83d\udd25 x.com/suinetwork #sui #suibasecamp #crypto #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
+      "text": "#ad the future of on-chain agents live at sui basecamp \ud83e\udd2f x.com/suinetwork #sui #suibasecamp #crypto"
     }
   ],
   "topics": [
