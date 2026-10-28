@@ -230,6 +230,36 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T150000.000Z.mp4",
       "campaign_id": "boxabl",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-28T17:15:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T17:15:00.000Z",
+      "source_key": "x:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
+      "buffer_post_id": "6ae2219f1d39803183900beb",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T171500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T17:15:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T17:15:00.000Z",
+      "source_key": "youtube:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
+      "buffer_post_id": "6ae221a04785904534fe1459",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T171500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-28T17:15:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T17:15:00.000Z",
+      "source_key": "tiktok:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
+      "buffer_post_id": "6ae221a21d39803183900d0a",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T171500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -255,7 +285,10 @@
     "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut90",
     "x:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
     "youtube:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
-    "tiktok:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj"
+    "tiktok:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
+    "x:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
+    "youtube:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
+    "tiktok:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL"
   ],
   "captions": [
     {
@@ -379,6 +412,21 @@
       "platform": "tiktok",
       "source": "19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
       "text": "#ad why everyone is talking about the boxabl foldable house @boxabl boxabl.com #boxabl #casita #tinyhome"
+    },
+    {
+      "platform": "x",
+      "source": "1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
+      "text": "#ad why everyone is talking about the boxabl foldable house @boxabl boxabl.com #boxabl 1o7pfcdzcifxmefl2cin5tozaziqalqhl"
+    },
+    {
+      "platform": "youtube",
+      "source": "1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
+      "text": "#ad why everyone is talking about the boxabl foldable house @boxabl boxabl.com #boxabl #casita #tinyhome #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
+      "text": "#ad how boxabl mass-produces factory-built homes that unfold on site @boxabl boxabl.com #boxabl #casita #tinyhome"
     }
   ],
   "topics": [
@@ -453,6 +501,10 @@
     {
       "topic": "boxabl bssq2adsw5sodn4igjbep0nordnhdhj why",
       "posted_at": "2026-10-28T15:00:00.000Z"
+    },
+    {
+      "topic": "ellie space o7pfcdzcifxmefl2cin5tozaziqalqhl",
+      "posted_at": "2026-10-28T17:15:00.000Z"
     }
   ]
 }
