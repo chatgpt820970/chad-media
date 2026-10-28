@@ -80,6 +80,26 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T040000.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T06:00:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T06:00:00.000Z",
+      "source_key": "youtube:02RDBIMKfe8",
+      "buffer_post_id": "6ae178561aac2b225f7a4db7",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T060000.000Z.mp4",
+      "campaign_id": null,
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-28T06:15:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T06:15:00.000Z",
+      "source_key": "tiktok:H0szcqT6UBI",
+      "buffer_post_id": "6ae178561aac2b225f7a4dff",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T061500.000Z.mp4",
+      "campaign_id": null,
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -90,7 +110,9 @@
     "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom",
     "x:mnNzR6L31pg",
     "youtube:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
-    "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK"
+    "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
+    "youtube:02RDBIMKfe8",
+    "tiktok:H0szcqT6UBI"
   ],
   "captions": [
     {
@@ -139,6 +161,16 @@
       "platform": "tiktok",
       "source": "1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK",
       "text": "#ad not your usual boring tech talk \ud83d\udc80 sui basecamp live x.com/suinetwork #sui #suibasecamp #crypto"
+    },
+    {
+      "platform": "youtube",
+      "source": "02RDBIMKfe8",
+      "text": "this hit harder than my last relationship \ud83d\udc80 #shorts #clips #movies #anime"
+    },
+    {
+      "platform": "tiktok",
+      "source": "H0szcqT6UBI",
+      "text": "my mom calling while i'm watching this part \ud83d\ude2d #anime #clips #movies"
     }
   ],
   "topics": [
@@ -177,6 +209,14 @@
     {
       "topic": "adeniyi y8q-82hgg0ydd7hta63lfz2oagnec3ik not",
       "posted_at": "2026-10-28T04:00:00.000Z"
+    },
+    {
+      "topic": "rdbimkfe8 rdbimkfe8 this",
+      "posted_at": "2026-10-28T06:00:00.000Z"
+    },
+    {
+      "topic": "h0szcqt6ubi h0szcqt6ubi mom",
+      "posted_at": "2026-10-28T06:15:00.000Z"
     }
   ]
 }
