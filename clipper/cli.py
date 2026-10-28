@@ -74,17 +74,23 @@ def command_check(bundle: dict) -> int:
 def command_fetch(bundle: dict, args: argparse.Namespace) -> int:
     output = Path(args.output_dir)
     exclude = None
+    exclude_boxabl = None
     if args.respect_ledger:
         ledger = load_json(bundle["root"] / "state" / "live.json", empty_ledger())
         sui = next(row for row in bundle["campaigns"]["campaigns"] if row["id"] == "sui-basecamp")
         platforms = [name for name in posting_platforms(bundle) if name in set(sui.get("platforms") or [])]
         exclude = prefetch_exclude_ids(ledger, platforms)
+        boxabl = next((row for row in bundle["campaigns"]["campaigns"] if row["id"] == "boxabl"), None)
+        if boxabl:
+            bx_platforms = [name for name in posting_platforms(bundle) if name in set(boxabl.get("platforms") or [])]
+            exclude_boxabl = prefetch_exclude_ids(ledger, bx_platforms)
     manifest = fetch_media(
         bundle,
         output,
         env=dict(os.environ),
         include_dropbox=not args.skip_dropbox,
         exclude_sui_ids=exclude,
+        exclude_boxabl_ids=exclude_boxabl,
     )
     output.mkdir(parents=True, exist_ok=True)
     (output / "manifest.json").write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")

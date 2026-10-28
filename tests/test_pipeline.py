@@ -54,7 +54,7 @@ class ConfigTests(unittest.TestCase):
         bundle = _bundle()
         self.assertEqual(check_bundle(bundle), [])
         active = sorted(row["id"] for row in bundle["campaigns"]["campaigns"] if row.get("active"))
-        self.assertEqual(active, ["dhan-aziz", "sui-basecamp"])
+        self.assertEqual(active, ["boxabl", "dhan-aziz", "sui-basecamp"])
         for row in bundle["campaigns"]["campaigns"]:
             if row["id"] not in active:
                 self.assertFalse(row["active"], row["id"])
@@ -113,7 +113,7 @@ class DryRunTests(unittest.TestCase):
         report = run_pipeline(_bundle(), now=NOW)
         self.assertEqual(report["errors"], [])
         self.assertEqual(report["posting"], "enabled")
-        self.assertEqual(report["active_campaigns"], ["sui-basecamp", "dhan-aziz"])
+        self.assertEqual(report["active_campaigns"], ["sui-basecamp", "dhan-aziz", "boxabl"])
         self.assertIn("content plan", report["posting_note"])
         self.assertIn("awaiting_approval", report["posting_note"])
         self.assertIn("Instagram is disabled", report["posting_note"])
@@ -243,8 +243,8 @@ class SlotTests(unittest.TestCase):
             self.assertGreaterEqual(min_slot_gap_minutes(spec["slots"]), 90)
             self.assertEqual(min_slot_gap_minutes(spec["slots"]), 135)
         self.assertEqual(schedule["youtube"]["slots"], schedule["instagram"]["slots"])
-        self.assertNotEqual(schedule["x"]["slots"], schedule["youtube"]["slots"])
-        self.assertNotEqual(schedule["tiktok"]["slots"][0], schedule["x"]["slots"][0])
+        self.assertEqual(schedule["x"]["slots"], schedule["youtube"]["slots"])
+        self.assertEqual(schedule["tiktok"]["slots"], schedule["youtube"]["slots"])
         slots = upcoming_slots(NOW, schedule["youtube"]["slots"], "Asia/Kolkata", 10)
         self.assertEqual(len(slots), 10)
         self.assertEqual(slots[0].astimezone(__import__("zoneinfo").ZoneInfo("Asia/Kolkata")).strftime("%H:%M"), "07:00")
@@ -479,28 +479,17 @@ class LivePostTests(unittest.TestCase):
         from clipper.livepost import due_slots
 
         schedule = _bundle()["pipeline"]["schedule"]
-        self.assertEqual(
-            [due_stamp(slot) for slot in due_slots(NOW, schedule["x"]["slots"], "Asia/Kolkata")],
-            ["2026-10-27T00:15:00.000Z"],
-        )
-        self.assertEqual(
-            [due_stamp(slot) for slot in due_slots(NOW, schedule["youtube"]["slots"], "Asia/Kolkata")],
-            ["2026-10-27T01:30:00.000Z"],
-        )
-        self.assertEqual(
-            [due_stamp(slot) for slot in due_slots(NOW, schedule["tiktok"]["slots"], "Asia/Kolkata")],
-            ["2026-10-27T01:45:00.000Z"],
-        )
+        for plat in ("x", "youtube", "tiktok"):
+            self.assertEqual(
+                [due_stamp(slot) for slot in due_slots(NOW, schedule[plat]["slots"], "Asia/Kolkata")],
+                ["2026-10-27T01:30:00.000Z"],
+            )
         later = datetime(2026, 10, 27, 6, 0, tzinfo=timezone.utc)
-        self.assertEqual(due_slots(later, schedule["x"]["slots"], "Asia/Kolkata"), [])
-        self.assertEqual(
-            [due_stamp(slot) for slot in due_slots(later, schedule["youtube"]["slots"], "Asia/Kolkata")],
-            ["2026-10-27T06:00:00.000Z"],
-        )
-        self.assertEqual(
-            [due_stamp(slot) for slot in due_slots(later, schedule["tiktok"]["slots"], "Asia/Kolkata")],
-            ["2026-10-27T06:15:00.000Z"],
-        )
+        for plat in ("x", "youtube", "tiktok"):
+            self.assertEqual(
+                [due_stamp(slot) for slot in due_slots(later, schedule[plat]["slots"], "Asia/Kolkata")],
+                ["2026-10-27T06:00:00.000Z"],
+            )
 
     def test_live_posts_enabled_platforms_and_skips_instagram(self):
         from clipper.run import _channel_id

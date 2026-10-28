@@ -285,6 +285,20 @@
       "duration_sec": 25,
       "lane": "campaign",
       "ready": true
+    },
+    {
+      "id": "fixture-boxabl-x",
+      "source_id": "boxabl-casita-unfold",
+      "title": "BOXABL Casita unfolding in an hour",
+      "content_type": "boxabl_official",
+      "platform": "x",
+      "duration_sec": 22,
+      "aspect_ratio": "9:16",
+      "media_url": "https://media.example.invalid/fixtures/boxabl-x.mp4",
+      "source_url": "https://drive.google.com/drive/folders/1XrfBdpDgkQb_Dq6ZVZaPeOuLa6ZElwK7",
+      "has_source_watermark": false,
+      "ready": true,
+      "lane": "campaign"
     }
   ]
 }

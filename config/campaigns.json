@@ -250,6 +250,75 @@
       }
     },
     {
+      "id": "boxabl",
+      "name": "Boxabl Official Clipping",
+      "active": true,
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/campaign/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "rate_per_1k_views_usd": 0.5,
+      "min_payout": 1.0,
+      "max_payout": 500.0,
+      "min_payout_usd": 1.0,
+      "max_payout_usd": 500.0,
+      "min_views": 2000,
+      "payout_timing": "",
+      "approval_notes": "",
+      "budget_snapshot": {
+        "total_usd": 85000.0,
+        "spent_usd": 21639.63,
+        "remaining_usd": 63360.37,
+        "captured_at": "2026-10-28"
+      },
+      "platforms": [
+        "x"
+      ],
+      "account_mode": "shared",
+      "publish_mode": "automatic",
+      "cross_post": "vary",
+      "min_duration_sec": 7,
+      "max_duration_sec": 60,
+      "content_types": [
+        "boxabl_official"
+      ],
+      "requires_ready_clip": true,
+      "source": {
+        "kind": "google_drive_folder",
+        "url": "https://drive.google.com/drive/folders/1XrfBdpDgkQb_Dq6ZVZaPeOuLa6ZElwK7",
+        "file": "config/inbox/campaigns/boxabl.txt",
+        "note": "Official Boxabl Content Drive (NEW) folder with 13 ready MP4 clips."
+      },
+      "logo": {
+        "required": false,
+        "note": "No logo overlay required; official Boxabl Casita footage."
+      },
+      "caption": {
+        "disclosure": "#Ad",
+        "hooks": [
+          "Inside the BOXABL Casita \u2014 unfolding a full-size home in an hour @boxabl boxabl.com",
+          "Why everyone is talking about the BOXABL foldable house @boxabl boxabl.com",
+          "How BOXABL mass-produces factory-built homes that unfold on site @boxabl boxabl.com",
+          "A closer look inside the BOXABL Casita build @boxabl boxabl.com"
+        ],
+        "required_phrases": [
+          "BOXABL",
+          "@boxabl",
+          "boxabl.com"
+        ],
+        "hashtags": [
+          "#BOXABL",
+          "#Casita",
+          "#tinyhome"
+        ],
+        "platform_tags": {},
+        "exclusive_tokens": [
+          "BOXABL",
+          "@boxabl",
+          "boxabl.com",
+          "#BOXABL"
+        ]
+      }
+    },
+    {
       "id": "rolling-stone",
       "active": false,
       "inactive_reason": "Needs 30% Tier 1 viewers and music pages. The shared India-first channels do not meet that, so this stays off.",

@@ -110,7 +110,14 @@ def sui_offset_from_id(identity: str) -> float:
     return 0.0
 
 
-def fetch_sui_clip(folder_url: str, output: Path, exclude_ids: set[str] | None = None) -> dict:
+def fetch_sui_clip(
+    folder_url: str,
+    output: Path,
+    exclude_ids: set[str] | None = None,
+    *,
+    subfolder: str = "sui-source",
+    min_size_bytes: int = 0,
+) -> dict:
     """List the Drive folder with gdown and download the smallest clip/cut not already posted."""
     import gdown
 
@@ -124,9 +131,15 @@ def fetch_sui_clip(folder_url: str, output: Path, exclude_ids: set[str] | None =
     for item in listed:
         file_id = str(getattr(item, "id", "") or "")
         name = Path(str(getattr(item, "path", "") or file_id)).name
-        if not file_id or Path(name).suffix.lower() not in _VIDEO_SUFFIXES:
+        suffix = Path(name).suffix.lower()
+        if not suffix:
+            name = f"{name}.mp4"
+            suffix = ".mp4"
+        if not file_id or suffix not in _VIDEO_SUFFIXES:
             continue
         size = _drive_file_bytes(file_id) or 10**12
+        if min_size_bytes and size < min_size_bytes:
+            continue
         all_files.append((size, file_id, name))
         if file_id not in excluded:
             ranked.append((0, size, file_id, file_id, name))
@@ -148,7 +161,7 @@ def fetch_sui_clip(folder_url: str, output: Path, exclude_ids: set[str] | None =
         }
     ranked.sort()
     _tier, size, chosen_id, raw_file_id, name = ranked[0]
-    source = output / "sui-source" / name
+    source = output / subfolder / name
     source.parent.mkdir(parents=True, exist_ok=True)
     if not source.is_file() or source.stat().st_size < 100000:
         gdown.download(id=raw_file_id, output=str(source), quiet=False, retries=2, timeout=(30, 120))
@@ -672,8 +685,9 @@ def fetch_media(
     *,
     include_dropbox: bool = True,
     exclude_sui_ids: set[str] | None = None,
+    exclude_boxabl_ids: set[str] | None = None,
 ) -> dict:
-    """Download Sui, Dhan Aziz, and content-plan media. Does not call Buffer."""
+    """Download Sui, Boxabl, Dhan Aziz, and content-plan media. Does not call Buffer."""
     env = env or {}
     output.mkdir(parents=True, exist_ok=True)
     errors: list[str] = []
@@ -681,6 +695,7 @@ def fetch_media(
     campaigns = {row["id"]: row for row in bundle["campaigns"]["campaigns"]}
     sui = campaigns["sui-basecamp"]
     dhan = campaigns["dhan-aziz"]
+    boxabl = campaigns.get("boxabl")
     try:
         fetched = fetch_sui_clip(sui["source"]["url"], output, exclude_ids=exclude_sui_ids)
         manifest["sui"] = fetched
@@ -704,6 +719,27 @@ def fetch_media(
             manifest["caption"] = caption
     except Exception as exc:
         errors.append(f"sui: {exc}")
+    if boxabl and boxabl.get("active"):
+        try:
+            fetched_bx = fetch_sui_clip(
+                boxabl["source"]["url"],
+                output,
+                exclude_ids=exclude_boxabl_ids,
+                subfolder="boxabl-source",
+                min_size_bytes=20_000_000,
+            )
+            manifest["boxabl"] = fetched_bx
+            if fetched_bx.get("status") != "exhausted":
+                short_bx = output / "boxabl-short.mp4"
+                cut_vertical(
+                    Path(fetched_bx["path"]),
+                    short_bx,
+                    40.0,
+                    sui_offset_from_id(fetched_bx.get("file_id", "")),
+                )
+                manifest["boxabl_short"] = str(short_bx)
+        except Exception as exc:
+            errors.append(f"boxabl: {exc}")
     if include_dropbox:
         try:
             manifest["dropbox"] = fetch_dropbox(dhan["source"]["url"], output / "dhan-aziz.zip")

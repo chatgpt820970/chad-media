@@ -309,6 +309,16 @@ def _gather_candidates(
                     sui,
                 )
 
+    boxabl = _campaign(bundle, "boxabl") or {}
+    if boxabl.get("active") and float((boxabl.get("budget_snapshot") or {}).get("remaining_usd", 1)) > 0 and platform in (boxabl.get("platforms") or []):
+        meta_bx = manifest.get("boxabl") or {}
+        path_bx = Path(str(meta_bx.get("path") or ""))
+        if not path_bx.is_file():
+            short_bx = media_dir / "boxabl-short.mp4"
+            path_bx = short_bx if short_bx.is_file() else path_bx
+        identity_bx = str(meta_bx.get("file_id") or (path_bx.stem if path_bx.is_file() else ""))
+        add("boxabl", path_bx, identity_bx, boxabl)
+
     dhan = _campaign(bundle, "dhan-aziz") or {}
     approved = {str(item) for item in (bundle.get("approvals") or {}).get("approved") or []}
     if dhan.get("active") and float((dhan.get("budget_snapshot") or {}).get("remaining_usd", 1)) > 0 and platform in (dhan.get("platforms") or []) and approved:
@@ -404,15 +414,15 @@ def _caption_for(
 ) -> tuple[dict | None, str]:
     char_limit = int(bundle["pipeline"]["x_char_limit"])
     title = clip_title or source.stem
-    if platform == "x" and kind not in {"sui", "dhan"}:
+    if platform == "x" and kind not in {"sui", "dhan", "boxabl"}:
         title = x_overlay_text(title, salt)
     clip = {"source_id": identity, "title": title}
-    if kind in {"sui", "dhan"}:
+    if kind in {"sui", "dhan", "boxabl"}:
         if campaign is None:
             raise RuntimeError(f"{kind} campaign is missing")
         disclosure = ((campaign.get("caption") or {}).get("disclosure") or "").strip()
         reserved = 1 if disclosure.startswith("#") else 0
-        tags = [] if kind == "sui" else rotated_hashtags(limits, salt, reserved=reserved)
+        tags = [] if kind in {"sui", "boxabl"} else rotated_hashtags(limits, salt, reserved=reserved)
         campaign = copy.deepcopy(campaign)
         existing = list(campaign["caption"].get("hashtags") or [])
         for tag in tags:
@@ -424,6 +434,8 @@ def _caption_for(
             raise RuntimeError("Sui caption is missing x.com/SuiNetwork")
         if kind == "dhan" and "@DHANAZIZ" not in caption:
             raise RuntimeError("Dhan Aziz caption is missing @DHANAZIZ")
+        if kind == "boxabl" and "@boxabl" not in caption:
+            raise RuntimeError("Boxabl caption is missing @boxabl")
         return campaign, caption
     tags = rotated_hashtags(limits, salt, reserved=0)
     caption = _pool_caption(platform, clip, char_limit, limits, used, tags, salt)
@@ -619,7 +631,7 @@ def execute_live(
                 chosen = None
                 break
             guard_ids = (identity,) if str(identity).isdigit() else ()
-            blocked = None if kind in {"sui", "dhan"} else blocked_reason(
+            blocked = None if kind in {"sui", "dhan", "boxabl"} else blocked_reason(
                 root,
                 f"{source.name}\n{source.stem}\n{clip_title}\n{identity}\n{caption}",
                 ledger,
@@ -654,9 +666,9 @@ def execute_live(
         clip_title = chosen[4] if len(chosen) > 4 else source.stem
         try:
             upload_path = source
-            if kind == "sui":
+            if kind in {"sui", "boxabl"}:
                 dest = variants / f"{platform}.mp4"
-                extra_offset = 0.0 if source.name == "sui-basecamp-short.mp4" else sui_offset_from_id(identity)
+                extra_offset = 0.0 if source.name in {"sui-basecamp-short.mp4", "boxabl-short.mp4"} else sui_offset_from_id(identity)
                 render_variant(source, dest, platform, campaign, extra_offset)
                 upload_path = dest
             else:

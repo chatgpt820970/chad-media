@@ -3,9 +3,9 @@ name: Clip live
 # Every two hours, post one clip on each enabled platform whose peak-hour
 # slot falls in that window. Times are IST (Asia/Kolkata), 10 per platform,
 # at least 90 minutes apart:
-#   X        14:00 16:15 18:30 20:45 23:00 01:15 03:30 05:45 08:00 10:15
+#   X        07:00 09:15 11:30 13:45 16:00 18:15 20:30 22:45 01:00 03:15
 #   YouTube  07:00 09:15 11:30 13:45 16:00 18:15 20:30 22:45 01:00 03:15
-#   TikTok   15:30 17:45 20:00 22:15 00:30 02:45 05:00 07:15 09:30 11:45
+#   TikTok   07:00 09:15 11:30 13:45 16:00 18:15 20:30 22:45 01:00 03:15
 # Instagram keeps the YouTube clock but stays disabled until its channel
 # can link to Content Rewards.
 # Live posting is on unless CLIPPER_LIVE is the lowercase string false.
