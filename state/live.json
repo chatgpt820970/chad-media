@@ -290,6 +290,36 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T193000.000Z.mp4",
       "campaign_id": "boxabl",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-28T21:45:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T21:45:00.000Z",
+      "source_key": "x:1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd",
+      "buffer_post_id": "6ae25a0844c308f29b5424c8",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T214500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T21:45:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T21:45:00.000Z",
+      "source_key": "youtube:1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd",
+      "buffer_post_id": "6ae25a09bcf6087bd6ea7325",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T214500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-28T21:45:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T21:45:00.000Z",
+      "source_key": "tiktok:1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd",
+      "buffer_post_id": "6ae25a0bbcf6087bd6ea7398",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T214500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -321,7 +351,10 @@
     "tiktok:1o7PFCdZCiFXmEfL2cIN5tOzAzIQAlqHL",
     "x:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
     "youtube:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
-    "tiktok:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C"
+    "tiktok:12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
+    "x:1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd",
+    "youtube:1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd",
+    "tiktok:1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd"
   ],
   "captions": [
     {
@@ -475,6 +508,21 @@
       "platform": "tiktok",
       "source": "12abK-dQmsYUqyzXz94iUuM_oEfD2wO-C",
       "text": "#ad from highway delivery to move-in ready with boxabl @boxabl boxabl.com #boxabl #casita #tinyhome"
+    },
+    {
+      "platform": "x",
+      "source": "1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd",
+      "text": "#ad watch this factory-built boxabl home unfold in real time @boxabl boxabl.com #boxabl"
+    },
+    {
+      "platform": "youtube",
+      "source": "1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd",
+      "text": "#ad from highway delivery to move-in ready with boxabl @boxabl boxabl.com #boxabl #casita #tinyhome #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd",
+      "text": "#ad how boxabl ships a complete foldable house straight to your lot @boxabl boxabl.com #boxabl #casita #tinyhome"
     }
   ],
   "topics": [
@@ -557,6 +605,10 @@
     {
       "topic": "faze rug abk-dqmsyuqyzxz94iuum",
       "posted_at": "2026-10-28T19:30:00.000Z"
+    },
+    {
+      "topic": "enes yilmazer qp0ntbotdiihsgbwzdemiw7kbnqjhksd",
+      "posted_at": "2026-10-28T21:45:00.000Z"
     }
   ]
 }
