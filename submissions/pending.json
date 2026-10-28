@@ -17,6 +17,42 @@
       "status": "missed_deadline",
       "buffer_post_id": "6ae205bfbae3f801a0066ad2",
       "note": "Content Rewards rejected: not posted within last 30 minutes (off-slot post 22:16 IST)"
+    },
+    {
+      "id": "boxabl:x:6ae25a0844c308f29b5424c8",
+      "post_url": "https://x.com/chadriyo/status/2115560551795335478",
+      "platform": "x",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-28T21:45:15.000Z",
+      "deadline_at": "2026-10-28T22:05:15.000Z",
+      "status": "pending",
+      "buffer_post_id": "6ae25a0844c308f29b5424c8"
+    },
+    {
+      "id": "boxabl:youtube:6ae25a09bcf6087bd6ea7325",
+      "post_url": "https://www.youtube.com/shorts/Iazl4Fwrwv4",
+      "platform": "youtube",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-28T21:45:04.000Z",
+      "deadline_at": "2026-10-28T22:05:04.000Z",
+      "status": "pending",
+      "buffer_post_id": "6ae25a09bcf6087bd6ea7325"
+    },
+    {
+      "id": "boxabl:tiktok:6ae25a0bbcf6087bd6ea7398",
+      "post_url": "https://www.tiktok.com/@bi67325/video/7701837990196268306",
+      "platform": "tiktok",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-28T21:45:46.000Z",
+      "deadline_at": "2026-10-28T22:05:46.000Z",
+      "status": "pending",
+      "buffer_post_id": "6ae25a0bbcf6087bd6ea7398"
     }
   ]
 }
