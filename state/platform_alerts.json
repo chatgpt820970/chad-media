@@ -1,6 +1,16 @@
 {
   "version": 1,
   "paused": {},
-  "alerts": [],
+  "alerts": [
+    {
+      "platform": "tiktok",
+      "at": "2026-10-28T12:20:16.000Z",
+      "reason": "HTTP 404",
+      "kind": "media_url",
+      "buffer_post_id": "",
+      "source_key": "",
+      "identity": ""
+    }
+  ],
   "blocked_sources": []
 }

@@ -170,6 +170,26 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T103000.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-28T12:45:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T12:45:00.000Z",
+      "source_key": "x:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY",
+      "buffer_post_id": "6ae1e93b768df719cebe139b",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T124500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T12:45:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T12:45:00.000Z",
+      "source_key": "youtube:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45",
+      "buffer_post_id": "6ae1e93cd47ee8ef2fb82304",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T124500.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -189,7 +209,9 @@
     "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45",
     "x:1-VsFMbNhQcJq1PP21i4Yfq5S55zBvy6f",
     "youtube:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45",
-    "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45"
+    "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45",
+    "x:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY",
+    "youtube:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45"
   ],
   "captions": [
     {
@@ -283,6 +305,16 @@
       "platform": "tiktok",
       "source": "1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45",
       "text": "#ad wait for the drop at sui basecamp \ud83d\udc40\ud83d\udd25 x.com/suinetwork #sui #suibasecamp #crypto"
+    },
+    {
+      "platform": "x",
+      "source": "1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY",
+      "text": "#ad a closer look inside the boxabl casita build @boxabl boxabl.com #boxabl"
+    },
+    {
+      "platform": "youtube",
+      "source": "1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45",
+      "text": "#ad nobody expected this announcement at sui basecamp \ud83e\udd2f x.com/suinetwork #sui #suibasecamp #crypto #shorts"
     }
   ],
   "topics": [
@@ -345,6 +377,10 @@
     {
       "topic": "adeniyi y8q-82hgg0ydd7hta63lfz2oagnec3ik cut45",
       "posted_at": "2026-10-28T10:30:00.000Z"
+    },
+    {
+      "topic": "enes yilmazer fs-njsz479khnhkqq4-x30zuahqy6kmy",
+      "posted_at": "2026-10-28T12:45:00.000Z"
     }
   ]
 }
