@@ -200,6 +200,36 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T124500.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-28T15:00:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T15:00:00.000Z",
+      "source_key": "x:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
+      "buffer_post_id": "6ae205bfbae3f801a0066ad2",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T150000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T15:00:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T15:00:00.000Z",
+      "source_key": "youtube:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
+      "buffer_post_id": "6ae205c0bae3f801a0066b76",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T150000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-28T15:00:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T15:00:00.000Z",
+      "source_key": "tiktok:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
+      "buffer_post_id": "6ae205c2037129e4c9d887fa",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T150000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -222,7 +252,10 @@
     "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45",
     "x:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY",
     "youtube:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45",
-    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut90"
+    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut90",
+    "x:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
+    "youtube:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
+    "tiktok:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj"
   ],
   "captions": [
     {
@@ -331,6 +364,21 @@
       "platform": "tiktok",
       "source": "1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut90",
       "text": "#ad sui basecamp just dropped the future of web3 and nobody's ready \ud83d\udd25 x.com/suinetwork #sui #suibasecamp #crypto"
+    },
+    {
+      "platform": "x",
+      "source": "19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
+      "text": "#ad inside the boxabl casita \u2014 unfolding a full-size home in an hour @boxabl boxabl.com #boxabl"
+    },
+    {
+      "platform": "youtube",
+      "source": "19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
+      "text": "#ad inside the boxabl casita \u2014 unfolding a full-size home in an hour @boxabl boxabl.com #boxabl #casita #tinyhome #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "19bsSQ2ADsw5sODn4igjbeP0norDNHdhj",
+      "text": "#ad why everyone is talking about the boxabl foldable house @boxabl boxabl.com #boxabl #casita #tinyhome"
     }
   ],
   "topics": [
@@ -397,6 +445,14 @@
     {
       "topic": "enes yilmazer fs-njsz479khnhkqq4-x30zuahqy6kmy",
       "posted_at": "2026-10-28T12:45:00.000Z"
+    },
+    {
+      "topic": "boxabl bssq2adsw5sodn4igjbep0nordnhdhj inside",
+      "posted_at": "2026-10-28T15:00:00.000Z"
+    },
+    {
+      "topic": "boxabl bssq2adsw5sodn4igjbep0nordnhdhj why",
+      "posted_at": "2026-10-28T15:00:00.000Z"
     }
   ]
 }
