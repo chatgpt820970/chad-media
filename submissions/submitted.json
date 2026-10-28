@@ -130,6 +130,45 @@
       "status": "submitted",
       "buffer_post_id": "6ae1b0a5074a2fccd988039b",
       "submitted_at": "2026-10-28T10:24:00.000Z"
+    },
+    {
+      "id": "boxabl:x:6ae1b6a0deb69b3963bc66e6",
+      "post_url": "https://x.com/1906627436428570624/status/2115390695015928072",
+      "platform": "x",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/campaign/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-28T10:30:18.000Z",
+      "deadline_at": "2026-10-28T10:50:18.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae1b6a0deb69b3963bc66e6",
+      "submitted_at": "2026-10-28T10:50:00.000Z"
+    },
+    {
+      "id": "sui-basecamp:youtube:6ae1b6a1af9616deeb9a4476",
+      "post_url": "https://www.youtube.com/shorts/BHhJjr3XMSo",
+      "platform": "youtube",
+      "campaign_id": "sui-basecamp",
+      "content_rewards_campaign_id": "1c64ec71-ba0e-4798-b017-869635798747",
+      "submit_page": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747",
+      "posted_at": "2026-10-28T10:30:16.000Z",
+      "deadline_at": "2026-10-28T10:50:16.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae1b6a1af9616deeb9a4476",
+      "submitted_at": "2026-10-28T10:50:00.000Z"
+    },
+    {
+      "id": "sui-basecamp:tiktok:6ae1b6a2deb69b3963bc6740",
+      "post_url": "https://tiktok.com/@bi67325/video/7701664070977522996",
+      "platform": "tiktok",
+      "campaign_id": "sui-basecamp",
+      "content_rewards_campaign_id": "1c64ec71-ba0e-4798-b017-869635798747",
+      "submit_page": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747",
+      "posted_at": "2026-10-28T10:31:17.000Z",
+      "deadline_at": "2026-10-28T10:51:17.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae1b6a2deb69b3963bc6740",
+      "submitted_at": "2026-10-28T10:52:00.000Z"
     }
   ]
 }
