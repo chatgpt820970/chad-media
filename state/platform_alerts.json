@@ -1,6 +1,23 @@
 {
   "version": 1,
-  "paused": {},
-  "alerts": [],
+  "paused": {
+    "x": {
+      "paused_at": "2026-10-28T15:07:22.000Z",
+      "reason": "Buffer reported status error",
+      "kind": "buffer_error",
+      "buffer_post_id": "6ae205bfbae3f801a0066ad2"
+    }
+  },
+  "alerts": [
+    {
+      "platform": "x",
+      "at": "2026-10-28T15:07:22.000Z",
+      "reason": "Buffer reported status error",
+      "kind": "buffer_error",
+      "buffer_post_id": "6ae205bfbae3f801a0066ad2",
+      "source_key": "",
+      "identity": ""
+    }
+  ],
   "blocked_sources": []
 }
