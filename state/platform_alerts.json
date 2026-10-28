@@ -1,13 +1,6 @@
 {
   "version": 1,
-  "paused": {
-    "x": {
-      "paused_at": "2026-10-28T15:07:22.000Z",
-      "reason": "Buffer reported status error",
-      "kind": "buffer_error",
-      "buffer_post_id": "6ae205bfbae3f801a0066ad2"
-    }
-  },
+  "paused": {},
   "alerts": [
     {
       "platform": "x",
@@ -16,7 +9,9 @@
       "kind": "buffer_error",
       "buffer_post_id": "6ae205bfbae3f801a0066ad2",
       "source_key": "",
-      "identity": ""
+      "identity": "",
+      "resolved": true,
+      "resolved_note": "One-off Buffer publish error on 20:30 IST X slot (post never went live); X unpaused by BIBI so 22:45 IST slot posts normally."
     }
   ],
   "blocked_sources": []
