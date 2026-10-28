@@ -98,8 +98,20 @@ def _video_files(folder: Path) -> list[Path]:
     ]
 
 
+_SUI_CUT_OFFSETS = (0, 45, 90, 135, 180, 225, 270, 315, 360, 405, 450, 495)
+
+
+def sui_offset_from_id(identity: str) -> float:
+    text = str(identity or "")
+    if "#cut" in text:
+        tail = text.rsplit("#cut", 1)[1]
+        if tail.isdigit():
+            return float(int(tail))
+    return 0.0
+
+
 def fetch_sui_clip(folder_url: str, output: Path, exclude_ids: set[str] | None = None) -> dict:
-    """List the Drive folder with gdown and download the smallest clip not already posted."""
+    """List the Drive folder with gdown and download the smallest clip/cut not already posted."""
     import gdown
 
     output.mkdir(parents=True, exist_ok=True)
@@ -107,16 +119,23 @@ def fetch_sui_clip(folder_url: str, output: Path, exclude_ids: set[str] | None =
     if not listed:
         raise RuntimeError("Sui Drive folder returned no files")
     excluded = {str(item) for item in (exclude_ids or set()) if item}
-    ranked: list[tuple[int, str, str]] = []
+    ranked: list[tuple[int, int, str, str, str]] = []
+    all_files: list[tuple[int, str, str]] = []
     for item in listed:
         file_id = str(getattr(item, "id", "") or "")
         name = Path(str(getattr(item, "path", "") or file_id)).name
         if not file_id or Path(name).suffix.lower() not in _VIDEO_SUFFIXES:
             continue
-        if file_id in excluded:
-            continue
         size = _drive_file_bytes(file_id) or 10**12
-        ranked.append((size, file_id, name))
+        all_files.append((size, file_id, name))
+        if file_id not in excluded:
+            ranked.append((0, size, file_id, file_id, name))
+    if not ranked and all_files:
+        for cut_idx, offset in enumerate(_SUI_CUT_OFFSETS[1:], start=1):
+            for size, raw_id, name in all_files:
+                cut_id = f"{raw_id}#cut{offset}"
+                if cut_id not in excluded:
+                    ranked.append((cut_idx, size, cut_id, raw_id, name))
     if not ranked:
         return {
             "status": "exhausted",
@@ -128,15 +147,16 @@ def fetch_sui_clip(folder_url: str, output: Path, exclude_ids: set[str] | None =
             "excluded": sorted(excluded),
         }
     ranked.sort()
-    size, file_id, name = ranked[0]
+    _tier, size, chosen_id, raw_file_id, name = ranked[0]
     source = output / "sui-source" / name
     source.parent.mkdir(parents=True, exist_ok=True)
-    gdown.download(id=file_id, output=str(source), quiet=False, retries=2, timeout=(30, 120))
+    if not source.is_file() or source.stat().st_size < 100000:
+        gdown.download(id=raw_file_id, output=str(source), quiet=False, retries=2, timeout=(30, 120))
     if not source.is_file() or source.stat().st_size < 100000:
         raise RuntimeError(f"gdown did not save a real clip at {source}")
     return {
         "status": "downloaded",
-        "file_id": file_id,
+        "file_id": chosen_id,
         "name": name,
         "listed": len(listed),
         "bytes": source.stat().st_size,
@@ -154,13 +174,13 @@ def fetch_dropbox(url: str, dest: Path) -> dict:
     return {"path": str(dest), "bytes": dest.stat().st_size}
 
 
-def cut_vertical(source: Path, dest: Path, seconds: float = 40.0) -> None:
+def cut_vertical(source: Path, dest: Path, seconds: float = 40.0, start_sec: float = 0.0) -> None:
     if not ffmpeg_available():
         raise RuntimeError("ffmpeg is not installed")
     graph, uses_logo = logo_filter({"logo": {"required": False}}, 720, 1280, 0.0)
     if uses_logo or "drawtext" in graph:
         raise RuntimeError("Sui cut must not stamp a logo or text")
-    apply_filters(source, dest, graph, None, seconds, 0.0)
+    apply_filters(source, dest, graph, None, seconds, start_sec)
 
 
 def ytdlp_argv() -> list[str]:
@@ -668,7 +688,7 @@ def fetch_media(
             pass
         else:
             short = output / "sui-basecamp-short.mp4"
-            cut_vertical(Path(fetched["path"]), short, 40.0)
+            cut_vertical(Path(fetched["path"]), short, 40.0, sui_offset_from_id(fetched.get("file_id", "")))
             limits = (bundle["pipeline"].get("platform_limits") or {}).get("youtube") or {}
             caption = build_caption(
                 sui,

@@ -102,16 +102,30 @@
       "caption": {
         "disclosure": "#Ad",
         "hooks": [
-          "Sui BaseCamp just dropped the future of Web3 and nobody's ready 🔥",
-          "The crypto conference moment everyone's skipping… big mistake 👀",
-          "This is why everyone's talking about Sui BaseCamp 🤯",
-          "Sui BaseCamp went off and you missed it 😭",
-          "Not your usual boring tech talk 💀 Sui BaseCamp live"
+          "Sui BaseCamp just dropped the future of Web3 and nobody's ready \ud83d\udd25",
+          "The crypto conference moment everyone's skipping\u2026 big mistake \ud83d\udc40",
+          "This is why everyone's talking about Sui BaseCamp \ud83e\udd2f",
+          "Sui BaseCamp went off and you missed it \ud83d\ude2d",
+          "Not your usual boring tech talk \ud83d\udc80 Sui BaseCamp live",
+          "Wait for the drop at Sui BaseCamp \ud83d\udc40\ud83d\udd25",
+          "Nobody expected this announcement at Sui BaseCamp \ud83e\udd2f",
+          "Web3 builders went crazy for this moment at Sui BaseCamp \ud83d\ude80",
+          "The alpha dropped live at Sui BaseCamp \ud83d\udc80\ud83d\udd25",
+          "Why every crypto dev is watching Sui BaseCamp right now \ud83d\udc40",
+          "This live demo at Sui BaseCamp changed the game \ud83d\udd25",
+          "Listen closely to what was just revealed at Sui BaseCamp \ud83d\udc40",
+          "Sui BaseCamp stage energy was on another level \ud83d\ude80",
+          "The future of on-chain agents live at Sui BaseCamp \ud83e\udd2f",
+          "Best clip from the Sui BaseCamp stage today \ud83d\udd25"
         ],
         "required_phrases": [
           "x.com/SuiNetwork"
         ],
-        "hashtags": ["#Sui", "#SuiBaseCamp", "#crypto"],
+        "hashtags": [
+          "#Sui",
+          "#SuiBaseCamp",
+          "#crypto"
+        ],
         "platform_tags": {},
         "exclusive_tokens": [
           "x.com/SuiNetwork",
@@ -710,7 +724,7 @@
       "caption": {
         "disclosure": "#Ad",
         "hooks": [
-          "SLAYGROUND — in theaters January 29, 2027"
+          "SLAYGROUND \u2014 in theaters January 29, 2027"
         ],
         "required_phrases": [
           "SLAYGROUND",
@@ -755,7 +769,7 @@
     {
       "id": "crookbrown",
       "active": false,
-      "title": "CrookBrown — Wait For Me",
+      "title": "CrookBrown \u2014 Wait For Me",
       "brand": "Artist Influence",
       "rate_per_1k_views_usd": 1.0,
       "min_payout_usd": 1.0,
@@ -792,7 +806,7 @@
       "caption": {
         "disclosure": "#Ad",
         "hooks": [
-          "Wait For Me — CrookBrown"
+          "Wait For Me \u2014 CrookBrown"
         ],
         "required_phrases": [
           "Wait For Me"
@@ -873,7 +887,7 @@
       "caption": {
         "disclosure": "#Ad",
         "hooks": [
-          "Ricky Hil — the documentary"
+          "Ricky Hil \u2014 the documentary"
         ],
         "required_phrases": [
           "Ricky Hil"

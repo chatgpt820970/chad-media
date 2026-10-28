@@ -28,7 +28,7 @@ from clipper.engine import (
     rotated_hashtags,
     variant_for,
 )
-from clipper.fetchsrc import fetch_sui_clip
+from clipper.fetchsrc import fetch_sui_clip, sui_offset_from_id
 from clipper.guard import blocked_reason, prune_topics, remember_topics
 from clipper.loadconfig import posting_platforms
 from clipper.mediahost import MediaURLError, is_media_url_error, pages_video_url, publish_live_pages, verify_public_mp4
@@ -432,7 +432,7 @@ def _caption_for(
     return None, caption
 
 
-def render_variant(source: Path, dest: Path, platform: str, campaign: dict | None) -> None:
+def render_variant(source: Path, dest: Path, platform: str, campaign: dict | None, extra_start: float = 0.0) -> None:
     if not ffmpeg_available():
         raise RuntimeError("ffmpeg is not installed")
     variant = variant_for(platform)
@@ -441,7 +441,7 @@ def render_variant(source: Path, dest: Path, platform: str, campaign: dict | Non
     if "drawtext" in graph:
         raise RuntimeError("live render must not stamp text")
     logo_path = Path(str(rules["logo"]["file"])) if uses_logo else None
-    apply_filters(source, dest, graph, logo_path, CLIP_SECONDS, float(variant["start_sec"]))
+    apply_filters(source, dest, graph, logo_path, CLIP_SECONDS, float(variant["start_sec"]) + float(extra_start))
 
 
 def _asset_name(platform: str, slot: datetime) -> str:
@@ -619,7 +619,7 @@ def execute_live(
                 chosen = None
                 break
             guard_ids = (identity,) if str(identity).isdigit() else ()
-            blocked = blocked_reason(
+            blocked = None if kind in {"sui", "dhan"} else blocked_reason(
                 root,
                 f"{source.name}\n{source.stem}\n{clip_title}\n{identity}\n{caption}",
                 ledger,
@@ -656,7 +656,8 @@ def execute_live(
             upload_path = source
             if kind == "sui":
                 dest = variants / f"{platform}.mp4"
-                render_variant(source, dest, platform, campaign)
+                extra_offset = 0.0 if source.name == "sui-basecamp-short.mp4" else sui_offset_from_id(identity)
+                render_variant(source, dest, platform, campaign, extra_offset)
                 upload_path = dest
             else:
                 from clipper.publicsrc import real_video
