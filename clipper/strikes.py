@@ -182,12 +182,20 @@ def record_post_statuses(
 ) -> list[str]:
     """Pause when Buffer shows a failed or removed post. Returns new alert lines."""
     messages: list[str] = []
+    handled_ids = {
+        str(row.get("buffer_post_id") or "")
+        for row in state.get("alerts") or []
+        if isinstance(row, dict) and row.get("resolved") and row.get("buffer_post_id")
+    }
     for post in posts or []:
         status = str(post.get("status") or "").strip().lower()
         if status not in FAILED_STATUSES:
             continue
         kind = "removed" if status in REMOVED_STATUSES else "buffer_error"
         post_id = str(post.get("id") or "")
+        if post_id and post_id in handled_ids:
+            # Already reviewed and resolved; don't re-pause on the same old failed post.
+            continue
         reason = f"Buffer reported status {status}"
         if pause_platform(state, platform, reason, kind, buffer_post_id=post_id, when=when):
             messages.append(alert_text(platform, kind, reason, post_id))
