@@ -65,6 +65,19 @@
       "status": "submitted",
       "buffer_post_id": "6ae15c4bbc763652ae19b2e2",
       "submitted_at": "2026-10-28T04:22:21.000Z"
+    },
+    {
+      "id": "sui-basecamp:tiktok:6ae140378bc396ba2f13f211",
+      "post_url": "https://tiktok.com/@bi67325/video/7701528773878975764",
+      "platform": "tiktok",
+      "campaign_id": "sui-basecamp",
+      "content_rewards_campaign_id": "1c64ec71-ba0e-4798-b017-869635798747",
+      "submit_page": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747",
+      "posted_at": "2026-10-28T01:46:44.000Z",
+      "deadline_at": "2026-10-28T02:16:44.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae140378bc396ba2f13f211",
+      "submitted_at": "2026-10-28T07:46:32.000Z"
     }
   ]
 }
