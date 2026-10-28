@@ -62,7 +62,7 @@ jobs:
             git push origin "HEAD:${GITHUB_REF_NAME}"
           fi
 
-      - name: Instant emergency check (unsubmitted link >=18m, paused platform, or low budget)
+      - name: Instant emergency check (unsubmitted link >=25m, paused platform, or low budget)
         if: ${{ vars.CLIPPER_MONITOR != 'false' }}
         run: |
           python3 - << 'PY'
@@ -81,7 +81,7 @@ jobs:
               try:
                   posted_dt = datetime.fromisoformat(posted_raw.replace("Z", "+00:00"))
                   age_min = (now - posted_dt).total_seconds() / 60.0
-                  if age_min >= 18.0:
+                  if age_min >= 25.0:
                       problems.append(f"Pending link unsubmitted for {age_min:.1f}m (deadline <30m): {item.get('id')} {item.get('post_url')}")
               except Exception:
                   problems.append(f"Pending link with unparseable timestamp: {item.get('id')}")
