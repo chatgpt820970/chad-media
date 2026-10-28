@@ -1,33 +1,8 @@
 {
-  "version": 1,
-  "automated_submit": false,
-  "submit_within_minutes": 30,
-  "raw_url": "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/submissions/pending.json",
-  "how_to_mark_submitted": "Run the Mark submitted workflow with this item's id or post_url, or set the item status to submitted and commit the file.",
-  "items": [
-    {
-      "id": "boxabl:youtube:6ae205c0bae3f801a0066b76",
-      "post_url": "https://www.youtube.com/shorts/D3M8ev6sJWc",
-      "platform": "youtube",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-28T15:00:35.000Z",
-      "deadline_at": "2026-10-28T15:20:35.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae205c0bae3f801a0066b76"
-    },
-    {
-      "id": "boxabl:tiktok:6ae205c2037129e4c9d887fa",
-      "post_url": "https://www.tiktok.com/@bi67325/video/7701733922954087681",
-      "platform": "tiktok",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-28T15:05:19.000Z",
-      "deadline_at": "2026-10-28T15:25:19.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae205c2037129e4c9d887fa"
-    }
-  ]
+ "version": 1,
+ "automated_submit": false,
+ "submit_within_minutes": 30,
+ "raw_url": "https://raw.githubusercontent.com/chatgpt820970/chad-media/main/submissions/pending.json",
+ "how_to_mark_submitted": "Run the Mark submitted workflow with this item's id or post_url, or set the item status to submitted and commit the file.",
+ "items": []
 }
