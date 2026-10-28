@@ -18,16 +18,16 @@
       "buffer_post_id": "6ae140378bc396ba2f13f211"
     },
     {
-      "id": "sui-basecamp:youtube:6ae15c4aed0a3f2cb4192c2f",
-      "post_url": "https://www.youtube.com/shorts/gV5v6aPoOUg",
-      "platform": "youtube",
+      "id": "sui-basecamp:tiktok:6ae15c4bbc763652ae19b2e2",
+      "post_url": "https://tiktok.com/@bi67325/video/7701563610882968853",
+      "platform": "tiktok",
       "campaign_id": "sui-basecamp",
       "content_rewards_campaign_id": "1c64ec71-ba0e-4798-b017-869635798747",
       "submit_page": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747",
-      "posted_at": "2026-10-28T03:45:02.000Z",
-      "deadline_at": "2026-10-28T04:15:02.000Z",
-      "status": "submitted",
-      "buffer_post_id": "6ae15c4aed0a3f2cb4192c2f"
+      "posted_at": "2026-10-28T04:01:02.000Z",
+      "deadline_at": "2026-10-28T04:31:02.000Z",
+      "status": "pending",
+      "buffer_post_id": "6ae15c4bbc763652ae19b2e2"
     }
   ]
 }

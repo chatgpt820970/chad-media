@@ -39,6 +39,19 @@
       "status": "submitted",
       "buffer_post_id": "6ae14036f6d6782c599dabdb",
       "submitted_at": "2026-10-28T01:52:25.000Z"
+    },
+    {
+      "id": "sui-basecamp:youtube:6ae15c4aed0a3f2cb4192c2f",
+      "post_url": "https://www.youtube.com/shorts/gV5v6aPoOUg",
+      "platform": "youtube",
+      "campaign_id": "sui-basecamp",
+      "content_rewards_campaign_id": "1c64ec71-ba0e-4798-b017-869635798747",
+      "submit_page": "https://contentrewards.com/c/campaigns/1c64ec71-ba0e-4798-b017-869635798747",
+      "posted_at": "2026-10-28T03:45:02.000Z",
+      "deadline_at": "2026-10-28T04:15:02.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae15c4aed0a3f2cb4192c2f",
+      "submitted_at": "2026-10-28T04:07:19.000Z"
     }
   ]
 }
