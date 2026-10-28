@@ -140,6 +140,36 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T081500.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "sending"
+    },
+    {
+      "key": "x:2026-10-28T10:30:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T10:30:00.000Z",
+      "source_key": "x:1-VsFMbNhQcJq1PP21i4Yfq5S55zBvy6f",
+      "buffer_post_id": "6ae1b6a0deb69b3963bc66e6",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T103000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-28T10:30:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-28T10:30:00.000Z",
+      "source_key": "youtube:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45",
+      "buffer_post_id": "6ae1b6a1af9616deeb9a4476",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261028T103000.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-28T10:30:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T10:30:00.000Z",
+      "source_key": "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45",
+      "buffer_post_id": "6ae1b6a2deb69b3963bc6740",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T103000.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -156,7 +186,10 @@
     "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
     "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
     "x:17OUNfD3iAzAlCPdkxDo22HZrj3i-2i5A",
-    "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45"
+    "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45",
+    "x:1-VsFMbNhQcJq1PP21i4Yfq5S55zBvy6f",
+    "youtube:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45",
+    "tiktok:1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45"
   ],
   "captions": [
     {
@@ -235,6 +268,21 @@
       "platform": "tiktok",
       "source": "1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45",
       "text": "#ad best clip from the sui basecamp stage today \ud83d\udd25 x.com/suinetwork #sui #suibasecamp #crypto"
+    },
+    {
+      "platform": "x",
+      "source": "1-VsFMbNhQcJq1PP21i4Yfq5S55zBvy6f",
+      "text": "#ad how boxabl mass-produces factory-built homes that unfold on site @boxabl boxabl.com #boxabl"
+    },
+    {
+      "platform": "youtube",
+      "source": "1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45",
+      "text": "#ad why every crypto dev is watching sui basecamp right now \ud83d\udc40 x.com/suinetwork #sui #suibasecamp #crypto #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1Y8Q-82hGG0YdD7hta63LfZ2OagNec3iK#cut45",
+      "text": "#ad wait for the drop at sui basecamp \ud83d\udc40\ud83d\udd25 x.com/suinetwork #sui #suibasecamp #crypto"
     }
   ],
   "topics": [
@@ -289,6 +337,14 @@
     {
       "topic": "adeniyi fjcmgffhtfq8tuajlmegplw1o-zdgbom cut45",
       "posted_at": "2026-10-28T08:15:00.000Z"
+    },
+    {
+      "topic": "airrack vsfmbnhqcjq1pp21i4yfq5s55zbvy6f how",
+      "posted_at": "2026-10-28T10:30:00.000Z"
+    },
+    {
+      "topic": "adeniyi y8q-82hgg0ydd7hta63lfz2oagnec3ik cut45",
+      "posted_at": "2026-10-28T10:30:00.000Z"
     }
   ]
 }
