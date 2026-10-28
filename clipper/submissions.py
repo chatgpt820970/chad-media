@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import re
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
@@ -37,6 +38,9 @@ def normalize_post_url(url: str) -> str:
         return "https://www.tiktok.com/" + url[len("https://tiktok.com/"):]
     if url.startswith("http://tiktok.com/"):
         return "https://www.tiktok.com/" + url[len("http://tiktok.com/"):]
+    m = re.match(r"^https?://(?:www\.)?(?:x|twitter)\.com/\d+/status/(\d+)", url)
+    if m:
+        return f"https://x.com/chadriyo/status/{m.group(1)}"
     return url
 
 
