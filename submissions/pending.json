@@ -16,6 +16,18 @@
       "deadline_at": "2026-10-28T08:51:55.000Z",
       "status": "pending",
       "buffer_post_id": "6ae1b0a2707b0dd3619b5a60"
+    },
+    {
+      "id": "boxabl:x:6ae1b2a8074a2fccd98882b3",
+      "post_url": "https://twitter.com/chadriyo/status/2115360580911395167",
+      "platform": "x",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/campaign/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-28T08:30:38.000Z",
+      "deadline_at": "2026-10-28T08:50:38.000Z",
+      "status": "pending",
+      "buffer_post_id": "6ae1b2a8074a2fccd98882b3"
     }
   ]
 }

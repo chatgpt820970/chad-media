@@ -120,6 +120,26 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T100000.000Z.mp4",
       "campaign_id": "sui-basecamp",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-28T08:15:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-28T08:15:00.000Z",
+      "source_key": "x:17OUNfD3iAzAlCPdkxDo22HZrj3i-2i5A",
+      "buffer_post_id": "6ae1b2a8074a2fccd98882b3",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261028T081500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "sent"
+    },
+    {
+      "key": "tiktok:2026-10-28T08:15:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-28T08:15:00.000Z",
+      "source_key": "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45",
+      "buffer_post_id": "6ae1b2b03ca4e5ab3b2fdc2c",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261028T081500.000Z.mp4",
+      "campaign_id": "sui-basecamp",
+      "status": "sending"
     }
   ],
   "sources": [
@@ -134,7 +154,9 @@
     "youtube:02RDBIMKfe8",
     "tiktok:H0szcqT6UBI",
     "youtube:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
-    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45"
+    "tiktok:1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
+    "x:17OUNfD3iAzAlCPdkxDo22HZrj3i-2i5A",
+    "tiktok:1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45"
   ],
   "captions": [
     {
@@ -203,6 +225,16 @@
       "platform": "tiktok",
       "source": "1_99-kjzyC7f1ofeUVOEhDUjSo1UMUpzk#cut45",
       "text": "#ad the future of on-chain agents live at sui basecamp \ud83e\udd2f x.com/suinetwork #sui #suibasecamp #crypto"
+    },
+    {
+      "platform": "x",
+      "source": "17OUNfD3iAzAlCPdkxDo22HZrj3i-2i5A",
+      "text": "#ad why everyone is talking about the boxabl foldable house @boxabl boxabl.com #boxabl"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1fjcmGFFHtfq8TUajLMeGPlw1O-ZDGbom#cut45",
+      "text": "#ad best clip from the sui basecamp stage today \ud83d\udd25 x.com/suinetwork #sui #suibasecamp #crypto"
     }
   ],
   "topics": [
@@ -249,6 +281,14 @@
     {
       "topic": "h0szcqt6ubi h0szcqt6ubi mom",
       "posted_at": "2026-10-28T06:15:00.000Z"
+    },
+    {
+      "topic": "graham stephan ounfd3iazalcpdkxdo22hzrj3i-2i5a",
+      "posted_at": "2026-10-28T08:15:00.000Z"
+    },
+    {
+      "topic": "adeniyi fjcmgffhtfq8tuajlmegplw1o-zdgbom cut45",
+      "posted_at": "2026-10-28T08:15:00.000Z"
     }
   ]
 }
