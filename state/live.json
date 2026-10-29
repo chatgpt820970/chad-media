@@ -350,6 +350,36 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261029T013000.000Z.mp4",
       "campaign_id": "boxabl",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-29T03:45:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-29T03:45:00.000Z",
+      "source_key": "x:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
+      "buffer_post_id": "6ae2ae9204f348da4005e4a0",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261029T034500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-29T03:45:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-29T03:45:00.000Z",
+      "source_key": "youtube:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
+      "buffer_post_id": "6ae2ae957a72c9efac10edfa",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261029T034500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-29T03:45:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-29T03:45:00.000Z",
+      "source_key": "tiktok:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
+      "buffer_post_id": "6ae2ae9642598d490d7d3915",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261029T034500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -387,7 +417,10 @@
     "tiktok:1qp0NTbotDIIHsgBWzDeMiW7KBnQJhKsd",
     "x:1jVAUxzeUHfwUzebLyohWr5dRvILvTWBB",
     "youtube:1jVAUxzeUHfwUzebLyohWr5dRvILvTWBB",
-    "tiktok:1jVAUxzeUHfwUzebLyohWr5dRvILvTWBB"
+    "tiktok:1jVAUxzeUHfwUzebLyohWr5dRvILvTWBB",
+    "x:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
+    "youtube:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
+    "tiktok:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-"
   ],
   "captions": [
     {
@@ -571,6 +604,21 @@
       "platform": "tiktok",
       "source": "1jVAUxzeUHfwUzebLyohWr5dRvILvTWBB",
       "text": "#ad a closer look inside the boxabl casita build @boxabl boxabl.com #boxabl #casita #tinyhome"
+    },
+    {
+      "platform": "x",
+      "source": "1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
+      "text": "#ad full kitchen, bath, and living space inside the boxabl casita @boxabl boxabl.com #boxabl"
+    },
+    {
+      "platform": "youtube",
+      "source": "1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
+      "text": "#ad watch this factory-built boxabl home unfold in real time @boxabl boxabl.com #boxabl #casita #tinyhome #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
+      "text": "#ad watch this factory-built boxabl home unfold in real time @boxabl boxabl.com #boxabl #casita #tinyhome"
     }
   ],
   "topics": [
@@ -661,6 +709,10 @@
     {
       "topic": "joe rogan and",
       "posted_at": "2026-10-29T01:30:00.000Z"
+    },
+    {
+      "topic": "faze rug jq6vl8khxe-",
+      "posted_at": "2026-10-29T03:45:00.000Z"
     }
   ]
 }
