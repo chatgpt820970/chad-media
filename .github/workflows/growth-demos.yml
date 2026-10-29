@@ -38,7 +38,7 @@ jobs:
       - name: Render approved demos
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: gemini-2.5-flash
+          GEMINI_MODEL: gemini-3.8-flash
           GROWTH_DEMO_DIR: work/growth-demos
         run: python -m growth.demos
 

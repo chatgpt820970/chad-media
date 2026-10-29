@@ -12,7 +12,7 @@ from pathlib import Path
 
 from growth.utils.ytdlp import Candidate
 
-DEFAULT_MODEL = "gemini-2.5-flash"
+DEFAULT_MODEL = "gemini-3.8-flash"
 UPLOAD_URL = "https://generativelanguage.googleapis.com/upload/v1beta/files"
 FILES_URL = "https://generativelanguage.googleapis.com/v1beta"
 
@@ -187,7 +187,16 @@ def watch_video(path: Path, prompt: str, api_key: str, model: str = DEFAULT_MODE
             with urllib.request.urlopen(request, timeout=timeout) as response:
                 payload = json.loads(response.read().decode("utf-8"))
         except Exception as exc:
-            raise RuntimeError(f"generateContent {model}: {exc} {_http_detail(exc)}") from exc
+            detail = _http_detail(exc)
+            import re as _re
+            hint = _re.search(r"use models/([\w.\-]+)", detail)
+            if not hint or hint.group(1) == model:
+                raise RuntimeError(f"generateContent {model}: {exc} {detail}") from exc
+            print(f"gemini model {model} retired; retrying with {hint.group(1)}", flush=True)
+            _RESOLVED[model] = hint.group(1)
+            request.full_url = f"{FILES_URL}/models/{hint.group(1)}:generateContent"
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                payload = json.loads(response.read().decode("utf-8"))
         text = _response_text(payload)
         if not text:
             raise RuntimeError("gemini returned nothing after watching the video")
