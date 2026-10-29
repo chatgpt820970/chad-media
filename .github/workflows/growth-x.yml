@@ -1,0 +1,110 @@
+name: Growth X
+
+# BIBI writes the final caption. These crons do not auto-post a template.
+# 07:00 and 17:30 IST prepare the next batch. The other crons are 30 minutes
+# before a slot (or the nearest minute that stays 20 minutes from the X news
+# posts at 20:47, 22:47 and 23:47) and only send a Gemini draft when the
+# final caption is still empty.
+on:
+  schedule:
+    - cron: "30 1 * * *"
+    - cron: "0 12 * * *"
+    - cron: "40 1 * * *"
+    - cron: "30 3 * * *"
+    - cron: "2 7 * * *"
+    - cron: "10 12 * * *"
+    - cron: "30 13 * * *"
+    - cron: "25 14 * * *"
+    - cron: "2 16 * * *"
+    - cron: "55 16 * * *"
+    - cron: "38 18 * * *"
+  workflow_dispatch:
+    inputs:
+      action:
+        description: "prepare, schedule, or tick"
+        type: choice
+        options:
+          - tick
+          - prepare
+          - schedule
+        default: prepare
+
+permissions:
+  contents: write
+  actions: write
+  issues: write
+
+concurrency:
+  group: growth-x
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install ffmpeg, tesseract, and yt-dlp
+        run: |
+          timeout 480 bash script/ci_apt.sh ffmpeg tesseract-ocr fonts-dejavu-core
+          timeout 240 python -m pip install -U --pre "yt-dlp[default]" opencv-python-headless
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: python script/write_cookies.py
+
+      - name: Check config
+        run: python -m growth.x check
+
+      - name: Prepare or send captioned posts
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          BUFFER_CHANNEL_X: ${{ vars.BUFFER_CHANNEL_X }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            python -m growth.x tick
+          elif [ "${{ inputs.action }}" = "schedule" ]; then
+            python -m growth.x schedule
+          elif [ "${{ inputs.action }}" = "tick" ]; then
+            python -m growth.x tick
+          else
+            python -m growth.x prepare
+          fi
+
+      - name: Open a ci-failed issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python -m growth.x alert
+
+      - name: Commit dedupe log
+        if: always()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add growth/x/state/seen.json growth/x/state/log.jsonl growth/x/state/pending_captions.json || true
+          if git diff --cached --quiet; then
+            echo "no growth-x state changes"
+          else
+            git commit -m "chore(growth-x): record scheduled posts"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
