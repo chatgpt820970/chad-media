@@ -1,10 +1,18 @@
-"""Public search for Denzen Shorts. Queries live in this bot's config."""
+"""Rank recent viral shorts for Denzen. YouTube sign-in failures are skipped."""
 
 from __future__ import annotations
 
-from growth.utils.ytdlp import Candidate, collect
+from growth.utils.ytdlp import Candidate, collect, rank_recent
 
 
 def discover(config: dict, env: dict | None = None) -> list[Candidate]:
-    del env
-    return [row for row in collect(list(config.get("sources") or [])) if row.lane == "indian"]
+    env = env or {}
+    cookies = (env.get("YT_COOKIES_FILE") or "").strip() or None
+    rows = collect(list(config.get("sources") or []), cookies=cookies)
+    ranked = rank_recent(
+        rows,
+        float(config.get("max_age_hours") or 48),
+        topic_weights=config.get("topic_weights"),
+        account_weights=config.get("account_weights"),
+    )
+    return [row for row in ranked if row.lane == "indian"]

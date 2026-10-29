@@ -59,7 +59,7 @@ jobs:
       - name: Install ffmpeg, tesseract, and yt-dlp
         run: |
           timeout 480 bash script/ci_apt.sh ffmpeg tesseract-ocr fonts-dejavu-core
-          timeout 240 python -m pip install -U --pre "yt-dlp[default]" opencv-python-headless
+          timeout 240 python -m pip install -U --pre "yt-dlp[default]" curl_cffi opencv-python-headless
 
       - name: Cookie files
         env:

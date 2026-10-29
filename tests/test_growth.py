@@ -17,7 +17,7 @@ from growth.instagram.caption import review_caption as ig_review
 from growth.utils.cli import main
 from growth.utils.dedupe import load_state, remember, save_state, seen, title_key
 from growth.utils.hosting import asset_name
-from growth.utils.media import Prepared, foreground_is_padded, vertical_graph
+from growth.utils.media import Prepared, foreground_is_padded, repost_pad_graph, vertical_graph
 from growth.utils.pipeline import Runtime, execute
 from growth.utils.quality import (
     choose_count,
@@ -33,7 +33,9 @@ from growth.utils.quality import (
     watermark_reason,
 )
 from growth.utils.schedule import buffer_payload, ist_utc_cron, lane_for_index, slot_clocks, slot_gaps_ok, slot_plan
-from growth.utils.ytdlp import parse_entries, search_target
+from growth.utils.improve import apply_weights, due, parse_weights, run_improve
+from growth.utils.review_gate import frame_times, parse_review
+from growth.utils.ytdlp import engagement, parse_entries, rank_recent, search_target
 from growth.x.bot import HOOKS as X_HOOKS
 from growth.x.pending import batch_slots, caption_to_schedule, load_queue, parse_due, save_queue
 from growth.x.prepare import prepare_batch
@@ -145,6 +147,16 @@ class ParseTests(unittest.TestCase):
         self.assertEqual(rows[0].lane, "indian")
         with self.assertRaises(ValueError):
             search_target({"kind": "private"})
+        self.assertEqual(
+            search_target({"kind": "hashtag", "platform": "tiktok", "tag": "bigg_boss"}),
+            "https://www.tiktok.com/tag/bigg_boss",
+        )
+        fresh = _candidate(source_id="new", timestamp=1_000_000, view_count=10, like_count=1, topic="cricket", url="https://www.tiktok.com/@mumbaiindians/video/1", account="https://www.tiktok.com/@mumbaiindians")
+        stale = _candidate(source_id="old", timestamp=1_000, view_count=99999, like_count=1, topic="cricket")
+        ranked = rank_recent([stale, fresh], max_age_hours=48, now=1_000_000)
+        self.assertEqual([row.source_id for row in ranked], ["new"])
+        boosted = engagement(fresh, {"cricket": 2}, {"https://www.tiktok.com/@mumbaiindians": 3})
+        self.assertEqual(boosted, (10 + 3) * 2 * 3)
 
 
 class CaptionTests(unittest.TestCase):
@@ -174,8 +186,11 @@ class CaptionTests(unittest.TestCase):
         self.assertGreaterEqual(count, 3)
         self.assertLessEqual(count, 5)
         self.assertEqual(yt_review(caption, clip), [])
-        graph = vertical_graph(caption.splitlines()[0], load_youtube()["hook_enable"], zoom=False)
-        self.assertIn("enable='lt(t,1)'", graph)
+        graph = repost_pad_graph()
+        self.assertNotIn("drawtext", graph)
+        self.assertNotIn("1.04", graph)
+        self.assertTrue(foreground_is_padded(graph))
+        self.assertIn("#shorts", caption.lower())
 
     def test_instagram_hinglish_and_mix(self):
         indian = _candidate(source_id="ig1", title="Kapil Sharma live moment", lane="indian", topic="kapil")
@@ -475,6 +490,11 @@ class ConfigAndWorkflowTests(unittest.TestCase):
         self.assertEqual(x_crons, x_expect)
         self.assertNotIn("python -m growth.x run", x_text)
         found.extend(x_crons)
+        improve = (ROOT / ".github/workflows/growth-improve.yml").read_text(encoding="utf-8")
+        self.assertIn("python -m growth.youtube improve", improve)
+        self.assertIn("python -m growth.instagram improve", improve)
+        self.assertIn('cron: "15 3 */3 * *"', improve)
+        found.append("15 3 */3 * *")
         self.assertEqual(len(found), len(set(found)))
 
     def test_gemini_failure_falls_back_to_the_template(self):
@@ -575,6 +595,90 @@ class ConfigAndWorkflowTests(unittest.TestCase):
         deadline = parse_due(first["due_at"]) - timedelta(minutes=30)
         fallback = caption_to_schedule(first, deadline, 30)
         self.assertEqual(fallback[1], "draft")
+
+
+class ReviewAndImproveTests(unittest.TestCase):
+    def test_frame_times_span_the_clip(self):
+        times = frame_times(20, 0)
+        self.assertAlmostEqual(times[0], 1.0)
+        self.assertGreater(times[-1], 10)
+        self.assertLess(times[-1], 20)
+
+    def test_parse_review_requires_every_score(self):
+        good = {
+            key: 9
+            for key in (
+                "viral",
+                "audience",
+                "not_stock",
+                "no_burned_text",
+                "no_watermark",
+                "not_cut_off",
+                "no_copyright_risk",
+                "safe",
+                "overall",
+            )
+        }
+        self.assertTrue(parse_review(json.dumps(good))["pass"])
+        good["overall"] = 7
+        self.assertFalse(parse_review(json.dumps(good))["pass"])
+        self.assertFalse(parse_review(json.dumps({"overall": 10, "viral": 10}))["pass"])
+
+    def test_weights_follow_views_and_wait_three_days(self):
+        moment = datetime(2026, 10, 29, tzinfo=timezone.utc)
+        self.assertTrue(due(None, moment))
+        self.assertFalse(due("2026-10-28T00:00:00Z", moment))
+        self.assertTrue(due("2026-10-25T00:00:00Z", moment))
+        cleaned = parse_weights(json.dumps({"topic_weights": {"cricket": 9}, "account_weights": {"https://example": 0.1}}))
+        self.assertEqual(cleaned["topic_weights"]["cricket"], 3.0)
+        self.assertEqual(cleaned["account_weights"]["https://example"], 0.3)
+        merged = apply_weights({"topic_weights": {"cricket": 1, "kapil": 1}}, {"topic_weights": {"cricket": 2}})
+        self.assertEqual(merged["topic_weights"], {"cricket": 2, "kapil": 1})
+        folder = Path(self.id().replace(".", "_") + "-improve")
+        folder.mkdir(exist_ok=True)
+        config_path = folder / "config.json"
+        state_path = folder / "improve.json"
+
+        def cleanup() -> None:
+            config_path.unlink(missing_ok=True)
+            state_path.unlink(missing_ok=True)
+            folder.rmdir()
+
+        self.addCleanup(cleanup)
+        config_path.write_text(
+            json.dumps(
+                {
+                    "strategy": "Bigg Boss and global viral",
+                    "topic_weights": {"cricket": 1},
+                    "account_weights": {"https://www.tiktok.com/@mumbaiindians": 1},
+                    "gemini_model": "gemini-2.0-flash",
+                }
+            ),
+            encoding="utf-8",
+        )
+
+        def fetch(config, token):
+            del config, token
+            return {"posts": {"edges": [{"node": {"text": "Virat ka ye reaction", "metrics": [{"type": "views", "value": 1000}]}}]}}
+
+        def ask(prompt):
+            self.assertIn("cricket", prompt)
+            self.assertIn("mumbaiindians", prompt)
+            return json.dumps(
+                {
+                    "topic_weights": {"cricket": 2.5, "noise": 2},
+                    "account_weights": {"https://www.tiktok.com/@mumbaiindians": 1.5},
+                }
+            )
+
+        result = run_improve(config_path, state_path, "token", moment, fetch=fetch, ask=ask)
+        self.assertTrue(result["updated"])
+        saved = json.loads(config_path.read_text(encoding="utf-8"))
+        self.assertEqual(saved["topic_weights"], {"cricket": 2.5})
+        self.assertEqual(saved["account_weights"]["https://www.tiktok.com/@mumbaiindians"], 1.5)
+        again = run_improve(config_path, state_path, "token", moment + timedelta(days=1), fetch=fetch, ask=ask)
+        self.assertFalse(again["updated"])
+        self.assertIn("under 3 days", again["reason"])
 
 
 if __name__ == "__main__":

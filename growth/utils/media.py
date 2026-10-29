@@ -53,6 +53,20 @@ def escape_drawtext(text: str) -> str:
     return compact.replace("'", "").replace(":", "\\:").replace("%", "")
 
 
+def is_vertical(width: int, height: int) -> bool:
+    return height > width * 1.2
+
+
+def repost_pad_graph() -> str:
+    """Fit a landscape frame into 9:16. No zoom and no burned-in text."""
+    return (
+        f"[0:v]split[fg][bg];"
+        f"[bg]scale={TARGET_W}:{TARGET_H}:force_original_aspect_ratio=increase,crop={TARGET_W}:{TARGET_H},boxblur=24:2[blur];"
+        f"[fg]scale={TARGET_W}:{TARGET_H}:force_original_aspect_ratio=decrease[fit];"
+        f"[blur][fit]overlay=(W-w)/2:(H-h)/2,setsar=1[v]"
+    )
+
+
 def vertical_graph(hook: str, enable: str, zoom: bool) -> str:
     """Fit the whole frame inside 1080x1920. The blurred layer is the only cover-crop."""
     zoom_chain = ""
@@ -364,7 +378,8 @@ def produce(
         duration,
         float(config.get("max_source_seconds") or 4800),
     )
-    allow_zoom = bool(config.get("zoom", True)) and not cutoff and not boxed
+    repost = bool(config.get("repost"))
+    allow_zoom = (not repost) and bool(config.get("zoom", True)) and not cutoff and not boxed
     rendered = work / f"{token}-out.mp4"
     if (
         not blocked
@@ -373,7 +388,21 @@ def produce(
         and not cutoff
         and min(width, height) >= int(config["min_resolution"])
     ):
-        if duration < float(config["clip_min_seconds"]):
+        low = float(config["clip_min_seconds"])
+        high = float(config["clip_max_seconds"])
+        if repost and (duration < low or duration > high):
+            return Prepared(
+                source_id=candidate.source_id,
+                width=width,
+                height=height,
+                duration=duration,
+                ocr_text=ocr_text,
+                corner_hits=tuple(hits),
+                edge_cutoff=cutoff,
+                scanners_unavailable=unavailable,
+                output_seconds=duration,
+            )
+        if not repost and duration < low:
             return Prepared(
                 source_id=candidate.source_id,
                 width=width,
@@ -385,8 +414,36 @@ def produce(
                 scanners_unavailable=unavailable,
                 output_seconds=output,
             )
+        if repost and is_vertical(width, height):
+            copied = subprocess.run(
+                ["ffmpeg", "-y", "-i", str(source), "-c", "copy", "-movflags", "+faststart", str(rendered)],
+                capture_output=True,
+                text=True,
+                timeout=180,
+                check=False,
+            )
+            if copied.returncode != 0 or not rendered.is_file():
+                _run(
+                    ["ffmpeg", "-y", "-i", str(source), "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-c:a", "aac", "-movflags", "+faststart", str(rendered)],
+                    180,
+                )
+            return Prepared(
+                source_id=candidate.source_id,
+                width=width,
+                height=height,
+                duration=duration,
+                ocr_text=ocr_text,
+                corner_hits=tuple(hits),
+                edge_cutoff=cutoff,
+                scanners_unavailable=unavailable,
+                output_seconds=duration,
+                local_path=str(rendered) if rendered.is_file() else "",
+                zoom=False,
+            )
         enable = str(config.get("hook_enable") or "lt(t,1.5)")
-        graph = vertical_graph(hook, enable, allow_zoom)
+        graph = repost_pad_graph() if repost else vertical_graph(hook, enable, allow_zoom)
+        if repost:
+            output = duration
         start = media_start
         if duration > output + 1.5:
             start = media_start + min(duration - output - 0.3, max(0.8, duration * 0.08))

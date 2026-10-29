@@ -25,10 +25,16 @@ def validate(config: dict) -> list[str]:
         errors.append("youtube bot is expected to be enabled")
     if config.get("handle") != "Denzen":
         errors.append("handle must be Denzen")
-    if float(config["clip_min_seconds"]) < 15 or float(config["clip_max_seconds"]) > 30:
-        errors.append("youtube clips must stay inside 15-30 seconds")
-    if str(config.get("hook_enable")) != "lt(t,1)":
-        errors.append("youtube hook must be on screen in the first second")
+    if not config.get("repost"):
+        errors.append("youtube reposts the original short")
+    if config.get("zoom"):
+        errors.append("youtube does not zoom the repost")
+    if float(config["clip_min_seconds"]) < 10 or float(config["clip_max_seconds"]) > 40:
+        errors.append("youtube shorts stay inside 10-40 seconds")
+    if int(config.get("min_gemini_score") or 0) < 8:
+        errors.append("youtube requires a gemini score of at least 8")
+    if "Bigg Boss" not in str(config.get("strategy") or ""):
+        errors.append("youtube strategy must name the entertainment lanes")
     if int(config.get("hashtag_min") or 0) != 3 or int(config.get("hashtag_max") or 0) != 5:
         errors.append("youtube captions use 3-5 hashtags")
     if any(row.get("lane") != "indian" for row in config.get("sources") or []):

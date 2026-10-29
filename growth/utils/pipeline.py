@@ -54,6 +54,7 @@ class Runtime:
     force_next: bool = False
     channel_check: Callable[[], tuple[bool, str]] | None = None
     queue_count: Callable[[], int] | None = None
+    review_gate: Callable[..., dict] | None = None
     events: list[dict] = field(default_factory=list)
 
 
@@ -285,6 +286,20 @@ def execute(runtime: Runtime) -> Report:
             reasons.append(output_note)
         if not prepared.local_path and "scanners unavailable" not in reasons:
             reasons.append("render produced no file")
+        if not reasons and runtime.review_gate is not None and not runtime.dry_run:
+            try:
+                verdict = runtime.review_gate(prepared, candidate)
+            except Exception as exc:
+                reasons.append(f"gemini review failed: {exc}"[:240])
+            else:
+                _emit(
+                    runtime,
+                    "gemini_score",
+                    source_id=candidate.source_id,
+                    reason=f"overall={verdict.get('overall')} pass={verdict.get('pass')} scores={verdict.get('scores')} note={verdict.get('note')}",
+                )
+                if not verdict.get("pass"):
+                    reasons.append(f"gemini score {verdict.get('overall')}")
         if reasons:
             report.rejected += 1
             permanent = "scanners unavailable" not in reasons

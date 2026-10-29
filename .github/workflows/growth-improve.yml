@@ -1,0 +1,74 @@
+name: Growth improve
+
+# GitHub cron cannot express "every 3 days" exactly. This fires on the 1st, 4th, 7th, and so on.
+# run_improve no-ops when the last saved tune is under 3 days old.
+# It rewrites the platform config when a weight changes, and records the tune time either way.
+on:
+  schedule:
+    - cron: "15 3 */3 * *"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  issues: write
+
+concurrency:
+  group: growth-improve
+  cancel-in-progress: false
+
+jobs:
+  tune:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Check configs
+        run: |
+          python -m growth.youtube check
+          python -m growth.instagram check
+
+      - name: Tune weights from Buffer metrics
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: |
+          python -m growth.youtube improve
+          python -m growth.instagram improve
+
+      - name: Open a ci-failed issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: |
+          python - << 'PY'
+          import os
+          from growth.utils.alert import upsert_ci_issue
+          upsert_ci_issue(
+              "improve",
+              "Growth improve did not finish. Check the Growth improve workflow log.",
+              os.environ["GITHUB_REPOSITORY"],
+              os.environ["GH_TOKEN"],
+          )
+          PY
+
+      - name: Commit weight changes
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add growth/youtube/config.json growth/instagram/config.json growth/youtube/state/improve.json growth/instagram/state/improve.json || true
+          if git diff --cached --quiet; then
+            echo "no weight changes"
+          else
+            git commit -m "chore(growth): tune source weights from post metrics"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
