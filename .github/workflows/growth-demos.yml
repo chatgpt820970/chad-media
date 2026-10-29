@@ -19,6 +19,9 @@ jobs:
         with:
           python-version: "3.12"
 
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
       - name: Install ffmpeg, tesseract, and yt-dlp
         run: |
           timeout 480 bash script/ci_apt.sh ffmpeg tesseract-ocr fonts-dejavu-core
