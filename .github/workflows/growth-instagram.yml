@@ -1,0 +1,20 @@
+name: Growth Instagram
+
+# Disabled until @benreelr is confirmed connected in Buffer.
+# Do not add a schedule until growth/instagram/config.json has both
+# "enabled": true and "channel_confirmed": true.
+# Intended cron, once that is true: "41 2 * * *" UTC (before 09:00 IST).
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  reels:
+    if: ${{ false }}
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Disabled
+        run: echo "Instagram growth stays off until the Buffer channel is confirmed."

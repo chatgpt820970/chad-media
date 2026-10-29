@@ -1,0 +1,83 @@
+name: Growth X
+
+# Daily X posts for @chadriyo. One run schedules the day's slots through Buffer.
+# Minute 11 stays off the clip-live quarter-hour crons.
+on:
+  schedule:
+    - cron: "11 1 * * *"
+      timezone: UTC
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Plan only. Scheduled runs always post."
+        type: boolean
+        default: true
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: growth-x
+  cancel-in-progress: false
+
+jobs:
+  post:
+    runs-on: ubuntu-latest
+    timeout-minutes: 35
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install ffmpeg, tesseract, and yt-dlp
+        run: |
+          timeout 480 bash script/ci_apt.sh ffmpeg tesseract-ocr fonts-dejavu-core
+          timeout 240 python -m pip install -U --pre "yt-dlp[default]" opencv-python-headless
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: python script/write_cookies.py
+
+      - name: Check config
+        run: python -m growth.x check
+
+      - name: Schedule posts
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          BUFFER_CHANNEL_X: ${{ vars.BUFFER_CHANNEL_X }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if [ "${{ github.event_name }}" = "schedule" ]; then
+            python -m growth.x run
+          elif [ "${{ inputs.dry_run }}" = "true" ]; then
+            python -m growth.x run --dry-run
+          else
+            python -m growth.x run
+          fi
+
+      - name: Commit dedupe log
+        if: ${{ always() && (github.event_name == 'schedule' || inputs.dry_run == false) }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add growth/x/state/seen.json growth/x/state/log.jsonl || true
+          if git diff --cached --quiet; then
+            echo "no growth-x state changes"
+          else
+            git commit -m "chore(growth-x): record scheduled posts"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi
