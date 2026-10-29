@@ -27,8 +27,9 @@
       "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
       "posted_at": "2026-10-29T03:45:04.000Z",
       "deadline_at": "2026-10-29T04:05:04.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae2ae957a72c9efac10edfa"
+      "status": "missed_deadline",
+      "buffer_post_id": "6ae2ae957a72c9efac10edfa",
+      "note": "09:15 IST YouTube slot: Submitter Bot submitted X + TikTok at ~09:31 IST but not YouTube; CI flagged at 37m (past Content Rewards 30m window). Marked missed by BIBI 09:55 IST."
     }
   ]
 }
