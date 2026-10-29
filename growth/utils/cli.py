@@ -98,7 +98,7 @@ def main(hooks: Hooks, argv: list[str] | None = None) -> int:
                 candidate,
                 str(_config.get("strategy") or ""),
                 (_env.get("GEMINI_API_KEY") or "").strip(),
-                str(_config.get("gemini_model") or "gemini-2.0-flash"),
+                str(_config.get("gemini_model") or "gemini-2.5-flash"),
                 _work / "review",
                 int(_config.get("min_gemini_score") or 8),
                 str(_config.get("platform") or ""),

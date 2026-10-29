@@ -16,7 +16,7 @@
   "news_share": 0.55,
   "min_gap_minutes": 50,
   "lead_tolerance": 4,
-  "gemini_model": "gemini-2.0-flash",
+  "gemini_model": "gemini-2.5-flash",
   "caption_mode": "bibi",
   "caption_deadline_minutes": 30,
   "batches": [

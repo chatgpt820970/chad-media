@@ -93,7 +93,7 @@ def _consider(config: dict, candidate: Candidate, work: Path, api_key: str, revi
             candidate,
             str(config.get("strategy") or ""),
             api_key,
-            str(config.get("gemini_model") or "gemini-2.0-flash"),
+            str(config.get("gemini_model") or "gemini-2.5-flash"),
             work / "review",
             int(config.get("min_gemini_score") or 8),
             str(config.get("platform") or ""),

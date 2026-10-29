@@ -38,9 +38,19 @@ jobs:
       - name: Render approved demos
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_MODEL: gemini-2.0-flash
+          GEMINI_MODEL: gemini-2.5-flash
           GROWTH_DEMO_DIR: work/growth-demos
         run: python -m growth.demos
+
+      - name: Upload demos artifact
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: growth-demos
+          path: |
+            work/growth-demos/*.mp4
+            work/growth-demos/captions.md
+            work/growth-demos/report.json
 
       - name: Upload growth-demos release
         if: success()
