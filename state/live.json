@@ -380,6 +380,36 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261029T034500.000Z.mp4",
       "campaign_id": "boxabl",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-29T06:00:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-29T06:00:00.000Z",
+      "source_key": "x:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
+      "buffer_post_id": "6ae2ca0102cc66e5339736b4",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261029T060000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-29T06:00:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-29T06:00:00.000Z",
+      "source_key": "youtube:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
+      "buffer_post_id": "6ae2ca02c4bbd0de4b4b7c4d",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261029T060000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-29T06:00:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-29T06:00:00.000Z",
+      "source_key": "tiktok:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
+      "buffer_post_id": "6ae2ca03c2255f48b9c63b81",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261029T060000.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -420,7 +450,10 @@
     "tiktok:1jVAUxzeUHfwUzebLyohWr5dRvILvTWBB",
     "x:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
     "youtube:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
-    "tiktok:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-"
+    "tiktok:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
+    "x:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
+    "youtube:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
+    "tiktok:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45"
   ],
   "captions": [
     {
@@ -619,6 +652,21 @@
       "platform": "tiktok",
       "source": "1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
       "text": "#ad watch this factory-built boxabl home unfold in real time @boxabl boxabl.com #boxabl #casita #tinyhome"
+    },
+    {
+      "platform": "x",
+      "source": "1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
+      "text": "#ad how boxabl ships a complete foldable house straight to your lot @boxabl boxabl.com #boxabl"
+    },
+    {
+      "platform": "youtube",
+      "source": "1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
+      "text": "#ad a closer look inside the boxabl casita build @boxabl boxabl.com #boxabl #casita #tinyhome #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
+      "text": "#ad how boxabl packs a full apartment into one shipping footprint @boxabl boxabl.com #boxabl #casita #tinyhome"
     }
   ],
   "topics": [
