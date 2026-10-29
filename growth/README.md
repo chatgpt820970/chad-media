@@ -4,11 +4,19 @@ Three separate schedulers. Each one has its own config, dedupe log, and GitHub A
 
 The paused Whop campaigns, `config/`, and the retired workflows are unchanged. These bots post on the same Buffer channels as the clip pipeline, on their own clocks.
 
-| Bot | Account | Default posts / day | Workflow |
+| Bot | Account | Slots / day | When a run fires |
 | --- | --- | --- | --- |
-| `growth/x` | @chadriyo | 9 (allowed range 8–9) | Scheduled, 01:11 UTC |
-| `growth/youtube` | Denzen (`@denzen0`) | 8 (allowed range 7–8) | Scheduled, 03:41 UTC |
-| `growth/instagram` | @benreelr | 8 (allowed range 7–8) | Disabled until the Buffer channel is confirmed |
+| `growth/x` | @chadriyo | 9 | One cron about 25 minutes before each IST slot, and a backup 10 minutes later |
+| `growth/youtube` | Denzen (`@denzen0`) | 8 | One cron 28 minutes before each slot, and a backup 10 minutes later |
+| `growth/instagram` | @benreelr | 8 | One cron 24 minutes before each slot, and a backup 10 minutes later |
+
+YouTube and Instagram each schedule one post per cron. Buffer `dueAt` is the exact slot time. A failed candidate is skipped and the next one is tried (up to 6). If the slot still fails, the backup cron retries only that slot. A second failure exits non-zero and opens or updates a GitHub issue labeled `ci-failed`. A full queue (9 or more scheduled posts) or a missing Buffer channel is a clean skip.
+
+X does not post an automatic caption. At 07:00 and 17:30 IST it renders the next batch, uploads each file, and appends `growth/x/state/pending_captions.json` with the slot time, public video URL, source title, a short description, and a Gemini draft. BIBI sets `caption` on an entry. `python -m growth.x schedule` (or `growth/x/schedule_captioned.py`) sends those entries to Buffer at the slot time. If `caption` is still empty 30 minutes before the slot, that same step sends the Gemini draft.
+
+X publish times (IST) are 07:30, 09:30, 13:00, 18:00, 19:30, 20:25, 22:00, 23:15, and 00:30. 20:25 is used instead of 20:30 so the post stays 22 minutes away from the 20:47 news post. The 23:15 runners start at 22:15 and 22:25, and the 00:30 runners start at 00:08 and 00:18, so those jobs stay 20 minutes away from the 22:47 and 23:47 news posts. YouTube slots are 07:30, 12:00, 14:00, 17:00, 19:00, 20:30, 21:30, 22:30. Instagram slots are 08:30, 11:00, 13:30, 16:30, 18:30, 20:00, 21:00, 22:00. The 21:00 Instagram runners start at 20:15 and 20:25.
+
+Instagram is enabled. Every run still asks the Buffer API whether `6ac93d936a5c39ccb66624d7` exists and skips the slot if it does not.
 
 Instagram’s 50–60 figure is the **content mix**, not the post count. Of the day’s reels, about 50–60% are Indian (Bigg Boss, Kapil Sharma, cricket, Bollywood, TV serials). The rest are global viral clips. At the default of 8 reels, that is 4 Indian and 4 global (50%). At 7, it is 4 Indian and 3 global (about 57%).
 
@@ -70,13 +78,11 @@ python3 -m growth.instagram run --dry-run --now 2026-10-29T01:00:00Z
 
 Set `"enabled": false` in that bot’s config and push. The workflow still runs; the bot logs `disabled` and exits 0. To stop the schedule entirely, delete the `schedule` block in `.github/workflows/growth-x.yml` or `growth-youtube.yml`.
 
-### Turn Instagram on
+### Turn Instagram off
 
-Do both. Either one alone does not post.
+Set `"enabled": false` and `"channel_confirmed": false` together, and remove the `schedule` list from `.github/workflows/growth-instagram.yml`.
 
-1. In Buffer, confirm the @benreelr channel is connected. The id already stored is `6ac93d936a5c39ccb66624d7`. If Buffer shows a different id, put it in `buffer_channel_id` or in the `BUFFER_CHANNEL_INSTAGRAM` variable.
-2. In `growth/instagram/config.json`, set `"enabled": true` and `"channel_confirmed": true` together. `python3 -m growth.instagram check` refuses a mismatch.
-3. In `.github/workflows/growth-instagram.yml`, remove `if: ${{ false }}`, switch `permissions.contents` to `write`, add `actions: write`, and add the schedule. The intended cron is `41 2 * * *` UTC, which is before the 09:00 IST slot. Copy the step list from `growth-youtube.yml` and point it at `python3 -m growth.instagram`.
+Captions use Gemini (`gemini-2.0-flash`, override with `GEMINI_MODEL`) when `GEMINI_API_KEY` is set. Each platform has its own prompt. If Gemini errors or the caption fails that platform's checks, the template caption is used.
 
 ## Workflows
 

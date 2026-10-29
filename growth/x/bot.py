@@ -7,7 +7,7 @@ from pathlib import Path
 
 from growth.utils.cli import Hooks
 from growth.utils.quality import split_share
-from growth.utils.schedule import common_errors
+from growth.utils.schedule import clock_minutes, common_errors, minutes_apart, slot_plan
 from growth.x.caption import caption_for, review_caption
 from growth.x.discover import discover
 
@@ -33,6 +33,14 @@ def validate(config: dict) -> list[str]:
         errors.append("x sources need news and video lanes")
     if not config.get("reject_promo"):
         errors.append("x must reject ads and promo")
+    news = (20 * 60 + 47, 22 * 60 + 47, 23 * 60 + 47)
+    for row in slot_plan(config):
+        post = clock_minutes(str(row["time"]))
+        if any(minutes_apart(post, item) < 20 for item in news):
+            errors.append(f"{row['time']} is within 20 minutes of the X news routine")
+        run = (post - int(row["fallback_lead"])) % 1440
+        if any(minutes_apart(run, item) < 20 for item in news):
+            errors.append(f"{row['time']} fallback run is within 20 minutes of the X news routine")
     return errors
 
 

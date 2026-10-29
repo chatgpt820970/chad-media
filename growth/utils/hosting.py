@@ -20,6 +20,10 @@ def asset_name(prefix: str, source_id: str) -> str:
     return f"{prefix}-{safe_id(source_id)}.mp4"
 
 
+def public_page_url(repo: str, name: str) -> str:
+    return pages_video_url(repo, name)
+
+
 class PagesPublisher:
     def __init__(self, repo: str, token: str, tag: str):
         self.repo = repo

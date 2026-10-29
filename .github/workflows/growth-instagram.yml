@@ -1,20 +1,112 @@
 name: Growth Instagram
 
-# Disabled until @benreelr is confirmed connected in Buffer.
-# Do not add a schedule until growth/instagram/config.json has both
-# "enabled": true and "channel_confirmed": true.
-# Intended cron, once that is true: "41 2 * * *" UTC (before 09:00 IST).
+# @benreelr is confirmed connected. Each run still asks Buffer and skips if the channel is gone.
+# One cron per IST slot. The 21:00 runners start at 20:15 and 20:25 so they stay 20 minutes from the 20:47 X news post.
 on:
+  schedule:
+    - cron: "36 2 * * *"
+    - cron: "46 2 * * *"
+    - cron: "6 5 * * *"
+    - cron: "16 5 * * *"
+    - cron: "36 7 * * *"
+    - cron: "46 7 * * *"
+    - cron: "36 10 * * *"
+    - cron: "46 10 * * *"
+    - cron: "36 12 * * *"
+    - cron: "46 12 * * *"
+    - cron: "6 14 * * *"
+    - cron: "16 14 * * *"
+    - cron: "45 14 * * *"
+    - cron: "55 14 * * *"
+    - cron: "6 16 * * *"
+    - cron: "16 16 * * *"
   workflow_dispatch:
+    inputs:
+      dry_run:
+        description: "Plan only."
+        type: boolean
+        default: false
+      next_slot:
+        description: "Schedule the next peak slot at least 20 minutes ahead."
+        type: boolean
+        default: false
 
 permissions:
-  contents: read
+  contents: write
+  actions: write
+  issues: write
+
+concurrency:
+  group: growth-instagram
+  cancel-in-progress: false
 
 jobs:
   reels:
-    if: ${{ false }}
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 35
     steps:
-      - name: Disabled
-        run: echo "Instagram growth stays off until the Buffer channel is confirmed."
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
+      - name: Install ffmpeg, tesseract, and yt-dlp
+        run: |
+          timeout 480 bash script/ci_apt.sh ffmpeg tesseract-ocr fonts-dejavu-core
+          timeout 240 python -m pip install -U --pre "yt-dlp[default]" opencv-python-headless
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: python script/write_cookies.py
+
+      - name: Check config
+        run: python -m growth.instagram check
+
+      - name: Schedule posts
+        env:
+          BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
+          BUFFER_CHANNEL_INSTAGRAM: ${{ vars.BUFFER_CHANNEL_INSTAGRAM }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          args=""
+          if [ "${{ github.event_name }}" != "schedule" ] && [ "${{ inputs.next_slot }}" = "true" ]; then
+            args="--next-slot"
+          fi
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.dry_run }}" != "true" ]; then
+            python -m growth.instagram run $args
+          else
+            python -m growth.instagram run --dry-run $args
+          fi
+
+      - name: Open a ci-failed issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python -m growth.instagram alert
+
+      - name: Commit dedupe log
+        if: ${{ always() && (github.event_name == 'schedule' || inputs.dry_run == false) }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add growth/instagram/state/seen.json growth/instagram/state/log.jsonl || true
+          if git diff --cached --quiet; then
+            echo "no growth-instagram state changes"
+          else
+            git commit -m "chore(growth-instagram): record scheduled posts"
+            git pull --rebase origin "${GITHUB_REF_NAME}"
+            git push origin "HEAD:${GITHUB_REF_NAME}"
+          fi

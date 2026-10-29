@@ -8,6 +8,8 @@ from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
+from growth.utils.alert import alert_from_log
+from growth.utils.buffer_guard import channel_is_ready, scheduled_count
 from growth.utils.hosting import PagesPublisher
 from growth.utils.media import produce
 from growth.utils.pipeline import Runtime, execute, live_poster, parse_now
@@ -28,11 +30,17 @@ class Hooks:
 
 def main(hooks: Hooks, argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog=f"growth.{hooks.root.name}")
-    parser.add_argument("command", choices=("check", "run"))
+    parser.add_argument("command", choices=("check", "run", "alert"))
     parser.add_argument("--dry-run", action="store_true")
+    parser.add_argument("--next-slot", action="store_true")
     parser.add_argument("--now", default="")
     args = parser.parse_args(argv)
     config = hooks.load_config()
+    if args.command == "alert":
+        repo = (os.environ.get("GITHUB_REPOSITORY") or "").strip()
+        token = (os.environ.get("GH_TOKEN") or os.environ.get("GITHUB_TOKEN") or "").strip()
+        print(alert_from_log(str(config["platform"]), hooks.root / "state" / "log.jsonl", repo, token))
+        return 0
     errors = hooks.validate(config)
     if args.command == "check":
         if errors:
@@ -68,10 +76,24 @@ def main(hooks: Hooks, argv: list[str] | None = None) -> int:
         poster=live_poster(token) if token else None,
         token_present=bool(token),
         channel=channel_id(config, env),
+        force_next=bool(args.next_slot),
+        channel_check=(lambda: channel_is_ready(token, channel_id(config, env))) if token else None,
+        queue_count=(
+            lambda: scheduled_count(token, str(config.get("buffer_organization_id") or ""), channel_id(config, env))
+        )
+        if token
+        else None,
     )
     report = execute(runtime)
+    post_id = ""
+    outcome = ""
+    for event in runtime.events:
+        outcome = str(event.get("kind") or outcome)
+        if event.get("kind") == "scheduled":
+            post_id = str(event.get("reason") or "")
     print(
         f"GROWTH platform={config['platform']} scheduled={report.scheduled} "
-        f"rejected={report.rejected} skipped={report.skipped} dry_run={report.dry_run}"
+        f"rejected={report.rejected} skipped={report.skipped} dry_run={report.dry_run} "
+        f"outcome={outcome} buffer_post_id={post_id}"
     )
-    return 0
+    return report.exit_code

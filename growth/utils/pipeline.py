@@ -12,15 +12,23 @@ from dataclasses import dataclass, field
 from datetime import datetime, timezone
 from pathlib import Path
 
-from clipper.buffer_api import BufferError, create_post, is_rate_limited
+from clipper.buffer_api import BufferError, create_post, due_stamp, is_rate_limited
 
-from growth.utils.dedupe import load_state, remember, save_state, seen
+from growth.utils.dedupe import (
+    clear_failure,
+    load_state,
+    posted_due,
+    record_failure,
+    remember,
+    save_state,
+    seen,
+)
 from growth.utils.hosting import asset_name
 from growth.utils.log import append_events
 from growth.utils.media import Prepared
 from growth.utils.quality import copyright_reason, media_reasons, promo_reason, resolution_reason
 from growth.utils.retry import MinorFailure, call_with_retry
-from growth.utils.schedule import buffer_payload, channel_id, upcoming_slots
+from growth.utils.schedule import buffer_payload, channel_id, lane_for_index, match_run, next_future_slot, slot_clocks
 from growth.utils.ytdlp import Candidate
 
 OrderFn = Callable[[list[Candidate], dict[str, int] | None], list[Candidate]]
@@ -43,6 +51,9 @@ class Runtime:
     poster: Callable[[dict], dict] | None = None
     token_present: bool = False
     channel: str = ""
+    force_next: bool = False
+    channel_check: Callable[[], tuple[bool, str]] | None = None
+    queue_count: Callable[[], int] | None = None
     events: list[dict] = field(default_factory=list)
 
 
@@ -52,6 +63,7 @@ class Report:
     rejected: int = 0
     skipped: int = 0
     dry_run: bool = False
+    exit_code: int = 0
 
 
 def _emit(runtime: Runtime, kind: str, **kwargs: object) -> None:
@@ -126,7 +138,6 @@ def execute(runtime: Runtime) -> Report:
     config = runtime.config
     report = Report(dry_run=runtime.dry_run)
     state = load_state(runtime.state_path)
-    goal = min(int(config["posts_per_day"]), int(config["safe_daily_cap"]), int(config["posts_per_day_max"]))
     if not config.get("enabled", False) and not runtime.dry_run:
         _emit(runtime, "disabled", reason="config enabled is false")
         append_events(runtime.log_path, runtime.events)
@@ -140,18 +151,48 @@ def execute(runtime: Runtime) -> Report:
         append_events(runtime.log_path, runtime.events)
         return report
 
-    slots = upcoming_slots(
-        runtime.now,
-        list(config["slot_times"]),
-        str(config["timezone"]),
-        float(config.get("horizon_hours") or 20),
+    hit = next_future_slot(runtime.now, config) if runtime.force_next else match_run(
+        runtime.now, config, tolerance=int(config.get("lead_tolerance") or 4)
     )
-    if not slots:
-        _emit(runtime, "no_future_slots")
+    if not hit:
+        _emit(runtime, "no_slot_in_window")
         append_events(runtime.log_path, runtime.events)
         return report
-    goal = min(goal, len(slots))
-    targets = runtime.targets_for(goal)
+    due = due_stamp(hit["when"])
+    role = str(hit["role"])
+    if posted_due(state, due):
+        _emit(runtime, "slot_already_posted", reason=hit["time"])
+        append_events(runtime.log_path, runtime.events)
+        return report
+    if not runtime.dry_run:
+        if runtime.channel_check is None or runtime.queue_count is None:
+            _emit(runtime, "buffer_check_missing", reason="channel and queue checks are required")
+            _finish_failure(runtime, report, state, due, role, "buffer checks missing")
+            return report
+        ok, reason = runtime.channel_check()
+        if not ok:
+            _emit(runtime, "channel_unavailable", reason=reason or "channel missing")
+            append_events(runtime.log_path, runtime.events)
+            save_state(runtime.state_path, state)
+            return report
+        try:
+            queued = int(runtime.queue_count())
+        except Exception as exc:
+            _emit(runtime, "queue_check_failed", reason=str(exc)[:240])
+            _finish_failure(runtime, report, state, due, role, str(exc)[:240])
+            return report
+        limit = int(config.get("queue_skip_at") or 9)
+        if queued >= limit:
+            _emit(runtime, "queue_full", reason=f"{queued} scheduled posts already queued")
+            append_events(runtime.log_path, runtime.events)
+            save_state(runtime.state_path, state)
+            return report
+    clocks = slot_clocks(config)
+    index = clocks.index(hit["time"]) if hit["time"] in clocks else 0
+    full_targets = runtime.targets_for(len(clocks))
+    targets = {lane_for_index(index, full_targets): 1} if full_targets else None
+    slots = [hit["when"]]
+    goal = 1
 
     try:
         discovered = runtime.discover()
@@ -262,16 +303,12 @@ def execute(runtime: Runtime) -> Report:
         return report
 
     if not ready:
-        _emit(runtime, "done", scheduled=0, rejected=report.rejected, skipped=report.skipped)
-        save_state(runtime.state_path, state)
-        append_events(runtime.log_path, runtime.events)
+        _finish_failure(runtime, report, state, due, role, "every candidate failed")
         return report
 
     publisher = runtime.publisher
     if publisher is None:
-        _emit(runtime, "publish_unavailable", reason="no media publisher")
-        save_state(runtime.state_path, state)
-        append_events(runtime.log_path, runtime.events)
+        _finish_failure(runtime, report, state, due, role, "no media publisher")
         return report
 
     posted_rows: list[tuple[Candidate, str, str, datetime, str]] = []
@@ -291,9 +328,7 @@ def execute(runtime: Runtime) -> Report:
         except Exception as exc:
             errors = {name: str(exc)[:300] for _candidate, _caption, _url, _slot, name in posted_rows}
     if runtime.poster is None:
-        _emit(runtime, "poster_missing", reason="Buffer poster is not configured")
-        save_state(runtime.state_path, state)
-        append_events(runtime.log_path, runtime.events)
+        _finish_failure(runtime, report, state, due, role, "Buffer poster is not configured")
         return report
     poster = runtime.poster
     for candidate, caption, url, slot, name in posted_rows:
@@ -335,11 +370,25 @@ def execute(runtime: Runtime) -> Report:
             },
         )
         report.scheduled += 1
-        _emit(runtime, "scheduled", source_id=candidate.source_id, reason=(post or {}).get("id") or "")
-    _emit(runtime, "done", scheduled=report.scheduled, rejected=report.rejected, skipped=report.skipped)
+        _emit(runtime, "scheduled", source_id=candidate.source_id, reason=(post or {}).get("id") or "", due_at=payload["dueAt"])
+    if report.scheduled:
+        clear_failure(state, due)
+        _emit(runtime, "done", scheduled=report.scheduled, rejected=report.rejected, skipped=report.skipped)
+        save_state(runtime.state_path, state)
+        append_events(runtime.log_path, runtime.events)
+        return report
+    _finish_failure(runtime, report, state, due, role, "buffer did not accept the post")
+    return report
+
+
+def _finish_failure(runtime: Runtime, report: Report, state: dict, due: str, role: str, reason: str) -> None:
+    record_failure(state, due, reason)
+    kind = "backup_failed" if role == "backup" else "primary_failed"
+    if role == "backup":
+        report.exit_code = 1
+    _emit(runtime, kind, reason=reason[:240])
     save_state(runtime.state_path, state)
     append_events(runtime.log_path, runtime.events)
-    return report
 
 
 def _hook(caption: str) -> str:

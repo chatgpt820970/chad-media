@@ -6,7 +6,7 @@ import json
 import re
 from pathlib import Path
 
-EMPTY = {"version": 1, "ids": [], "titles": [], "posts": []}
+EMPTY = {"version": 1, "ids": [], "titles": [], "posts": [], "failures": []}
 
 
 def title_key(title: str) -> str:
@@ -27,6 +27,8 @@ def load_state(path: Path) -> dict:
         state["titles"] = [str(item) for item in payload.get("titles") or [] if str(item)]
         posts = payload.get("posts") or []
         state["posts"] = [item for item in posts if isinstance(item, dict)]
+        failures = payload.get("failures") or []
+        state["failures"] = [item for item in failures if isinstance(item, dict)]
     return state
 
 
@@ -48,6 +50,29 @@ def remember(state: dict, source_id: str, title: str, post: dict | None = None) 
     state["ids"] = state["ids"][-2000:]
     state["titles"] = state["titles"][-2000:]
     state["posts"] = state["posts"][-400:]
+
+
+def posted_due(state: dict, due_at: str) -> bool:
+    return any(str(row.get("due_at") or "") == due_at for row in state.get("posts") or [])
+
+
+def failure_attempts(state: dict, due_at: str) -> int:
+    for row in state.get("failures") or []:
+        if str(row.get("due_at") or "") == due_at:
+            return int(row.get("attempts") or 0)
+    return 0
+
+
+def record_failure(state: dict, due_at: str, reason: str) -> int:
+    attempts = failure_attempts(state, due_at) + 1
+    kept = [row for row in state.get("failures") or [] if str(row.get("due_at") or "") != due_at]
+    kept.append({"due_at": due_at, "attempts": attempts, "reason": (reason or "")[:300]})
+    state["failures"] = kept[-100:]
+    return attempts
+
+
+def clear_failure(state: dict, due_at: str) -> None:
+    state["failures"] = [row for row in state.get("failures") or [] if str(row.get("due_at") or "") != due_at]
 
 
 def save_state(path: Path, state: dict) -> None:

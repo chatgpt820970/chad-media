@@ -1,21 +1,38 @@
 name: Growth X
 
-# Daily X posts for @chadriyo. One run schedules the day's slots through Buffer.
-# Minute 11 stays off the clip-live quarter-hour crons.
+# BIBI writes the final caption. These crons do not auto-post a template.
+# 07:00 and 17:30 IST prepare the next batch. The other crons are 30 minutes
+# before a slot (or the nearest minute that stays 20 minutes from the X news
+# posts at 20:47, 22:47 and 23:47) and only send a Gemini draft when the
+# final caption is still empty.
 on:
   schedule:
-    - cron: "11 1 * * *"
-      timezone: UTC
+    - cron: "30 1 * * *"
+    - cron: "0 12 * * *"
+    - cron: "40 1 * * *"
+    - cron: "30 3 * * *"
+    - cron: "2 7 * * *"
+    - cron: "10 12 * * *"
+    - cron: "30 13 * * *"
+    - cron: "25 14 * * *"
+    - cron: "2 16 * * *"
+    - cron: "55 16 * * *"
+    - cron: "38 18 * * *"
   workflow_dispatch:
     inputs:
-      dry_run:
-        description: "Plan only. Scheduled runs always post."
-        type: boolean
-        default: true
+      action:
+        description: "prepare, schedule, or tick"
+        type: choice
+        options:
+          - tick
+          - prepare
+          - schedule
+        default: prepare
 
 permissions:
   contents: write
   actions: write
+  issues: write
 
 concurrency:
   group: growth-x
@@ -54,26 +71,36 @@ jobs:
       - name: Check config
         run: python -m growth.x check
 
-      - name: Schedule posts
+      - name: Prepare or send captioned posts
         env:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
           BUFFER_CHANNEL_X: ${{ vars.BUFFER_CHANNEL_X }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
         run: |
           if [ "${{ github.event_name }}" = "schedule" ]; then
-            python -m growth.x run
-          elif [ "${{ inputs.dry_run }}" = "true" ]; then
-            python -m growth.x run --dry-run
+            python -m growth.x tick
+          elif [ "${{ inputs.action }}" = "schedule" ]; then
+            python -m growth.x schedule
+          elif [ "${{ inputs.action }}" = "tick" ]; then
+            python -m growth.x tick
           else
-            python -m growth.x run
+            python -m growth.x prepare
           fi
 
+      - name: Open a ci-failed issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python -m growth.x alert
+
       - name: Commit dedupe log
-        if: ${{ always() && (github.event_name == 'schedule' || inputs.dry_run == false) }}
+        if: always()
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add growth/x/state/seen.json growth/x/state/log.jsonl || true
+          git add growth/x/state/seen.json growth/x/state/log.jsonl growth/x/state/pending_captions.json || true
           if git diff --cached --quiet; then
             echo "no growth-x state changes"
           else

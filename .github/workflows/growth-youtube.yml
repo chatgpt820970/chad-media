@@ -1,21 +1,39 @@
 name: Growth YouTube
 
-# Daily Denzen Shorts. One run schedules 7-8 clips through Buffer.
-# Minute 41 stays off the clip-live cron at minute 17.
+# One cron per IST slot, 28 minutes ahead, plus a backup 10 minutes later.
 on:
   schedule:
-    - cron: "41 3 * * *"
-      timezone: UTC
+    - cron: "32 1 * * *"
+    - cron: "42 1 * * *"
+    - cron: "2 6 * * *"
+    - cron: "12 6 * * *"
+    - cron: "2 8 * * *"
+    - cron: "12 8 * * *"
+    - cron: "2 11 * * *"
+    - cron: "12 11 * * *"
+    - cron: "2 13 * * *"
+    - cron: "12 13 * * *"
+    - cron: "32 14 * * *"
+    - cron: "42 14 * * *"
+    - cron: "32 15 * * *"
+    - cron: "42 15 * * *"
+    - cron: "32 16 * * *"
+    - cron: "42 16 * * *"
   workflow_dispatch:
     inputs:
       dry_run:
-        description: "Plan only. Scheduled runs always post."
+        description: "Plan only."
         type: boolean
-        default: true
+        default: false
+      next_slot:
+        description: "Schedule the next peak slot at least 20 minutes ahead."
+        type: boolean
+        default: false
 
 permissions:
   contents: write
   actions: write
+  issues: write
 
 concurrency:
   group: growth-youtube
@@ -58,15 +76,25 @@ jobs:
         env:
           BUFFER_API_TOKEN: ${{ secrets.BUFFER_API_TOKEN }}
           BUFFER_CHANNEL_YOUTUBE: ${{ vars.BUFFER_CHANNEL_YOUTUBE }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           GH_TOKEN: ${{ github.token }}
         run: |
-          if [ "${{ github.event_name }}" = "schedule" ]; then
-            python -m growth.youtube run
-          elif [ "${{ inputs.dry_run }}" = "true" ]; then
-            python -m growth.youtube run --dry-run
-          else
-            python -m growth.youtube run
+          args=""
+          if [ "${{ github.event_name }}" != "schedule" ] && [ "${{ inputs.next_slot }}" = "true" ]; then
+            args="--next-slot"
           fi
+          if [ "${{ github.event_name }}" = "schedule" ] || [ "${{ inputs.dry_run }}" != "true" ]; then
+            python -m growth.youtube run $args
+          else
+            python -m growth.youtube run --dry-run $args
+          fi
+
+      - name: Open a ci-failed issue
+        if: failure()
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GITHUB_REPOSITORY: ${{ github.repository }}
+        run: python -m growth.youtube alert
 
       - name: Commit dedupe log
         if: ${{ always() && (github.event_name == 'schedule' || inputs.dry_run == false) }}

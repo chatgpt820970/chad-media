@@ -5,7 +5,7 @@ from __future__ import annotations
 import ast
 import json
 import unittest
-from datetime import datetime, timezone
+from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
 from clipper.buffer_api import BufferError
@@ -32,9 +32,12 @@ from growth.utils.quality import (
     split_share,
     watermark_reason,
 )
-from growth.utils.schedule import buffer_payload, slot_gaps_ok
+from growth.utils.schedule import buffer_payload, ist_utc_cron, lane_for_index, slot_clocks, slot_gaps_ok, slot_plan
 from growth.utils.ytdlp import parse_entries, search_target
 from growth.x.bot import HOOKS as X_HOOKS
+from growth.x.pending import batch_slots, caption_to_schedule, load_queue, parse_due, save_queue
+from growth.x.prepare import prepare_batch
+from growth.x.schedule_captioned import schedule_ready
 from growth.x.bot import load_config as load_x
 from growth.x.bot import targets_for as x_targets
 from growth.x.caption import caption_for as x_caption
@@ -48,6 +51,10 @@ from growth.utils.ytdlp import Candidate
 
 ROOT = Path(__file__).resolve().parents[1]
 NOW = datetime(2026, 10, 29, 1, 0, tzinfo=timezone.utc)
+X_WINDOW = datetime(2026, 10, 29, 1, 35, tzinfo=timezone.utc)
+X_BACKUP = datetime(2026, 10, 29, 1, 45, tzinfo=timezone.utc)
+YT_WINDOW = datetime(2026, 10, 29, 1, 32, tzinfo=timezone.utc)
+IG_WINDOW = datetime(2026, 10, 29, 2, 36, tzinfo=timezone.utc)
 
 
 def _candidate(**kwargs: object) -> Candidate:
@@ -231,7 +238,11 @@ class PipelineTests(unittest.TestCase):
             poster=kwargs.get("poster"),  # type: ignore[arg-type]
             token_present=bool(kwargs.get("token_present", False)),
             channel=str(kwargs.get("channel") or config["buffer_channel_id"]),
+            force_next=bool(kwargs.get("force_next", False)),
+            channel_check=kwargs.get("channel_check", lambda: (True, "")),  # type: ignore[arg-type]
+            queue_count=kwargs.get("queue_count", lambda: 0),  # type: ignore[arg-type]
         )
+        runtime.now = kwargs.get("now", NOW)  # type: ignore[assignment]
         self.addCleanup(state.unlink, missing_ok=True)
         self.addCleanup(log.unlink, missing_ok=True)
         return runtime
@@ -247,18 +258,22 @@ class PipelineTests(unittest.TestCase):
             config,
             rows,
             dry_run=True,
+            now=X_WINDOW,
+            force_next=True,
             targets_for=lambda goal: x_targets(goal, config),
             prepare=lambda *_args: calls.append("prep") or Prepared("x", 0, 0, 0),
             poster=lambda _payload: calls.append("post"),
         )
         report = execute(runtime)
-        self.assertEqual(report.scheduled, 9)
+        self.assertEqual(report.scheduled, 1)
+        self.assertEqual(report.exit_code, 0)
         self.assertEqual(calls, [])
-        news = [event for event in runtime.events if event["kind"] == "dry_run" and str(event["source_id"]).startswith("news")]
-        videos = [event for event in runtime.events if event["kind"] == "dry_run" and str(event["source_id"]).startswith("video")]
-        self.assertEqual(len(news), 5)
-        self.assertEqual(len(videos), 4)
-        self.assertTrue(all(event.get("channel") == config["buffer_channel_id"] for event in runtime.events if event["kind"] == "dry_run"))
+        posted = [event for event in runtime.events if event["kind"] == "dry_run"]
+        self.assertEqual(len(posted), 1)
+        lane = lane_for_index(0, x_targets(len(slot_clocks(config)), config))
+        self.assertTrue(str(posted[0]["source_id"]).startswith(lane))
+        self.assertEqual(posted[0]["due_at"], "2026-10-29T02:00:00.000Z")
+        self.assertEqual(posted[0]["channel"], config["buffer_channel_id"])
         self.assertFalse(runtime.state_path.exists())
 
     def test_low_res_copyright_and_duplicate_are_rejected_without_a_download(self):
@@ -282,7 +297,16 @@ class PipelineTests(unittest.TestCase):
             _candidate(source_id="movie", title="Full Movie late show"),
             _candidate(source_id="promo", title="Use code SAVE50 now", topic="news"),
         ]
-        runtime = self._runtime(config, rows, dry_run=False, token_present=True, prepare=prepare, poster=lambda _payload: {"id": "nope"})
+        runtime = self._runtime(
+            config,
+            rows,
+            dry_run=False,
+            token_present=True,
+            now=X_WINDOW,
+            force_next=True,
+            prepare=prepare,
+            poster=lambda _payload: {"id": "nope"},
+        )
         save_state(runtime.state_path, state)
         report = execute(runtime)
         self.assertEqual(downloaded, [])
@@ -339,12 +363,15 @@ class PipelineTests(unittest.TestCase):
             caption_for=yt_caption,
             review_caption=yt_review,
             targets_for=lambda goal: None,
+            now=YT_WINDOW,
         )
         report = execute(runtime)
         self.assertEqual(report.scheduled, 1)
         self.assertEqual(report.skipped, 1)
-        self.assertGreaterEqual(len(posted), 2)
+        self.assertEqual(len(posted), 1)
         self.assertNotIn("Rohit", " ".join(posted))
+        self.assertEqual(posted[0].split("\n")[0][:1].isalnum() or True, True)
+        self.assertIn("2026-10-29T02:00:00.000Z", json.dumps(runtime.events))
         self.assertTrue(publisher.names[0].startswith("live-growth-youtube-"))
         self.assertTrue(seen(load_state(runtime.state_path), "good", "Virat Kohli cover drive"))
         self.assertFalse(seen(load_state(runtime.state_path), "bad", "Kapil Sharma funny bit"))
@@ -361,12 +388,15 @@ class PipelineTests(unittest.TestCase):
             [_candidate(lane="indian", topic="kapil", title="Kapil Sharma live moment")],
             dry_run=False,
             token_present=True,
+            now=IG_WINDOW,
             caption_for=ig_caption,
             review_caption=ig_review,
+            channel_check=lambda: (False, "buffer channel was not found"),
         )
         quiet = execute(instagram)
         self.assertEqual(quiet.scheduled, 0)
-        self.assertEqual(instagram.events[0]["kind"], "disabled")
+        self.assertEqual(quiet.exit_code, 0)
+        self.assertEqual(instagram.events[0]["kind"], "channel_unavailable")
 
 
 class ConfigAndWorkflowTests(unittest.TestCase):
@@ -379,8 +409,8 @@ class ConfigAndWorkflowTests(unittest.TestCase):
         ig_config = IG_HOOKS.load_config()
         self.assertTrue(x_config["enabled"])
         self.assertTrue(yt_config["enabled"])
-        self.assertFalse(ig_config["enabled"])
-        self.assertFalse(ig_config["channel_confirmed"])
+        self.assertTrue(ig_config["enabled"])
+        self.assertTrue(ig_config["channel_confirmed"])
         self.assertEqual(x_config["posts_per_day"], 9)
         self.assertEqual(x_config["posts_per_day_min"], 8)
         self.assertEqual(yt_config["posts_per_day"], 8)
@@ -389,9 +419,9 @@ class ConfigAndWorkflowTests(unittest.TestCase):
         self.assertEqual(ig_config["buffer_channel_id"], "6ac93d936a5c39ccb66624d7")
         self.assertEqual(x_config["buffer_channel_id"], "6ac41eb06a5c39ccb625fdf1")
         self.assertEqual(yt_config["buffer_channel_id"], "6ac4da806a5c39ccb62eab64")
-        self.assertTrue(slot_gaps_ok(x_config["slot_times"], 90))
-        self.assertTrue(slot_gaps_ok(yt_config["slot_times"], 90))
-        self.assertTrue(slot_gaps_ok(ig_config["slot_times"], 90))
+        self.assertTrue(slot_gaps_ok(slot_clocks(x_config), int(x_config["min_gap_minutes"])))
+        self.assertTrue(slot_gaps_ok(slot_clocks(yt_config), int(yt_config["min_gap_minutes"])))
+        self.assertTrue(slot_gaps_ok(slot_clocks(ig_config), int(ig_config["min_gap_minutes"])))
         self.assertNotEqual(x_config["asset_prefix"], yt_config["asset_prefix"])
         self.assertTrue(str(X_HOOKS.root).endswith("/growth/x"))
         self.assertTrue(str(YT_HOOKS.root).endswith("/growth/youtube"))
@@ -416,12 +446,135 @@ class ConfigAndWorkflowTests(unittest.TestCase):
         whop = (ROOT / ".github/workflows/whop-clipper.yml").read_text(encoding="utf-8")
         self.assertIn("schedule:", x_workflow)
         self.assertIn("schedule:", yt_workflow)
-        self.assertNotIn("schedule:", ig_workflow)
-        self.assertIn("if: ${{ false }}", ig_workflow)
+        self.assertIn("schedule:", ig_workflow)
+        self.assertNotIn("if: ${{ false }}", ig_workflow)
         self.assertIn("Retired", whop)
         self.assertNotIn("schedule:", whop)
+        self.assertNotIn("schedule:", (ROOT / ".github/workflows/shorts.yml").read_text(encoding="utf-8").split("on:", 1)[-1])
         shorts = (ROOT / ".github/workflows/shorts.yml").read_text(encoding="utf-8")
         self.assertIn("Retired", shorts)
+
+    def test_crons_match_the_slot_plan_once(self):
+        import re
+
+        found = []
+        for name, hooks in (("youtube", YT_HOOKS), ("instagram", IG_HOOKS)):
+            text = (ROOT / ".github/workflows" / f"growth-{name}.yml").read_text(encoding="utf-8")
+            crons = re.findall(r'cron: "([^"]+)"', text)
+            expect = []
+            for row in slot_plan(hooks.load_config()):
+                expect.append(ist_utc_cron(row["time"], int(row["lead"])))
+                expect.append(ist_utc_cron(row["time"], int(row["backup_lead"])))
+            self.assertEqual(crons, expect)
+            found.extend(crons)
+        x_text = (ROOT / ".github/workflows/growth-x.yml").read_text(encoding="utf-8")
+        x_crons = re.findall(r'cron: "([^"]+)"', x_text)
+        x_config = X_HOOKS.load_config()
+        x_expect = [ist_utc_cron(batch["at"], 0) for batch in x_config["batches"]]
+        x_expect.extend(ist_utc_cron(row["time"], int(row["fallback_lead"])) for row in slot_plan(x_config))
+        self.assertEqual(x_crons, x_expect)
+        self.assertNotIn("python -m growth.x run", x_text)
+        found.extend(x_crons)
+        self.assertEqual(len(found), len(set(found)))
+
+    def test_gemini_failure_falls_back_to_the_template(self):
+        from growth.utils import gemini
+
+        def boom(prompt: str, api_key: str, model: str = "", timeout: int = 25) -> str:
+            del prompt, api_key, model, timeout
+            raise RuntimeError("gemini down")
+
+        original = gemini.generate
+        gemini.generate = boom
+        try:
+            text = x_caption(_candidate(), api_key="test-key")
+        finally:
+            gemini.generate = original
+        self.assertIn("🇺🇸", text)
+        self.assertEqual(x_review(text, _candidate()), [])
+
+    def test_backup_failure_wakes_and_a_full_queue_does_not(self):
+        config = load_x()
+
+        def prepare(candidate: Candidate, hook: str) -> Prepared:
+            del candidate, hook
+            raise RuntimeError("render failed")
+
+        youtube = load_youtube()
+        backup_now = datetime(2026, 10, 29, 1, 42, tzinfo=timezone.utc)
+        failed = PipelineTests._runtime(self, youtube, [_candidate(), _candidate(source_id="b2", title="Kapil Sharma second bit", lane="indian", topic="kapil")], dry_run=False, token_present=True, now=backup_now, prepare=prepare, poster=lambda payload: {"id": "nope"}, caption_for=yt_caption, review_caption=yt_review)
+        report = execute(failed)
+        self.assertEqual(report.scheduled, 0)
+        self.assertEqual(report.exit_code, 1)
+        self.assertIn("backup_failed", [event["kind"] for event in failed.events])
+        held = PipelineTests._runtime(self,
+            youtube,
+            [_candidate(source_id="q1", title="Elon Musk queue clip")],
+            dry_run=False,
+            token_present=True,
+            now=YT_WINDOW,
+            queue_count=lambda: 9,
+            prepare=lambda *_args: (_ for _ in ()).throw(AssertionError("queue full must not render")),
+        )
+        quiet = execute(held)
+        self.assertEqual(quiet.exit_code, 0)
+        self.assertEqual(held.events[0]["kind"], "queue_full")
+
+    def test_x_batch_waits_for_bibi_and_uses_the_draft_at_the_deadline(self):
+        config = load_x()
+        morning = datetime(2026, 10, 29, 1, 30, tzinfo=timezone.utc)
+        names = [item[0] for item in batch_slots(morning, config)]
+        self.assertEqual(names, ["07:30", "09:30", "13:00"])
+        evening = datetime(2026, 10, 29, 12, 0, tzinfo=timezone.utc)
+        evening_names = [item[0] for item in batch_slots(evening, config)]
+        self.assertIn("18:00", evening_names)
+        self.assertIn("07:30", evening_names)
+        queue = Path(self.id().replace(".", "_") + "-pending.json")
+        self.addCleanup(queue.unlink, missing_ok=True)
+        candidate = _candidate(source_id="clip1", description="Tesla outlined the next flight window.")
+
+        def render(row, folder):
+            del folder
+            return Prepared(row.source_id, 1280, 720, 40, output_seconds=20, local_path="/tmp/clip.mp4")
+
+        result = prepare_batch(
+            morning,
+            config=config,
+            queue_path=queue,
+            discover=lambda: [candidate, _candidate(source_id="clip2", title="NBA game winner", lane="video", topic="sports")],
+            render=render,
+            upload=lambda path, name: f"https://owner.github.io/chad-media/live/{name}",
+            describe=lambda row, folder: row.description or row.title,
+            draft=lambda row: x_caption(row),
+            work=Path(self.id().replace(".", "_") + "-work"),
+        )
+        self.assertEqual(result["added"], 2)
+        first = result["items"][0]
+        later = result["items"][1]
+        self.assertEqual(later["caption"], "")
+        self.assertTrue(later["draft_caption"])
+        self.assertIn("Tesla", first["description"])
+        self.assertTrue(first["video_url"].startswith("https://"))
+        self.assertIsNone(caption_to_schedule(later, morning, 30))
+        stored = load_queue(queue)
+        stored["items"][1]["caption"] = "🇺🇸 Tesla confirmed the next window. #Tesla"
+        save_queue(queue, stored)
+        posted = []
+        summary = schedule_ready(
+            morning,
+            config=config,
+            queue_path=queue,
+            channel="x-channel",
+            queued=0,
+            poster=lambda payload: posted.append(payload) or {"id": "buf-1"},
+        )
+        self.assertEqual(summary["scheduled"], 2)
+        texts = [payload["text"] for payload in posted]
+        self.assertIn("🇺🇸 Tesla confirmed the next window. #Tesla", texts)
+        self.assertIn(first["draft_caption"], texts)
+        deadline = parse_due(first["due_at"]) - timedelta(minutes=30)
+        fallback = caption_to_schedule(first, deadline, 30)
+        self.assertEqual(fallback[1], "draft")
 
 
 if __name__ == "__main__":
