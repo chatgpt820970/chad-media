@@ -17,6 +17,44 @@ UPLOAD_URL = "https://generativelanguage.googleapis.com/upload/v1beta/files"
 FILES_URL = "https://generativelanguage.googleapis.com/v1beta"
 
 
+_RESOLVED: dict[str, str] = {}
+
+
+def _http_detail(exc: Exception) -> str:
+    try:
+        return exc.read().decode("utf-8", "replace")[:400]  # type: ignore[attr-defined]
+    except Exception:
+        return ""
+
+
+def resolve_model(model: str, api_key: str) -> str:
+    """Return `model` if the API serves it, else the newest flash model that supports generateContent."""
+    if model in _RESOLVED:
+        return _RESOLVED[model]
+    try:
+        request = urllib.request.Request(f"{FILES_URL}/models?pageSize=1000", headers={"x-goog-api-key": api_key}, method="GET")
+        with urllib.request.urlopen(request, timeout=30) as response:
+            listing = json.loads(response.read().decode("utf-8")).get("models") or []
+    except Exception as exc:
+        print(f"gemini model listing failed: {exc} {_http_detail(exc)}", flush=True)
+        return model
+    names = [
+        str(item.get("name") or "").removeprefix("models/")
+        for item in listing
+        if "generateContent" in (item.get("supportedGenerationMethods") or [])
+    ]
+    chosen = model
+    if model not in names:
+        flash = [n for n in names if "flash" in n and "lite" not in n and "image" not in n and "tts" not in n and "live" not in n and "exp" not in n]
+        stable = [n for n in flash if "preview" not in n] or flash
+        if stable:
+            latest = [n for n in stable if "latest" in n]
+            chosen = latest[0] if latest else sorted(stable)[-1]
+        print(f"gemini model {model} not served; using {chosen}", flush=True)
+    _RESOLVED[model] = chosen
+    return chosen
+
+
 def generate(prompt: str, api_key: str, model: str = DEFAULT_MODEL, timeout: int = 25) -> str:
     url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
     body = json.dumps(
@@ -116,11 +154,15 @@ def delete_video(name: str, api_key: str) -> None:
 
 def watch_video(path: Path, prompt: str, api_key: str, model: str = DEFAULT_MODEL, timeout: int = 180) -> str:
     """Send the mp4, with audio, and return Gemini's text."""
-    uploaded = upload_video(path, api_key, timeout=timeout)
+    try:
+        uploaded = upload_video(path, api_key, timeout=timeout)
+    except Exception as exc:
+        raise RuntimeError(f"file upload: {exc} {_http_detail(exc)}") from exc
     try:
         uri = str(uploaded.get("uri") or "")
         if not uri:
             raise RuntimeError("gemini file has no uri")
+        model = resolve_model(model, api_key)
         url = f"{FILES_URL}/models/{model}:generateContent"
         body = json.dumps(
             {
@@ -141,8 +183,11 @@ def watch_video(path: Path, prompt: str, api_key: str, model: str = DEFAULT_MODE
             headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
             method="POST",
         )
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            payload = json.loads(response.read().decode("utf-8"))
+        try:
+            with urllib.request.urlopen(request, timeout=timeout) as response:
+                payload = json.loads(response.read().decode("utf-8"))
+        except Exception as exc:
+            raise RuntimeError(f"generateContent {model}: {exc} {_http_detail(exc)}") from exc
         text = _response_text(payload)
         if not text:
             raise RuntimeError("gemini returned nothing after watching the video")
