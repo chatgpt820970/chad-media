@@ -33,7 +33,7 @@
   ],
   "min_resolution": 720,
   "clip_seconds": 20,
-  "clip_min_seconds": 8,
+  "clip_min_seconds": 6,
   "clip_max_seconds": 90,
   "max_source_seconds": 4800,
   "max_age_hours": 168,

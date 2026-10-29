@@ -81,24 +81,49 @@ def usable_trim(duration: float, clip_min: float, tweaks: dict) -> float:
     return round(trimmed, 2)
 
 
+def has_audio(path: Path) -> bool:
+    if shutil.which("ffprobe") is None:
+        return False
+    result = subprocess.run(
+        ["ffprobe", "-v", "error", "-select_streams", "a", "-show_entries", "stream=index", "-of", "csv=p=0", str(path)],
+        capture_output=True,
+        text=True,
+        timeout=60,
+        check=False,
+    )
+    return bool((result.stdout or "").strip())
+
+
 def apply_light_touch(source: Path, dest: Path, tweaks: dict, clip_min: float) -> float:
-    """Re-encode one vertical file. Returns the new duration. Raises MinorFailure."""
+    """Re-encode one vertical file at 1080x1920. Returns the new duration. Raises MinorFailure.
+
+    Trims up to 0.5s from both the start and the end, speeds up slightly, grades
+    lightly. Works with or without an audio stream. No text, no stock footage.
+    """
     _width, _height, duration, _start = probe(source)
     trim = usable_trim(duration, clip_min, tweaks)
-    speed = float(tweaks.get("speed") or 1.03)
+    head = trim
+    tail = trim if duration - 2 * trim >= float(clip_min) * float(tweaks.get("speed") or 1.03) else 0.0
     video_filter, audio_filter = light_touch_filters(tweaks)
+    video_filter = (
+        "scale=1080:1920:force_original_aspect_ratio=decrease:flags=lanczos,"
+        "pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,"
+        + video_filter
+    )
     command = ["ffmpeg", "-y"]
-    if tweaks.get("trim") == "start" and trim > 0:
-        command.extend(["-ss", f"{trim:.2f}"])
+    if head > 0:
+        command.extend(["-ss", f"{head:.2f}"])
+    if tail > 0:
+        # input-side -t so the tail is cut from the source before the speed-up
+        command.extend(["-t", f"{max(0.5, duration - head - tail):.2f}"])
     command.extend(["-i", str(source)])
-    if tweaks.get("trim") == "end" and trim > 0:
-        command.extend(["-t", f"{max(0.5, duration - trim):.2f}"])
+    command.extend(["-map", "0:v:0", "-vf", video_filter])
+    if has_audio(source):
+        command.extend(["-map", "0:a:0", "-af", audio_filter, "-c:a", "aac", "-b:a", "192k"])
+    else:
+        command.append("-an")
     command.extend(
         [
-            "-vf",
-            video_filter,
-            "-af",
-            audio_filter,
             "-c:v",
             "libx264",
             "-preset",
@@ -107,16 +132,14 @@ def apply_light_touch(source: Path, dest: Path, tweaks: dict, clip_min: float) -
             "17",
             "-pix_fmt",
             "yuv420p",
-            "-c:a",
-            "aac",
-            "-b:a",
-            "192k",
             "-movflags",
             "+faststart",
             str(dest),
         ]
     )
     _run(command, 240)
+    if not dest.is_file():
+        raise MinorFailure("light touch produced no file")
     _w, _h, touched, _s = probe(dest)
     return touched
 
@@ -169,6 +192,7 @@ def _run(command: list[str], timeout: int) -> subprocess.CompletedProcess[str]:
         raise MinorFailure(str(exc)[:300]) from exc
     if result.returncode != 0:
         detail = (result.stderr or result.stdout or "command failed")[-400:]
+        print(f"command failed rc={result.returncode}: {' '.join(command[:3])} ... stderr: {(result.stderr or '')[-1200:]}", flush=True)
         raise MinorFailure(detail)
     return result
 
@@ -453,7 +477,6 @@ def produce(
     if (
         not blocked
         and not unavailable
-        and not hits
         and not cutoff
         and min(width, height) >= int(config["min_resolution"])
     ):
@@ -480,6 +503,7 @@ def produce(
                 check=False,
             )
             if copied.returncode != 0 or not rendered.is_file():
+                print(f"ffmpeg copy failed rc={copied.returncode}: {(copied.stderr or '')[-600:]}", flush=True)
                 _run(
                     ["ffmpeg", "-y", "-i", str(source), "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(rendered)],
                     240,

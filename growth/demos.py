@@ -65,11 +65,14 @@ def _local_reasons(config: dict, candidate: Candidate, prepared) -> list[str]:
     low = float(config["clip_min_seconds"])
     high = float(config["clip_max_seconds"])
     if prepared.duration and (prepared.duration < low or prepared.duration > high):
-        reasons.append("duration outside the clip window")
+        reasons.append(f"duration outside the clip window ({prepared.duration:.1f}s not in {low:g}-{high:g}s)")
     if prepared.width and prepared.height and not is_vertical(prepared.width, prepared.height):
         reasons.append("not native vertical")
     if not prepared.local_path and "not native vertical" not in reasons:
-        reasons.append("render produced no file")
+        reasons.append(
+            f"render produced no file (hits={list(prepared.corner_hits)} cutoff={prepared.edge_cutoff} "
+            f"scanners_unavailable={prepared.scanners_unavailable} size={prepared.width}x{prepared.height} dur={prepared.duration:.1f})"
+        )
     return reasons
 
 

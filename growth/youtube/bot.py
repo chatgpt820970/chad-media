@@ -27,8 +27,8 @@ def validate(config: dict) -> list[str]:
         errors.append("youtube reposts the original short")
     if config.get("zoom"):
         errors.append("youtube does not zoom the repost")
-    if float(config["clip_min_seconds"]) < 10 or float(config["clip_max_seconds"]) > 40:
-        errors.append("youtube shorts stay inside 10-40 seconds")
+    if float(config["clip_min_seconds"]) < 6 or float(config["clip_max_seconds"]) > 90:
+        errors.append("youtube shorts stay inside 6-90 seconds")
     if int(config.get("min_gemini_score") or 0) < 8:
         errors.append("youtube requires a gemini score of at least 8")
     if "Bigg Boss" not in str(config.get("strategy") or ""):

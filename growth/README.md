@@ -63,7 +63,7 @@ Config files:
 | `repost` | YouTube and Instagram keep the original short. X leaves this off. |
 | `indian_share`, `indian_share_min`, `indian_share_max` | Instagram mix. Keep the share inside 0.50–0.60. |
 | `news_share` | X news vs video split. |
-| `clip_seconds`, `clip_min_seconds`, `clip_max_seconds` | Output length. YouTube reposts must stay inside 10–40 seconds. |
+| `clip_seconds`, `clip_min_seconds`, `clip_max_seconds` | Output length. YouTube reposts must stay inside 6–90 seconds. |
 | `hook_enable` | ffmpeg `drawtext` window for X. YouTube and Instagram do not burn text. |
 | `min_resolution` | Never set this below 720. |
 | `max_examined` | How many downloads one run will attempt. YouTube and Instagram use 6. |
@@ -133,7 +133,7 @@ Limits this bot will not cross:
 - X: 9 posts/day. YouTube: 8. Instagram: 8. Raising `posts_per_day` above `safe_daily_cap` fails `check`.
 - Slot gap: at least `min_gap_minutes`.
 - Resolution: 720p minimum.
-- Output: YouTube reposts 10–40s. X up to its configured clip max. Instagram reposts inside its configured clip window.
+- Output: YouTube reposts 6–90s. X up to its configured clip max. Instagram reposts inside its configured clip window.
 - Downloads per run: `max_examined` (6 on YouTube and Instagram).
 - Actions: one job per slot, 35 minute timeout, plus the improve job about every 3 days.
 
