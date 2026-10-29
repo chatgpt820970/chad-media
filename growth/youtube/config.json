@@ -36,7 +36,7 @@
   "repost": true,
   "zoom": false,
   "min_gemini_score": 8,
-  "gemini_model": "gemini-3.8-flash",
+  "gemini_model": "gemini-flash-latest",
   "strategy": "YouTube Shorts for an Indian audience: Bigg Boss fights and funny moments, Kapil Sharma comedy, Virat Rohit and Dhoni fan edits, Bollywood dialogue, airport and paparazzi clips, weddings and dance, desi comedy, and a love/romantic lane of couple reels, romantic Bollywood scenes and songs, and love-song edits. Keep the original song. Native vertical 9:16 only. Reject landscape video, blurred padding, crops, and any broadcaster or event logo. 10 to 40 seconds, a strong first second, the name in the title, and #shorts.",
   "reject_promo": true,
   "hashtag_min": 3,

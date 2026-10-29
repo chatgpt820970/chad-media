@@ -14,7 +14,7 @@ from pathlib import Path
 
 from growth.utils.ytdlp import Candidate
 
-DEFAULT_MODEL = "gemini-3.8-flash"
+DEFAULT_MODEL = "gemini-flash-latest"
 UPLOAD_URL = "https://generativelanguage.googleapis.com/upload/v1beta/files"
 FILES_URL = "https://generativelanguage.googleapis.com/v1beta"
 
@@ -26,14 +26,48 @@ def _http_detail(exc: Exception) -> str:
         return ""
 
 
-FALLBACK_MODELS = ("gemini-3.8-flash", "gemini-flash-latest", "gemini-2.5-flash")
-RETRIES = 3
+FALLBACK_MODELS = ("gemini-flash-latest", "gemini-flash-lite-latest", "gemini-3.8-flash")
+TRANSIENT_RETRIES = 1  # one retry for 503/500/timeouts, then the next model
 BACKOFF = 4.0
+MINUTE_WAIT = 30.0  # per-minute 429 with no retryDelay
 _sleep = time.sleep
 
 
 class QuotaExhausted(RuntimeError):
-    """Every key hit a 429 quota error."""
+    """Every key hit a 429 quota error (or the request budget is spent)."""
+
+
+class BudgetExhausted(QuotaExhausted):
+    """The per-run request budget is spent."""
+
+
+class ModelUnavailable(RuntimeError):
+    """503/500/timeout persisted after the retry, or the model is 404."""
+
+
+_budget: dict = {"limit": None, "used": 0}
+
+
+def set_budget(limit: int | None) -> None:
+    """Cap every HTTP request to Gemini (uploads and generateContent). None means no cap."""
+    _budget["limit"] = limit
+    _budget["used"] = 0
+
+
+def requests_used() -> int:
+    return int(_budget["used"])
+
+
+def requests_left() -> int | None:
+    limit = _budget["limit"]
+    return None if limit is None else max(0, limit - _budget["used"])
+
+
+def _charge(label: str) -> None:
+    limit = _budget["limit"]
+    if limit is not None and _budget["used"] >= limit:
+        raise BudgetExhausted(f"{label}: gemini request budget of {limit} used up")
+    _budget["used"] += 1
 
 
 def api_keys(primary: str = "") -> list[str]:
@@ -46,9 +80,11 @@ def api_keys(primary: str = "") -> list[str]:
     return keys
 
 
-def model_chain(model: str) -> list[str]:
-    chain = [m for m in [model, *FALLBACK_MODELS] if m]
-    return list(dict.fromkeys(chain))
+def model_chain(model: str = "") -> list[str]:
+    chain = [*FALLBACK_MODELS]
+    if model and model not in chain:
+        chain.append(model)
+    return chain
 
 
 def _status(exc: Exception) -> int:
@@ -65,35 +101,48 @@ def _is_timeout(exc: Exception) -> bool:
     return isinstance(exc, (TimeoutError, socket.timeout)) or "timed out" in text
 
 
-def _is_quota(detail: str) -> bool:
-    return "quota" in detail.lower() or "RESOURCE_EXHAUSTED" in detail
+def _per_minute(detail: str) -> bool:
+    """True only when the 429 is clearly a per-minute limit and not a per-day one."""
+    return "PerMinute" in detail and "PerDay" not in detail
 
 
 def call_with_retry(send: Callable[[], dict], label: str = "gemini") -> dict:
-    """Run `send` with exponential backoff on 429, 503, 500 and timeouts.
+    """Send one request with the retry policy.
 
-    Raises QuotaExhausted right away on a 429 whose body is a quota error so the
-    caller can rotate keys. Other errors are re-raised with the API body attached.
+    - 429 per-day (or unclear): QuotaExhausted right away, so the caller moves to the next key.
+    - 429 per-minute: wait retryDelay once, retry once, then QuotaExhausted.
+    - 503/500/timeout: one retry after a short backoff, then ModelUnavailable (next model).
+    - 404: ModelUnavailable. Anything else: RuntimeError.
+    Every attempt is charged against the request budget.
     """
-    last: Exception | None = None
-    for attempt in range(RETRIES + 1):
+    minute_waited = False
+    transient = 0
+    while True:
+        _charge(label)
         try:
             return send()
         except Exception as exc:  # noqa: BLE001
             detail = _http_detail(exc)
             status = _status(exc)
-            if status == 429 and _is_quota(detail) and "PerDay" in detail:
-                raise QuotaExhausted(f"{label}: daily quota exhausted") from exc
-            retryable = status in (429, 500, 503) or _is_timeout(exc)
-            if not retryable or attempt == RETRIES:
-                if status == 429 and _is_quota(detail):
-                    raise QuotaExhausted(f"{label}: quota exhausted") from exc
-                raise RuntimeError(f"{label}: {exc} {detail}") from exc
-            wait = _retry_delay(detail) or BACKOFF * (2 ** attempt)
-            print(f"{label}: {status or 'timeout'}, retry {attempt + 1}/{RETRIES} in {wait:.0f}s", flush=True)
-            _sleep(wait)
-            last = exc
-    raise RuntimeError(f"{label}: {last}")
+            if status == 429:
+                if _per_minute(detail) and not minute_waited:
+                    minute_waited = True
+                    wait = _retry_delay(detail) or MINUTE_WAIT
+                    print(f"{label}: 429 per-minute, waiting {wait:.0f}s once", flush=True)
+                    _sleep(wait)
+                    continue
+                kind = "per-minute again" if minute_waited else "per-day/unclear"
+                raise QuotaExhausted(f"{label}: 429 {kind}") from exc
+            if status in (500, 502, 503, 504) or _is_timeout(exc):
+                if transient < TRANSIENT_RETRIES:
+                    transient += 1
+                    print(f"{label}: {status or 'timeout'}, retry {transient}/{TRANSIENT_RETRIES} in {BACKOFF:.0f}s", flush=True)
+                    _sleep(BACKOFF)
+                    continue
+                raise ModelUnavailable(f"{label}: {status or 'timeout'} after retry") from exc
+            if status == 404:
+                raise ModelUnavailable(f"{label}: 404 {detail[:200]}") from exc
+            raise RuntimeError(f"{label}: {exc} {detail}") from exc
 
 
 def _post(url: str, body: bytes, api_key: str, timeout: int) -> dict:
@@ -108,26 +157,34 @@ def _post(url: str, body: bytes, api_key: str, timeout: int) -> dict:
 
 
 def generate_json(body: dict, api_key: str, model: str, timeout: int, rotate: bool = True) -> dict:
-    """POST generateContent with retries, model fallback on 404, and key rotation on quota errors."""
+    """POST generateContent: next model on 503/timeout/404, next key on quota."""
     data = json.dumps(body).encode("utf-8")
     keys = api_keys(api_key) if rotate else [api_key]
     if not keys:
         raise RuntimeError("no gemini api key")
     errors: list[str] = []
+    unavailable = False
     for key in keys:
         for name in model_chain(model):
             url = f"{FILES_URL}/models/{name}:generateContent"
             try:
                 return call_with_retry(lambda: _post(url, data, key, timeout), f"gemini {name}")
+            except BudgetExhausted:
+                raise
             except QuotaExhausted as exc:
                 errors.append(str(exc))
-                print(f"{exc}; rotating to the next key", flush=True)
+                print(f"{exc}; switching to the next key", flush=True)
                 break
-            except RuntimeError as exc:
-                errors.append(str(exc)[:300])
-                if " 404" in str(exc) or "Not Found" in str(exc):
-                    continue
-                raise
+            except ModelUnavailable as exc:
+                errors.append(str(exc)[:200])
+                unavailable = True
+                print(f"{exc}; trying the next model", flush=True)
+                continue
+        else:
+            # every model was unavailable for this key; another key will not fix a 503
+            raise RuntimeError("all gemini models unavailable: " + "; ".join(errors)[-400:])
+    if unavailable and not any("429" in e for e in errors):
+        raise RuntimeError("; ".join(errors)[-400:])
     raise QuotaExhausted("; ".join(errors)[-600:] or "gemini failed")
 
 
@@ -216,49 +273,88 @@ def delete_video(name: str, api_key: str) -> None:
         return
 
 
-def watch_video(path: Path, prompt: str, api_key: str, model: str = DEFAULT_MODEL, timeout: int = 180) -> str:
-    """Send the mp4, with audio, and return Gemini's text.
+PROXY_HEIGHT = 360
+PROXY_FPS = 15
+PROXY_SECONDS = 60
 
-    Uploaded files belong to the key's project, so on a quota error the file is
+
+def make_proxy(path: Path) -> Path:
+    """Low-res copy for review only: 360p, 15fps, at most 60s, mono audio. Falls back to the original."""
+    import subprocess
+    import tempfile
+
+    out = Path(tempfile.mkdtemp(prefix="gemini-proxy-")) / f"{path.stem}.proxy.mp4"
+    cmd = [
+        "ffmpeg", "-y", "-loglevel", "error", "-t", str(PROXY_SECONDS), "-i", str(path),
+        "-vf", f"scale=-2:{PROXY_HEIGHT},fps={PROXY_FPS}",
+        "-c:v", "libx264", "-preset", "veryfast", "-crf", "30", "-pix_fmt", "yuv420p",
+        "-c:a", "aac", "-ac", "1", "-b:a", "48k", "-movflags", "+faststart", str(out),
+    ]
+    try:
+        subprocess.run(cmd, check=True, timeout=180, capture_output=True)
+    except Exception as exc:  # noqa: BLE001
+        print(f"gemini proxy failed ({str(exc)[:120]}); sending the original", flush=True)
+        return path
+    if not out.exists() or out.stat().st_size == 0:
+        return path
+    print(f"gemini proxy {path.stat().st_size // 1024}KB -> {out.stat().st_size // 1024}KB", flush=True)
+    return out
+
+
+def watch_video(path: Path, prompt: str, api_key: str, model: str = DEFAULT_MODEL, timeout: int = 180) -> str:
+    """Send a low-res proxy of the mp4, with audio, and return Gemini's text.
+
+    Uploaded files belong to the key's project, so on a quota error the proxy is
     re-uploaded under the next key.
     """
     keys = api_keys(api_key)
     if not keys:
         raise RuntimeError("no gemini api key")
+    proxy = make_proxy(path)
     errors: list[str] = []
-    for key in keys:
-        try:
-            uploaded = call_with_retry(lambda: upload_video(path, key, timeout=timeout), "gemini upload")
-        except QuotaExhausted as exc:
-            errors.append(str(exc))
-            continue
-        try:
-            uri = str(uploaded.get("uri") or "")
-            if not uri:
-                raise RuntimeError("gemini file has no uri")
-            body = {
-                "contents": [
-                    {
-                        "parts": [
-                            {"file_data": {"mime_type": "video/mp4", "file_uri": uri}},
-                            {"text": prompt},
-                        ]
-                    }
-                ],
-                "generationConfig": {"temperature": 0.4, "maxOutputTokens": 900},
-            }
+    try:
+        for key in keys:
             try:
-                payload = generate_json(body, key, model, timeout, rotate=False)
+                uploaded = call_with_retry(lambda: upload_video(proxy, key, timeout=timeout), "gemini upload")
+            except BudgetExhausted:
+                raise
             except QuotaExhausted as exc:
                 errors.append(str(exc))
-                print("gemini key out of quota; trying the next key", flush=True)
                 continue
-            text = _response_text(payload)
-            if not text:
-                raise RuntimeError("gemini returned nothing after watching the video")
-            return text
-        finally:
-            delete_video(str(uploaded.get("name") or ""), key)
+            except ModelUnavailable as exc:
+                raise RuntimeError(str(exc)) from exc
+            try:
+                uri = str(uploaded.get("uri") or "")
+                if not uri:
+                    raise RuntimeError("gemini file has no uri")
+                body = {
+                    "contents": [
+                        {
+                            "parts": [
+                                {"file_data": {"mime_type": "video/mp4", "file_uri": uri}},
+                                {"text": prompt},
+                            ]
+                        }
+                    ],
+                    "generationConfig": {"temperature": 0.4, "maxOutputTokens": 900},
+                }
+                try:
+                    payload = generate_json(body, key, model, timeout, rotate=False)
+                except BudgetExhausted:
+                    raise
+                except QuotaExhausted as exc:
+                    errors.append(str(exc))
+                    print("gemini key out of quota; trying the next key", flush=True)
+                    continue
+                text = _response_text(payload)
+                if not text:
+                    raise RuntimeError("gemini returned nothing after watching the video")
+                return text
+            finally:
+                delete_video(str(uploaded.get("name") or ""), key)
+    finally:
+        if proxy != path:
+            proxy.unlink(missing_ok=True)
     raise QuotaExhausted("all gemini keys out of quota: " + "; ".join(errors)[-400:])
 
 

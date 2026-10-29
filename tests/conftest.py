@@ -9,3 +9,4 @@ def _no_real_gemini(monkeypatch):
     from growth.utils import gemini
 
     monkeypatch.setattr(gemini, "_sleep", lambda seconds: None)
+    gemini.set_budget(None)

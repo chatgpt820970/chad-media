@@ -17,6 +17,7 @@ from growth.instagram.discover import discover as discover_instagram
 from growth.utils.media import apply_light_touch, is_vertical, produce
 from growth.utils.pipeline import media_reasons
 from growth.utils.quality import copyright_reason
+from growth.utils import gemini
 from growth.utils.gemini import QuotaExhausted, api_keys
 from growth.utils.review_gate import score_video
 from growth.utils.ytdlp import Candidate
@@ -28,7 +29,7 @@ LIMIT = 15 * 1024 * 1024
 PER_PLATFORM = 3
 LOVE_MINIMUM = 2
 EXAMINE = 12
-GEMINI_BUDGET = 8  # Gemini calls per run, across both platforms
+GEMINI_BUDGET = 15  # every Gemini HTTP request per run (uploads, generate, retries)
 
 
 def _shrink(path: Path) -> Path:
@@ -79,15 +80,20 @@ def _local_reasons(config: dict, candidate: Candidate, prepared) -> list[str]:
 
 
 class Budget:
+    """Thin view over the gemini module's per-request budget."""
+
     def __init__(self, calls: int) -> None:
-        self.calls = calls
+        gemini.set_budget(calls)
         self.exhausted = False
 
     def take(self) -> bool:
-        if self.exhausted or self.calls <= 0:
-            return False
-        self.calls -= 1
-        return True
+        # a video review costs at least 2 requests (upload + generate)
+        left = gemini.requests_left()
+        return not self.exhausted and (left is None or left >= 2)
+
+    @property
+    def used(self) -> int:
+        return gemini.requests_used()
 
 
 def _prepare(config: dict, candidate: Candidate, work: Path):
@@ -113,7 +119,7 @@ def _review(config: dict, candidate: Candidate, prepared, work: Path, api_key: s
             candidate,
             str(config.get("strategy") or ""),
             api_key,
-            str(config.get("gemini_model") or "gemini-3.8-flash"),
+            str(config.get("gemini_model") or "gemini-flash-latest"),
             work / "review",
             int(config.get("min_gemini_score") or 8),
             str(config.get("platform") or ""),
@@ -247,6 +253,7 @@ def main() -> int:
     for config, discover, review in jobs:
         found = _gather(config, discover, review, api_key, work / config["platform"], budget, used)
         print(f"KEPT {config['platform']} {len(found)}", flush=True)
+        print(f"GEMINI requests used so far: {gemini.requests_used()} of {GEMINI_BUDGET if not os.environ.get('GROWTH_GEMINI_BUDGET') else os.environ['GROWTH_GEMINI_BUDGET']}", flush=True)
         saved.extend(found)
     love = sum(1 for item in saved if item["topic"] == "love")
     counts = {name: sum(1 for item in saved if item["platform"] == name) for name in ("youtube", "instagram")}

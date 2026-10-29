@@ -20,7 +20,7 @@
   "indian_share_max": 0.6,
   "min_gap_minutes": 60,
   "lead_tolerance": 4,
-  "gemini_model": "gemini-3.8-flash",
+  "gemini_model": "gemini-flash-latest",
   "slots": [
     {"time": "08:30", "lead": 24, "backup_lead": 14},
     {"time": "11:00", "lead": 24, "backup_lead": 14},
