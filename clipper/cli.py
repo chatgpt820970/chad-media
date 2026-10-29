@@ -215,6 +215,8 @@ def sync_sent_posts(bundle: dict, pending: dict, submitted: dict | None = None) 
     paused = False
     when = datetime.now(timezone.utc)
     for platform, spec in bundle["channels"]["platforms"].items():
+        if not spec.get("enabled", True):
+            continue
         channel = str(os.environ.get(spec.get("channel_id_env") or "") or spec["buffer_channel_id"])
         try:
             data = graphql(api, token, POSTS_QUERY, {"organizationId": org, "channelId": channel})

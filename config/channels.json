@@ -4,14 +4,15 @@
   "platforms": {
     "x": {
       "label": "X",
-      "enabled": true,
+      "enabled": false,
       "handle": "@chadriyo",
       "audience": "worldwide",
       "buffer_service": "twitter",
       "buffer_channel_id": "6ac41eb06a5c39ccb625fdf1",
       "channel_id_env": "BUFFER_CHANNEL_X",
       "links_blocked": true,
-      "cookies_env": "X_COOKIES_FILE"
+      "cookies_env": "X_COOKIES_FILE",
+      "enabled_note": "Removed from the Whop Content Rewards pipeline per user Oct 29 2026. @chadriyo X is used only by the separate news-posting routine. Do not re-enable for clips."
     },
     "youtube": {
       "label": "YouTube Shorts",

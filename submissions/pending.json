@@ -14,9 +14,9 @@
       "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
       "posted_at": "2026-10-28T16:46:32.000Z",
       "deadline_at": "2026-10-28T17:06:32.000Z",
-      "status": "missed_deadline",
+      "status": "skipped",
       "buffer_post_id": "6ae205bfbae3f801a0066ad2",
-      "note": "Content Rewards rejected: not posted within last 30 minutes (off-slot post 22:16 IST)"
+      "note": "Content Rewards rejected: not posted within last 30 minutes (off-slot post 22:16 IST) | X removed from Whop pipeline per user Oct 29 2026; not a missed failure."
     },
     {
       "id": "boxabl:youtube:6ae2ae957a72c9efac10edfa",
@@ -40,8 +40,9 @@
       "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
       "posted_at": "2026-10-29T08:15:13.000Z",
       "deadline_at": "2026-10-29T08:35:13.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae2e659b8abb6631d1013cf"
+      "status": "skipped",
+      "buffer_post_id": "6ae2e659b8abb6631d1013cf",
+      "note": "X removed from Whop pipeline per user Oct 29 2026; not a missed failure."
     },
     {
       "id": "boxabl:youtube:6ae2e65a35657f219b2f1024",

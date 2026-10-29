@@ -37,8 +37,30 @@ ROOT = Path(__file__).resolve().parents[1]
 NOW = datetime(2026, 10, 27, 0, 0, tzinfo=timezone.utc)
 
 
+_X_PLATFORMS = {"boxabl": ["x"], "t-bird": ["x"]}
+
+
 def _bundle() -> dict:
-    return load_bundle(ROOT)
+    """Live config with X turned back on so the X code paths stay covered.
+
+    Production config has X off (removed from the Whop pipeline Oct 29 2026);
+    see test_x_removed_from_live_config.
+    """
+    bundle = load_bundle(ROOT)
+    bundle["channels"]["platforms"]["x"]["enabled"] = True
+    for row in bundle["campaigns"]["campaigns"]:
+        if row.get("id") in _X_PLATFORMS and "x" not in (row.get("platforms") or []):
+            row["platforms"] = ["x"] + list(row.get("platforms") or [])
+    return bundle
+
+
+class XRemovedTests(unittest.TestCase):
+    def test_x_removed_from_live_config(self):
+        from clipper.loadconfig import posting_platforms
+        live = load_bundle(ROOT)
+        self.assertNotIn("x", posting_platforms(live))
+        for row in live["campaigns"]["campaigns"]:
+            self.assertNotIn("x", row.get("platforms") or [])
 
 
 def _activate(bundle: dict, *ids: str) -> dict:
