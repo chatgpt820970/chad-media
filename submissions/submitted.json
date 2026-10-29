@@ -456,6 +456,46 @@
       "status": "submitted",
       "buffer_post_id": "6ae2ca03c2255f48b9c63b81",
       "submitted_at": "2026-10-29T06:17:19.000Z"
+    },
+    {
+      "id": "boxabl:x:6ae2e659b8abb6631d1013cf",
+      "post_url": "https://x.com/chadriyo/status/2115719087611330669",
+      "platform": "x",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-29T08:15:13.000Z",
+      "deadline_at": "2026-10-29T08:35:13.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae2e659b8abb6631d1013cf",
+      "note": "X removed from Whop pipeline per user Oct 29 2026; not a missed failure.",
+      "submitted_at": "2026-10-29T08:26:33.000Z"
+    },
+    {
+      "id": "boxabl:youtube:6ae2e65a35657f219b2f1024",
+      "post_url": "https://www.youtube.com/shorts/hYveDGSEuEk",
+      "platform": "youtube",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-29T08:15:08.000Z",
+      "deadline_at": "2026-10-29T08:35:08.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae2e65a35657f219b2f1024",
+      "submitted_at": "2026-10-29T08:26:33.000Z"
+    },
+    {
+      "id": "boxabl:tiktok:6ae2e65b2467e67f128220f3",
+      "post_url": "https://www.tiktok.com/@bi67325/video/7702000089358683398",
+      "platform": "tiktok",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-29T08:16:49.000Z",
+      "deadline_at": "2026-10-29T08:36:49.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae2e65b2467e67f128220f3",
+      "submitted_at": "2026-10-29T08:26:33.000Z"
     }
   ]
 }
