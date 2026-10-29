@@ -106,7 +106,7 @@ def probe(path: Path) -> tuple[int, int, float]:
             "-select_streams",
             "v:0",
             "-show_entries",
-            "stream=width,height:format=duration",
+            "stream=width,height,start_time:format=duration",
             "-of",
             "json",
             str(path),
@@ -118,12 +118,16 @@ def probe(path: Path) -> tuple[int, int, float]:
     stream = streams[0] if streams else {}
     width = int(stream.get("width") or 0)
     height = int(stream.get("height") or 0)
-    duration = float((payload.get("format") or {}).get("duration") or 0)
-    return width, height, duration
+    format_duration = float((payload.get("format") or {}).get("duration") or 0)
+    start = float(stream.get("start_time") or 0)
+    duration = format_duration
+    if start > 0.5 and format_duration > start + 0.2:
+        duration = format_duration - start
+    return width, height, duration, start
 
 
 def _raw_frame(path: Path, second: float, dest: Path) -> tuple[bytes, int, int]:
-    width, height, _duration = probe(path)
+    width, height, _duration, _start = probe(path)
     if width < 4 or height < 4:
         raise MinorFailure("probe returned no frame size")
     if shutil.which("ffmpeg") is None:
@@ -269,11 +273,11 @@ def scan_video(path: Path, work: Path) -> tuple[str, list[str], bool, bool, bool
     """Return ocr text, corner hits, edge cutoff, letterbox, and whether scanners were missing."""
     if shutil.which("ffmpeg") is None or shutil.which("ffprobe") is None or shutil.which("tesseract") is None:
         return "", [], False, False, True
-    width, _height, duration = probe(path)
-    del width
-    stamps = [min(1.0, max(0.0, duration * 0.15))]
+    _width, _height, duration, start = probe(path)
+    relative = [min(1.0, max(0.0, duration * 0.15))]
     if duration > 4:
-        stamps.append(min(duration * 0.55, max(0.0, duration - 0.4)))
+        relative.append(min(duration * 0.55, max(0.0, duration - 0.4)))
+    stamps = [start + second for second in relative]
     ocr_parts: list[str] = []
     hits: list[str] = []
     cutoff = False
@@ -324,20 +328,34 @@ def _clip_seconds(duration: float, config: dict) -> float:
     return wanted
 
 
-def produce(candidate: Candidate, hook: str, config: dict, work: Path, env: dict[str, str]) -> Prepared:
-    """Download, scan, and render one candidate. Raises MinorFailure to skip it."""
+def produce(
+    candidate: Candidate,
+    hook: str,
+    config: dict,
+    work: Path,
+    env: dict[str, str],
+    source_file: Path | None = None,
+) -> Prepared:
+    """Download, scan, and render one candidate. Raises MinorFailure to skip it.
+
+    `source_file` skips the download when the clip is already on disk. The scan,
+    copyright check, and 9:16 render are the same either way.
+    """
     work.mkdir(parents=True, exist_ok=True)
     token = safe_id(candidate.source_id)
     source = work / f"{token}.mp4"
-    if shutil.which("yt-dlp") is None:
-        raise MinorFailure("yt-dlp unavailable")
-    _run(download_command(candidate.url, str(source), _cookies(candidate.url, env)), 180)
-    if not source.is_file():
-        matches = list(work.glob(f"{token}.*"))
-        if not matches:
-            raise MinorFailure("download saved nothing")
-        source = matches[0]
-    width, height, duration = probe(source)
+    if source_file is not None and Path(source_file).is_file():
+        source = Path(source_file)
+    else:
+        if shutil.which("yt-dlp") is None:
+            raise MinorFailure("yt-dlp unavailable")
+        _run(download_command(candidate.url, str(source), _cookies(candidate.url, env)), 180)
+        if not source.is_file():
+            matches = list(work.glob(f"{token}.*"))
+            if not matches:
+                raise MinorFailure("download saved nothing")
+            source = matches[0]
+    width, height, duration, media_start = probe(source)
     ocr_text, hits, cutoff, boxed, unavailable = scan_video(source, work)
     output = _clip_seconds(duration, config)
     blocked = copyright_reason(
@@ -369,9 +387,9 @@ def produce(candidate: Candidate, hook: str, config: dict, work: Path, env: dict
             )
         enable = str(config.get("hook_enable") or "lt(t,1.5)")
         graph = vertical_graph(hook, enable, allow_zoom)
-        start = 0.0
+        start = media_start
         if duration > output + 1.5:
-            start = min(duration - output - 0.3, max(0.8, duration * 0.08))
+            start = media_start + min(duration - output - 0.3, max(0.8, duration * 0.08))
         _run(
             [
                 "ffmpeg",
