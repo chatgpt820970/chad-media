@@ -76,7 +76,7 @@ def vertical_graph(hook: str, enable: str, zoom: bool) -> str:
 
 def foreground_is_padded(graph: str) -> bool:
     """The foreground branch fits inside the frame. It is not cover-cropped."""
-    if "force_original_aspect_ratio=decrease[fit]" not in graph:
+    if "[fg]scale=" not in graph or "force_original_aspect_ratio=decrease[fit]" not in graph:
         return False
     if "boxblur" not in graph or "overlay=(W-w)/2:(H-h)/2" not in graph:
         return False
