@@ -17,7 +17,7 @@ from growth.instagram.caption import review_caption as ig_review
 from growth.utils.cli import main
 from growth.utils.dedupe import load_state, remember, save_state, seen, title_key
 from growth.utils.hosting import asset_name
-from growth.utils.media import Prepared, foreground_is_padded, repost_pad_graph, vertical_graph
+from growth.utils.media import Prepared, foreground_is_padded, light_touch_filters, usable_trim, vertical_graph
 from growth.utils.pipeline import Runtime, execute
 from growth.utils.quality import (
     choose_count,
@@ -34,7 +34,7 @@ from growth.utils.quality import (
 )
 from growth.utils.schedule import buffer_payload, ist_utc_cron, lane_for_index, slot_clocks, slot_gaps_ok, slot_plan
 from growth.utils.improve import apply_weights, due, parse_weights, run_improve
-from growth.utils.review_gate import frame_times, parse_review
+from growth.utils.review_gate import frame_times, parse_review, parse_tweaks
 from growth.utils.ytdlp import engagement, parse_entries, rank_recent, search_target
 from growth.x.bot import HOOKS as X_HOOKS
 from growth.x.pending import batch_slots, caption_to_schedule, load_queue, parse_due, save_queue
@@ -101,6 +101,7 @@ class QualityTests(unittest.TestCase):
     def test_watermark_ocr_and_copyright(self):
         self.assertEqual(watermark_reason("follow @creator on tiktok"), "third-party watermark or logo")
         self.assertIsNone(watermark_reason("a stadium crowd"))
+        self.assertIn("logo", watermark_reason("ICC Men's Cricket World Cup") or "")
         self.assertIn("full copy", copyright_reason("Full Movie Bahubali", "", 120, 4800) or "")
         self.assertIn("feature", copyright_reason("Match replay", "", 100 * 60, 4800) or "")
         self.assertIsNone(copyright_reason("Virat Kohli incredible six", "", 40, 4800))
@@ -186,10 +187,14 @@ class CaptionTests(unittest.TestCase):
         self.assertGreaterEqual(count, 3)
         self.assertLessEqual(count, 5)
         self.assertEqual(yt_review(caption, clip), [])
-        graph = repost_pad_graph()
-        self.assertNotIn("drawtext", graph)
-        self.assertNotIn("1.04", graph)
-        self.assertTrue(foreground_is_padded(graph))
+        video_filter, audio_filter = light_touch_filters({"speed": 1.03, "grade": True, "mirror": False})
+        self.assertNotIn("drawtext", video_filter)
+        self.assertNotIn("boxblur", video_filter)
+        self.assertNotIn("crop", video_filter)
+        self.assertNotIn("pad", video_filter)
+        self.assertIn("atempo=1.030", audio_filter)
+        self.assertEqual(usable_trim(20, 10, {"speed": 1.03, "trim_seconds": 0.4}), 0.4)
+        self.assertEqual(usable_trim(10.1, 10, {"speed": 1.03, "trim_seconds": 0.4}), 0.0)
         self.assertIn("#shorts", caption.lower())
 
     def test_instagram_hinglish_and_mix(self):
@@ -600,9 +605,15 @@ class ConfigAndWorkflowTests(unittest.TestCase):
 class ReviewAndImproveTests(unittest.TestCase):
     def test_frame_times_span_the_clip(self):
         times = frame_times(20, 0)
-        self.assertAlmostEqual(times[0], 1.0)
-        self.assertGreater(times[-1], 10)
+        self.assertEqual(len(times), 6)
+        self.assertAlmostEqual(times[0], 1.6)
+        self.assertGreater(times[-1], 15)
         self.assertLess(times[-1], 20)
+        quiet = parse_tweaks({"mirror": True, "speed": 1.04}, 8)
+        self.assertFalse(quiet["mirror"])
+        flipped = parse_tweaks({"mirror": True, "speed": 9}, 9)
+        self.assertTrue(flipped["mirror"])
+        self.assertEqual(flipped["speed"], 1.05)
 
     def test_parse_review_requires_every_score(self):
         good = {

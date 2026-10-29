@@ -131,13 +131,15 @@ def engagement(candidate: Candidate, topic_weights: dict | None = None, account_
     return (int(candidate.view_count or 0) + int(candidate.like_count or 0) * 3) * topic * account
 
 
-def rank_recent(candidates: list[Candidate], max_age_hours: float = 48, now: float | None = None, topic_weights: dict | None = None, account_weights: dict | None = None) -> list[Candidate]:
+def rank_recent(candidates: list[Candidate], max_age_hours: float = 48, now: float | None = None, topic_weights: dict | None = None, account_weights: dict | None = None, keep_undated: bool = False) -> list[Candidate]:
     """Keep clips posted inside the window and put the most watched first."""
     moment = now if now is not None else datetime.now(timezone.utc).timestamp()
     cutoff = moment - float(max_age_hours) * 3600
     fresh = [row for row in candidates if row.timestamp and row.timestamp >= cutoff]
+    undated = [row for row in candidates if keep_undated and not row.timestamp]
     fresh.sort(key=lambda row: engagement(row, topic_weights, account_weights), reverse=True)
-    return fresh
+    undated.sort(key=lambda row: engagement(row, topic_weights, account_weights), reverse=True)
+    return fresh + undated
 
 
 def parse_entries(payload: dict | None, source: dict) -> list[Candidate]:

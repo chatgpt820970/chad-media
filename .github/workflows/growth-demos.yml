@@ -1,0 +1,56 @@
+name: Growth demos
+
+# Manual only. Watches candidate videos with Gemini and uploads the ones it approves.
+# Does not schedule anything in Buffer.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  demos:
+    runs-on: ubuntu-latest
+    timeout-minutes: 120
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install ffmpeg, tesseract, and yt-dlp
+        run: |
+          timeout 480 bash script/ci_apt.sh ffmpeg tesseract-ocr fonts-dejavu-core
+          python -m pip install -U --pre "yt-dlp[default]" curl_cffi opencv-python-headless
+
+      - name: Cookie files
+        env:
+          YT_COOKIES: ${{ secrets.YT_COOKIES }}
+          X_COOKIES: ${{ secrets.X_COOKIES }}
+          INSTAGRAM_COOKIES: ${{ secrets.INSTAGRAM_COOKIES }}
+          TIKTOK_COOKIES: ${{ secrets.TIKTOK_COOKIES }}
+        run: python script/write_cookies.py
+
+      - name: Render approved demos
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_MODEL: gemini-2.0-flash
+          GROWTH_DEMO_DIR: work/growth-demos
+        run: python -m growth.demos
+
+      - name: Upload growth-demos release
+        if: success()
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          cd work/growth-demos
+          for name in captions.md \
+            youtube-1-rabada.mp4 youtube-2-cummins.mp4 youtube-3-tilak.mp4 \
+            instagram-1-virat-rohit.mp4 instagram-2-fifa-flags.mp4 instagram-3-fifa-ethiopia.mp4 \
+            youtube-1-holi.mp4 youtube-2-rajasthan.mp4 youtube-3-times.mp4 \
+            instagram-1-baganda.mp4 instagram-2-bird.mp4 instagram-3-homeland.mp4
+          do
+            gh release delete-asset growth-demos "$name" --yes || true
+          done
+          gh release upload growth-demos captions.md *.mp4 --clobber

@@ -18,7 +18,11 @@ PIRACY = re.compile(
 )
 EPISODE_CODE = re.compile(r"(?i)\bS\d{1,2}\s*E\d{1,2}\b")
 WATERMARK = re.compile(
-    r"(?i)\b(tiktok|instagram|instagr\.am|capcut|douyin|likee|kwai|vigo|inshot|vmate|watermark)\b|"
+    r"(?i)\b("
+    r"tiktok|instagram|instagr\.am|capcut|douyin|likee|kwai|vigo|inshot|vmate|watermark|"
+    r"icc|ipl|bcci|espn|nba|fifa|hotstar|jiocinema|jio\s*cinema|sonyliv|sony\s*liv|"
+    r"star\s*sports|starsports|world\s*cup|disney\s*\+|willow\.?tv"
+    r")\b|"
     r"(?<![\w])@[\w.]{3,}"
 )
 SAFETY = re.compile(r"(?i)\b(nude|nudes|naked|nsfw|porn|xxx|onlyfans|hentai|gore|beheading)\b")
