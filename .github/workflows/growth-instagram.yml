@@ -1,25 +1,7 @@
 name: Growth Instagram
 
-# @benreelr is confirmed connected. Each run still asks Buffer and skips if the channel is gone.
-# One cron per IST slot. The 21:00 runners start at 20:15 and 20:25 so they stay 20 minutes from the 20:47 X news post.
+# @benreelr is confirmed connected. Schedule stays off until a Growth demos run approves sample clips.
 on:
-  schedule:
-    - cron: "36 2 * * *"
-    - cron: "46 2 * * *"
-    - cron: "6 5 * * *"
-    - cron: "16 5 * * *"
-    - cron: "36 7 * * *"
-    - cron: "46 7 * * *"
-    - cron: "36 10 * * *"
-    - cron: "46 10 * * *"
-    - cron: "36 12 * * *"
-    - cron: "46 12 * * *"
-    - cron: "6 14 * * *"
-    - cron: "16 14 * * *"
-    - cron: "45 14 * * *"
-    - cron: "55 14 * * *"
-    - cron: "6 16 * * *"
-    - cron: "16 16 * * *"
   workflow_dispatch:
     inputs:
       dry_run:

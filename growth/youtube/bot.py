@@ -21,8 +21,6 @@ def validate(config: dict) -> list[str]:
     errors = common_errors(config)
     if config.get("platform") != "youtube":
         errors.append("platform must be youtube")
-    if not config.get("enabled"):
-        errors.append("youtube bot is expected to be enabled")
     if config.get("handle") != "Denzen":
         errors.append("handle must be Denzen")
     if not config.get("repost"):

@@ -1,6 +1,6 @@
 {
   "platform": "youtube",
-  "enabled": true,
+  "enabled": false,
   "handle": "Denzen",
   "username": "@denzen0",
   "buffer_service": "youtube",
