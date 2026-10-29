@@ -352,6 +352,45 @@
       "status": "submitted",
       "buffer_post_id": "6ae25a0bbcf6087bd6ea7398",
       "submitted_at": "2026-10-28T21:58:57.000Z"
+    },
+    {
+      "id": "boxabl:x:6ae2921a7d94db46db268c53",
+      "post_url": "https://x.com/chadriyo/status/2115617169874567566",
+      "platform": "x",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-29T01:30:14.000Z",
+      "deadline_at": "2026-10-29T01:50:14.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae2921a7d94db46db268c53",
+      "submitted_at": "2026-10-29T01:44:35.000Z"
+    },
+    {
+      "id": "boxabl:youtube:6ae2921bcc91be5434baf671",
+      "post_url": "https://www.youtube.com/shorts/m20Gk1Vn4Tw",
+      "platform": "youtube",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-29T01:30:14.000Z",
+      "deadline_at": "2026-10-29T01:50:14.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae2921bcc91be5434baf671",
+      "submitted_at": "2026-10-29T01:44:35.000Z"
+    },
+    {
+      "id": "boxabl:tiktok:6ae2921ccc91be5434baf6ea",
+      "post_url": "https://www.tiktok.com/@bi67325/video/7701894479908736257",
+      "platform": "tiktok",
+      "campaign_id": "boxabl",
+      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
+      "posted_at": "2026-10-29T01:31:51.000Z",
+      "deadline_at": "2026-10-29T01:51:51.000Z",
+      "status": "submitted",
+      "buffer_post_id": "6ae2921ccc91be5434baf6ea",
+      "submitted_at": "2026-10-29T01:44:35.000Z"
     }
   ]
 }
