@@ -35,6 +35,10 @@ def validate(config: dict) -> list[str]:
         errors.append("youtube requires a gemini score of at least 8")
     if "Bigg Boss" not in str(config.get("strategy") or ""):
         errors.append("youtube strategy must name the entertainment lanes")
+    if "love" not in str(config.get("strategy") or "").lower():
+        errors.append("youtube strategy must include the love lane")
+    if float((config.get("topic_weights") or {}).get("love") or 0) < 2:
+        errors.append("love category needs a high weight")
     if int(config.get("hashtag_min") or 0) != 3 or int(config.get("hashtag_max") or 0) != 5:
         errors.append("youtube captions use 3-5 hashtags")
     if any(row.get("lane") != "indian" for row in config.get("sources") or []):

@@ -25,7 +25,7 @@ from growth.utils.dedupe import (
 )
 from growth.utils.hosting import asset_name
 from growth.utils.log import append_events
-from growth.utils.media import Prepared
+from growth.utils.media import Prepared, apply_light_touch, is_vertical
 from growth.utils.quality import copyright_reason, media_reasons, promo_reason, resolution_reason
 from growth.utils.retry import MinorFailure, call_with_retry
 from growth.utils.schedule import buffer_payload, channel_id, lane_for_index, match_run, next_future_slot, slot_clocks
@@ -284,7 +284,9 @@ def execute(runtime: Runtime) -> Report:
         output_note = _output_reason(prepared, config)
         if output_note:
             reasons.append(output_note)
-        if not prepared.local_path and "scanners unavailable" not in reasons:
+        if config.get("repost") and prepared.width and prepared.height and not is_vertical(prepared.width, prepared.height):
+            reasons.append("not native vertical")
+        if not prepared.local_path and "scanners unavailable" not in reasons and "not native vertical" not in reasons:
             reasons.append("render produced no file")
         if not reasons and runtime.review_gate is not None and not runtime.dry_run:
             try:
@@ -300,6 +302,38 @@ def execute(runtime: Runtime) -> Report:
                 )
                 if not verdict.get("pass"):
                     reasons.append(f"gemini score {verdict.get('overall')}")
+                else:
+                    watched = str(verdict.get("caption") or "").strip()
+                    caption_notes = runtime.review_caption(watched, candidate) if watched else ["gemini caption missing"]
+                    if caption_notes:
+                        reasons.append(caption_notes[0])
+                    else:
+                        caption = watched
+                        tweaks = verdict.get("tweaks") or {}
+                        touched = Path(prepared.local_path).with_name(Path(prepared.local_path).stem + "-touch.mp4")
+                        try:
+                            touched_duration = apply_light_touch(
+                                Path(prepared.local_path),
+                                touched,
+                                tweaks,
+                                float(config["clip_min_seconds"]),
+                            )
+                        except Exception as exc:
+                            reasons.append(f"light edit failed: {exc}"[:240])
+                        else:
+                            prepared = Prepared(
+                                source_id=prepared.source_id,
+                                width=prepared.width,
+                                height=prepared.height,
+                                duration=prepared.duration,
+                                ocr_text=prepared.ocr_text,
+                                corner_hits=prepared.corner_hits,
+                                edge_cutoff=prepared.edge_cutoff,
+                                scanners_unavailable=prepared.scanners_unavailable,
+                                output_seconds=touched_duration,
+                                local_path=str(touched),
+                                zoom=False,
+                            )
         if reasons:
             report.rejected += 1
             permanent = "scanners unavailable" not in reasons

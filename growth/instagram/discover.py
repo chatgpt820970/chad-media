@@ -16,5 +16,6 @@ def discover(config: dict, env: dict | None = None) -> list[Candidate]:
         float(config.get("max_age_hours") or 48),
         topic_weights=config.get("topic_weights"),
         account_weights=config.get("account_weights"),
+        keep_undated=(env.get("GROWTH_KEEP_UNDATED") or "") == "1",
     )
     return [row for row in ranked if row.lane in LANES]

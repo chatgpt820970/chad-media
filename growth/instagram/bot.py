@@ -40,6 +40,10 @@ def validate(config: dict) -> list[str]:
         errors.append("instagram does not zoom the repost")
     if "Bollywood" not in str(config.get("strategy") or "") or "global viral" not in str(config.get("strategy") or ""):
         errors.append("instagram strategy must cover the Indian and global mix")
+    if "love" not in str(config.get("strategy") or "").lower():
+        errors.append("instagram strategy must include the love lane")
+    if float((config.get("topic_weights") or {}).get("love") or 0) < 2:
+        errors.append("love category needs a high weight")
     if int(config.get("min_gemini_score") or 0) < 8:
         errors.append("instagram requires a gemini score of at least 8")
     lanes = {row.get("lane") for row in config.get("sources") or []}

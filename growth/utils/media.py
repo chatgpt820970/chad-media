@@ -1,8 +1,7 @@
-"""Download, scan, and fit a clip to 9:16 with blurred padding.
+"""Download and scan a clip.
 
-The subject is scaled to fit. Cropping is only applied to the blurred background
-fill, and to a small optional zoom that is skipped when the frame is letterboxed
-or already cut off.
+X can pad a landscape frame with a blurred background. YouTube and Instagram
+repost only native vertical video: no pad, no crop, no burned-in text.
 """
 
 from __future__ import annotations
@@ -55,6 +54,71 @@ def escape_drawtext(text: str) -> str:
 
 def is_vertical(width: int, height: int) -> bool:
     return height > width * 1.2
+
+
+def light_touch_filters(tweaks: dict) -> tuple[str, str]:
+    """Slight speed, optional grade, optional mirror. No crop, pad, or text."""
+    parts: list[str] = []
+    if tweaks.get("mirror"):
+        parts.append("hflip")
+    if tweaks.get("grade", True):
+        parts.append("eq=contrast=1.04:saturation=1.06:gamma=1.01")
+    speed = float(tweaks.get("speed") or 1.03)
+    parts.append(f"setpts=PTS/{speed:.3f}")
+    return ",".join(parts), f"atempo={speed:.3f}"
+
+
+def usable_trim(duration: float, clip_min: float, tweaks: dict) -> float:
+    """Trim 0.3-0.5s only when the sped-up result still meets the minimum length."""
+    speed = float(tweaks.get("speed") or 1.03)
+    requested = float(tweaks.get("trim_seconds") or 0.4)
+    room = float(duration) - float(clip_min) * speed
+    if room < 0.3:
+        return 0.0
+    trimmed = min(requested, room, 0.5)
+    if trimmed < 0.3:
+        return 0.0
+    return round(trimmed, 2)
+
+
+def apply_light_touch(source: Path, dest: Path, tweaks: dict, clip_min: float) -> float:
+    """Re-encode one vertical file. Returns the new duration. Raises MinorFailure."""
+    _width, _height, duration, _start = probe(source)
+    trim = usable_trim(duration, clip_min, tweaks)
+    speed = float(tweaks.get("speed") or 1.03)
+    video_filter, audio_filter = light_touch_filters(tweaks)
+    command = ["ffmpeg", "-y"]
+    if tweaks.get("trim") == "start" and trim > 0:
+        command.extend(["-ss", f"{trim:.2f}"])
+    command.extend(["-i", str(source)])
+    if tweaks.get("trim") == "end" and trim > 0:
+        command.extend(["-t", f"{max(0.5, duration - trim):.2f}"])
+    command.extend(
+        [
+            "-vf",
+            video_filter,
+            "-af",
+            audio_filter,
+            "-c:v",
+            "libx264",
+            "-preset",
+            "medium",
+            "-crf",
+            "17",
+            "-pix_fmt",
+            "yuv420p",
+            "-c:a",
+            "aac",
+            "-b:a",
+            "192k",
+            "-movflags",
+            "+faststart",
+            str(dest),
+        ]
+    )
+    _run(command, 240)
+    _w, _h, touched, _s = probe(dest)
+    return touched
 
 
 def repost_pad_graph() -> str:
@@ -180,12 +244,12 @@ def _raw_frame(path: Path, second: float, dest: Path) -> tuple[bytes, int, int]:
 def _ocr_corners(path: Path, second: float, work: Path, stamp: str) -> str:
     if shutil.which("tesseract") is None or shutil.which("ffmpeg") is None:
         return ""
+    # Scale the crop so a small broadcaster bug is large enough for OCR.
     crops = {
-        "tl": "crop=iw*0.22:ih*0.18:0:0",
-        "tr": "crop=iw*0.22:ih*0.18:iw*0.78:0",
-        "bl": "crop=iw*0.22:ih*0.18:0:ih*0.82",
-        "br": "crop=iw*0.22:ih*0.18:iw*0.78:ih*0.82",
-        "band": "crop=iw*0.7:ih*0.12:iw*0.15:ih*0.84",
+        "tl": "crop=iw*0.28:ih*0.22:0:0,scale=iw*3:ih*3:flags=neighbor",
+        "tr": "crop=iw*0.28:ih*0.22:iw*0.72:0,scale=iw*3:ih*3:flags=neighbor",
+        "bl": "crop=iw*0.28:ih*0.22:0:ih*0.78,scale=iw*3:ih*3:flags=neighbor",
+        "br": "crop=iw*0.28:ih*0.22:iw*0.72:ih*0.78,scale=iw*3:ih*3:flags=neighbor",
     }
     chunks: list[str] = []
     for name, crop in crops.items():
@@ -288,10 +352,15 @@ def scan_video(path: Path, work: Path) -> tuple[str, list[str], bool, bool, bool
     if shutil.which("ffmpeg") is None or shutil.which("ffprobe") is None or shutil.which("tesseract") is None:
         return "", [], False, False, True
     _width, _height, duration, start = probe(path)
-    relative = [min(1.0, max(0.0, duration * 0.15))]
-    if duration > 4:
-        relative.append(min(duration * 0.55, max(0.0, duration - 0.4)))
-    stamps = [start + second for second in relative]
+    fractions = (0.08, 0.22, 0.38, 0.54, 0.70, 0.86)
+    span = max(0.0, duration)
+    stamps = []
+    for fraction in fractions:
+        if span <= 0:
+            stamps.append(start)
+            continue
+        at = start + span * fraction
+        stamps.append(min(at, start + max(0.0, span - 0.15)))
     ocr_parts: list[str] = []
     hits: list[str] = []
     cutoff = False
@@ -390,7 +459,7 @@ def produce(
     ):
         low = float(config["clip_min_seconds"])
         high = float(config["clip_max_seconds"])
-        if repost and (duration < low or duration > high):
+        if repost and (duration < low or duration > high or not is_vertical(width, height)):
             return Prepared(
                 source_id=candidate.source_id,
                 width=width,
@@ -402,19 +471,7 @@ def produce(
                 scanners_unavailable=unavailable,
                 output_seconds=duration,
             )
-        if not repost and duration < low:
-            return Prepared(
-                source_id=candidate.source_id,
-                width=width,
-                height=height,
-                duration=duration,
-                ocr_text=ocr_text,
-                corner_hits=tuple(hits),
-                edge_cutoff=cutoff,
-                scanners_unavailable=unavailable,
-                output_seconds=output,
-            )
-        if repost and is_vertical(width, height):
+        if repost:
             copied = subprocess.run(
                 ["ffmpeg", "-y", "-i", str(source), "-c", "copy", "-movflags", "+faststart", str(rendered)],
                 capture_output=True,
@@ -424,8 +481,8 @@ def produce(
             )
             if copied.returncode != 0 or not rendered.is_file():
                 _run(
-                    ["ffmpeg", "-y", "-i", str(source), "-c:v", "libx264", "-preset", "veryfast", "-crf", "20", "-c:a", "aac", "-movflags", "+faststart", str(rendered)],
-                    180,
+                    ["ffmpeg", "-y", "-i", str(source), "-c:v", "libx264", "-preset", "medium", "-crf", "17", "-c:a", "aac", "-b:a", "192k", "-movflags", "+faststart", str(rendered)],
+                    240,
                 )
             return Prepared(
                 source_id=candidate.source_id,
@@ -440,10 +497,20 @@ def produce(
                 local_path=str(rendered) if rendered.is_file() else "",
                 zoom=False,
             )
+        if not repost and duration < low:
+            return Prepared(
+                source_id=candidate.source_id,
+                width=width,
+                height=height,
+                duration=duration,
+                ocr_text=ocr_text,
+                corner_hits=tuple(hits),
+                edge_cutoff=cutoff,
+                scanners_unavailable=unavailable,
+                output_seconds=output,
+            )
         enable = str(config.get("hook_enable") or "lt(t,1.5)")
-        graph = repost_pad_graph() if repost else vertical_graph(hook, enable, allow_zoom)
-        if repost:
-            output = duration
+        graph = vertical_graph(hook, enable, allow_zoom)
         start = media_start
         if duration > output + 1.5:
             start = media_start + min(duration - output - 0.3, max(0.8, duration * 0.08))

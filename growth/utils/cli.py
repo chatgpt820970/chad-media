@@ -101,6 +101,7 @@ def main(hooks: Hooks, argv: list[str] | None = None) -> int:
                 str(_config.get("gemini_model") or "gemini-2.0-flash"),
                 _work / "review",
                 int(_config.get("min_gemini_score") or 8),
+                str(_config.get("platform") or ""),
             )
         )
         if config.get("repost")
