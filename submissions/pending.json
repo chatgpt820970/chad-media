@@ -30,42 +30,6 @@
       "status": "missed_deadline",
       "buffer_post_id": "6ae2ae957a72c9efac10edfa",
       "note": "09:15 IST YouTube slot: Submitter Bot submitted X + TikTok at ~09:31 IST but not YouTube; CI flagged at 37m (past Content Rewards 30m window). Marked missed by BIBI 09:55 IST."
-    },
-    {
-      "id": "boxabl:x:6ae2ca0102cc66e5339736b4",
-      "post_url": "https://x.com/chadriyo/status/2115685106773901513",
-      "platform": "x",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-29T06:00:11.000Z",
-      "deadline_at": "2026-10-29T06:20:11.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae2ca0102cc66e5339736b4"
-    },
-    {
-      "id": "boxabl:youtube:6ae2ca02c4bbd0de4b4b7c4d",
-      "post_url": "https://www.youtube.com/shorts/-B0u9KnJ7SY",
-      "platform": "youtube",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-29T06:00:12.000Z",
-      "deadline_at": "2026-10-29T06:20:12.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae2ca02c4bbd0de4b4b7c4d"
-    },
-    {
-      "id": "boxabl:tiktok:6ae2ca03c2255f48b9c63b81",
-      "post_url": "https://www.tiktok.com/@bi67325/video/7701965115993689345",
-      "platform": "tiktok",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-29T06:01:53.000Z",
-      "deadline_at": "2026-10-29T06:21:53.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae2ca03c2255f48b9c63b81"
     }
   ]
 }
