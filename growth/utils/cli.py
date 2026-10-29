@@ -3,12 +3,15 @@
 from __future__ import annotations
 
 import argparse
+import json
 import os
 from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
 
 from growth.utils.alert import alert_from_log
+from growth.utils.improve import run_improve
+from growth.utils.review_gate import score_video
 from growth.utils.buffer_guard import channel_is_ready, scheduled_count
 from growth.utils.hosting import PagesPublisher
 from growth.utils.media import produce
@@ -30,7 +33,7 @@ class Hooks:
 
 def main(hooks: Hooks, argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(prog=f"growth.{hooks.root.name}")
-    parser.add_argument("command", choices=("check", "run", "alert"))
+    parser.add_argument("command", choices=("check", "run", "alert", "improve"))
     parser.add_argument("--dry-run", action="store_true")
     parser.add_argument("--next-slot", action="store_true")
     parser.add_argument("--now", default="")
@@ -42,6 +45,18 @@ def main(hooks: Hooks, argv: list[str] | None = None) -> int:
         print(alert_from_log(str(config["platform"]), hooks.root / "state" / "log.jsonl", repo, token))
         return 0
     errors = hooks.validate(config)
+    if args.command == "improve":
+        if errors:
+            print("\n".join(errors))
+            return 1
+        result = run_improve(
+            hooks.root / "config.json",
+            hooks.root / "state" / "improve.json",
+            (os.environ.get("BUFFER_API_TOKEN") or "").strip(),
+            parse_now(args.now) if args.now else None,
+        )
+        print(json.dumps(result))
+        return 1 if result.get("error") else 0
     if args.command == "check":
         if errors:
             print("\n".join(errors))
@@ -77,6 +92,19 @@ def main(hooks: Hooks, argv: list[str] | None = None) -> int:
         token_present=bool(token),
         channel=channel_id(config, env),
         force_next=bool(args.next_slot),
+        review_gate=(
+            lambda prepared, candidate, _config=config, _work=work, _env=env: score_video(
+                Path(prepared.local_path),
+                candidate,
+                str(_config.get("strategy") or ""),
+                (_env.get("GEMINI_API_KEY") or "").strip(),
+                str(_config.get("gemini_model") or "gemini-2.0-flash"),
+                _work / "review",
+                int(_config.get("min_gemini_score") or 8),
+            )
+        )
+        if config.get("repost")
+        else None,
         channel_check=(lambda: channel_is_ready(token, channel_id(config, env))) if token else None,
         queue_count=(
             lambda: scheduled_count(token, str(config.get("buffer_organization_id") or ""), channel_id(config, env))

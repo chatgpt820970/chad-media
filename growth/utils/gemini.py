@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import base64
 import json
 import os
 import urllib.request
@@ -32,6 +33,27 @@ def generate(prompt: str, api_key: str, model: str = DEFAULT_MODEL, timeout: int
     text = "".join(str(part.get("text") or "") for part in parts).strip()
     if not text:
         raise RuntimeError("gemini returned an empty caption")
+    return text
+
+
+def generate_vision(prompt: str, images: list[tuple[str, bytes]], api_key: str, model: str = DEFAULT_MODEL, timeout: int = 45) -> str:
+    parts: list[dict] = [{"text": prompt}]
+    for mime, data in images:
+        parts.append({"inline_data": {"mime_type": mime, "data": base64.b64encode(data).decode("ascii")}})
+    url = f"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent"
+    body = json.dumps({"contents": [{"parts": parts}], "generationConfig": {"temperature": 0.2, "maxOutputTokens": 400}}).encode()
+    request = urllib.request.Request(
+        url,
+        data=body,
+        headers={"Content-Type": "application/json", "x-goog-api-key": api_key},
+        method="POST",
+    )
+    with urllib.request.urlopen(request, timeout=timeout) as response:
+        payload = json.loads(response.read().decode("utf-8"))
+    chunks = (((payload.get("candidates") or [{}])[0].get("content") or {}).get("parts") or [])
+    text = "".join(str(part.get("text") or "") for part in chunks).strip()
+    if not text:
+        raise RuntimeError("gemini vision returned nothing")
     return text
 
 
