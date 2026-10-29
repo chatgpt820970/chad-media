@@ -19,18 +19,6 @@
       "note": "Content Rewards rejected: not posted within last 30 minutes (off-slot post 22:16 IST)"
     },
     {
-      "id": "boxabl:x:6ae2ae9204f348da4005e4a0",
-      "post_url": "https://x.com/chadriyo/status/2115651143548141968",
-      "platform": "x",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-29T03:45:14.000Z",
-      "deadline_at": "2026-10-29T04:05:14.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae2ae9204f348da4005e4a0"
-    },
-    {
       "id": "boxabl:youtube:6ae2ae957a72c9efac10edfa",
       "post_url": "https://www.youtube.com/shorts/d83yQDzz6a8",
       "platform": "youtube",
@@ -41,18 +29,6 @@
       "deadline_at": "2026-10-29T04:05:04.000Z",
       "status": "pending",
       "buffer_post_id": "6ae2ae957a72c9efac10edfa"
-    },
-    {
-      "id": "boxabl:tiktok:6ae2ae9642598d490d7d3915",
-      "post_url": "https://www.tiktok.com/@bi67325/video/7701930783396711687",
-      "platform": "tiktok",
-      "campaign_id": "boxabl",
-      "content_rewards_campaign_id": "188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "submit_page": "https://contentrewards.com/c/campaigns/188c3e39-7850-4896-94df-e7a5be0cfec3",
-      "posted_at": "2026-10-29T03:46:44.000Z",
-      "deadline_at": "2026-10-29T04:06:44.000Z",
-      "status": "pending",
-      "buffer_post_id": "6ae2ae9642598d490d7d3915"
     }
   ]
 }
