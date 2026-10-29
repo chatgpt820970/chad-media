@@ -338,6 +338,7 @@ class PipelineTests(unittest.TestCase):
 
     def test_skip_then_schedule_and_stop_on_rate_limit(self):
         config = load_youtube()
+        config["enabled"] = True
         rows = [
             _candidate(source_id="bad", title="Kapil Sharma funny bit", lane="indian", topic="kapil", duration=40),
             _candidate(source_id="good", title="Virat Kohli cover drive", lane="indian", topic="virat", duration=40),
@@ -416,7 +417,7 @@ class PipelineTests(unittest.TestCase):
         quiet = execute(instagram)
         self.assertEqual(quiet.scheduled, 0)
         self.assertEqual(quiet.exit_code, 0)
-        self.assertEqual(instagram.events[0]["kind"], "channel_unavailable")
+        self.assertEqual(instagram.events[0]["kind"], "disabled")
 
 
 class ConfigAndWorkflowTests(unittest.TestCase):
@@ -428,9 +429,9 @@ class ConfigAndWorkflowTests(unittest.TestCase):
         yt_config = YT_HOOKS.load_config()
         ig_config = IG_HOOKS.load_config()
         self.assertTrue(x_config["enabled"])
-        self.assertTrue(yt_config["enabled"])
-        self.assertTrue(ig_config["enabled"])
-        self.assertTrue(ig_config["channel_confirmed"])
+        self.assertFalse(yt_config["enabled"])
+        self.assertFalse(ig_config["enabled"])
+        self.assertFalse(ig_config["channel_confirmed"])
         self.assertEqual(x_config["posts_per_day"], 9)
         self.assertEqual(x_config["posts_per_day_min"], 8)
         self.assertEqual(yt_config["posts_per_day"], 8)
@@ -465,8 +466,8 @@ class ConfigAndWorkflowTests(unittest.TestCase):
         ig_workflow = (ROOT / ".github/workflows/growth-instagram.yml").read_text(encoding="utf-8")
         whop = (ROOT / ".github/workflows/whop-clipper.yml").read_text(encoding="utf-8")
         self.assertIn("schedule:", x_workflow)
-        self.assertIn("schedule:", yt_workflow)
-        self.assertIn("schedule:", ig_workflow)
+        self.assertNotIn("schedule:", yt_workflow)
+        self.assertNotIn("schedule:", ig_workflow)
         self.assertNotIn("if: ${{ false }}", ig_workflow)
         self.assertIn("Retired", whop)
         self.assertNotIn("schedule:", whop)
@@ -481,6 +482,9 @@ class ConfigAndWorkflowTests(unittest.TestCase):
         for name, hooks in (("youtube", YT_HOOKS), ("instagram", IG_HOOKS)):
             text = (ROOT / ".github/workflows" / f"growth-{name}.yml").read_text(encoding="utf-8")
             crons = re.findall(r'cron: "([^"]+)"', text)
+            if "schedule:" not in text:
+                self.assertEqual(crons, [])
+                continue
             expect = []
             for row in slot_plan(hooks.load_config()):
                 expect.append(ist_utc_cron(row["time"], int(row["lead"])))
@@ -526,6 +530,7 @@ class ConfigAndWorkflowTests(unittest.TestCase):
             raise RuntimeError("render failed")
 
         youtube = load_youtube()
+        youtube["enabled"] = True
         backup_now = datetime(2026, 10, 29, 1, 42, tzinfo=timezone.utc)
         failed = PipelineTests._runtime(self, youtube, [_candidate(), _candidate(source_id="b2", title="Kapil Sharma second bit", lane="indian", topic="kapil")], dry_run=False, token_present=True, now=backup_now, prepare=prepare, poster=lambda payload: {"id": "nope"}, caption_for=yt_caption, review_caption=yt_review)
         report = execute(failed)

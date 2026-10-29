@@ -1,7 +1,7 @@
 {
   "platform": "instagram",
-  "enabled": true,
-  "channel_confirmed": true,
+  "enabled": false,
+  "channel_confirmed": false,
   "enabled_note": "Owner confirmed @benreelr is connected. Each run still asks Buffer and skips the slot if that channel id is missing.",
   "handle": "@benreelr",
   "buffer_service": "instagram",

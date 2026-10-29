@@ -16,7 +16,7 @@ X does not post an automatic caption. At 07:00 and 17:30 IST it renders the next
 
 X publish times (IST) are 07:30, 09:30, 13:00, 18:00, 19:30, 20:25, 22:00, 23:15, and 00:30. 20:25 is used instead of 20:30 so the post stays 22 minutes away from the 20:47 news post. The 23:15 runners start at 22:15 and 22:25, and the 00:30 runners start at 00:08 and 00:18, so those jobs stay 20 minutes away from the 22:47 and 23:47 news posts. YouTube slots are 07:30, 12:00, 14:00, 17:00, 19:00, 20:30, 21:30, 22:30. Instagram slots are 08:30, 11:00, 13:30, 16:30, 18:30, 20:00, 21:00, 22:00. The 21:00 Instagram runners start at 20:15 and 20:25.
 
-Instagram is enabled. Every run still asks the Buffer API whether `6ac93d936a5c39ccb66624d7` exists and skips the slot if it does not.
+YouTube and Instagram posting schedules are off until a Growth demos run approves sample clips. A manual run still asks Buffer whether `6ac93d936a5c39ccb66624d7` exists when Instagram is enabled.
 
 Instagram’s 50–60 figure is the **content mix**, not the post count. Of the day’s reels, about 50–60% are Indian (Bigg Boss, Kapil Sharma, cricket, Bollywood, TV serials). The rest are global viral clips. At the default of 8 reels, that is 4 Indian and 4 global (50%). At 7, it is 4 Indian and 3 global (about 57%).
 
