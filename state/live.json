@@ -410,6 +410,36 @@
       "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261029T060000.000Z.mp4",
       "campaign_id": "boxabl",
       "status": "scheduled"
+    },
+    {
+      "key": "x:2026-10-29T08:15:00.000Z",
+      "platform": "x",
+      "due_at": "2026-10-29T08:15:00.000Z",
+      "source_key": "x:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj#cut45",
+      "buffer_post_id": "6ae2e659b8abb6631d1013cf",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-x-20261029T081500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "youtube:2026-10-29T08:15:00.000Z",
+      "platform": "youtube",
+      "due_at": "2026-10-29T08:15:00.000Z",
+      "source_key": "youtube:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj#cut45",
+      "buffer_post_id": "6ae2e65a35657f219b2f1024",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-youtube-20261029T081500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
+    },
+    {
+      "key": "tiktok:2026-10-29T08:15:00.000Z",
+      "platform": "tiktok",
+      "due_at": "2026-10-29T08:15:00.000Z",
+      "source_key": "tiktok:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj#cut45",
+      "buffer_post_id": "6ae2e65b2467e67f128220f3",
+      "video_url": "https://chatgpt820970.github.io/chad-media/live/live-tiktok-20261029T081500.000Z.mp4",
+      "campaign_id": "boxabl",
+      "status": "scheduled"
     }
   ],
   "sources": [
@@ -453,7 +483,10 @@
     "tiktok:1JQ6vl8khXe-_CxvsMsuwWobgCoAlAOs-",
     "x:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
     "youtube:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
-    "tiktok:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45"
+    "tiktok:1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
+    "x:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj#cut45",
+    "youtube:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj#cut45",
+    "tiktok:19bsSQ2ADsw5sODn4igjbeP0norDNHdhj#cut45"
   ],
   "captions": [
     {
@@ -667,6 +700,21 @@
       "platform": "tiktok",
       "source": "1Fs-njSz479KHNHKQQ4-x30ZuaHQY6kMY#cut45",
       "text": "#ad how boxabl packs a full apartment into one shipping footprint @boxabl boxabl.com #boxabl #casita #tinyhome"
+    },
+    {
+      "platform": "x",
+      "source": "19bsSQ2ADsw5sODn4igjbeP0norDNHdhj#cut45",
+      "text": "#ad why factory-built boxabl homes are changing construction @boxabl boxabl.com #boxabl"
+    },
+    {
+      "platform": "youtube",
+      "source": "19bsSQ2ADsw5sODn4igjbeP0norDNHdhj#cut45",
+      "text": "#ad inside the engineering behind the boxabl folding house @boxabl boxabl.com #boxabl #casita #tinyhome #shorts"
+    },
+    {
+      "platform": "tiktok",
+      "source": "19bsSQ2ADsw5sODn4igjbeP0norDNHdhj#cut45",
+      "text": "#ad the future of housing is built on an assembly line by boxabl @boxabl boxabl.com #boxabl #casita #tinyhome"
     }
   ],
   "topics": [
@@ -761,6 +809,10 @@
     {
       "topic": "faze rug jq6vl8khxe-",
       "posted_at": "2026-10-29T03:45:00.000Z"
+    },
+    {
+      "topic": "boxabl bssq2adsw5sodn4igjbep0nordnhdhj cut45",
+      "posted_at": "2026-10-29T08:15:00.000Z"
     }
   ]
 }
