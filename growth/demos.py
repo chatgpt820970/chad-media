@@ -17,6 +17,7 @@ from growth.instagram.discover import discover as discover_instagram
 from growth.utils.media import apply_light_touch, is_vertical, produce
 from growth.utils.pipeline import media_reasons
 from growth.utils.quality import copyright_reason
+from growth.utils.gemini import QuotaExhausted, api_keys
 from growth.utils.review_gate import score_video
 from growth.utils.ytdlp import Candidate
 from growth.youtube.bot import load_config as load_youtube
@@ -27,6 +28,7 @@ LIMIT = 15 * 1024 * 1024
 PER_PLATFORM = 3
 LOVE_MINIMUM = 2
 EXAMINE = 12
+GEMINI_BUDGET = 8  # Gemini calls per run, across both platforms
 
 
 def _shrink(path: Path) -> Path:
@@ -76,7 +78,20 @@ def _local_reasons(config: dict, candidate: Candidate, prepared) -> list[str]:
     return reasons
 
 
-def _consider(config: dict, candidate: Candidate, work: Path, api_key: str, review) -> dict | None:
+class Budget:
+    def __init__(self, calls: int) -> None:
+        self.calls = calls
+        self.exhausted = False
+
+    def take(self) -> bool:
+        if self.exhausted or self.calls <= 0:
+            return False
+        self.calls -= 1
+        return True
+
+
+def _prepare(config: dict, candidate: Candidate, work: Path):
+    """Local-only pass: download, duration, resolution, OCR, render. No Gemini."""
     print(f"TRY {config['platform']} {candidate.topic} views={candidate.view_count} {candidate.url}", flush=True)
     try:
         prepared = produce(candidate, "", config, work / candidate.source_id, dict(os.environ))
@@ -87,6 +102,11 @@ def _consider(config: dict, candidate: Candidate, work: Path, api_key: str, revi
     if reasons:
         print(f"SKIP local {reasons[0]}", flush=True)
         return None
+    return prepared
+
+
+def _review(config: dict, candidate: Candidate, prepared, work: Path, api_key: str, review) -> dict | None:
+    """One combined Gemini call: approve the clip and write its caption."""
     try:
         verdict = score_video(
             Path(prepared.local_path),
@@ -98,8 +118,10 @@ def _consider(config: dict, candidate: Candidate, work: Path, api_key: str, revi
             int(config.get("min_gemini_score") or 8),
             str(config.get("platform") or ""),
         )
+    except QuotaExhausted:
+        raise
     except Exception as exc:
-        print(f"SKIP gemini {exc}", flush=True)
+        print(f"SKIP gemini {str(exc)[:300]}", flush=True)
         return None
     print(f"SCORE pass={verdict.get('pass')} overall={verdict.get('overall')} {verdict.get('scores')} note={verdict.get('note')}", flush=True)
     if not verdict.get("pass"):
@@ -136,19 +158,37 @@ def _consider(config: dict, candidate: Candidate, work: Path, api_key: str, revi
     }
 
 
-def _gather(config: dict, discover, review, api_key: str, work: Path) -> list[dict]:
-    rows = discover(config, dict(os.environ))
-    rows.sort(key=lambda row: (0 if row.topic == "love" else 1, -int(row.view_count or 0)))
+def _rank(row: Candidate) -> tuple:
+    return (0 if row.topic == "love" else 1, -int(row.view_count or 0))
+
+
+def _gather(config: dict, discover, review, api_key: str, work: Path, budget: Budget, used: set[str]) -> list[dict]:
+    rows = [row for row in discover(config, dict(os.environ)) if row.url not in used]
+    rows.sort(key=_rank)
+    # Stage 1: local pre-filter only, so Gemini sees just the best candidates.
+    ready: list[tuple[Candidate, object]] = []
+    for candidate in rows[:EXAMINE]:
+        prepared = _prepare(config, candidate, work)
+        if prepared is not None:
+            ready.append((candidate, prepared))
+    print(f"LOCAL {config['platform']} passed={len(ready)} of {min(len(rows), EXAMINE)}", flush=True)
+    # Stage 2: Gemini, best first, stop once enough are approved or the budget runs out.
     kept: list[dict] = []
-    examined = 0
-    for candidate in rows:
-        if len(kept) >= PER_PLATFORM or examined >= EXAMINE:
+    for candidate, prepared in ready:
+        if len(kept) >= PER_PLATFORM:
             break
-        examined += 1
-        item = _consider(config, candidate, work, api_key, review)
-        if item is None:
-            continue
-        kept.append(item)
+        if not budget.take():
+            print("STOP gemini budget used up", flush=True)
+            break
+        try:
+            item = _review(config, candidate, prepared, work, api_key, review)
+        except QuotaExhausted as exc:
+            budget.exhausted = True
+            print(f"STOP gemini quota {str(exc)[:200]}", flush=True)
+            break
+        if item is not None:
+            kept.append(item)
+            used.add(candidate.url)
     return kept
 
 
@@ -189,7 +229,8 @@ def _write(folder: Path, items: list[dict]) -> None:
 
 
 def main() -> int:
-    api_key = (os.environ.get("GEMINI_API_KEY") or "").strip()
+    keys = api_keys()
+    api_key = keys[0] if keys else ""
     if not api_key:
         print("GEMINI_API_KEY is empty")
         return 1
@@ -201,8 +242,10 @@ def main() -> int:
         (load_instagram(), discover_instagram, review_instagram),
     )
     saved: list[dict] = []
+    budget = Budget(int(os.environ.get("GROWTH_GEMINI_BUDGET") or GEMINI_BUDGET))
+    used: set[str] = set()
     for config, discover, review in jobs:
-        found = _gather(config, discover, review, api_key, work / config["platform"])
+        found = _gather(config, discover, review, api_key, work / config["platform"], budget, used)
         print(f"KEPT {config['platform']} {len(found)}", flush=True)
         saved.extend(found)
     love = sum(1 for item in saved if item["topic"] == "love")
