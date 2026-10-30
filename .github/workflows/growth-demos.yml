@@ -41,6 +41,7 @@ jobs:
           GEMINI_API_KEY_2: ${{ secrets.GEMINI_API_KEY_2 }}
           GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
           GEMINI_MODEL: gemini-flash-latest
+          GEMINI_MODEL_FIRST: gemini-flash-lite-latest
           GROWTH_DEMO_DIR: work/growth-demos
         run: python -m growth.demos
 

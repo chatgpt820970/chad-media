@@ -81,7 +81,9 @@ def api_keys(primary: str = "") -> list[str]:
 
 
 def model_chain(model: str = "") -> list[str]:
-    chain = [*FALLBACK_MODELS]
+    preferred = (os.environ.get("GEMINI_MODEL_FIRST") or "").strip()
+    chain = [preferred] if preferred else []
+    chain += [m for m in FALLBACK_MODELS if m not in chain]
     if model and model not in chain:
         chain.append(model)
     return chain
