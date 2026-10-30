@@ -22,14 +22,46 @@
   "lead_tolerance": 4,
   "gemini_model": "gemini-flash-latest",
   "slots": [
-    {"time": "08:30", "lead": 24, "backup_lead": 14},
-    {"time": "11:00", "lead": 24, "backup_lead": 14},
-    {"time": "13:30", "lead": 24, "backup_lead": 14},
-    {"time": "16:30", "lead": 24, "backup_lead": 14},
-    {"time": "18:30", "lead": 24, "backup_lead": 14},
-    {"time": "20:00", "lead": 24, "backup_lead": 14},
-    {"time": "21:00", "lead": 45, "backup_lead": 35},
-    {"time": "22:00", "lead": 24, "backup_lead": 14}
+    {
+      "time": "08:30",
+      "lead": 24,
+      "backup_lead": 14
+    },
+    {
+      "time": "11:00",
+      "lead": 24,
+      "backup_lead": 14
+    },
+    {
+      "time": "13:30",
+      "lead": 24,
+      "backup_lead": 14
+    },
+    {
+      "time": "16:30",
+      "lead": 24,
+      "backup_lead": 14
+    },
+    {
+      "time": "18:30",
+      "lead": 24,
+      "backup_lead": 14
+    },
+    {
+      "time": "20:00",
+      "lead": 24,
+      "backup_lead": 14
+    },
+    {
+      "time": "21:00",
+      "lead": 45,
+      "backup_lead": 35
+    },
+    {
+      "time": "22:00",
+      "lead": 24,
+      "backup_lead": 14
+    }
   ],
   "min_resolution": 720,
   "clip_seconds": 20,
@@ -41,7 +73,7 @@
   "repost": true,
   "zoom": false,
   "min_gemini_score": 8,
-  "strategy": "Instagram Reels: 50-60% Indian content — Bollywood paparazzi reels, trending songs, dance, cricket fan edits, Bigg Boss, and a love/romantic lane of couple reels, romantic Bollywood scenes and songs, and love-song edits. Keep the original romantic song. The other 40-50% is global viral: satisfying clips, funny animals, amazing skills, and celebrity moments. Native vertical 9:16 only, full quality, no blurred padding and no crop.",
+  "strategy": "Instagram Reels: 50-60% Indian content — Bollywood paparazzi reels, trending songs, dance, cricket fan edits, Bigg Boss, and a love/romantic lane of couple reels, romantic Bollywood scenes and songs, and love-song edits. Keep the original romantic song. The other 40-50% is global viral: satisfying clips, funny animals, amazing skills, and celebrity moments. Native vertical 9:16 only, full quality, no blurred padding and no crop. Love lane is couple reels and fan edits from creators, never official label/studio channels (T-Series, Zee Music, Saregama, Sony Music, Tips, YRF etc.), never trailers, teasers, jukeboxes or devotional/religious content. Any corner logo or watermark is a reject.",
   "reject_promo": true,
   "hashtag_min": 3,
   "hashtag_max": 5,
@@ -57,8 +89,6 @@
     "skills": 0.5
   },
   "account_weights": {
-    "https://www.youtube.com/@TSeries/shorts": 1.6,
-    "https://www.youtube.com/@ZeeMusicCompany/shorts": 1.6,
     "https://www.tiktok.com/@instantbollywood": 1.3,
     "https://www.tiktok.com/@voompla": 1.3,
     "https://www.youtube.com/@viralbhayani/shorts": 1.3,
@@ -66,28 +96,198 @@
     "https://www.tiktok.com/@zachking": 0.5
   },
   "sources": [
-    {"kind": "account", "url": "https://www.youtube.com/@TSeries/shorts", "lane": "indian", "topic": "love", "count": 5},
-    {"kind": "account", "url": "https://www.youtube.com/@ZeeMusicCompany/shorts", "lane": "indian", "topic": "love", "count": 5},
-    {"kind": "hashtag", "platform": "tiktok", "tag": "bollywoodlove", "lane": "indian", "topic": "love", "count": 4},
-    {"kind": "hashtag", "platform": "tiktok", "tag": "romanticstatus", "lane": "indian", "topic": "love", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@bollywoodromance", "lane": "indian", "topic": "love", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@lovesongstatus", "lane": "indian", "topic": "love", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@instantbollywood", "lane": "indian", "topic": "paparazzi", "count": 5},
-    {"kind": "account", "url": "https://www.tiktok.com/@voompla", "lane": "indian", "topic": "paparazzi", "count": 5},
-    {"kind": "account", "url": "https://www.tiktok.com/@viralbhayani", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.youtube.com/@viralbhayani/shorts", "lane": "indian", "topic": "paparazzi", "count": 5},
-    {"kind": "account", "url": "https://www.youtube.com/@VOOMPLA/shorts", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/viralbhayani/reels/", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/instantbollywood/reels/", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/voompla/reels/", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/bollywoodbubble/reels/", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/filmygyan/reels/", "lane": "indian", "topic": "bollywood", "count": 4},
-    {"kind": "account", "url": "https://www.youtube.com/@ColorsTV/shorts", "lane": "indian", "topic": "bigg-boss", "count": 5},
-    {"kind": "account", "url": "https://www.instagram.com/colorstv/reels/", "lane": "indian", "topic": "bigg-boss", "count": 4},
-    {"kind": "account", "url": "https://www.youtube.com/@KapilSharmaK9/shorts", "lane": "indian", "topic": "kapil", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@mumbaiindians", "lane": "indian", "topic": "cricket", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/sonytv/reels/", "lane": "indian", "topic": "comedy", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@khaby.lame", "lane": "global", "topic": "comedy", "count": 3},
-    {"kind": "account", "url": "https://www.tiktok.com/@zachking", "lane": "global", "topic": "skills", "count": 3}
+    {
+      "kind": "ytsearch",
+      "query": "couple reel romantic hindi shorts",
+      "lane": "indian",
+      "topic": "love",
+      "count": 5
+    },
+    {
+      "kind": "ytsearch",
+      "query": "romantic couple status shorts fan edit",
+      "lane": "indian",
+      "topic": "love",
+      "count": 5
+    },
+    {
+      "kind": "ytsearch",
+      "query": "pyaar ishq couple edit shorts",
+      "lane": "indian",
+      "topic": "love",
+      "count": 5
+    },
+    {
+      "kind": "ytsearch",
+      "query": "bollywood romantic scene fan edit shorts",
+      "lane": "indian",
+      "topic": "love",
+      "count": 5
+    },
+    {
+      "kind": "hashtag",
+      "platform": "tiktok",
+      "tag": "couplegoals",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "hashtag",
+      "platform": "tiktok",
+      "tag": "indiancouple",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "hashtag",
+      "platform": "tiktok",
+      "tag": "bollywoodlove",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "hashtag",
+      "platform": "tiktok",
+      "tag": "romanticstatus",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@bollywoodromance",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@lovesongstatus",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@instantbollywood",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 5
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@voompla",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 5
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@viralbhayani",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@viralbhayani/shorts",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 5
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@VOOMPLA/shorts",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/viralbhayani/reels/",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/instantbollywood/reels/",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/voompla/reels/",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/bollywoodbubble/reels/",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/filmygyan/reels/",
+      "lane": "indian",
+      "topic": "bollywood",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@ColorsTV/shorts",
+      "lane": "indian",
+      "topic": "bigg-boss",
+      "count": 5
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/colorstv/reels/",
+      "lane": "indian",
+      "topic": "bigg-boss",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@KapilSharmaK9/shorts",
+      "lane": "indian",
+      "topic": "kapil",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@mumbaiindians",
+      "lane": "indian",
+      "topic": "cricket",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/sonytv/reels/",
+      "lane": "indian",
+      "topic": "comedy",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@khaby.lame",
+      "lane": "global",
+      "topic": "comedy",
+      "count": 3
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@zachking",
+      "lane": "global",
+      "topic": "skills",
+      "count": 3
+    }
   ]
 }

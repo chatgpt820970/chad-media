@@ -14,6 +14,7 @@ from pathlib import Path
 
 from clipper.buffer_api import BufferError, create_post, due_stamp, is_rate_limited
 
+from growth.utils.content_filter import source_reasons
 from growth.utils.dedupe import (
     clear_failure,
     load_state,
@@ -107,7 +108,7 @@ def _lane_needed(done: dict[str, int], targets: dict[str, int] | None) -> list[s
 
 
 def _metadata_reasons(candidate: Candidate, config: dict) -> list[str]:
-    reasons: list[str] = []
+    reasons: list[str] = list(source_reasons(candidate, require_love=False))
     if promo_reason(candidate.title) or promo_reason(candidate.description):
         if config.get("reject_promo"):
             reasons.append("ad or promo")

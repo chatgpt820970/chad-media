@@ -17,14 +17,46 @@
   "min_gap_minutes": 60,
   "lead_tolerance": 4,
   "slots": [
-    {"time": "07:30", "lead": 28, "backup_lead": 18},
-    {"time": "12:00", "lead": 28, "backup_lead": 18},
-    {"time": "14:00", "lead": 28, "backup_lead": 18},
-    {"time": "17:00", "lead": 28, "backup_lead": 18},
-    {"time": "19:00", "lead": 28, "backup_lead": 18},
-    {"time": "20:30", "lead": 28, "backup_lead": 18},
-    {"time": "21:30", "lead": 28, "backup_lead": 18},
-    {"time": "22:30", "lead": 28, "backup_lead": 18}
+    {
+      "time": "07:30",
+      "lead": 28,
+      "backup_lead": 18
+    },
+    {
+      "time": "12:00",
+      "lead": 28,
+      "backup_lead": 18
+    },
+    {
+      "time": "14:00",
+      "lead": 28,
+      "backup_lead": 18
+    },
+    {
+      "time": "17:00",
+      "lead": 28,
+      "backup_lead": 18
+    },
+    {
+      "time": "19:00",
+      "lead": 28,
+      "backup_lead": 18
+    },
+    {
+      "time": "20:30",
+      "lead": 28,
+      "backup_lead": 18
+    },
+    {
+      "time": "21:30",
+      "lead": 28,
+      "backup_lead": 18
+    },
+    {
+      "time": "22:30",
+      "lead": 28,
+      "backup_lead": 18
+    }
   ],
   "min_resolution": 720,
   "clip_seconds": 20,
@@ -37,7 +69,7 @@
   "zoom": false,
   "min_gemini_score": 8,
   "gemini_model": "gemini-flash-latest",
-  "strategy": "YouTube Shorts for an Indian audience: Bigg Boss fights and funny moments, Kapil Sharma comedy, Virat Rohit and Dhoni fan edits, Bollywood dialogue, airport and paparazzi clips, weddings and dance, desi comedy, and a love/romantic lane of couple reels, romantic Bollywood scenes and songs, and love-song edits. Keep the original song. Native vertical 9:16 only. Reject landscape video, blurred padding, crops, and any broadcaster or event logo. 10 to 40 seconds, a strong first second, the name in the title, and #shorts.",
+  "strategy": "YouTube Shorts for an Indian audience: Bigg Boss fights and funny moments, Kapil Sharma comedy, Virat Rohit and Dhoni fan edits, Bollywood dialogue, airport and paparazzi clips, weddings and dance, desi comedy, and a love/romantic lane of couple reels, romantic Bollywood scenes and songs, and love-song edits. Keep the original song. Native vertical 9:16 only. Reject landscape video, blurred padding, crops, and any broadcaster or event logo. 10 to 40 seconds, a strong first second, the name in the title, and #shorts. Love lane is couple reels and fan edits from creators, never official label/studio channels (T-Series, Zee Music, Saregama, Sony Music, Tips, YRF etc.), never trailers, teasers, jukeboxes or devotional/religious content. Any corner logo or watermark is a reject.",
   "reject_promo": true,
   "hashtag_min": 3,
   "hashtag_max": 5,
@@ -53,8 +85,6 @@
     "comedy": 1.0
   },
   "account_weights": {
-    "https://www.youtube.com/@TSeries/shorts": 1.6,
-    "https://www.youtube.com/@ZeeMusicCompany/shorts": 1.6,
     "https://www.tiktok.com/@instantbollywood": 1.3,
     "https://www.tiktok.com/@voompla": 1.3,
     "https://www.tiktok.com/@viralbhayani": 1.2,
@@ -67,31 +97,220 @@
     "https://www.tiktok.com/@mumbaiindians": 1.0
   },
   "sources": [
-    {"kind": "account", "url": "https://www.youtube.com/@TSeries/shorts", "lane": "indian", "topic": "love", "count": 6},
-    {"kind": "account", "url": "https://www.youtube.com/@ZeeMusicCompany/shorts", "lane": "indian", "topic": "love", "count": 6},
-    {"kind": "hashtag", "platform": "tiktok", "tag": "bollywoodlove", "lane": "indian", "topic": "love", "count": 4},
-    {"kind": "hashtag", "platform": "tiktok", "tag": "romanticstatus", "lane": "indian", "topic": "love", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@bollywoodromance", "lane": "indian", "topic": "love", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@lovesongstatus", "lane": "indian", "topic": "love", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@instantbollywood", "lane": "indian", "topic": "paparazzi", "count": 6},
-    {"kind": "account", "url": "https://www.tiktok.com/@voompla", "lane": "indian", "topic": "paparazzi", "count": 6},
-    {"kind": "account", "url": "https://www.tiktok.com/@viralbhayani", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.youtube.com/@viralbhayani/shorts", "lane": "indian", "topic": "paparazzi", "count": 6},
-    {"kind": "account", "url": "https://www.youtube.com/@VOOMPLA/shorts", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/viralbhayani/reels/", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/instantbollywood/reels/", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/voompla/reels/", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/bollywoodbubble/reels/", "lane": "indian", "topic": "paparazzi", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/filmygyan/reels/", "lane": "indian", "topic": "bollywood", "count": 4},
-    {"kind": "account", "url": "https://www.youtube.com/@ColorsTV/shorts", "lane": "indian", "topic": "bigg-boss", "count": 6},
-    {"kind": "account", "url": "https://www.instagram.com/colorstv/reels/", "lane": "indian", "topic": "bigg-boss", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@colors.tv", "lane": "indian", "topic": "bigg-boss", "count": 4},
-    {"kind": "account", "url": "https://www.youtube.com/@KapilSharmaK9/shorts", "lane": "indian", "topic": "kapil", "count": 6},
-    {"kind": "account", "url": "https://www.youtube.com/@TheKapilSharmaShow/shorts", "lane": "indian", "topic": "kapil", "count": 6},
-    {"kind": "account", "url": "https://www.youtube.com/@SETIndia/shorts", "lane": "indian", "topic": "comedy", "count": 4},
-    {"kind": "account", "url": "https://www.instagram.com/sonytv/reels/", "lane": "indian", "topic": "comedy", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@sonytvofficial", "lane": "indian", "topic": "comedy", "count": 4},
-    {"kind": "account", "url": "https://www.tiktok.com/@mumbaiindians", "lane": "indian", "topic": "cricket", "count": 4},
-    {"kind": "hashtag", "platform": "tiktok", "tag": "bigg_boss", "lane": "indian", "topic": "bigg-boss", "count": 4}
+    {
+      "kind": "ytsearch",
+      "query": "couple reel romantic hindi shorts",
+      "lane": "indian",
+      "topic": "love",
+      "count": 6
+    },
+    {
+      "kind": "ytsearch",
+      "query": "romantic couple status shorts fan edit",
+      "lane": "indian",
+      "topic": "love",
+      "count": 6
+    },
+    {
+      "kind": "ytsearch",
+      "query": "pyaar ishq couple edit shorts",
+      "lane": "indian",
+      "topic": "love",
+      "count": 6
+    },
+    {
+      "kind": "ytsearch",
+      "query": "bollywood romantic scene fan edit shorts",
+      "lane": "indian",
+      "topic": "love",
+      "count": 6
+    },
+    {
+      "kind": "hashtag",
+      "platform": "tiktok",
+      "tag": "couplegoals",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "hashtag",
+      "platform": "tiktok",
+      "tag": "indiancouple",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "hashtag",
+      "platform": "tiktok",
+      "tag": "bollywoodlove",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "hashtag",
+      "platform": "tiktok",
+      "tag": "romanticstatus",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@bollywoodromance",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@lovesongstatus",
+      "lane": "indian",
+      "topic": "love",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@instantbollywood",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 6
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@voompla",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 6
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@viralbhayani",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@viralbhayani/shorts",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 6
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@VOOMPLA/shorts",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/viralbhayani/reels/",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/instantbollywood/reels/",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/voompla/reels/",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/bollywoodbubble/reels/",
+      "lane": "indian",
+      "topic": "paparazzi",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/filmygyan/reels/",
+      "lane": "indian",
+      "topic": "bollywood",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@ColorsTV/shorts",
+      "lane": "indian",
+      "topic": "bigg-boss",
+      "count": 6
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/colorstv/reels/",
+      "lane": "indian",
+      "topic": "bigg-boss",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@colors.tv",
+      "lane": "indian",
+      "topic": "bigg-boss",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@KapilSharmaK9/shorts",
+      "lane": "indian",
+      "topic": "kapil",
+      "count": 6
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@TheKapilSharmaShow/shorts",
+      "lane": "indian",
+      "topic": "kapil",
+      "count": 6
+    },
+    {
+      "kind": "account",
+      "url": "https://www.youtube.com/@SETIndia/shorts",
+      "lane": "indian",
+      "topic": "comedy",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.instagram.com/sonytv/reels/",
+      "lane": "indian",
+      "topic": "comedy",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@sonytvofficial",
+      "lane": "indian",
+      "topic": "comedy",
+      "count": 4
+    },
+    {
+      "kind": "account",
+      "url": "https://www.tiktok.com/@mumbaiindians",
+      "lane": "indian",
+      "topic": "cricket",
+      "count": 4
+    },
+    {
+      "kind": "hashtag",
+      "platform": "tiktok",
+      "tag": "bigg_boss",
+      "lane": "indian",
+      "topic": "bigg-boss",
+      "count": 4
+    }
   ]
 }

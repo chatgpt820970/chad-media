@@ -14,7 +14,8 @@ from pathlib import Path
 from growth.instagram.bot import load_config as load_instagram
 from growth.instagram.caption import review_caption as review_instagram
 from growth.instagram.discover import discover as discover_instagram
-from growth.utils.media import apply_light_touch, is_vertical, produce
+from growth.utils.content_filter import neutral_caption, source_reasons, strip_emoji
+from growth.utils.media import apply_light_touch, bitrate_kbps, is_vertical, produce
 from growth.utils.pipeline import media_reasons
 from growth.utils.quality import copyright_reason
 from growth.utils import gemini
@@ -29,6 +30,7 @@ LIMIT = 15 * 1024 * 1024
 PER_PLATFORM = 3
 LOVE_MINIMUM = 2
 EXAMINE = 12
+MIN_KBPS = 900  # below this a 720p+ clip looks soft/blurry
 GEMINI_BUDGET = 15  # every Gemini HTTP request per run (uploads, generate, retries)
 
 
@@ -101,6 +103,10 @@ def _local_reasons(config: dict, candidate: Candidate, prepared) -> list[str]:
         reasons.append(f"duration outside the clip window ({prepared.duration:.1f}s not in {low:g}-{high:g}s)")
     if prepared.width and prepared.height and not is_vertical(prepared.width, prepared.height):
         reasons.append("not native vertical")
+    if prepared.local_path and Path(prepared.local_path).is_file():
+        kbps = bitrate_kbps(Path(prepared.local_path))
+        if kbps and kbps < MIN_KBPS:
+            reasons.append(f"low bitrate ({kbps} kbps < {MIN_KBPS})")
     if not prepared.local_path and "not native vertical" not in reasons:
         reasons.append(
             f"render produced no file (hits={list(prepared.corner_hits)} cutoff={prepared.edge_cutoff} "
@@ -146,11 +152,8 @@ class _Skipped(Exception):
 
 
 def _placeholder_caption(config: dict, candidate: Candidate) -> str:
-    title = " ".join(str(candidate.title or candidate.topic or "").split())[:90]
-    tags = "#love #romantic #shorts" if config.get("platform") == "youtube" else "#love #reels #hindisongs"
-    if candidate.topic != "love":
-        tags = "#shorts #viral" if config.get("platform") == "youtube" else "#reels #viral"
-    return f"{title} {tags}".strip()
+    """Gemini skipped: a short neutral caption, never the source title, no emoji."""
+    return neutral_caption(candidate, str(config.get("platform") or ""))
 
 
 def _review(config: dict, candidate: Candidate, prepared, work: Path, api_key: str, review) -> dict | None:
@@ -185,7 +188,7 @@ def _review(config: dict, candidate: Candidate, prepared, work: Path, api_key: s
     print(f"SCORE pass={verdict.get('pass')} overall={verdict.get('overall')} {verdict.get('scores')} note={verdict.get('note')}", flush=True)
     if not verdict.get("pass"):
         return None
-    caption = str(verdict.get("caption") or "").strip()
+    caption = strip_emoji(str(verdict.get("caption") or "").strip())
     notes = [] if skip else (review(caption, candidate) if caption else ["gemini caption missing"])
     if notes:
         print(f"SKIP caption {notes[0]}", flush=True)
@@ -222,7 +225,15 @@ def _rank(row: Candidate) -> tuple:
 
 
 def _gather(config: dict, discover, review, api_key: str, work: Path, budget: Budget, used: set[str]) -> list[dict]:
-    rows = [row for row in discover(config, dict(os.environ)) if row.url not in used]
+    rows = []
+    for row in discover(config, dict(os.environ)):
+        if row.url in used:
+            continue
+        blocked = source_reasons(row, require_love=True)
+        if blocked:
+            print(f"SKIP source {blocked[0]} {row.url}", flush=True)
+            continue
+        rows.append(row)
     rows.sort(key=_rank)
     # Stage 1: local pre-filter only, so Gemini sees just the best candidates.
     ready: list[tuple[Candidate, object]] = []

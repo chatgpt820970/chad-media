@@ -229,7 +229,9 @@ def media_reasons(width: int, height: int, duration: float | None, ocr_text: str
         reasons.append(resolution)
     if not width or not height:
         reasons.append("missing dimensions")
-    # corner_hits are a soft hint only; Gemini review makes the final logo call
+    # a detected corner logo/watermark is a reject (never cropped around); Gemini double-checks
+    if corner_hits:
+        reasons.append(f"corner logo or watermark detected ({', '.join(corner_hits)})")
     if watermark_reason(ocr_text):
         reasons.append("third-party watermark or logo")
     if cutoff:

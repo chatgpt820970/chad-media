@@ -7,6 +7,7 @@ repost only native vertical video: no pad, no crop, no burned-in text.
 from __future__ import annotations
 
 import json
+import re
 import shutil
 import subprocess
 from dataclasses import dataclass
@@ -94,6 +95,68 @@ def has_audio(path: Path) -> bool:
     return bool((result.stdout or "").strip())
 
 
+SILENCE_START = re.compile(r"silence_start:\s*(-?[0-9.]+)")
+SCENE_TIME = re.compile(r"pts_time:([0-9.]+)")
+FADE_OUT = 0.4
+FADE_IN = 0.15
+
+
+def pick_clean_end(duration: float, silences: list[float], scenes: list[float], window: float = 3.0, minimum: float = 0.0) -> float:
+    """End on a silence gap (preferred) or scene cut inside the last `window` seconds."""
+    low = max(minimum, duration - window)
+    for group in (silences, scenes):
+        inside = [t for t in group if low <= t <= duration - 0.05]
+        if inside:
+            return round(max(inside), 2)
+    return round(duration, 2)
+
+
+def parse_silence_starts(stderr: str, offset: float = 0.0) -> list[float]:
+    return [offset + float(v) for v in SILENCE_START.findall(stderr or "")]
+
+
+def parse_scene_times(stderr: str, offset: float = 0.0) -> list[float]:
+    return [offset + float(v) for v in SCENE_TIME.findall(stderr or "")]
+
+
+def clean_end(source: Path, duration: float, minimum: float) -> float:
+    """Find a cut point near the end so nothing stops mid-word. Falls back to the full length."""
+    if shutil.which("ffmpeg") is None or duration <= 0:
+        return duration
+    offset = max(0.0, duration - 3.5)
+    silences: list[float] = []
+    scenes: list[float] = []
+    try:
+        if has_audio(source):
+            out = subprocess.run(
+                ["ffmpeg", "-hide_banner", "-ss", f"{offset:.2f}", "-i", str(source), "-vn",
+                 "-af", "silencedetect=noise=-32dB:d=0.18", "-f", "null", "-"],
+                capture_output=True, text=True, timeout=60, check=False,
+            )
+            silences = parse_silence_starts(out.stderr, offset)
+        out = subprocess.run(
+            ["ffmpeg", "-hide_banner", "-ss", f"{offset:.2f}", "-i", str(source), "-an",
+             "-vf", "select='gt(scene,0.3)',showinfo", "-f", "null", "-"],
+            capture_output=True, text=True, timeout=90, check=False,
+        )
+        scenes = parse_scene_times(out.stderr, offset)
+    except Exception:
+        return duration
+    return pick_clean_end(duration, silences, scenes, 3.0, minimum)
+
+
+def fit_graph(video_filter: str) -> str:
+    """Fit the whole picture in 1080x1920 over a blurred copy. No cover-crop of the subject."""
+    return (
+        "[0:v]split=2[bg][fg];"
+        "[bg]scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,boxblur=24:2[blur];"
+        "[fg]scale=1080:1920:force_original_aspect_ratio=decrease:flags=lanczos[fit];"
+        "[blur][fit]overlay=(W-w)/2:(H-h)/2,setsar=1,"
+        + video_filter
+        + "[v]"
+    )
+
+
 def apply_light_touch(source: Path, dest: Path, tweaks: dict, clip_min: float) -> float:
     """Re-encode one vertical file at 1080x1920. Returns the new duration. Raises MinorFailure.
 
@@ -101,23 +164,27 @@ def apply_light_touch(source: Path, dest: Path, tweaks: dict, clip_min: float) -
     lightly. Works with or without an audio stream. No text, no stock footage.
     """
     _width, _height, duration, _start = probe(source)
+    speed = float(tweaks.get("speed") or 1.03)
     trim = usable_trim(duration, clip_min, tweaks)
     head = trim
-    tail = trim if duration - 2 * trim >= float(clip_min) * float(tweaks.get("speed") or 1.03) else 0.0
+    # end on a silence gap or scene cut so no word or lyric is chopped
+    end = clean_end(source, duration, head + float(clip_min) * speed)
+    tail = round(max(0.0, duration - end), 2)
+    if duration - head - tail < float(clip_min) * speed:
+        tail = 0.0
+    length = max(0.5, duration - head - tail)
+    out_len = length / speed
+    fade_start = max(0.0, out_len - FADE_OUT)
     video_filter, audio_filter = light_touch_filters(tweaks)
-    video_filter = (
-        "scale=1080:1920:force_original_aspect_ratio=decrease:flags=lanczos,"
-        "pad=1080:1920:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,"
-        + video_filter
-    )
+    video_filter += f",fade=t=in:st=0:d={FADE_IN},fade=t=out:st={fade_start:.2f}:d={FADE_OUT}"
+    audio_filter += f",afade=t=in:st=0:d={FADE_IN},afade=t=out:st={fade_start:.2f}:d={FADE_OUT}"
     command = ["ffmpeg", "-y"]
     if head > 0:
         command.extend(["-ss", f"{head:.2f}"])
-    if tail > 0:
-        # input-side -t so the tail is cut from the source before the speed-up
-        command.extend(["-t", f"{max(0.5, duration - head - tail):.2f}"])
+    # input-side -t so the tail is cut from the source before the speed-up
+    command.extend(["-t", f"{length:.2f}"])
     command.extend(["-i", str(source)])
-    command.extend(["-map", "0:v:0", "-vf", video_filter])
+    command.extend(["-filter_complex", fit_graph(video_filter), "-map", "[v]"])
     if has_audio(source):
         command.extend(["-map", "0:a:0", "-af", audio_filter, "-c:a", "aac", "-b:a", "192k"])
     else:
@@ -195,6 +262,20 @@ def _run(command: list[str], timeout: int) -> subprocess.CompletedProcess[str]:
         print(f"command failed rc={result.returncode}: {' '.join(command[:3])} ... stderr: {(result.stderr or '')[-1200:]}", flush=True)
         raise MinorFailure(detail)
     return result
+
+
+def bitrate_kbps(path: Path) -> int:
+    """Overall bitrate in kbps, 0 when unknown."""
+    if shutil.which("ffprobe") is None:
+        return 0
+    try:
+        out = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=bit_rate", "-of", "csv=p=0", str(path)],
+            capture_output=True, text=True, timeout=60, check=False,
+        )
+        return int(float((out.stdout or "0").strip() or 0) / 1000)
+    except Exception:
+        return 0
 
 
 def probe(path: Path) -> tuple[int, int, float]:
