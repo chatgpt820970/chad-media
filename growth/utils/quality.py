@@ -219,7 +219,7 @@ def split_share(total: int, share: float) -> tuple[int, int]:
     return primary, total - primary
 
 
-def media_reasons(width: int, height: int, duration: float | None, ocr_text: str, corner_hits: list[str], cutoff: bool, scanners_unavailable: bool, minimum: int) -> list[str]:
+def media_reasons(width: int, height: int, duration: float | None, ocr_text: str, corner_hits: list[str], cutoff: bool, scanners_unavailable: bool, minimum: int, reject_corner: bool = False) -> list[str]:
     reasons: list[str] = []
     if scanners_unavailable:
         reasons.append("scanners unavailable")
@@ -229,8 +229,9 @@ def media_reasons(width: int, height: int, duration: float | None, ocr_text: str
         reasons.append(resolution)
     if not width or not height:
         reasons.append("missing dimensions")
-    # a detected corner logo/watermark is a reject (never cropped around); Gemini double-checks
-    if corner_hits:
+    # corner hits are a hint for Gemini, which makes the final logo call.
+    # Only when Gemini is unavailable/skipped (reject_corner) are they a hard reject.
+    if corner_hits and reject_corner:
         reasons.append(f"corner logo or watermark detected ({', '.join(corner_hits)})")
     if watermark_reason(ocr_text):
         reasons.append("third-party watermark or logo")

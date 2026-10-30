@@ -31,7 +31,7 @@ class Labels(unittest.TestCase):
 
 class Devotional(unittest.TestCase):
     def test_hits(self):
-        for t in ("Jai Shri Ram", "Ravana Tandav", "Ramayana scene", "Mahadev status", "Hanuman Chalisa", "Krishna bhajan", "Ram"):
+        for t in ("Jai Shri Ram", "Ravana Tandav", "Ramayana scene", "Mahadev status", "Hanuman Chalisa", "Krishna bhajan"):
             self.assertTrue(devotional_reason(cand(title=t)), t)
 
     def test_word_boundaries(self):
@@ -61,7 +61,7 @@ class Captions(unittest.TestCase):
 
 class Media(unittest.TestCase):
     def test_corner_logo_rejects(self):
-        reasons = media_reasons(1080, 1920, 20.0, "", ["top-right"], False, False, 720)
+        reasons = media_reasons(1080, 1920, 20.0, "", ["top-right"], False, False, 720, reject_corner=True)
         self.assertTrue(any("corner logo" in r for r in reasons))
         self.assertEqual(media_reasons(1080, 1920, 20.0, "", [], False, False, 720), [])
 
@@ -81,3 +81,20 @@ class Media(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
+
+
+class FollowUp(unittest.TestCase):
+    def test_ram_names_not_devotional(self):
+        for t in ("Ram Charan romantic scene", "Ram Kapoor and Sakshi couple", "Ram and Priya love"):
+            self.assertIsNone(devotional_reason(cand(title=t)), t)
+        for t in ("Jai Shri Ram", "Siya Ram status", "Ram ji ki kripa", "Ram bhajan", "Ram Navami special"):
+            self.assertTrue(devotional_reason(cand(title=t)), t)
+
+    def test_broad_love(self):
+        for t in ("Tum hi ho", "dil se", "heart touching song", "shaadi vibes", "Kesariya cover"):
+            self.assertTrue(is_love(cand(topic="bollywood", title=t)), t)
+        self.assertTrue(is_love(cand(topic="love", title="untitled clip")))
+
+    def test_corner_hint_only_unless_gemini_off(self):
+        self.assertEqual(media_reasons(1080, 1920, 20.0, "", ["top-left"], False, False, 720), [])
+        self.assertTrue(media_reasons(1080, 1920, 20.0, "", ["top-left"], False, False, 720, reject_corner=True))

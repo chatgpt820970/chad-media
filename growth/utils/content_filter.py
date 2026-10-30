@@ -31,7 +31,7 @@ PROMO_TITLE = re.compile(
 )
 DEVOTIONAL = re.compile(
     r"(?i)(?<![a-z])("
-    r"ram|shri\s*ram|shree\s*ram|jai\s*shri\s*ram|jai\s*shree\s*ram|siya\s*ram|ramayan|ramayana|ramayanam|"
+    r"jai\s*(shri|shree|sri)\s*ram|(shri|shree|sri)\s*ram|siya\s*ram|ram\s*siya|sita\s*ram|ram\s*ji|ram\s*bhajan|ram\s*navami|ram\s*mandir|ram\s*lalla|ram\s*darbar|raghupati|ramayan|ramayana|ramayanam|"
     r"ravan|ravana|raavan|tandav|shiv|shiva|shivaay|shankar|mahadev|bholenath|mahakal|bhole|"
     r"bhajan|bhajans|aarti|arti|krishna|krishn|radhe|radha\s*krishna|govind|kanha|hanuman|bajrang|"
     r"devotional|mantra|mantras|chalisa|bhakti|ganesh|ganpati|durga|navratri|mata\s*rani|jai\s*mata|"
@@ -43,7 +43,9 @@ LOVE = re.compile(
     r"(?i)(?<![a-z])("
     r"love|lovers?|romance|romantic|couple|couples|couplegoals|pyaar|pyar|ishq|mohabbat|prem|"
     r"dil|jaan|jaanu|sanam|humsafar|saathiya|valentine|crush|bae|wife|husband|shaadi|wedding|"
-    r"proposal|propose|kiss|hug|date|girlfriend|boyfriend|bf|gf|lovestory|love\s*story|"
+    r"proposal|propose|kiss|kissing|hug|hugs|date|girlfriend|boyfriend|bf|gf|lovestory|love\s*story|tum|tera|teri|tujhe|mera|meri|"
+    r"heart|hearts|aashiqui|ashiqui|aashiq|deewana|deewani|dilbar|dilwale|sajna|sajni|mahi|yaara|piya|saiyaan|"
+    r"tum\s*hi\s*ho|raabta|kesariya|tera\s*ban|hawayein|pehla\s*nasha|soulmate|forever|together|cute|"
     r"lovesong|love\s*song|romanticstatus|bollywoodlove"
     r")(?![a-z])"
 )

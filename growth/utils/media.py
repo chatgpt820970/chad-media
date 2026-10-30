@@ -516,6 +516,30 @@ def _clip_seconds(duration: float, config: dict) -> float:
     return wanted
 
 
+GENERIC_FORMAT = "bv*+ba/b"
+
+
+def _download(url: str, source: Path, work: Path, token: str, cookies: str | None, fmt: str | None = None) -> Path:
+    """yt-dlp download; 'format not available' (or any failure) retries with a generic selector."""
+    command = download_command(url, str(source), cookies)
+    if fmt:
+        command[command.index("-f") + 1] = fmt
+    try:
+        _run(command, 180)
+    except Exception as exc:
+        if fmt:
+            raise
+        print(f"download retry generic format: {str(exc)[:160]}", flush=True)
+        command[command.index("-f") + 1] = GENERIC_FORMAT
+        _run(command, 180)
+    if source.is_file():
+        return source
+    matches = [m for m in work.glob(f"{token}.*") if m.suffix in (".mp4", ".mkv", ".webm", ".mov")]
+    if not matches:
+        raise MinorFailure("download saved nothing")
+    return matches[0]
+
+
 def produce(
     candidate: Candidate,
     hook: str,
@@ -537,13 +561,15 @@ def produce(
     else:
         if shutil.which("yt-dlp") is None:
             raise MinorFailure("yt-dlp unavailable")
-        _run(download_command(candidate.url, str(source), _cookies(candidate.url, env)), 180)
-        if not source.is_file():
-            matches = list(work.glob(f"{token}.*"))
-            if not matches:
-                raise MinorFailure("download saved nothing")
-            source = matches[0]
+        source = _download(candidate.url, source, work, token, _cookies(candidate.url, env))
     width, height, duration, media_start = probe(source)
+    if (not width or not height) and source_file is None:
+        # odd container/format: retry with the generic selector and probe again
+        source.unlink(missing_ok=True)
+        source = _download(candidate.url, work / f"{token}.mp4", work, token, _cookies(candidate.url, env), GENERIC_FORMAT)
+        width, height, duration, media_start = probe(source)
+    if not width or not height:
+        raise MinorFailure("download has no frame size after retry")
     ocr_text, hits, cutoff, boxed, unavailable = scan_video(source, work)
     output = _clip_seconds(duration, config)
     blocked = copyright_reason(
@@ -563,7 +589,8 @@ def produce(
     ):
         low = float(config["clip_min_seconds"])
         high = float(config["clip_max_seconds"])
-        if repost and (duration < low or duration > high or not is_vertical(width, height)):
+        fit_ok = bool(config.get("allow_fit"))
+        if repost and (duration < low or duration > high or (not fit_ok and not is_vertical(width, height))):
             return Prepared(
                 source_id=candidate.source_id,
                 width=width,

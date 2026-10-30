@@ -93,6 +93,7 @@ def _local_reasons(config: dict, candidate: Candidate, prepared) -> list[str]:
         prepared.edge_cutoff,
         prepared.scanners_unavailable,
         int(config["min_resolution"]),
+        reject_corner=os.environ.get("GROWTH_SKIP_GEMINI") == "1",
     )
     copy = copyright_reason(candidate.title, candidate.description, prepared.duration, float(config.get("max_source_seconds") or 4800))
     if copy:
@@ -101,13 +102,12 @@ def _local_reasons(config: dict, candidate: Candidate, prepared) -> list[str]:
     high = float(config["clip_max_seconds"])
     if prepared.duration and (prepared.duration < low or prepared.duration > high):
         reasons.append(f"duration outside the clip window ({prepared.duration:.1f}s not in {low:g}-{high:g}s)")
-    if prepared.width and prepared.height and not is_vertical(prepared.width, prepared.height):
-        reasons.append("not native vertical")
+    # non-vertical sources are fitted over a blurred background later (no face crop)
     if prepared.local_path and Path(prepared.local_path).is_file():
         kbps = bitrate_kbps(Path(prepared.local_path))
         if kbps and kbps < MIN_KBPS:
             reasons.append(f"low bitrate ({kbps} kbps < {MIN_KBPS})")
-    if not prepared.local_path and "not native vertical" not in reasons:
+    if not prepared.local_path:
         reasons.append(
             f"render produced no file (hits={list(prepared.corner_hits)} cutoff={prepared.edge_cutoff} "
             f"scanners_unavailable={prepared.scanners_unavailable} size={prepared.width}x{prepared.height} dur={prepared.duration:.1f})"
@@ -167,10 +167,17 @@ def _review(config: dict, candidate: Candidate, prepared, work: Path, api_key: s
         if skip:
             raise _Skipped
 
+        hint = ""
+        if prepared.corner_hits:
+            hint = (f" Local scan flagged a possible logo/watermark in: {', '.join(prepared.corner_hits)}. "
+                    "Check those corners carefully; any real logo or watermark scores 1 on no_watermark.")
+        if prepared.width and prepared.height and not is_vertical(prepared.width, prepared.height):
+            hint += (" This source is not vertical; it will be fitted whole into 9:16 over a blurred copy of itself "
+                     "(no crop), so do not penalise orientation or that padding.")
         verdict = score_video(
             Path(prepared.local_path),
             candidate,
-            str(config.get("strategy") or ""),
+            str(config.get("strategy") or "") + hint,
             api_key,
             str(config.get("gemini_model") or "gemini-flash-latest"),
             work / "review",
@@ -225,6 +232,7 @@ def _rank(row: Candidate) -> tuple:
 
 
 def _gather(config: dict, discover, review, api_key: str, work: Path, budget: Budget, used: set[str]) -> list[dict]:
+    config = {**config, "allow_fit": True}
     rows = []
     for row in discover(config, dict(os.environ)):
         if row.url in used:
