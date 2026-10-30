@@ -111,9 +111,29 @@ def _prepare(config: dict, candidate: Candidate, work: Path):
     return prepared
 
 
+class _Skipped(Exception):
+    pass
+
+
+def _placeholder_caption(config: dict, candidate: Candidate) -> str:
+    title = " ".join(str(candidate.title or candidate.topic or "").split())[:90]
+    tags = "#love #romantic #shorts" if config.get("platform") == "youtube" else "#love #reels #hindisongs"
+    if candidate.topic != "love":
+        tags = "#shorts #viral" if config.get("platform") == "youtube" else "#reels #viral"
+    return f"{title} {tags}".strip()
+
+
 def _review(config: dict, candidate: Candidate, prepared, work: Path, api_key: str, review) -> dict | None:
-    """One combined Gemini call: approve the clip and write its caption."""
+    """One combined Gemini call: approve the clip and write its caption.
+
+    GROWTH_SKIP_GEMINI=1 (demos only) approves clips that passed every local check
+    and gives them a placeholder caption.
+    """
+    skip = os.environ.get("GROWTH_SKIP_GEMINI") == "1"
     try:
+        if skip:
+            raise _Skipped
+
         verdict = score_video(
             Path(prepared.local_path),
             candidate,
@@ -124,6 +144,9 @@ def _review(config: dict, candidate: Candidate, prepared, work: Path, api_key: s
             int(config.get("min_gemini_score") or 8),
             str(config.get("platform") or ""),
         )
+    except _Skipped:
+        verdict = {"pass": True, "overall": None, "scores": {}, "note": "gemini skipped (local checks only)", "tweaks": {},
+                   "caption": _placeholder_caption(config, candidate)}
     except QuotaExhausted:
         raise
     except Exception as exc:
@@ -133,7 +156,7 @@ def _review(config: dict, candidate: Candidate, prepared, work: Path, api_key: s
     if not verdict.get("pass"):
         return None
     caption = str(verdict.get("caption") or "").strip()
-    notes = review(caption, candidate) if caption else ["gemini caption missing"]
+    notes = [] if skip else (review(caption, candidate) if caption else ["gemini caption missing"])
     if notes:
         print(f"SKIP caption {notes[0]}", flush=True)
         return None
@@ -183,7 +206,7 @@ def _gather(config: dict, discover, review, api_key: str, work: Path, budget: Bu
     for candidate, prepared in ready:
         if len(kept) >= PER_PLATFORM:
             break
-        if not budget.take():
+        if os.environ.get("GROWTH_SKIP_GEMINI") != "1" and not budget.take():
             print("STOP gemini budget used up", flush=True)
             break
         try:

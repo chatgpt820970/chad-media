@@ -4,6 +4,11 @@ name: Growth demos
 # Does not schedule anything in Buffer.
 on:
   workflow_dispatch:
+    inputs:
+      skip_gemini:
+        description: "Skip Gemini review (approve clips that pass local checks, placeholder caption)"
+        type: boolean
+        default: false
 
 permissions:
   contents: write
@@ -42,6 +47,7 @@ jobs:
           GEMINI_API_KEY_3: ${{ secrets.GEMINI_API_KEY_3 }}
           GEMINI_MODEL: gemini-flash-latest
           GEMINI_MODEL_FIRST: gemini-flash-lite-latest
+          GROWTH_SKIP_GEMINI: ${{ inputs.skip_gemini && '1' || '' }}
           GROWTH_DEMO_DIR: work/growth-demos
         run: python -m growth.demos
 
