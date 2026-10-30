@@ -36,7 +36,8 @@ def _shrink(path: Path) -> Path:
     if path.stat().st_size <= LIMIT:
         return path
     dest = path.with_name(path.stem + "-small.mp4")
-    subprocess.run(
+    try:
+        subprocess.run(
         [
             "ffmpeg", "-y", "-i", str(path),
             "-c:v", "libx264", "-preset", "medium", "-crf", "23",
@@ -45,7 +46,36 @@ def _shrink(path: Path) -> Path:
         capture_output=True,
         timeout=240,
         check=False,
-    )
+        )
+    except subprocess.TimeoutExpired:
+        pass
+    if dest.is_file() and dest.stat().st_size <= LIMIT:
+        return dest
+    # second pass: aim a bitrate at ~14MB for this clip's duration, keeping resolution
+    try:
+        probe = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_entries", "format=duration", "-of", "csv=p=0", str(path)],
+            capture_output=True, text=True, timeout=60, check=False,
+        )
+        seconds = max(float((probe.stdout or "0").strip() or 0), 1.0)
+    except Exception:
+        return path
+    video_kbps = max(int((14 * 1024 * 1024 * 8 / 1000) / seconds) - 160, 800)
+    dest = path.with_name(path.stem + "-fit.mp4")
+    try:
+        subprocess.run(
+            [
+                "ffmpeg", "-y", "-i", str(path),
+                "-c:v", "libx264", "-preset", "fast", "-b:v", f"{video_kbps}k",
+                "-maxrate", f"{video_kbps}k", "-bufsize", f"{video_kbps * 2}k",
+                "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart", str(dest),
+            ],
+            capture_output=True,
+            timeout=300,
+            check=False,
+        )
+    except subprocess.TimeoutExpired:
+        return path
     if dest.is_file() and dest.stat().st_size <= LIMIT:
         return dest
     return path
